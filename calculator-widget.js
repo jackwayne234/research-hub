@@ -126,7 +126,7 @@
       padding: 10px 12px; background: #0d0d22; border-bottom: 1px solid #1a1a3a;
       flex-shrink: 0;
     }
-    #calc-formula-panel .fp-header span { font-size: 13px; font-weight: 600; color: #a78bfa; }
+    #calc-formula-panel .fp-header span { font-size: 15px; font-weight: 700; color: #e0e0f0; }
     #calc-formula-panel .fp-close {
       background: none; border: none; color: #8888aa; cursor: pointer;
       font-size: 16px; padding: 2px 6px;
@@ -139,7 +139,7 @@
       display: flex; gap: 4px; padding: 0 8px 8px; flex-wrap: wrap; flex-shrink: 0;
       border-bottom: 1px solid #1a1a3a; margin-bottom: 4px; padding-bottom: 8px;
     }
-    #calc-formula-panel .fp-presets button {
+    #calc-formula-panel .fp-presets button { font-size: 13px;
       background: #1a1a3a; border: 1px solid #252550; color: #8888aa;
       border-radius: 4px; padding: 3px 8px; font-size: 10px; cursor: pointer;
       font-family: 'JetBrains Mono', monospace; transition: all 0.15s;
@@ -150,22 +150,22 @@
       padding: 10px; margin-bottom: 8px;
     }
     #calc-formula-panel .fp-card-title {
-      font-size: 12px; font-weight: 600; color: #f472b6; margin-bottom: 2px;
+      font-size: 15px; font-weight: 700; color: #f472b6; margin-bottom: 4px;
     }
     #calc-formula-panel .fp-card-eq {
-      font-size: 11px; color: #8888aa; margin-bottom: 8px;
+      font-size: 13px; color: #c0c0d8; margin-bottom: 8px;
     }
     #calc-formula-panel .fp-fields {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
       gap: 6px; margin-bottom: 8px;
     }
     #calc-formula-panel .fp-field label {
-      display: block; font-size: 9px; color: #6366f1; text-transform: uppercase;
-      letter-spacing: 0.5px; margin-bottom: 2px;
+      display: block; font-size: 12px; color: #a78bfa; text-transform: uppercase;
+      font-weight: 600; letter-spacing: 0.5px; margin-bottom: 3px;
     }
     #calc-formula-panel .fp-field input {
-      width: 100%; background: #111128; border: 1px solid #252550; color: #e0e0f0;
-      border-radius: 4px; padding: 5px 6px; font-size: 11px;
+      width: 100%; background: #111128; border: 1px solid #353560; color: #e0e0f0;
+      border-radius: 4px; padding: 7px 8px; font-size: 13px;
       font-family: 'JetBrains Mono', monospace; outline: none;
       box-sizing: border-box;
     }
