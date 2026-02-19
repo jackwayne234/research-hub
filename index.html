@@ -113,6 +113,29 @@ a:hover { color: var(--accent2); }
 .qg-item.pass { border-color: rgba(34,197,94,0.3); }
 .qg-item.fail { border-color: rgba(239,68,68,0.3); opacity: 0.6; }
 
+/* Skill bars */
+.skill { display: flex; align-items: center; gap: 10px; margin: 6px 0; font-size: 0.8rem; }
+.skill-name { width: 160px; flex-shrink: 0; color: #c0c0d8; }
+.skill-track { flex: 1; height: 12px; background: #1a1a3a; border-radius: 6px; overflow: hidden; }
+.skill-fill { height: 100%; border-radius: 6px; transition: width 1s ease-out; }
+.skill-pct { width: 36px; font-size: 0.7rem; color: var(--text-dim); text-align: right; }
+
+/* Footer */
+.footer { text-align: center; padding: 32px 0 16px; font-size: 0.72rem; color: var(--text-dim); border-top: 1px solid var(--card-border); margin-top: 20px; }
+.footer .stats { display: flex; gap: 20px; justify-content: center; margin-bottom: 8px; flex-wrap: wrap; }
+.footer .stat { display: flex; align-items: center; gap: 4px; }
+
+/* Back to top */
+.btt {
+  position: fixed; bottom: 24px; right: 24px; width: 40px; height: 40px;
+  background: var(--card); border: 1px solid var(--card-border); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+  cursor: pointer; opacity: 0; transition: opacity 0.3s, transform 0.2s;
+  pointer-events: none; z-index: 100; color: var(--text-dim);
+}
+.btt.show { opacity: 1; pointer-events: auto; }
+.btt:hover { border-color: var(--accent1); color: var(--text); transform: translateY(-2px); }
+
 /* Main */
 .main { margin-left: 48px; max-width: 960px; padding: 32px 24px 64px; margin-right: auto; }
 
@@ -386,20 +409,17 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
   </div>
   <div class="card-body">
     <p><strong>Current level:</strong> Mid-Calc 1 notation — concepts at graduate level</p>
-    <h3>What's Solid</h3>
-    <ul>
-      <li>Derivatives — power rule, chain rule, coefficients, multi-term</li>
-      <li>Integration — reverse power rule, +C, multi-term</li>
-      <li>Limits — plug in, factor, epsilon-delta concept</li>
-      <li>Complex numbers — i, Euler's formula, phasors, complex plane</li>
-      <li>Matrices & tensors — conceptual understanding</li>
-      <li>Linear algebra — self-taught end-to-end</li>
-    </ul>
+    <h3>Skills Mastered</h3>
+    <div class="skill"><span class="skill-name">Derivatives (power/chain)</span><div class="skill-track"><div class="skill-fill" data-w="90" style="background:linear-gradient(90deg,var(--accent1),var(--green));"></div></div><span class="skill-pct">90%</span></div>
+    <div class="skill"><span class="skill-name">Integration (reverse)</span><div class="skill-track"><div class="skill-fill" data-w="80" style="background:linear-gradient(90deg,var(--accent1),var(--green));"></div></div><span class="skill-pct">80%</span></div>
+    <div class="skill"><span class="skill-name">Limits</span><div class="skill-track"><div class="skill-fill" data-w="70" style="background:linear-gradient(90deg,var(--accent1),var(--accent2));"></div></div><span class="skill-pct">70%</span></div>
+    <div class="skill"><span class="skill-name">Complex numbers</span><div class="skill-track"><div class="skill-fill" data-w="75" style="background:linear-gradient(90deg,var(--accent1),var(--accent2));"></div></div><span class="skill-pct">75%</span></div>
+    <div class="skill"><span class="skill-name">Linear algebra</span><div class="skill-track"><div class="skill-fill" data-w="65" style="background:linear-gradient(90deg,var(--accent2),var(--orange));"></div></div><span class="skill-pct">65%</span></div>
+    <div class="skill"><span class="skill-name">Matrices & tensors</span><div class="skill-track"><div class="skill-fill" data-w="50" style="background:linear-gradient(90deg,var(--accent2),var(--orange));"></div></div><span class="skill-pct">50%</span></div>
     <h3>Next Up</h3>
-    <ul>
-      <li>Product rule, quotient rule</li>
-      <li>Deeper calc practice & notation fluency</li>
-    </ul>
+    <div class="skill"><span class="skill-name">Product/quotient rule</span><div class="skill-track"><div class="skill-fill" data-w="15" style="background:linear-gradient(90deg,var(--accent3),var(--orange));"></div></div><span class="skill-pct">15%</span></div>
+    <div class="skill"><span class="skill-name">Calc 2 (series/integ)</span><div class="skill-track"><div class="skill-fill" data-w="5" style="background:linear-gradient(90deg,var(--accent3),var(--orange));"></div></div><span class="skill-pct">5%</span></div>
+    <div class="skill"><span class="skill-name">Calc 3 (multivariable)</span><div class="skill-track"><div class="skill-fill" data-w="0" style="background:var(--card-border);"></div></div><span class="skill-pct">—</span></div>
     <h3>Roadmap</h3>
     <p>Calc 1 → 2 → 3 → Linear Algebra notation → Verify optical computer → Placement exam</p>
     <p style="margin-top:8px;"><strong>Target:</strong> Write next paper entirely by hand — every formula, every derivation.</p>
@@ -592,13 +612,43 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
     <span class="chevron">▼</span>
   </div>
   <div class="card-body">
+    <div style="margin:12px 0;">
+      <svg viewBox="0 0 560 200" style="width:100%;max-width:560px;display:block;margin:0 auto;">
+        <rect width="560" height="200" fill="#0d0d24" rx="8"/>
+        <!-- Nodes -->
+        <rect x="220" y="10" width="120" height="30" rx="6" fill="rgba(99,102,241,0.2)" stroke="rgba(99,102,241,0.4)"/>
+        <text x="280" y="30" fill="#e0e0f0" font-family="JetBrains Mono" font-size="10" text-anchor="middle">BH Evaporation</text>
+        <rect x="30" y="75" width="110" height="30" rx="6" fill="rgba(236,72,153,0.15)" stroke="rgba(236,72,153,0.3)"/>
+        <text x="85" y="95" fill="#ec4899" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Gravity</text>
+        <rect x="420" y="75" width="120" height="30" rx="6" fill="rgba(168,85,247,0.15)" stroke="rgba(168,85,247,0.3)"/>
+        <text x="480" y="95" fill="#a855f7" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Dark Energy</text>
+        <rect x="30" y="155" width="130" height="30" rx="6" fill="rgba(245,158,11,0.15)" stroke="rgba(245,158,11,0.3)"/>
+        <text x="95" y="175" fill="#f59e0b" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Time Dilation</text>
+        <rect x="210" y="155" width="140" height="30" rx="6" fill="rgba(34,197,94,0.15)" stroke="rgba(34,197,94,0.3)"/>
+        <text x="280" y="175" fill="#22c55e" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Spatial Depletion</text>
+        <rect x="400" y="155" width="130" height="30" rx="6" fill="rgba(99,102,241,0.15)" stroke="rgba(99,102,241,0.3)"/>
+        <text x="465" y="175" fill="#6366f1" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Wormholes</text>
+        <!-- Connecting lines -->
+        <g stroke="#333" stroke-width="1" stroke-dasharray="3,3" opacity="0.6">
+          <line x1="240" y1="40" x2="120" y2="75"/><!-- BH→Gravity -->
+          <line x1="320" y1="40" x2="440" y2="75"/><!-- BH→DE -->
+          <line x1="85" y1="105" x2="85" y2="155"/><!-- Gravity→TimeDil -->
+          <line x1="280" y1="40" x2="280" y2="155"/><!-- BH→Spatial -->
+          <line x1="480" y1="105" x2="465" y2="155"/><!-- DE→Wormholes -->
+          <line x1="140" y1="90" x2="420" y2="90"/><!-- Gravity↔DE -->
+        </g>
+        <!-- Central label -->
+        <text x="280" y="105" fill="#8888aa" font-family="JetBrains Mono" font-size="8" text-anchor="middle">wave pressure substrate</text>
+        <text x="280" y="118" fill="#6366f1" font-family="JetBrains Mono" font-size="9" text-anchor="middle" font-weight="600">same mechanism</text>
+      </svg>
+    </div>
     <ul>
-      <li><strong>Gravity</strong> — Wave pressure from accumulated black hole evaporation</li>
-      <li><strong>Dark energy</strong> — Accumulated substrate wave pressure pushing space apart</li>
-      <li><strong>Time dilation</strong> — Wave interaction effects (both mass and velocity)</li>
-      <li><strong>Spatial depletion</strong> — Why space is mostly empty; substrate consumed by matter formation</li>
-      <li><strong>Wormholes</strong> — 4-5 orbiting BHs can naturally tear open spatial geometry</li>
-      <li><strong>Breakdown vs sustaining voltage</strong> — Analogy for phase transition thresholds in spacetime</li>
+      <li><strong>Gravity</strong> — Wave pressure shadow from accumulated BH evaporation waves</li>
+      <li><strong>Dark energy</strong> — Same wave pressure, accumulated over eons, pushing space apart</li>
+      <li><strong>Time dilation</strong> — Degree of interaction with substrate wave background (mass AND velocity)</li>
+      <li><strong>Spatial depletion</strong> — BHs consuming spatial geometry for billions of years → mostly empty</li>
+      <li><strong>Wormholes</strong> — 4-5 orbiting BHs tear open spatial geometry; breakdown vs sustaining voltage</li>
+      <li><strong>Key:</strong> Gravity and dark energy are the <em>same mechanism</em> at different scales</li>
     </ul>
   </div>
 </div>
@@ -644,7 +694,20 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
   </div>
 </div>
 
+<div class="footer">
+  <div class="stats">
+    <div class="stat">📄 4 papers published</div>
+    <div class="stat">📐 6 dimensions</div>
+    <div class="stat">✅ 9/10 QG models</div>
+    <div class="stat">🔢 0 free parameters</div>
+    <div class="stat">⏱️ All in ~1 month</div>
+  </div>
+  <div>Riner Research Hub · Built by Barron 🐱 · Last updated Feb 19, 2026</div>
+</div>
+
 </div><!-- .main -->
+
+<div class="btt" id="btt" onclick="window.scrollTo({top:0})">↑</div>
 
 <script>
 document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
@@ -742,6 +805,25 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.3 });
 document.querySelectorAll('.compare-grid').forEach(g => observer.observe(g));
+
+// Animate skill bars on scroll
+const skillObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.skill-fill[data-w]').forEach(b => {
+        b.style.width = b.dataset.w + '%';
+      });
+      skillObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll('#math .card-body').forEach(g => skillObs.observe(g));
+
+// Back to top
+const btt = document.getElementById('btt');
+window.addEventListener('scroll', () => {
+  btt.classList.toggle('show', window.scrollY > 400);
+}, { passive: true });
 </script>
 </body>
 </html>
