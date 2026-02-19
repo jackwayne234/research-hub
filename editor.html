@@ -326,21 +326,90 @@ function loadSkeleton() {
 <script>
 // Symbol Sidebar
 const SYM_CATEGORIES = [
-  {name:'Greek Letters (lowercase)', symbols:'α β γ δ ε ζ η θ ι κ λ μ ν ξ π ρ σ τ φ χ ψ ω'.split(' ')},
-  {name:'Greek Letters (uppercase)', symbols:'Δ Γ Θ Λ Σ Φ Ψ Ω'.split(' ')},
-  {name:'Math Operators', symbols:'± × ÷ · √ ∂ ∫ ∑ ∏ ∞ ≈ ≠ ≤ ≥ ∝ ∇'.split(' ')},
-  {name:'Subscripts', symbols:'₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉'.split(' ')},
-  {name:'Superscripts', symbols:'⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁿ ᵢ ⱼ'.split(' ')},
-  {name:'Physics', symbols:'ℏ ℓ ° ′ ″ → ← ↔ ⊗ ⊕'.split(' ')},
+  {name:'Greek Letters (lowercase)', symbols:[
+    {s:'α',d:'alpha — angular acceleration, fine-structure constant'},
+    {s:'β',d:'beta — velocity as fraction of light speed (v/c), river velocity'},
+    {s:'γ',d:'gamma — Lorentz factor, photon'},
+    {s:'δ',d:'delta — small change, Dirac delta function'},
+    {s:'ε',d:'epsilon — small quantity, permittivity'},
+    {s:'ζ',d:'zeta — Riemann zeta function, Euler product'},
+    {s:'η',d:'eta — flat spacetime metric, efficiency'},
+    {s:'θ',d:'theta — angle, polar coordinate'},
+    {s:'ι',d:'iota'},
+    {s:'κ',d:'kappa — curvature, Einstein gravitational constant'},
+    {s:'λ',d:'lambda — wavelength, cosmological constant'},
+    {s:'μ',d:'mu — metric index, reduced mass, permeability'},
+    {s:'ν',d:'nu — metric index, frequency'},
+    {s:'ξ',d:'xi — coordinate, extra dimension'},
+    {s:'π',d:'pi — 3.14159... ratio of circumference to diameter'},
+    {s:'ρ',d:'rho — density, radial coordinate'},
+    {s:'σ',d:'sigma — stress, cross-section, Stefan-Boltzmann'},
+    {s:'τ',d:'tau — proper time, lifetime'},
+    {s:'φ',d:'phi — azimuthal angle, scalar field, phase'},
+    {s:'χ',d:'chi — susceptibility'},
+    {s:'ψ',d:'psi — wave function'},
+    {s:'ω',d:'omega — angular frequency'}
+  ]},
+  {name:'Greek Letters (uppercase)', symbols:[
+    {s:'Δ',d:'Delta — change in a quantity (Δr = change in radius)'},
+    {s:'Γ',d:'Gamma — Christoffel symbols (connection coefficients)'},
+    {s:'Θ',d:'Theta — angle, Heaviside step function'},
+    {s:'Λ',d:'Lambda — cosmological constant'},
+    {s:'Σ',d:'Sigma — summation, surface'},
+    {s:'Φ',d:'Phi — gravitational potential, field'},
+    {s:'Ψ',d:'Psi — wave function'},
+    {s:'Ω',d:'Omega — solid angle, density parameter (dΩ² in metric)'}
+  ]},
+  {name:'Math Operators', symbols:[
+    {s:'±',d:'plus or minus'},
+    {s:'×',d:'multiplication'},
+    {s:'÷',d:'division'},
+    {s:'·',d:'dot product, multiplication'},
+    {s:'√',d:'square root'},
+    {s:'∂',d:'partial derivative — rate of change with respect to one variable'},
+    {s:'∫',d:'integral — area under a curve, reverse of derivative'},
+    {s:'∑',d:'summation — add up a series'},
+    {s:'∏',d:'product — multiply a series'},
+    {s:'∞',d:'infinity'},
+    {s:'≈',d:'approximately equal to'},
+    {s:'≠',d:'not equal to'},
+    {s:'≤',d:'less than or equal to'},
+    {s:'≥',d:'greater than or equal to'},
+    {s:'∝',d:'proportional to'},
+    {s:'∇',d:'nabla/del — gradient, divergence, curl operator'}
+  ]},
+  {name:'Subscripts', symbols:[
+    {s:'₀',d:'subscript 0'},{s:'₁',d:'subscript 1'},{s:'₂',d:'subscript 2'},
+    {s:'₃',d:'subscript 3'},{s:'₄',d:'subscript 4'},{s:'₅',d:'subscript 5'},
+    {s:'₆',d:'subscript 6'},{s:'₇',d:'subscript 7'},{s:'₈',d:'subscript 8'},{s:'₉',d:'subscript 9'}
+  ]},
+  {name:'Superscripts', symbols:[
+    {s:'⁰',d:'superscript 0'},{s:'¹',d:'superscript 1'},{s:'²',d:'squared'},
+    {s:'³',d:'cubed'},{s:'⁴',d:'superscript 4'},{s:'⁵',d:'superscript 5'},
+    {s:'⁶',d:'superscript 6'},{s:'⁷',d:'superscript 7'},{s:'⁸',d:'superscript 8'},
+    {s:'⁹',d:'superscript 9'},{s:'ⁿ',d:'to the nth power'},{s:'ᵢ',d:'subscript i index'},{s:'ⱼ',d:'subscript j index'}
+  ]},
+  {name:'Physics', symbols:[
+    {s:'ℏ',d:'h-bar — reduced Planck constant (h/2π), quantum of action'},
+    {s:'ℓ',d:'script l — Planck length, angular momentum quantum number'},
+    {s:'°',d:'degree — angle measurement'},
+    {s:'′',d:'prime — derivative, arcminutes'},
+    {s:'″',d:'double prime — second derivative, arcseconds'},
+    {s:'→',d:'arrow — vector, tends to, implies'},
+    {s:'←',d:'left arrow'},
+    {s:'↔',d:'double arrow — if and only if'},
+    {s:'⊗',d:'tensor product'},
+    {s:'⊕',d:'direct sum'}
+  ]},
   {name:'Key Equations', equations:[
-    'v = √(2GM/r)',
-    'β = √(rₛ/r)',
-    'Clock rate = √(1 - β²)',
-    'rₛ = 2GM/c²',
-    'g_μν = diag(g_rr·ζ, g_θθ·ζ, g_φφ·ζ, Ṡ², 1/r)',
-    'ζ = ζ(1 + (r/rₛ)³)',
-    'Ṡ = √(Σ(dg_i/dr)²)',
-    'ds² = −(1 − rₛ/r)dt² + (1 − rₛ/r)⁻¹dr² + r²dΩ²'
+    {eq:'v = √(2GM/r)',d:'Escape velocity — speed needed to leave a mass. G=gravitational constant, M=mass of body, r=distance from center'},
+    {eq:'β = √(rₛ/r)',d:'River velocity — how fast space flows inward as a fraction of light speed. rₛ=Schwarzschild radius'},
+    {eq:'Clock rate = √(1 - β²)',d:'Gravitational time dilation — how fast a clock ticks relative to one at infinity. β from river velocity'},
+    {eq:'rₛ = 2GM/c²',d:'Schwarzschild radius — size a mass would need to be compressed to become a black hole'},
+    {eq:'g_μν = diag(g_rr·ζ, g_θθ·ζ, g_φφ·ζ, Ṡ², 1/r)',d:'5D prime-modified metric — 3 spatial dims with Euler product, entropy rate as time, temperature as 5th dim'},
+    {eq:'ζ = ζ(1 + (r/rₛ)³)',d:'Euler prime product mapped to radius — α=3 constrained by LIGO data'},
+    {eq:'Ṡ = √(Σ(dg_i/dr)²)',d:'Entropy rate — rate of change of spatial geometry, emergent time'},
+    {eq:'ds² = −(1 − rₛ/r)dt² + (1 − rₛ/r)⁻¹dr² + r²dΩ²',d:'Schwarzschild metric — standard GR line element for spacetime around a non-rotating mass'}
   ]}
 ];
 
@@ -361,10 +430,12 @@ function buildSidebar() {
     const body = document.createElement('div');
     body.className = 'sidebar-cat-body';
     if (cat.symbols) {
-      cat.symbols.forEach(s => {
+      cat.symbols.forEach(item => {
+        const s = typeof item === 'string' ? item : item.s;
+        const d = typeof item === 'string' ? s : item.d;
         const btn = document.createElement('button');
         btn.className = 'sym-btn'; btn.textContent = s;
-        btn.draggable = true; btn.title = s;
+        btn.draggable = true; btn.title = d;
         btn.dataset.sym = s;
         btn.onclick = () => insertAtCursor(s);
         btn.ondragstart = e => e.dataTransfer.setData('text/plain', s);
@@ -372,10 +443,12 @@ function buildSidebar() {
       });
     }
     if (cat.equations) {
-      cat.equations.forEach(eq => {
+      cat.equations.forEach(item => {
+        const eq = typeof item === 'string' ? item : item.eq;
+        const d = typeof item === 'string' ? eq : item.d;
         const btn = document.createElement('button');
         btn.className = 'sym-btn eq-btn'; btn.textContent = eq;
-        btn.draggable = true; btn.title = eq;
+        btn.draggable = true; btn.title = d;
         btn.dataset.sym = eq;
         btn.onclick = () => insertAtCursor(eq);
         btn.ondragstart = e => e.dataTransfer.setData('text/plain', eq);
