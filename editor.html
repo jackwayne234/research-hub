@@ -87,6 +87,56 @@ a:hover { color: var(--accent2); }
 }
 .math-inline { padding: 0 4px; }
 
+/* Symbol Sidebar */
+.symbol-sidebar {
+  position: fixed; top: 0; right: 0; width: 320px; height: 100vh;
+  background: #0d0d24; border-left: 1px solid var(--card-border);
+  z-index: 200; display: flex; flex-direction: column;
+  transform: translateX(100%); transition: transform 0.25s ease;
+  font-size: 0.82rem;
+}
+.symbol-sidebar.open { transform: translateX(0); }
+body.sidebar-open .editor { margin-right: 320px; }
+body.sidebar-open .toolbar { padding-right: 340px; }
+.sidebar-header {
+  padding: 12px 14px; border-bottom: 1px solid var(--card-border);
+  display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;
+}
+.sidebar-header .sidebar-top { display: flex; align-items: center; justify-content: space-between; }
+.sidebar-header .sidebar-title { font-weight: 600; color: var(--accent2); font-size: 0.85rem; }
+.sidebar-close { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.1rem; padding: 2px 6px; }
+.sidebar-close:hover { color: var(--text); }
+.sidebar-search {
+  width: 100%; padding: 6px 10px; background: var(--card); border: 1px solid var(--card-border);
+  border-radius: 6px; color: var(--text); font-family: inherit; font-size: 0.78rem; outline: none;
+}
+.sidebar-search:focus { border-color: var(--accent1); }
+.sidebar-content { flex: 1; overflow-y: auto; padding: 8px 0; }
+.sidebar-category { border-bottom: 1px solid #1a1a3a; }
+.sidebar-cat-header {
+  padding: 8px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.75rem; font-weight: 600; color: var(--accent1); text-transform: uppercase; letter-spacing: 0.05em;
+  user-select: none;
+}
+.sidebar-cat-header:hover { background: rgba(99,102,241,0.06); }
+.sidebar-cat-header .arrow { transition: transform 0.2s; font-size: 0.65rem; }
+.sidebar-cat-header.collapsed .arrow { transform: rotate(-90deg); }
+.sidebar-cat-body { padding: 4px 14px 10px; display: flex; flex-wrap: wrap; gap: 4px; }
+.sidebar-cat-body.hidden { display: none; }
+.sym-btn {
+  background: var(--card); border: 1px solid var(--card-border); color: var(--text);
+  padding: 4px 8px; border-radius: 4px; cursor: pointer; font-family: inherit;
+  font-size: 0.88rem; line-height: 1.2; transition: all 0.15s; user-select: none;
+}
+.sym-btn:hover { border-color: var(--accent2); background: rgba(168,85,247,0.1); }
+.sym-btn.eq-btn {
+  width: 100%; text-align: left; font-size: 0.76rem; padding: 6px 10px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sym-btn[draggable="true"] { cursor: grab; }
+.toolbar .sym-toggle { color: var(--accent2); border-color: var(--accent2); }
+.toolbar .sym-toggle.active { background: var(--accent2); color: #fff; }
+
 /* Print stylesheet */
 @media print {
   * { color: #000 !important; background: #fff !important; border-color: #ccc !important; }
@@ -112,6 +162,7 @@ a:hover { color: var(--accent2); }
   <button onclick="exportDocx()" title="Export as .doc">📝 DOCX</button>
   <button onclick="insertMath()" title="Insert LaTeX math block (Ctrl+M)">∑ Math</button>
   <button onclick="loadSkeleton()" title="Load 5D metric paper template">🧬 Load Skeleton</button>
+  <button class="sym-toggle" onclick="toggleSymbolSidebar()" title="Symbol & Equation Palette">Σ Symbols</button>
   <span class="spacer"></span>
   <span class="wc" id="wordcount">0 words</span>
   <span class="status" id="save-status">Not saved yet</span>
@@ -261,6 +312,170 @@ function loadSkeleton() {
   updateWordCount();
 }
 </script>
+<div class="symbol-sidebar" id="symbolSidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-top">
+      <span class="sidebar-title">Σ Symbols & Equations</span>
+      <button class="sidebar-close" onclick="toggleSymbolSidebar()">✕</button>
+    </div>
+    <input class="sidebar-search" id="symSearch" placeholder="Search symbols..." oninput="filterSymbols(this.value)">
+  </div>
+  <div class="sidebar-content" id="symContent"></div>
+</div>
+
+<script>
+// Symbol Sidebar
+const SYM_CATEGORIES = [
+  {name:'Greek Letters (lowercase)', symbols:'α β γ δ ε ζ η θ ι κ λ μ ν ξ π ρ σ τ φ χ ψ ω'.split(' ')},
+  {name:'Greek Letters (uppercase)', symbols:'Δ Γ Θ Λ Σ Φ Ψ Ω'.split(' ')},
+  {name:'Math Operators', symbols:'± × ÷ · √ ∂ ∫ ∑ ∏ ∞ ≈ ≠ ≤ ≥ ∝ ∇'.split(' ')},
+  {name:'Subscripts', symbols:'₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉'.split(' ')},
+  {name:'Superscripts', symbols:'⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁿ ᵢ ⱼ'.split(' ')},
+  {name:'Physics', symbols:'ℏ ℓ ° ′ ″ → ← ↔ ⊗ ⊕'.split(' ')},
+  {name:'Key Equations', equations:[
+    'v = √(2GM/r)',
+    'β = √(rₛ/r)',
+    'Clock rate = √(1 - β²)',
+    'rₛ = 2GM/c²',
+    'g_μν = diag(g_rr·ζ, g_θθ·ζ, g_φφ·ζ, Ṡ², 1/r)',
+    'ζ = ζ(1 + (r/rₛ)³)',
+    'Ṡ = √(Σ(dg_i/dr)²)',
+    'ds² = −(1 − rₛ/r)dt² + (1 − rₛ/r)⁻¹dr² + r²dΩ²'
+  ]}
+];
+
+function buildSidebar() {
+  const cont = document.getElementById('symContent');
+  cont.innerHTML = '';
+  SYM_CATEGORIES.forEach((cat, ci) => {
+    const sec = document.createElement('div');
+    sec.className = 'sidebar-category';
+    sec.dataset.catName = cat.name.toLowerCase();
+    const hdr = document.createElement('div');
+    hdr.className = 'sidebar-cat-header';
+    hdr.innerHTML = `<span>${cat.name}</span><span class="arrow">▼</span>`;
+    hdr.onclick = () => {
+      hdr.classList.toggle('collapsed');
+      body.classList.toggle('hidden');
+    };
+    const body = document.createElement('div');
+    body.className = 'sidebar-cat-body';
+    if (cat.symbols) {
+      cat.symbols.forEach(s => {
+        const btn = document.createElement('button');
+        btn.className = 'sym-btn'; btn.textContent = s;
+        btn.draggable = true; btn.title = s;
+        btn.dataset.sym = s;
+        btn.onclick = () => insertAtCursor(s);
+        btn.ondragstart = e => e.dataTransfer.setData('text/plain', s);
+        body.appendChild(btn);
+      });
+    }
+    if (cat.equations) {
+      cat.equations.forEach(eq => {
+        const btn = document.createElement('button');
+        btn.className = 'sym-btn eq-btn'; btn.textContent = eq;
+        btn.draggable = true; btn.title = eq;
+        btn.dataset.sym = eq;
+        btn.onclick = () => insertAtCursor(eq);
+        btn.ondragstart = e => e.dataTransfer.setData('text/plain', eq);
+        body.appendChild(btn);
+      });
+    }
+    sec.appendChild(hdr);
+    sec.appendChild(body);
+    cont.appendChild(sec);
+  });
+}
+
+function toggleSymbolSidebar() {
+  const sb = document.getElementById('symbolSidebar');
+  const btn = document.querySelector('.sym-toggle');
+  sb.classList.toggle('open');
+  document.body.classList.toggle('sidebar-open');
+  btn.classList.toggle('active');
+}
+
+// Track last cursor position in contenteditable
+let lastRange = null;
+document.addEventListener('selectionchange', () => {
+  const sel = window.getSelection();
+  if (sel.rangeCount > 0) {
+    const r = sel.getRangeAt(0);
+    const node = r.startContainer;
+    if (node && (node.nodeType === 3 ? node.parentElement : node).closest && (node.nodeType === 3 ? node.parentElement : node).closest('.section-body')) {
+      lastRange = r.cloneRange();
+    }
+  }
+});
+
+function insertAtCursor(text) {
+  const sel = window.getSelection();
+  let range = null;
+  // Try current selection first
+  if (sel.rangeCount > 0) {
+    const r = sel.getRangeAt(0);
+    const node = r.startContainer;
+    const el = (node.nodeType === 3 ? node.parentElement : node);
+    if (el.closest && el.closest('.section-body')) range = r;
+  }
+  // Fall back to last known position
+  if (!range && lastRange) range = lastRange;
+  // Fall back to end of first section
+  if (!range) {
+    const first = document.querySelector('.section-body');
+    range = document.createRange();
+    range.selectNodeContents(first);
+    range.collapse(false);
+  }
+  sel.removeAllRanges();
+  sel.addRange(range);
+  document.execCommand('insertText', false, text);
+}
+
+function filterSymbols(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('.sidebar-category').forEach(cat => {
+    const catName = cat.dataset.catName;
+    const btns = cat.querySelectorAll('.sym-btn');
+    let anyVisible = false;
+    btns.forEach(btn => {
+      const match = !q || btn.dataset.sym.toLowerCase().includes(q) || catName.includes(q);
+      btn.style.display = match ? '' : 'none';
+      if (match) anyVisible = true;
+    });
+    cat.style.display = anyVisible ? '' : 'none';
+    // Auto-expand matching categories
+    if (q && anyVisible) {
+      cat.querySelector('.sidebar-cat-header').classList.remove('collapsed');
+      cat.querySelector('.sidebar-cat-body').classList.remove('hidden');
+    }
+  });
+}
+
+// Enable drop on all contenteditable areas
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.section-body').forEach(el => {
+    el.addEventListener('dragover', e => e.preventDefault());
+    el.addEventListener('drop', e => {
+      e.preventDefault();
+      const text = e.dataTransfer.getData('text/plain');
+      if (!text) return;
+      // Insert at drop position
+      const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
+      if (range) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+      document.execCommand('insertText', false, text);
+    });
+  });
+});
+
+buildSidebar();
+</script>
+
 <script src="calculator-widget.js"></script>
 </body>
 </html>
