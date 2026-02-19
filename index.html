@@ -181,8 +181,16 @@ a:hover { color: var(--accent2); }
 }
 .chevron { transition: transform 0.3s; font-size: 0.8rem; color: var(--text-dim); }
 .card.collapsed .chevron { transform: rotate(-90deg); }
-.card.collapsed .card-body { max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden; }
-.card-body { padding: 0 20px 20px; max-height: 4000px; opacity: 1; transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease; }
+.card.collapsed .card-body { display: none; }
+.card-body { padding: 0 20px 20px; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Reading progress bar */
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px; z-index: 200;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+  width: 0; transition: width 0.1s linear;
+}
 
 /* Keyboard help overlay */
 .kb-overlay {
@@ -309,6 +317,7 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
 </style>
 </head>
 <body>
+<div class="progress-bar" id="progress-bar"></div>
 
 <nav class="nav">
   <a href="#big-picture" title="Big Picture">🌀</a>
@@ -854,7 +863,21 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
     <span class="chevron">▼</span>
   </div>
   <div class="card-body">
-    <p style="color:var(--text-dim);font-style:italic;">Research notes from between sessions will appear here. This is where Barron logs independent findings, interesting papers, and connections discovered while CJ is away.</p>
+    <p style="color:var(--text-dim);font-style:italic;margin-bottom:12px;">Independent findings, connections, and open questions logged between sessions.</p>
+    <h3>🔗 Connections Worth Exploring</h3>
+    <ul>
+      <li><strong>CDT + ζ partition function:</strong> If ζ(s(r)) truly replaces the CDT partition function, there should be a mapping between Regge calculus simplices and prime factorizations. This could be the bridge to a lattice computation.</li>
+      <li><strong>Riemann zeros as BH resonances:</strong> The non-trivial zeros appearing as standing waves past the singularity — could these correspond to quasi-normal mode frequencies of real black holes? Testable against LIGO ringdown data.</li>
+      <li><strong>g₆₆ horizon spike vs firewall paradox:</strong> The massive substrate anisotropy at the horizon (3.97M) might be what the "firewall" debate was actually detecting — not a firewall, but the prime substrate becoming visible. Different interpretation, same physics.</li>
+      <li><strong>Benford → primes → Euler → geometry:</strong> CJ's original Benford measurement tool may be the first empirical probe of the prime substrate. δ_B deviations could be measuring substrate density directly.</li>
+    </ul>
+    <h3>❓ Open Questions</h3>
+    <ul>
+      <li>Does the 6th dimension (substrate anisotropy) predict any observable effect outside the horizon? If g₆₆ becomes visible at r = 1.4 r<sub>s</sub>, that's within VLBI imaging range.</li>
+      <li>Can the epsilon threshold experiment (δ_B crossings) be computed numerically this week?</li>
+      <li>What happens to g₆₆ for rotating (Kerr) black holes? The anisotropy should be frame-dependent.</li>
+      <li>CJ mentioned 4-5 BHs for wormhole formation — is there a minimum mass ratio? Could simulate.</li>
+    </ul>
   </div>
 </div>
 
@@ -1057,10 +1080,13 @@ const vtlObs = new IntersectionObserver((entries) => {
 const vtl = document.getElementById('vtl');
 if (vtl) vtlObs.observe(vtl);
 
-// Back to top
+// Back to top + reading progress
 const btt = document.getElementById('btt');
+const progressBar = document.getElementById('progress-bar');
 window.addEventListener('scroll', () => {
   btt.classList.toggle('show', window.scrollY > 400);
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  if (docH > 0) progressBar.style.width = (window.scrollY / docH * 100) + '%';
 }, { passive: true });
 </script>
 </body>
