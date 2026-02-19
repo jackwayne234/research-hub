@@ -181,8 +181,31 @@ a:hover { color: var(--accent2); }
 }
 .chevron { transition: transform 0.3s; font-size: 0.8rem; color: var(--text-dim); }
 .card.collapsed .chevron { transform: rotate(-90deg); }
-.card.collapsed .card-body { display: none; }
-.card-body { padding: 0 20px 20px; }
+.card.collapsed .card-body { max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden; }
+.card-body { padding: 0 20px 20px; max-height: 4000px; opacity: 1; transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease; }
+
+/* Keyboard help overlay */
+.kb-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.kb-overlay.show { opacity: 1; pointer-events: auto; }
+.kb-box {
+  background: var(--card); border: 1px solid var(--card-border); border-radius: 12px;
+  padding: 24px 32px; max-width: 400px; width: 90%;
+}
+.kb-box h3 { font-size: 1rem; margin-bottom: 12px; color: var(--text); }
+.kb-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.8rem; }
+.kb-row .kb-key { background: #1a1a3a; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; color: var(--accent1); }
+.kb-row .kb-desc { color: var(--text-dim); }
+
+/* VS GR table */
+.vs-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.78rem; }
+.vs-table th { text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--card-border); color: var(--text-dim); font-weight: 500; }
+.vs-table td { padding: 6px 10px; border-bottom: 1px solid var(--card-border); color: #c0c0d8; }
+.vs-table tr:hover td { background: rgba(99,102,241,0.05); }
+.vs-table .new { color: var(--accent2); font-weight: 500; }
 .card-body p, .card-body li { font-size: 0.85rem; color: #c0c0d8; }
 .card-body ul { padding-left: 20px; }
 .card-body li { margin-bottom: 4px; }
@@ -369,6 +392,19 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
       <tr><td>Horizon preserved</td><td>✅</td></tr>
       <tr><td>Singularity resolved</td><td>✅</td></tr>
     </table>
+    <h3>What Changes vs Standard GR</h3>
+    <table class="vs-table">
+      <tr><th>Aspect</th><th>Standard GR</th><th>Prime-Modified 5D+</th></tr>
+      <tr><td>Dimensions</td><td>4 (3+1)</td><td class="new">6 (3+1+temp+substrate)</td></tr>
+      <tr><td>Free parameters</td><td>Λ, G (tuned)</td><td class="new">Zero — all constrained</td></tr>
+      <tr><td>Singularity</td><td>Infinite density (unsolved)</td><td class="new">Phase transition through ζ pole</td></tr>
+      <tr><td>Hawking radiation</td><td>Semiclassical approximation</td><td class="new">Exact: g₅₅ = 4π·T_H</td></tr>
+      <tr><td>Information paradox</td><td>Unresolved</td><td class="new">Reformatted as substrate</td></tr>
+      <tr><td>Quantum gravity</td><td>Incompatible</td><td class="new">Compatible with 9/10 frameworks</td></tr>
+      <tr><td>Far-field behavior</td><td>Schwarzschild</td><td class="new">Identical (ζ → 1)</td></tr>
+      <tr><td>Observational tests</td><td>All pass</td><td class="new">All pass (GPS, LIGO, etc.)</td></tr>
+    </table>
+
     <h3>The Hawking Connection</h3>
     <p>g<sub>55</sub>(horizon) = 4π × T<sub>Hawking</sub> — <strong>exactly</strong>. The 5th dimension <em>is</em> temperature. Black holes don't radiate — substrate accumulates inside, then releases on evaporation. Information isn't lost; it's reformatted into prime substrate and stored.</p>
     <p style="margin-top:8px;color:var(--text-dim);font-size:0.78rem;">Full experiment: benford-fun/5D_prime_metric_experiment.md</p>
@@ -764,6 +800,18 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
 
 <div class="btt" id="btt" onclick="window.scrollTo({top:0})">↑</div>
 
+<div class="kb-overlay" id="kb-overlay" onclick="this.classList.remove('show')">
+  <div class="kb-box" onclick="event.stopPropagation()">
+    <h3>⌨️ Keyboard Shortcuts</h3>
+    <div class="kb-row"><span class="kb-key">?</span><span class="kb-desc">Toggle this help</span></div>
+    <div class="kb-row"><span class="kb-key">1</span>–<span class="kb-key">9</span><span class="kb-desc">Jump to section</span></div>
+    <div class="kb-row"><span class="kb-key">0</span><span class="kb-desc">Back to top</span></div>
+    <div class="kb-row"><span class="kb-key">E</span><span class="kb-desc">Expand all</span></div>
+    <div class="kb-row"><span class="kb-key">C</span><span class="kb-desc">Collapse all</span></div>
+    <p style="margin-top:12px;font-size:0.7rem;color:var(--text-dim);">Press ? or click outside to close</p>
+  </div>
+</div>
+
 <script>
 document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 function toggle(header) {
@@ -885,6 +933,22 @@ document.querySelectorAll('#math .card-body').forEach(g => skillObs.observe(g));
     idx = (idx + 1) % nodes.length;
   }, 1200);
 })();
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  const overlay = document.getElementById('kb-overlay');
+  if (e.key === '?') { overlay.classList.toggle('show'); return; }
+  if (overlay.classList.contains('show')) { overlay.classList.remove('show'); return; }
+  const sectionIds = ['big-picture','metric','math','projects','pubs','viz','substrate','speculative','log'];
+  if (e.key >= '1' && e.key <= '9') {
+    const el = document.getElementById(sectionIds[parseInt(e.key)-1]);
+    if (el) { el.scrollIntoView({behavior:'smooth'}); el.classList.remove('collapsed'); }
+  }
+  if (e.key === '0') window.scrollTo({top:0, behavior:'smooth'});
+  if (e.key === 'e' || e.key === 'E') toggleAll(false);
+  if (e.key === 'c' || e.key === 'C') toggleAll(true);
+});
 
 // Back to top
 const btt = document.getElementById('btt');
