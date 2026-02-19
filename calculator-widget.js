@@ -486,12 +486,14 @@
   // Drag
   let dragging = false, dx, dy;
   widget.querySelector('.calc-titlebar').addEventListener('mousedown', e => {
+    e.preventDefault(); e.stopPropagation();
     dragging = true; dx = e.clientX - widget.offsetLeft; dy = e.clientY - widget.offsetTop;
   });
   widget.querySelector('.calc-titlebar').addEventListener('touchstart', e => {
+    e.preventDefault(); e.stopPropagation();
     dragging = true; const t = e.touches[0];
     dx = t.clientX - widget.offsetLeft; dy = t.clientY - widget.offsetTop;
-  }, { passive: true });
+  });
   const onMove = (cx, cy) => {
     if (!dragging) return;
     widget.style.left = Math.max(0, cx - dx) + 'px';
