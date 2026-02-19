@@ -75,6 +75,44 @@ a:hover { color: var(--accent2); }
 .bar-fill.safe { background: linear-gradient(90deg, #22c55e, #6366f1); }
 .bar-val { width: 42px; font-size: 0.7rem; color: var(--text-dim); }
 
+/* Expand/collapse controls */
+.header-controls { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+.header-controls button {
+  background: var(--card); border: 1px solid var(--card-border); color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 4px 12px;
+  border-radius: 6px; cursor: pointer; transition: all 0.2s;
+}
+.header-controls button:hover { color: var(--text); border-color: var(--accent1); }
+
+/* Radial explorer */
+.explorer { background: #0d0d24; border: 1px solid var(--card-border); border-radius: 8px; padding: 16px; margin: 16px 0; }
+.explorer-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.explorer-header label { font-size: 0.8rem; color: var(--text-dim); }
+.explorer-header .r-val { font-size: 1rem; font-weight: 700; color: var(--accent2); min-width: 60px; }
+.explorer-header .r-zone { font-size: 0.75rem; padding: 2px 8px; border-radius: 99px; font-weight: 500; }
+.explorer input[type=range] {
+  width: 100%; height: 6px; -webkit-appearance: none; appearance: none;
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e, #6366f1);
+  border-radius: 3px; outline: none; margin: 4px 0 12px;
+}
+.explorer input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--text); border: 2px solid var(--accent2); cursor: pointer;
+}
+.dim-readouts { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.dim-read { background: #111128; border: 1px solid var(--card-border); border-radius: 6px; padding: 8px 10px; }
+.dim-read .dim-name { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 2px; }
+.dim-read .dim-val { font-size: 0.9rem; font-weight: 600; }
+
+/* QG compat */
+.qg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin: 12px 0; }
+.qg-item { background: #0d0d24; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px; font-size: 0.78rem; display: flex; align-items: center; gap: 8px; }
+.qg-item .qg-icon { font-size: 1.1rem; flex-shrink: 0; }
+.qg-item .qg-name { color: var(--text); font-weight: 500; }
+.qg-item .qg-note { color: var(--text-dim); font-size: 0.7rem; }
+.qg-item.pass { border-color: rgba(34,197,94,0.3); }
+.qg-item.fail { border-color: rgba(239,68,68,0.3); opacity: 0.6; }
+
 /* Main */
 .main { margin-left: 48px; max-width: 960px; padding: 32px 24px 64px; margin-right: auto; }
 
@@ -199,6 +237,10 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
 <header class="header">
   <h1>Riner Research Hub</h1>
   <div class="sub">CJ + Barron 🐱 &nbsp;·&nbsp; <span id="date"></span></div>
+  <div class="header-controls">
+    <button onclick="toggleAll(false)">▼ Expand All</button>
+    <button onclick="toggleAll(true)">▲ Collapse All</button>
+  </div>
 </header>
 
 <!-- Key Breakthroughs -->
@@ -250,6 +292,21 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
       <li>Euler's prime product replaces Causal Set theory's 5 axioms in 3 spatial dimensions</li>
       <li>9/10 quantum gravity models already fit; primes complete the picture</li>
     </ul>
+    <h3>Quantum Gravity Compatibility</h3>
+    <p style="font-size:0.8rem;color:var(--text-dim);margin-bottom:8px;">9 of 10 major QG frameworks work with primes. The one that doesn't is already broken.</p>
+    <div class="qg-grid">
+      <div class="qg-item pass"><span class="qg-icon">✅</span><div><div class="qg-name">CDT</div><div class="qg-note">ζ replaces partition fn</div></div></div>
+      <div class="qg-item pass"><span class="qg-icon">✅</span><div><div class="qg-name">Loop QG</div><div class="qg-note">Spin networks + primes</div></div></div>
+      <div class="qg-item pass"><span class="qg-icon">✅</span><div><div class="qg-name">String Theory</div><div class="qg-note">Extreme symmetry</div></div></div>
+      <div class="qg-item pass"><span class="qg-icon">✅</span><div><div class="qg-name">Causal Sets</div><div class="qg-note">Euler replaces 5 axioms</div></div></div>
+      <div class="qg-item pass"><span class="qg-icon">✅</span><div><div class="qg-name">Asymptotic Safety</div><div class="qg-note">UV fixed point compatible</div></div></div>
+      <div class="qg-item pass"><span class="qg-icon">✅</span><div><div class="qg-name">Twistor Theory</div><div class="qg-note">Complex plane natural</div></div></div>
+      <div class="qg-item pass"><span class="qg-icon">✅</span><div><div class="qg-name">Group Field Theory</div><div class="qg-note">Algebraic structure fits</div></div></div>
+      <div class="qg-item pass"><span class="qg-icon">✅</span><div><div class="qg-name">Non-Comm Geometry</div><div class="qg-note">Prime spectrum natural</div></div></div>
+      <div class="qg-item pass"><span class="qg-icon">✅</span><div><div class="qg-name">Emergent Gravity</div><div class="qg-note">Thermodynamic match</div></div></div>
+      <div class="qg-item fail"><span class="qg-icon">❌</span><div><div class="qg-name">Supergravity</div><div class="qg-note">Already has issues</div></div></div>
+    </div>
+
     <h3>Core Insight</h3>
     <p>Primes are <strong>anti-Benford</strong> — they score a perfect zero on the Benford test. They are the source of all numerical order, yet possess no order themselves. The anti-Benford prime substrate generates Benford-like emergent geometry on the tensor side.</p>
   </div>
@@ -279,6 +336,24 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
     <h3>The Hawking Connection</h3>
     <p>g<sub>55</sub>(horizon) = 4π × T<sub>Hawking</sub> — <strong>exactly</strong>. The 5th dimension <em>is</em> temperature. Black holes don't radiate — substrate accumulates inside, then releases on evaporation. Information isn't lost; it's reformatted into prime substrate and stored.</p>
     <p style="margin-top:8px;color:var(--text-dim);font-size:0.78rem;">Full experiment: benford-fun/5D_prime_metric_experiment.md</p>
+
+    <h3>🎮 Radial Explorer — Fall Into the Black Hole</h3>
+    <div class="explorer" id="radial-explorer">
+      <div class="explorer-header">
+        <label>r / r<sub>s</sub> =</label>
+        <span class="r-val" id="rx-val">3.00</span>
+        <span class="r-zone" id="rx-zone" style="background:rgba(34,197,94,0.15);color:var(--green);">Far field</span>
+      </div>
+      <input type="range" id="rx-slider" min="5" max="300" value="300" step="1">
+      <div class="dim-readouts">
+        <div class="dim-read"><div class="dim-name">g_rr · ζ (radial)</div><div class="dim-val" id="dx-grr" style="color:var(--accent1);">—</div></div>
+        <div class="dim-read"><div class="dim-name">g_θθ · ζ (angular)</div><div class="dim-val" id="dx-gth" style="color:var(--accent2);">—</div></div>
+        <div class="dim-read"><div class="dim-name">g_tt · ζ (time)</div><div class="dim-val" id="dx-gtt" style="color:var(--accent3);">—</div></div>
+        <div class="dim-read"><div class="dim-name">g₅₅ = 1/r (temp)</div><div class="dim-val" id="dx-g55" style="color:var(--orange);">—</div></div>
+        <div class="dim-read"><div class="dim-name">g₆₆ (anisotropy)</div><div class="dim-val" id="dx-g66" style="color:#f472b6;">—</div></div>
+        <div class="dim-read"><div class="dim-name">Zone</div><div class="dim-val" id="dx-zone" style="color:var(--green);">—</div></div>
+      </div>
+    </div>
 
     <h3>4D vs 5D: Why the 5th Dimension Is Mandatory</h3>
     <div class="compare-grid">
@@ -576,6 +651,70 @@ document.getElementById('date').textContent = new Date().toLocaleDateString('en-
 function toggle(header) {
   header.parentElement.classList.toggle('collapsed');
 }
+
+// Expand/collapse all
+function toggleAll(collapse) {
+  document.querySelectorAll('.card').forEach(c => {
+    if (collapse) c.classList.add('collapsed');
+    else c.classList.remove('collapsed');
+  });
+}
+
+// Radial explorer
+(function() {
+  const slider = document.getElementById('rx-slider');
+  if (!slider) return;
+  const rVal = document.getElementById('rx-val');
+  const rZone = document.getElementById('rx-zone');
+  const dGrr = document.getElementById('dx-grr');
+  const dGth = document.getElementById('dx-gth');
+  const dGtt = document.getElementById('dx-gtt');
+  const dG55 = document.getElementById('dx-g55');
+  const dG66 = document.getElementById('dx-g66');
+  const dZone = document.getElementById('dx-zone');
+
+  function zeta(s) { // approximate ζ for real s > 1
+    if (s <= 1.01) return 100; // near pole
+    let sum = 1; for (let n=2; n<=200; n++) sum += Math.pow(n, -s); return sum;
+  }
+
+  function update() {
+    const r = slider.value / 100; // r in units of r_s
+    rVal.textContent = r.toFixed(2);
+
+    const s = 1 + Math.pow(r, 3); // s(r) = 1 + (r/r_s)^3
+    const z = zeta(s);
+    const grr = (1 / (1 - 1/r)) * z;
+    const gth = r * r * z;
+    const gtt = (1 - 1/r) * z;
+    const g55 = 1 / r;
+
+    // g66 approximation: spike at horizon
+    const dr = Math.abs(1 - r);
+    const g66 = dr < 0.01 ? 3970000 : (r > 1.5 ? 0 : Math.max(0, 100 / (dr * dr)));
+
+    let zone, zoneColor, zoneBg;
+    if (r > 2) { zone = 'Far field'; zoneColor = 'var(--green)'; zoneBg = 'rgba(34,197,94,0.15)'; }
+    else if (r > 1.2) { zone = 'Approaching'; zoneColor = 'var(--orange)'; zoneBg = 'rgba(245,158,11,0.15)'; }
+    else if (r > 0.98) { zone = '⚡ HORIZON'; zoneColor = 'var(--accent3)'; zoneBg = 'rgba(236,72,153,0.2)'; }
+    else if (r > 0.5) { zone = 'Inside BH'; zoneColor = 'var(--accent2)'; zoneBg = 'rgba(168,85,247,0.15)'; }
+    else { zone = '💥 Deep interior'; zoneColor = '#ef4444'; zoneBg = 'rgba(239,68,68,0.15)'; }
+
+    rZone.textContent = zone;
+    rZone.style.color = zoneColor;
+    rZone.style.background = zoneBg;
+
+    dGrr.textContent = r <= 1.01 ? '∞ (diverges)' : grr.toFixed(2);
+    dGth.textContent = gth.toFixed(2);
+    dGtt.textContent = r <= 1.01 ? '→ 0' : gtt.toFixed(4);
+    dG55.textContent = g55.toFixed(3);
+    dG66.textContent = g66 > 1e6 ? (g66/1e6).toFixed(1) + 'M' : g66 > 100 ? Math.round(g66).toLocaleString() : g66.toFixed(1);
+    dZone.textContent = zone;
+    dZone.style.color = zoneColor;
+  }
+  slider.addEventListener('input', update);
+  update();
+})();
 
 // Scroll spy for nav
 const navLinks = document.querySelectorAll('.nav a');
