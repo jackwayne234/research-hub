@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paper Editor — Riner Research Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a1a;
+  --card: #111128;
+  --card-border: #1a1a3a;
+  --text: #e0e0f0;
+  --text-dim: #8888aa;
+  --accent1: #6366f1;
+  --accent2: #a855f7;
+  --accent3: #ec4899;
+  --green: #22c55e;
+  --orange: #f59e0b;
+}
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+a { color: var(--accent1); text-decoration: none; }
+a:hover { color: var(--accent2); }
+
+/* Toolbar */
+.toolbar {
+  position: sticky; top: 0; z-index: 100;
+  background: #08081aee; backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--card-border);
+  padding: 8px 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.toolbar a, .toolbar button {
+  background: var(--card); border: 1px solid var(--card-border); color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 5px 12px;
+  border-radius: 6px; cursor: pointer; transition: all 0.2s; text-decoration: none;
+}
+.toolbar a:hover, .toolbar button:hover { color: var(--text); border-color: var(--accent1); }
+.toolbar .spacer { flex: 1; }
+.toolbar .status { font-size: 0.68rem; color: var(--text-dim); }
+.toolbar .wc { font-size: 0.68rem; color: var(--accent2); }
+
+/* Editor */
+.editor { max-width: 800px; margin: 0 auto; padding: 32px 24px 120px; }
+.section { margin-bottom: 28px; }
+.section-heading {
+  font-size: 0.7rem; font-weight: 600; color: var(--accent1);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 6px; padding-left: 2px;
+}
+.section-body {
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: 10px; padding: 16px 20px; min-height: 60px;
+  outline: none; font-size: 0.88rem; line-height: 1.8; color: #c8c8e0;
+  transition: border-color 0.2s;
+}
+.section-body:focus { border-color: var(--accent1); }
+.section-body:empty::before {
+  content: attr(data-placeholder);
+  color: #444466; font-style: italic;
+}
+.section-body.title-field {
+  font-size: 1.6rem; font-weight: 700; text-align: center; min-height: auto;
+  background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(168,85,247,0.04));
+  color: var(--text);
+}
+.section-body.authors-field {
+  font-size: 1rem; text-align: center; min-height: auto; color: var(--text-dim);
+}
+.section-body.abstract-field {
+  font-style: italic; border-left: 3px solid var(--accent2); border-radius: 0 10px 10px 0;
+}
+
+/* Math blocks */
+.math-block {
+  background: #0d0d24; border: 1px solid var(--card-border); border-radius: 6px;
+  padding: 12px 16px; margin: 10px 0; text-align: center; font-size: 1.1rem;
+}
+.math-inline { padding: 0 4px; }
+
+/* Print stylesheet */
+@media print {
+  * { color: #000 !important; background: #fff !important; border-color: #ccc !important; }
+  body { font-family: 'Times New Roman', Georgia, serif; font-size: 12pt; line-height: 1.6; }
+  .toolbar { display: none !important; }
+  .editor { max-width: 100%; padding: 0; margin: 0; }
+  .section-body { border: none !important; padding: 4px 0; min-height: 0; font-size: 12pt; }
+  .section-body.title-field { font-size: 18pt; margin-bottom: 4px; }
+  .section-body.authors-field { font-size: 12pt; margin-bottom: 16px; }
+  .section-body.abstract-field { border-left: 2px solid #666 !important; padding-left: 12px; }
+  .section-heading { font-size: 13pt; color: #000 !important; margin-top: 18pt; border-bottom: 1px solid #ccc; padding-bottom: 2pt; }
+  .section { margin-bottom: 8pt; }
+  .math-block { border: none !important; background: transparent !important; }
+  @page { margin: 1in; size: letter; }
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <a href="index.html">← Hub</a>
+  <button onclick="exportPDF()" title="Print to PDF">📄 PDF</button>
+  <button onclick="exportDocx()" title="Export as .doc">📝 DOCX</button>
+  <button onclick="insertMath()" title="Insert LaTeX math block (Ctrl+M)">∑ Math</button>
+  <button onclick="loadSkeleton()" title="Load 5D metric paper template">🧬 Load Skeleton</button>
+  <span class="spacer"></span>
+  <span class="wc" id="wordcount">0 words</span>
+  <span class="status" id="save-status">Not saved yet</span>
+</div>
+
+<div class="editor" id="editor"></div>
+
+<script>
+const SECTIONS = [
+  {id:'title', heading:'', cls:'title-field', ph:'Paper Title'},
+  {id:'authors', heading:'', cls:'authors-field', ph:'Author names and affiliations'},
+  {id:'abstract', heading:'Abstract', cls:'abstract-field', ph:'A concise summary of your paper (150–300 words). State the problem, approach, key results, and significance.'},
+  {id:'introduction', heading:'1. Introduction', cls:'', ph:'Motivation, background, and the specific problem you address. End with a clear statement of what this paper contributes.'},
+  {id:'theory', heading:'2. Theoretical Framework', cls:'', ph:'Core equations, derivations, and the mathematical structure of your model. Define all variables and notation.'},
+  {id:'methods', heading:'3. Methods', cls:'', ph:'Computational or analytical methods used. How were predictions generated? What approximations were made?'},
+  {id:'results', heading:'4. Results', cls:'', ph:'Present your findings — numerical results, plots, comparisons with observation. Let the data speak.'},
+  {id:'discussion', heading:'5. Discussion', cls:'', ph:'Interpret results. What do they mean physically? How do they compare to existing work? What are the limitations?'},
+  {id:'conclusion', heading:'6. Conclusion', cls:'', ph:'Summary of findings and their significance. Future directions and open questions.'},
+  {id:'acknowledgments', heading:'Acknowledgments', cls:'', ph:'Thank collaborators, funding sources, and anyone who contributed.'},
+  {id:'references', heading:'References', cls:'', ph:'[1] Author, Title, Journal, Year.\n[2] ...'}
+];
+
+const editorEl = document.getElementById('editor');
+SECTIONS.forEach(s => {
+  const div = document.createElement('div');
+  div.className = 'section';
+  if (s.heading) div.innerHTML = `<div class="section-heading">${s.heading}</div>`;
+  div.innerHTML += `<div class="section-body ${s.cls}" contenteditable="true" data-id="${s.id}" data-placeholder="${s.ph}"></div>`;
+  editorEl.appendChild(div);
+});
+
+// Load from localStorage
+const STORAGE_KEY = 'riner-paper-editor';
+function loadContent() {
+  try {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (!data) return;
+    document.querySelectorAll('.section-body').forEach(el => {
+      if (data[el.dataset.id]) el.innerHTML = data[el.dataset.id];
+    });
+  } catch(e) {}
+}
+function saveContent() {
+  const data = {};
+  document.querySelectorAll('.section-body').forEach(el => {
+    data[el.dataset.id] = el.innerHTML;
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  document.getElementById('save-status').textContent = 'Saved ' + new Date().toLocaleTimeString();
+}
+loadContent();
+setInterval(saveContent, 10000);
+
+// Word count
+function updateWordCount() {
+  let text = '';
+  document.querySelectorAll('.section-body').forEach(el => text += ' ' + el.innerText);
+  const wc = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+  document.getElementById('wordcount').textContent = wc.toLocaleString() + ' words';
+}
+setInterval(updateWordCount, 2000);
+updateWordCount();
+
+// Math
+function insertMath() {
+  const latex = prompt('Enter LaTeX equation:', 'E = mc^2');
+  if (!latex) return;
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  const block = document.createElement('div');
+  block.className = 'math-block';
+  block.setAttribute('data-latex', latex);
+  try { katex.render(latex, block, {displayMode: true, throwOnError: false}); }
+  catch(e) { block.textContent = latex; }
+  range.insertNode(block);
+  range.collapse(false);
+}
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'm') { e.preventDefault(); insertMath(); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveContent(); }
+});
+
+// Re-render math after load
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    if (typeof renderMathInElement === 'function') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ]
+      });
+    }
+  }, 500);
+});
+
+// Export PDF
+function exportPDF() { saveContent(); window.print(); }
+
+// Export DOCX (HTML-based .doc)
+function exportDocx() {
+  saveContent();
+  let html = '<html><head><meta charset="utf-8"><style>body{font-family:"Times New Roman",serif;font-size:12pt;line-height:1.6;margin:1in;}h1{font-size:18pt;text-align:center;}h2{font-size:14pt;border-bottom:1px solid #ccc;margin-top:18pt;}.authors{text-align:center;color:#666;margin-bottom:18pt;}.abstract{font-style:italic;border-left:2px solid #666;padding-left:12px;margin-bottom:18pt;}</style></head><body>';
+  document.querySelectorAll('.section-body').forEach(el => {
+    const id = el.dataset.id;
+    const content = el.innerHTML || '';
+    if (!content.trim()) return;
+    if (id === 'title') html += `<h1>${content}</h1>`;
+    else if (id === 'authors') html += `<div class="authors">${content}</div>`;
+    else if (id === 'abstract') html += `<h2>Abstract</h2><div class="abstract">${content}</div>`;
+    else {
+      const sec = SECTIONS.find(s => s.id === id);
+      if (sec && sec.heading) html += `<h2>${sec.heading}</h2>`;
+      html += `<div>${content}</div>`;
+    }
+  });
+  html += '</body></html>';
+  const blob = new Blob(['\ufeff' + html], {type: 'application/msword'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'paper.doc';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// Load skeleton
+function loadSkeleton() {
+  if (!confirm('Load the 5D prime-modified metric paper skeleton? This will replace current content.')) return;
+  const skeleton = {
+    title: 'A 5D Prime-Modified Schwarzschild Metric with Emergent Temperature Dimension and Zero Free Parameters',
+    authors: 'C.J. Riner<br>Independent Researcher',
+    abstract: 'We present a modified Schwarzschild metric in which the Euler product representation of the Riemann zeta function is embedded directly into the spacetime geometry. The modification introduces a prime-number substrate that couples to all spatial dimensions via ζ(s(r)), where s = 1 + (r/r<sub>s</sub>)<sup>α</sup> and α = 3 is uniquely constrained by LIGO gravitational wave observations. A 5th dimension g<sub>55</sub> = 1/r emerges as a geometric temperature, reproducing the Hawking temperature exactly at the horizon: g<sub>55</sub>(r<sub>s</sub>) = 4π T<sub>H</sub>. The framework contains zero free parameters — every quantity is fixed by observation or mathematical identity. We demonstrate consistency with GPS time dilation, Mercury perihelion precession, gravitational lensing, and LIGO waveforms. Singularities are resolved as phase transitions through the ζ pole at s = 1, and the Riemann critical line at s = ½ acquires a physical interpretation as a spacetime boundary where standing waves emerge from the prime substrate.',
+    introduction: '<b>The problem:</b> General relativity succeeds spectacularly in 4D but breaks at singularities, is incompatible with quantum mechanics, and requires tuned parameters (Λ, G). Meanwhile, number theory — particularly the distribution of primes — exhibits deep but unexplained connections to physics (random matrix theory, quantum chaos, the Hilbert-Pólya conjecture).\n\n<b>Our approach:</b> We take the Euler product ζ(s) = Π(1 - p<sup>-s</sup>)<sup>-1</sup> and embed it directly into the Schwarzschild metric as a radially-dependent multiplicative factor. This is not an approximation or perturbation — it is a structural modification that preserves all far-field behavior while fundamentally altering near-horizon and interior physics.\n\n<b>Key results:</b> (1) The exponent α = 3 is uniquely fixed by LIGO constraints. (2) A 5th dimension emerges as temperature. (3) Hawking radiation is exact, not semiclassical. (4) Zero free parameters remain. (5) 9 of 10 quantum gravity frameworks are compatible.',
+    theory: '<b>The metric:</b>\n\nds² = −(1 − r<sub>s</sub>/r) ζ(s) dt² + (1 − r<sub>s</sub>/r)<sup>−1</sup> ζ(s) dr² + r² ζ(s) dΩ² + Ṡ² dτ² + (1/r) dξ²\n\nwhere:\n• ζ(s) = Riemann zeta function (Euler product form)\n• s(r) = 1 + (r/r<sub>s</sub>)<sup>α</sup>, with α = 3 (LIGO-constrained)\n• Ṡ = entropy rate (4th dimension = entropic time)\n• g<sub>55</sub> = 1/r (5th dimension = temperature)\n\n<b>Why α = 3:</b> The LIGO constraint requires that gravitational wave propagation matches observed waveforms. Only α = 3 satisfies the dispersion relation within measurement uncertainty.\n\n<b>Euler product embedding:</b> The key insight is that ζ(s) = Π<sub>p prime</sub> (1 − p<sup>−s</sup>)<sup>−1</sup> encodes the contribution of every prime to the geometry. Each prime "votes" on the local curvature. Far from the black hole (large r → large s), all votes converge to 1 and standard Schwarzschild is recovered. Near the horizon, the votes diverge — the prime substrate becomes geometrically visible.',
+    methods: 'We validate the metric against five independent observational tests:\n\n1. <b>GPS time dilation:</b> Compare g<sub>tt</sub> at Earth orbit altitude vs ground level. Deviation from Schwarzschild must be < 10<sup>-10</sup>.\n\n2. <b>Mercury perihelion:</b> Compute orbital precession using the modified effective potential. Must reproduce 43"/century.\n\n3. <b>Gravitational lensing:</b> Deflection angle for light passing the Sun. Must match 1.75" ± measurement error.\n\n4. <b>LIGO gravitational waves:</b> Wave equation in the modified background. Phase velocity deviation must be < 10<sup>-15</sup>.\n\n5. <b>Hawking temperature:</b> Surface gravity at the horizon gives T<sub>H</sub> = ℏc³/(8πGMk<sub>B</sub>). Check whether g<sub>55</sub>(r<sub>s</sub>) = 4πT<sub>H</sub> holds exactly.',
+    results: '<b>All five tests pass:</b>\n\n• GPS: Deviation = 2.4 × 10<sup>-14</sup> (well within 10<sup>-10</sup> threshold)\n• Mercury: 42.98"/century (within measurement uncertainty of 43.11 ± 0.45)\n• Lensing: 1.7500003" (indistinguishable from GR prediction)\n• LIGO: Phase velocity deviation = 8.1 × 10<sup>-19</sup>\n• Hawking: g<sub>55</sub>(r<sub>s</sub>) = 1/r<sub>s</sub> = 4πT<sub>H</sub> — <b>exact</b>, not approximate\n\n<b>Singularity resolution:</b> At r → 0, s → 1 and ζ diverges (pole). But this is a well-understood mathematical singularity — a phase transition, not a physical infinity. The metric transitions through the pole into a region where ζ < 0, producing sign-flipped geometry with standing wave solutions.\n\n<b>The 5th dimension is mandatory:</b> Without g<sub>55</sub>, the prime amplification at r < 0.4 r<sub>s</sub> grows to 11× with no absorption mechanism. With g<sub>55</sub> = 1/r, it absorbs 44–77% of the excess. The mathematics demands the extra dimension.',
+    discussion: '<b>Physical interpretation:</b> The 5th dimension is not merely a mathematical convenience — it is temperature made geometric. Black holes do not "radiate" in the Hawking sense; rather, the prime substrate accumulates inside the horizon as entropic information, then releases upon evaporation. The information paradox dissolves: information is reformatted into prime substrate and stored in g<sub>55</sub>.\n\n<b>Quantum gravity compatibility:</b> 9 of 10 major frameworks (CDT, Loop QG, String Theory, Causal Sets, Asymptotic Safety, Twistor Theory, Group Field Theory, Non-Commutative Geometry, Emergent Gravity) are compatible. The Euler product naturally replaces the CDT partition function, and primes provide the discrete structure that Loop QG requires.\n\n<b>The Riemann connection:</b> The critical line at s = ½ corresponds to a physical boundary in the interior geometry where the metric signature flips. Non-trivial zeros of ζ may encode resonant frequencies of the prime substrate — a physical interpretation of the Riemann Hypothesis.\n\n<b>Limitations:</b> The current analysis is restricted to non-rotating (Schwarzschild) black holes. Extension to Kerr geometry is the next priority. Observational signatures of g<sub>55</sub> outside the horizon remain to be quantified.',
+    conclusion: 'We have shown that embedding the Euler product into the Schwarzschild metric produces a 5D framework with:\n\n1. Zero free parameters (all constrained by observation or identity)\n2. Exact Hawking temperature (not semiclassical)\n3. Singularity resolution via ζ-pole phase transition\n4. Compatibility with 9/10 quantum gravity frameworks\n5. A physical interpretation of the Riemann critical line\n\nThe prime numbers — the atoms of arithmetic — appear to also be the atoms of geometry. The anti-Benford substrate (primes have zero internal order) generates Benford-like emergent structure on the tensor side, completing a cycle from pure number theory to observable physics.\n\nFuture work: Kerr extension, epsilon threshold analysis via Benford deviation, and identification of observable signatures in VLBI and gravitational wave data.',
+    acknowledgments: 'The author thanks Barron 🐱 for computational assistance and moral support, and the open-source community for tools that made this research possible.',
+    references: '[1] Schwarzschild, K. "Über das Gravitationsfeld eines Massenpunktes nach der Einsteinschen Theorie." Sitzungsberichte der Königlich Preußischen Akademie der Wissenschaften, 1916.\n\n[2] Hawking, S.W. "Particle creation by black holes." Communications in Mathematical Physics, 43(3), 199–220, 1975.\n\n[3] Riemann, B. "Über die Anzahl der Primzahlen unter einer gegebenen Größe." Monatsberichte der Berliner Akademie, 1859.\n\n[4] Euler, L. "Variae observationes circa series infinitas." Commentarii academiae scientiarum Petropolitanae, 1744.\n\n[5] Abbott, B.P. et al. (LIGO). "Observation of Gravitational Waves from a Binary Black Hole Merger." Phys. Rev. Lett., 116, 061102, 2016.\n\n[6] Riner, C.J. "Modified Schwarzschild Metric via Benford\'s Law." Zenodo, 2026.'
+  };
+  document.querySelectorAll('.section-body').forEach(el => {
+    if (skeleton[el.dataset.id] !== undefined) el.innerHTML = skeleton[el.dataset.id];
+  });
+  saveContent();
+  updateWordCount();
+}
+</script>
+</body>
+</html>
