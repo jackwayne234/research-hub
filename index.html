@@ -266,12 +266,45 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
   width: 8px; height: 8px; border-radius: 50%; background: var(--accent2);
 }
 
+/* Visual timeline */
+.vtl { position: relative; padding: 0; margin: 16px 0; }
+.vtl-track { position: absolute; left: 18px; top: 0; bottom: 0; width: 3px; background: var(--card-border); border-radius: 2px; }
+.vtl-progress { position: absolute; left: 18px; top: 0; width: 3px; border-radius: 2px; background: linear-gradient(180deg, var(--green), var(--accent1), var(--accent2)); transition: height 1s ease-out; }
+.vtl-item { position: relative; padding: 12px 0 12px 48px; font-size: 0.82rem; }
+.vtl-dot {
+  position: absolute; left: 12px; top: 16px; width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--card-border); background: var(--bg); z-index: 1;
+}
+.vtl-item.done .vtl-dot { background: var(--green); border-color: var(--green); }
+.vtl-item.current .vtl-dot { background: var(--accent2); border-color: var(--accent2); box-shadow: 0 0 8px rgba(168,85,247,0.5); }
+.vtl-item.current .vtl-dot::after { content:''; position:absolute; inset:-4px; border-radius:50%; border:2px solid var(--accent2); opacity:0.4; animation: pulse-ring 2s infinite; }
+@keyframes pulse-ring { 0%,100%{transform:scale(1);opacity:0.4} 50%{transform:scale(1.3);opacity:0} }
+.vtl-item.future .vtl-dot { background: var(--bg); border-color: #333; }
+.vtl-label { font-size: 0.7rem; color: var(--accent1); font-weight: 600; }
+.vtl-text { color: #c0c0d8; }
+
+/* Counter animation */
+.counter-grid { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin: 16px 0; }
+.counter-item { text-align: center; min-width: 90px; }
+.counter-num { font-size: 1.8rem; font-weight: 700; line-height: 1; }
+.counter-label { font-size: 0.68rem; color: var(--text-dim); margin-top: 4px; }
+
 /* Responsive */
 @media (max-width: 640px) {
-  .nav { width: 40px; }
-  .main { margin-left: 40px; padding: 20px 14px; }
+  .nav { position: fixed; bottom: 0; top: auto; left: 0; width: 100vw; height: 44px;
+    flex-direction: row; padding: 0 4px; gap: 2px; overflow-x: auto;
+    border-right: none; border-top: 1px solid var(--card-border); }
+  .nav a { width: 28px; height: 28px; font-size: 12px; flex-shrink: 0; }
+  .nav a::after { display: none; }
+  .main { margin-left: 0; padding: 20px 14px 60px; }
   .header h1 { font-size: 1.6rem; }
   .proj-grid { grid-template-columns: 1fr; }
+  .breakthroughs { gap: 6px; }
+  .bt { padding: 8px 12px; max-width: 100%; }
+  .compare-grid { grid-template-columns: 1fr; }
+  .qg-grid { grid-template-columns: 1fr 1fr; }
+  .dim-readouts { grid-template-columns: 1fr 1fr; }
+  .btt { bottom: 56px; }
 }
 </style>
 </head>
@@ -767,10 +800,50 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
     <span class="chevron">▼</span>
   </div>
   <div class="card-body">
-    <div class="tl-item"><strong>Now → Aug 2026:</strong> Calc 1-3 + linear algebra notation, verify optical computer, write next paper by hand</div>
-    <div class="tl-item"><strong>Aug 30, 2026:</strong> Navy retirement (20 years)</div>
-    <div class="tl-item"><strong>Post-retirement:</strong> College via GI Bill — physics degree path</div>
-    <div class="tl-item"><strong>Future:</strong> Funding decisions (DARPA / NSF / university), formal paper publication with full notation</div>
+    <div class="vtl" id="vtl">
+      <div class="vtl-track"></div>
+      <div class="vtl-progress" id="vtl-progress" style="height:0"></div>
+      <div class="vtl-item done">
+        <div class="vtl-dot"></div>
+        <div class="vtl-label">Jan 2026</div>
+        <div class="vtl-text"><strong>4 papers published</strong> on Zenodo — Benford metric, BEC, optical logic, AI accelerator</div>
+      </div>
+      <div class="vtl-item done">
+        <div class="vtl-dot"></div>
+        <div class="vtl-label">Feb 18, 2026</div>
+        <div class="vtl-text"><strong>5D metric breakthrough</strong> — all tests pass, Hawking temp emerges exactly, zero free parameters</div>
+      </div>
+      <div class="vtl-item done">
+        <div class="vtl-dot"></div>
+        <div class="vtl-label">Feb 19, 2026</div>
+        <div class="vtl-text"><strong>6th dimension discovered</strong> — substrate anisotropy, 5D proven mandatory, Riemann connection</div>
+      </div>
+      <div class="vtl-item current">
+        <div class="vtl-dot"></div>
+        <div class="vtl-label">Now → Mar 2026</div>
+        <div class="vtl-text"><strong>Write next paper by hand</strong> — skeleton → fill in notation as math skills grow</div>
+      </div>
+      <div class="vtl-item future">
+        <div class="vtl-dot"></div>
+        <div class="vtl-label">Feb → Aug 2026</div>
+        <div class="vtl-text">Calc 1→2→3 + linear algebra notation · verify optical computer math</div>
+      </div>
+      <div class="vtl-item future">
+        <div class="vtl-dot"></div>
+        <div class="vtl-label">Aug 30, 2026</div>
+        <div class="vtl-text"><strong>🎖️ Navy retirement</strong> — 20 years of service complete</div>
+      </div>
+      <div class="vtl-item future">
+        <div class="vtl-dot"></div>
+        <div class="vtl-label">Fall 2026</div>
+        <div class="vtl-text">College via GI Bill — physics degree path, placement exam</div>
+      </div>
+      <div class="vtl-item future">
+        <div class="vtl-dot"></div>
+        <div class="vtl-label">Future</div>
+        <div class="vtl-text">Funding decisions (DARPA / NSF / university) · formal publications with full notation</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -786,14 +859,14 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
 </div>
 
 <div class="footer">
-  <div class="stats">
-    <div class="stat">📄 4 papers published</div>
-    <div class="stat">📐 6 dimensions</div>
-    <div class="stat">✅ 9/10 QG models</div>
-    <div class="stat">🔢 0 free parameters</div>
-    <div class="stat">⏱️ All in ~1 month</div>
+  <div class="counter-grid" id="counters">
+    <div class="counter-item"><div class="counter-num" data-target="4" style="color:var(--accent1);">0</div><div class="counter-label">papers published</div></div>
+    <div class="counter-item"><div class="counter-num" data-target="6" style="color:var(--accent2);">0</div><div class="counter-label">dimensions</div></div>
+    <div class="counter-item"><div class="counter-num" data-target="9" style="color:var(--green);">0</div><div class="counter-label">of 10 QG models</div></div>
+    <div class="counter-item"><div class="counter-num" data-target="0" style="color:var(--orange);">0</div><div class="counter-label">free parameters</div></div>
+    <div class="counter-item"><div class="counter-num" data-target="30" style="color:var(--accent3);">0</div><div class="counter-label">days of research</div></div>
   </div>
-  <div>Riner Research Hub · Built by Barron 🐱 · Last updated Feb 19, 2026</div>
+  <div style="font-size:0.72rem;color:var(--text-dim);">Riner Research Hub · Built by Barron 🐱 · Last updated Feb 19, 2026</div>
 </div>
 
 </div><!-- .main -->
@@ -949,6 +1022,40 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'e' || e.key === 'E') toggleAll(false);
   if (e.key === 'c' || e.key === 'C') toggleAll(true);
 });
+
+// Animate counters on scroll
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.querySelectorAll('.counter-num[data-target]').forEach(el => {
+      const target = parseInt(el.dataset.target);
+      if (target === 0) { el.textContent = '0'; return; }
+      let current = 0;
+      const step = Math.max(1, Math.floor(target / 20));
+      const iv = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(iv); }
+        el.textContent = current;
+      }, 50);
+    });
+    counterObs.unobserve(e.target);
+  });
+}, { threshold: 0.3 });
+const counters = document.getElementById('counters');
+if (counters) counterObs.observe(counters);
+
+// Animate timeline progress
+const vtlObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const prog = document.getElementById('vtl-progress');
+    // 3 done + half of current = 3.5 out of 8 items ≈ 44%
+    if (prog) setTimeout(() => { prog.style.height = '44%'; }, 200);
+    vtlObs.unobserve(e.target);
+  });
+}, { threshold: 0.2 });
+const vtl = document.getElementById('vtl');
+if (vtl) vtlObs.observe(vtl);
 
 // Back to top
 const btt = document.getElementById('btt');
