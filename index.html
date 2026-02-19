@@ -192,6 +192,36 @@ a:hover { color: var(--accent2); }
   width: 0; transition: width 0.1s linear;
 }
 
+/* Search modal */
+.search-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 300;
+  display: flex; align-items: flex-start; justify-content: center; padding-top: 15vh;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.search-overlay.show { opacity: 1; pointer-events: auto; }
+.search-box {
+  background: var(--card); border: 1px solid var(--accent1); border-radius: 12px;
+  width: 90%; max-width: 480px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.search-input {
+  width: 100%; background: transparent; border: none; padding: 14px 18px;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--text);
+  outline: none; border-bottom: 1px solid var(--card-border);
+}
+.search-input::placeholder { color: var(--text-dim); }
+.search-results { max-height: 300px; overflow-y: auto; }
+.search-results::-webkit-scrollbar { width: 4px; }
+.search-results::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 2px; }
+.sr-item {
+  padding: 10px 18px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid rgba(26,26,58,0.5); transition: background 0.15s;
+}
+.sr-item:hover, .sr-item.active { background: rgba(99,102,241,0.1); }
+.sr-icon { font-size: 14px; flex-shrink: 0; }
+.sr-title { color: var(--text); font-weight: 500; }
+.sr-hint { font-size: 0.7rem; color: var(--text-dim); margin-left: auto; }
+.search-empty { padding: 20px; text-align: center; font-size: 0.8rem; color: var(--text-dim); }
+
 /* Keyboard help overlay */
 .kb-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
@@ -341,6 +371,7 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
   <div class="header-controls">
     <button onclick="toggleAll(false)">▼ Expand All</button>
     <button onclick="toggleAll(true)">▲ Collapse All</button>
+    <button onclick="openSearch()">🔍 Search <span style="opacity:0.5;font-size:0.65rem;">⌘K</span></button>
   </div>
 </header>
 
@@ -910,12 +941,20 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
 
 <div class="btt" id="btt" onclick="window.scrollTo({top:0})">↑</div>
 
+<div class="search-overlay" id="search-overlay" onclick="closeSearch()">
+  <div class="search-box" onclick="event.stopPropagation()">
+    <input class="search-input" id="search-input" type="text" placeholder="Search sections, equations, concepts..." autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+
 <div class="kb-overlay" id="kb-overlay" onclick="this.classList.remove('show')">
   <div class="kb-box" onclick="event.stopPropagation()">
     <h3>⌨️ Keyboard Shortcuts</h3>
     <div class="kb-row"><span class="kb-key">?</span><span class="kb-desc">Toggle this help</span></div>
     <div class="kb-row"><span class="kb-key">1</span>–<span class="kb-key">9</span><span class="kb-desc">Jump to section</span></div>
     <div class="kb-row"><span class="kb-key">0</span><span class="kb-desc">Back to top</span></div>
+    <div class="kb-row"><span class="kb-key">⌘K</span> / <span class="kb-key">/</span><span class="kb-desc">Search</span></div>
     <div class="kb-row"><span class="kb-key">E</span><span class="kb-desc">Expand all</span></div>
     <div class="kb-row"><span class="kb-key">C</span><span class="kb-desc">Collapse all</span></div>
     <p style="margin-top:12px;font-size:0.7rem;color:var(--text-dim);">Press ? or click outside to close</p>
@@ -1044,12 +1083,72 @@ document.querySelectorAll('#math .card-body').forEach(g => skillObs.observe(g));
   }, 1200);
 })();
 
+// Search
+const searchIndex = [
+  {icon:'🌀', title:'The Big Picture', desc:'Substrate cycle, core insight', id:'big-picture', keywords:'primes euler cycle anti-benford substrate'},
+  {icon:'📐', title:'5D Prime-Modified Metric', desc:'ds², validation, Hawking, Riemann', id:'metric', keywords:'metric schwarzschild zeta hawking temperature riemann ligo gps mercury'},
+  {icon:'📊', title:'Math Journey', desc:'Skills, roadmap, calc progress', id:'math', keywords:'derivatives integration limits linear algebra calc'},
+  {icon:'🔧', title:'Projects', desc:'Optical computer, Benford, climate', id:'projects', keywords:'n-radix optical fab benford climate paper'},
+  {icon:'📄', title:'Publications', desc:'4 Zenodo papers + links', id:'pubs', keywords:'zenodo paper bec ternary wavelength'},
+  {icon:'🎨', title:'Visualizations', desc:'6 interactive HTML demos', id:'viz', keywords:'simulator wormhole dimension stack bars'},
+  {icon:'🔮', title:'6th Dimension', desc:'Substrate topology, g₆₆ spike', id:'substrate', keywords:'anisotropy horizon g66 delta epsilon'},
+  {icon:'💡', title:'Speculative Ideas', desc:'Gravity, dark energy, wormholes', id:'speculative', keywords:'gravity dark energy time dilation spatial depletion wormhole'},
+  {icon:'📝', title:'Session Log', desc:'Daily session summaries', id:'log', keywords:'session log february'},
+  {icon:'🗺️', title:'Roadmap', desc:'Timeline & milestones', id:'roadmap', keywords:'navy retirement college gi bill timeline'},
+  {icon:'🐱', title:"Barron's Notes", desc:'Research connections & questions', id:'notes', keywords:'firewall kerr cdt quasi-normal'},
+  {icon:'📐', title:'vs Standard GR Table', desc:'What changes and what stays', id:'metric', keywords:'comparison general relativity singularity information paradox'},
+  {icon:'📐', title:'Radial Explorer', desc:'Interactive slider — fall into BH', id:'metric', keywords:'radial explorer slider fall black hole zone'},
+  {icon:'📐', title:'4D vs 5D Comparison', desc:'Why 5th dimension is mandatory', id:'metric', keywords:'4d 5d mandatory blowup absorption'},
+  {icon:'📐', title:'Riemann Connection', desc:'Critical line as spacetime boundary', id:'metric', keywords:'riemann hypothesis critical line sign flip zeros'},
+  {icon:'🌀', title:'QG Compatibility', desc:'9/10 quantum gravity frameworks', id:'big-picture', keywords:'cdt loop string causal sets twistor supergravity'},
+];
+let srActive = 0;
+function openSearch() {
+  const o = document.getElementById('search-overlay');
+  o.classList.add('show');
+  const inp = document.getElementById('search-input');
+  inp.value = '';
+  inp.focus();
+  renderResults('');
+}
+function closeSearch() { document.getElementById('search-overlay').classList.remove('show'); }
+function renderResults(q) {
+  const box = document.getElementById('search-results');
+  const ql = q.toLowerCase().trim();
+  const filtered = ql ? searchIndex.filter(s =>
+    (s.title+' '+s.desc+' '+s.keywords).toLowerCase().includes(ql)
+  ) : searchIndex.slice(0, 8);
+  if (!filtered.length) { box.innerHTML = '<div class="search-empty">No results</div>'; return; }
+  srActive = Math.min(srActive, filtered.length - 1);
+  box.innerHTML = filtered.map((s, i) =>
+    `<div class="sr-item${i===srActive?' active':''}" data-id="${s.id}" onclick="goToResult('${s.id}')">
+      <span class="sr-icon">${s.icon}</span><span class="sr-title">${s.title}</span><span class="sr-hint">${s.desc}</span>
+    </div>`
+  ).join('');
+}
+function goToResult(id) {
+  closeSearch();
+  const el = document.getElementById(id);
+  if (el) { el.classList.remove('collapsed'); el.scrollIntoView({behavior:'smooth'}); }
+}
+document.getElementById('search-input').addEventListener('input', (e) => { srActive = 0; renderResults(e.target.value); });
+document.getElementById('search-input').addEventListener('keydown', (e) => {
+  const items = document.querySelectorAll('.sr-item');
+  if (e.key === 'ArrowDown') { e.preventDefault(); srActive = Math.min(srActive+1, items.length-1); renderResults(e.target.value); }
+  if (e.key === 'ArrowUp') { e.preventDefault(); srActive = Math.max(srActive-1, 0); renderResults(e.target.value); }
+  if (e.key === 'Enter' && items[srActive]) { items[srActive].click(); }
+  if (e.key === 'Escape') closeSearch();
+});
+
 // Keyboard shortcuts
 document.addEventListener('keydown', (e) => {
+  // Ctrl/Cmd+K opens search
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); return; }
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   const overlay = document.getElementById('kb-overlay');
   if (e.key === '?') { overlay.classList.toggle('show'); return; }
   if (overlay.classList.contains('show')) { overlay.classList.remove('show'); return; }
+  if (e.key === '/') { e.preventDefault(); openSearch(); return; }
   const sectionIds = ['big-picture','metric','math','projects','pubs','viz','substrate','speculative','log'];
   if (e.key >= '1' && e.key <= '9') {
     const el = document.getElementById(sectionIds[parseInt(e.key)-1]);
