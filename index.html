@@ -180,6 +180,14 @@ a:hover { color: var(--accent2); }
   background: rgba(245,158,11,0.15); color: var(--orange);
 }
 .chevron { transition: transform 0.3s; font-size: 0.8rem; color: var(--text-dim); }
+.card-header .link-btn {
+  opacity: 0; font-size: 0.75rem; padding: 2px 6px; cursor: pointer;
+  background: none; border: 1px solid transparent; border-radius: 4px;
+  color: var(--text-dim); transition: all 0.2s; margin-right: 4px;
+}
+.card-header:hover .link-btn { opacity: 0.5; }
+.card-header .link-btn:hover { opacity: 1; border-color: var(--accent1); color: var(--accent1); }
+.link-btn.copied { color: var(--green) !important; opacity: 1 !important; }
 .card.collapsed .chevron { transform: rotate(-90deg); }
 .card.collapsed .card-body { display: none; }
 .card-body { padding: 0 20px 20px; animation: fadeIn 0.3s ease; }
@@ -1020,6 +1028,27 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
 
 <script>
 document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+// Inject link buttons into card headers
+document.querySelectorAll('.card[id] .card-header').forEach(h => {
+  const id = h.parentElement.id;
+  if (!id) return;
+  const btn = document.createElement('span');
+  btn.className = 'link-btn';
+  btn.textContent = '🔗';
+  btn.title = 'Copy link to section';
+  btn.onclick = (e) => {
+    e.stopPropagation();
+    const url = location.origin + location.pathname + '#' + id;
+    navigator.clipboard.writeText(url).then(() => {
+      btn.textContent = '✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '🔗'; btn.classList.remove('copied'); }, 1500);
+    });
+  };
+  const chevron = h.querySelector('.chevron');
+  if (chevron) h.insertBefore(btn, chevron);
+});
+
 function toggle(header) {
   header.parentElement.classList.toggle('collapsed');
 }
