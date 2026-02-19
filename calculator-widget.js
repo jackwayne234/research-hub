@@ -151,9 +151,11 @@
     }
     #calc-formula-panel .fp-card-title {
       font-size: 15px; font-weight: 700; color: #f472b6; margin-bottom: 4px;
+      user-select: text; cursor: text;
     }
     #calc-formula-panel .fp-card-eq {
       font-size: 13px; color: #c0c0d8; margin-bottom: 8px;
+      user-select: text; cursor: text;
     }
     #calc-formula-panel .fp-fields {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
