@@ -258,9 +258,9 @@
   ];
 
   const presets = [
-    { label: '🌍 Earth', values: { M: '5.972e24', r: '6.371e6' } },
-    { label: '🔴 Mars', values: { M: '6.39e23', r: '3.3895e6' } },
-    { label: '☀️ Sun', values: { M: '1.989e30', r: '6.957e8' } },
+    { label: '🌍 Earth', values: { M: '5.972e24', r: '6.371e6', r_s: '8.87e-3' } },
+    { label: '🔴 Mars', values: { M: '6.39e23', r: '3.3895e6', r_s: '9.46e-4' } },
+    { label: '☀️ Sun', values: { M: '1.989e30', r: '6.957e8', r_s: '2.954e3' } },
   ];
 
   let formulaCardsHtml = '';
