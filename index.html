@@ -942,7 +942,7 @@ a.viz-link .proj:hover { border-color: var(--accent3); background: #12122a; }
       <div class="vtl-item future">
         <div class="vtl-dot"></div>
         <div class="vtl-label">Aug 30, 2026</div>
-        <div class="vtl-text"><strong>🎖️ Navy retirement</strong> — 20 years of service complete</div>
+        <div class="vtl-text"><strong>🎖️ Navy retirement</strong> — 20 years of service complete · <span id="retire-countdown" style="color:var(--orange);font-weight:600;"></span></div>
       </div>
       <div class="vtl-item future">
         <div class="vtl-dot"></div>
@@ -1239,6 +1239,23 @@ const vtlObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.2 });
 const vtl = document.getElementById('vtl');
 if (vtl) vtlObs.observe(vtl);
+
+// Retirement countdown
+(function() {
+  const el = document.getElementById('retire-countdown');
+  if (!el) return;
+  function update() {
+    const now = new Date();
+    const ret = new Date('2026-08-30T00:00:00-05:00'); // EST
+    const diff = ret - now;
+    if (diff <= 0) { el.textContent = '🎉 RETIRED!'; return; }
+    const days = Math.floor(diff / 86400000);
+    const hrs = Math.floor((diff % 86400000) / 3600000);
+    el.textContent = days + 'd ' + hrs + 'h remaining';
+  }
+  update();
+  setInterval(update, 60000);
+})();
 
 // Back to top + reading progress
 const btt = document.getElementById('btt');
