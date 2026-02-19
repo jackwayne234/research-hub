@@ -66,10 +66,13 @@
     }
     #calc-widget .calc-buttons button:hover { background: #252550; }
     #calc-widget .calc-buttons button.op {
-      background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.15));
-      border-color: rgba(99,102,241,0.3);
+      background: linear-gradient(135deg, rgba(236,72,153,0.35), rgba(168,85,247,0.3));
+      border-color: rgba(236,72,153,0.5);
+      color: #f472b6;
+      font-size: 18px;
+      font-weight: 700;
     }
-    #calc-widget .calc-buttons button.op:hover { background: rgba(99,102,241,0.35); }
+    #calc-widget .calc-buttons button.op:hover { background: rgba(236,72,153,0.5); color: #fff; }
     #calc-widget .calc-buttons button.eq {
       background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff; border: none;
     }
