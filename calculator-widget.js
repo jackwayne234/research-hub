@@ -115,7 +115,7 @@
 
     /* Formula Panel */
     #calc-formula-panel {
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      position: absolute; top: 36px; left: 0; right: 0; bottom: 0;
       background: #111128; z-index: 10; display: none;
       flex-direction: column; overflow: hidden;
       border-radius: 12px;
