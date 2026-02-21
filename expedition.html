@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planetary Expedition</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#0a0a1a;--card:#111128;--card-border:#1a1a3a;--text:#e0e0f0;--text-dim:#8888aa;
+--accent1:#6366f1;--accent2:#a855f7;--accent3:#ec4899;--green:#22c55e;--orange:#f59e0b;
+--font:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;line-height:1.5;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+button{font-family:var(--font);cursor:pointer;border:1px solid var(--card-border);background:var(--card);color:var(--text);padding:4px 10px;font-size:12px;border-radius:3px;transition:background .15s}
+button:hover{background:var(--accent1);border-color:var(--accent1)}
+button.active{background:var(--accent1);border-color:var(--accent2)}
+select{font-family:var(--font);background:var(--card);color:var(--text);border:1px solid var(--card-border);padding:4px 8px;font-size:12px;border-radius:3px}
+input,textarea{font-family:var(--font);background:var(--bg);color:var(--text);border:1px solid var(--card-border);padding:4px 8px;font-size:12px;border-radius:3px}
+textarea{resize:vertical}
+
+#top-bar{display:flex;align-items:center;gap:12px;padding:6px 12px;background:var(--card);border-bottom:1px solid var(--card-border);flex-shrink:0;flex-wrap:wrap}
+#top-bar .label{color:var(--text-dim);font-size:11px}
+#top-bar .value{color:var(--green);font-size:12px}
+#top-bar .sep{color:var(--card-border)}
+.top-group{display:flex;align-items:center;gap:6px}
+
+#main{display:flex;flex:1;overflow:hidden}
+#left-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--card-border)}
+#right-panel{width:320px;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+
+#output{flex:1;overflow-y:auto;padding:12px;white-space:pre-wrap;font-size:13px;line-height:1.6}
+#output .location-name{color:var(--accent2);font-weight:700;font-size:15px}
+#output .reading{color:var(--green)}
+#output .dim{color:var(--text-dim)}
+#output .warn{color:var(--orange)}
+#output .accent{color:var(--accent1)}
+#output .bio{color:var(--accent3)}
+#output .separator{color:var(--card-border);display:block;margin:6px 0}
+
+#map-container{border-top:1px solid var(--card-border);padding:8px 12px;flex-shrink:0}
+#map-display{font-size:12px;line-height:1.3;color:var(--text-dim);letter-spacing:2px}
+#map-display .you{color:var(--accent3);font-weight:700}
+#map-display .explored{color:var(--text)}
+
+#right-panel .section{padding:8px 12px;border-bottom:1px solid var(--card-border)}
+#right-panel .section-title{color:var(--accent1);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+
+#action-bar{display:flex;flex-wrap:wrap;gap:4px}
+#action-bar button{min-width:40px}
+#instrument-bar{display:flex;flex-wrap:wrap;gap:4px}
+#instrument-bar button{font-size:11px;padding:3px 7px}
+
+#catalog-list{overflow-y:auto;flex:1;padding:8px 12px;font-size:11px}
+#catalog-list .entry{margin-bottom:6px;padding:4px 0;border-bottom:1px solid var(--card-border)}
+#catalog-list .entry-name{color:var(--accent3)}
+#catalog-list .entry-type{color:var(--text-dim);font-size:10px}
+
+#log-area{padding:8px 12px;flex-shrink:0;border-top:1px solid var(--card-border)}
+#log-input{width:100%;height:50px;margin-top:4px}
+
+#seed-bar{display:flex;gap:6px;align-items:center}
+#seed-input{width:120px}
+
+.tab-bar{display:flex;gap:2px;padding:4px 12px;background:var(--bg);border-bottom:1px solid var(--card-border)}
+.tab-bar button{border:none;background:transparent;color:var(--text-dim);padding:4px 8px;font-size:11px;border-bottom:2px solid transparent}
+.tab-bar button.active{color:var(--accent1);border-bottom-color:var(--accent1);background:transparent}
+.tab-bar button:hover{color:var(--text);background:transparent}
+
+#right-content{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.right-view{display:none;flex:1;flex-direction:column;overflow:hidden}
+.right-view.active{display:flex}
+
+#log-entries{overflow-y:auto;flex:1;padding:8px 12px;font-size:11px}
+#log-entries .log-entry{margin-bottom:8px;padding:4px 0;border-bottom:1px solid var(--card-border)}
+#log-entries .log-time{color:var(--text-dim);font-size:10px}
+#log-entries .log-text{margin-top:2px}
+
+#planet-info{padding:12px;font-size:11px;overflow-y:auto;flex:1}
+#planet-info .prop{margin-bottom:4px}
+#planet-info .prop-label{color:var(--text-dim)}
+#planet-info .prop-value{color:var(--green)}
+
+/* MOBILE */
+@media(max-width:700px){
+  body{font-size:14px}
+  #main{flex-direction:column;overflow-y:auto}
+  #left-panel{border-right:none;flex:none}
+  #right-panel{width:100%;flex:none;border-top:1px solid var(--card-border)}
+  #output{min-height:200px;max-height:40vh;font-size:14px}
+  #top-bar{font-size:11px;gap:6px;padding:6px 8px;overflow-x:auto;flex-wrap:nowrap}
+  #top-bar .sep{display:none}
+  #top-bar .top-group{flex-shrink:0}
+  #map-container{max-height:120px;overflow:auto}
+  #action-bar{gap:6px}
+  #action-bar button{min-width:48px;padding:8px 12px;font-size:14px}
+  #instrument-bar{gap:6px}
+  #instrument-bar button{padding:8px 10px;font-size:13px}
+  .section{padding:10px 12px!important}
+  button{padding:6px 12px;font-size:13px}
+  .tab-bar button{font-size:13px;padding:6px 10px}
+  #log-input{height:60px;font-size:14px}
+  #catalog-list{font-size:13px}
+  #log-entries{font-size:13px}
+  #planet-info{font-size:13px}
+  #instrument-readout{font-size:14px!important;max-height:50vh!important}
+}
+</style>
+</head>
+<body>
+
+<div id="top-bar">
+  <div class="top-group">
+    <button onclick="randomPlanet()">🪐 New Planet</button>
+  </div>
+  <span class="sep">│</span>
+  <div class="top-group"><span class="label">POS:</span><span class="value" id="hud-pos">0,0</span></div>
+  <span class="sep">│</span>
+  <div class="top-group"><span class="label">BIOME:</span><span class="value" id="hud-biome">—</span></div>
+  <span class="sep">│</span>
+  <div class="top-group"><span class="label">TIME:</span><span class="value" id="hud-time">—</span></div>
+  <span class="sep">│</span>
+  <div class="top-group"><span class="label">RAD:</span><span class="value" id="hud-rad">—</span></div>
+  <span class="sep">│</span>
+  <div class="top-group"><span class="label">GRAV:</span><span class="value" id="hud-grav">—</span></div>
+</div>
+
+<div id="main">
+  <div id="left-panel">
+    <div id="output"></div>
+    <div id="map-container">
+      <div id="map-display"></div>
+    </div>
+    <div class="section" style="border-top:1px solid var(--card-border);padding:8px 12px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span style="color:var(--text-dim);font-size:11px">MOVE:</span>
+        <div id="action-bar">
+          <button onclick="move(0,-1)" title="North (↑)">N ↑</button>
+          <button onclick="move(0,1)" title="South (↓)">S ↓</button>
+          <button onclick="move(-1,0)" title="West (←)">W ←</button>
+          <button onclick="move(1,0)" title="East (→)">E →</button>
+        </div>
+        <span style="color:var(--card-border)">│</span>
+        <button onclick="deployDrone()">🛸 Drone Survey</button>
+        <button onclick="showWait()" id="btn-wait">⏳ Wait 1hr</button>
+      </div>
+      <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+        <span style="color:var(--text-dim);font-size:11px">INSTRUMENTS:</span>
+        <div id="instrument-bar">
+          <button onclick="useInstrument('atmo')">🌡️ Atmo</button>
+          <button onclick="useInstrument('rad')">☢️ Rad</button>
+          <button onclick="useInstrument('star')">🔭 Stars</button>
+          <button onclick="useInstrument('solar')">☀️ Solar</button>
+          <button onclick="useInstrument('mag')">🧲 Mag</button>
+          <button onclick="useInstrument('lidar')">📡 LIDAR</button>
+          <button onclick="useInstrument('radar')">📻 Radar</button>
+          <button onclick="useInstrument('ir')">🔴 IR</button>
+          <button onclick="useInstrument('spec')">🔬 Spec</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="right-panel">
+    <div class="tab-bar">
+      <button class="active" onclick="showTab('catalog')">Catalog</button>
+      <button onclick="showTab('logs')">Logs</button>
+      <button onclick="showTab('planet')">Planet</button>
+    </div>
+    <div id="right-content">
+      <div id="view-catalog" class="right-view active">
+        <div id="catalog-list"><span class="dim">No discoveries yet.</span></div>
+      </div>
+      <div id="view-logs" class="right-view">
+        <div id="log-entries"><span class="dim">No logs yet.</span></div>
+        <div id="log-area">
+          <div class="section-title">WRITE LOG</div>
+          <textarea id="log-input" placeholder="Record your observations..."></textarea>
+          <button onclick="writeLog()" style="margin-top:4px;width:100%">Save Log Entry</button>
+        </div>
+      </div>
+      <div id="view-planet" class="right-view">
+        <div id="planet-info"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// SEEDED PRNG (mulberry32)
+// ═══════════════════════════════════════════════
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hashStr(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}return h>>>0}
+function seedRng(seed){return mulberry32(typeof seed==='number'?seed:hashStr(String(seed)))}
+function tileRng(seed,x,y){return mulberry32(hashStr(seed+':'+x+':'+y))}
+
+// ═══════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════
+const G_CONST=6.674e-11, STEFAN_BOLTZMANN=5.670e-8, BOLTZMANN=1.381e-23, WIEN=2.898e-3;
+const EARTH_MASS=5.972e24, EARTH_RADIUS=6.371e6, SUN_LUMINOSITY=3.828e26, SUN_TEMP=5778, AU=1.496e11;
+const STAR_TYPES={
+  M:{tempRange:[2400,3700],massRange:[0.08,0.45],lumFactor:[0.001,0.08],color:'#ff6644'},
+  K:{tempRange:[3700,5200],massRange:[0.45,0.8],lumFactor:[0.08,0.6],color:'#ffaa44'},
+  G:{tempRange:[5200,6000],massRange:[0.8,1.04],lumFactor:[0.6,1.5],color:'#ffff88'},
+  F:{tempRange:[6000,7500],massRange:[1.04,1.4],lumFactor:[1.5,5.0],color:'#ffffff'}
+};
+const ELEMENTS_SPECTRAL={
+  Hydrogen:{lines:[410.2,434.0,486.1,656.3],color:'#ff4444'},
+  Helium:{lines:[388.9,447.1,501.6,587.6,667.8],color:'#ffaa00'},
+  Carbon:{lines:[426.7,505.2,538.0],color:'#888888'},
+  Nitrogen:{lines:[399.5,444.7,463.1,500.5,567.9],color:'#4488ff'},
+  Oxygen:{lines:[436.8,532.9,543.5,615.6,777.4],color:'#44ff88'},
+  Iron:{lines:[382.0,404.6,438.4,489.1,516.7,527.0],color:'#cc8844'},
+  Silicon:{lines:[390.6,412.8,505.6,634.7],color:'#aaaacc'},
+  Sodium:{lines:[589.0,589.6],color:'#ffff00'},
+  Calcium:{lines:[393.4,396.8,422.7],color:'#ff88ff'},
+  Magnesium:{lines:[382.9,383.8,516.7,517.3,518.4],color:'#88ffaa'},
+  Titanium:{lines:[398.2,430.6,453.3,498.2],color:'#cc88ff'},
+  Sulfur:{lines:[415.3,469.4,545.4,564.0],color:'#ffff44'}
+};
+const BIOME_CHARS={plains:'.',mountain:'^',cave:'○',ocean:'~',volcanic:'▲',ice:'❄',forest:'♣',desert:'░',marsh:'≈'};
+const BIOME_NAMES={plains:'Plains',mountain:'Mountains',cave:'Cave Entrance',ocean:'Ocean Shore',volcanic:'Volcanic Field',ice:'Ice Sheet',forest:'Xeno-Forest',desert:'Arid Desert',marsh:'Marshland'};
+const BIOME_COLORS={plains:'var(--green)',mountain:'var(--text)',cave:'var(--text-dim)',ocean:'#4488ff',volcanic:'var(--orange)',ice:'#88ccff',forest:'#44cc88',desert:'#ccaa44',marsh:'#4488aa'};
+
+// ═══════════════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════════════
+let planet=null, state=null;
+
+function initState(){
+  return {
+    x:0, y:0, underground:false, timeHours:8.0,
+    explored:{}, catalog:[], logs:[], autoLog:[]
+  };
+}
+
+// ═══════════════════════════════════════════════
+// PLANET GENERATION
+// ═══════════════════════════════════════════════
+function generatePlanet(seed){
+  const r=seedRng(seed);
+  const lerp=(a,b,t)=>a+(b-a)*t;
+
+  // Star
+  const starTypes=['M','K','G','F'];
+  const starTypeKey=starTypes[Math.floor(r()*4)];
+  const st=STAR_TYPES[starTypeKey];
+  const starTemp=lerp(st.tempRange[0],st.tempRange[1],r());
+  const starMass=lerp(st.massRange[0],st.massRange[1],r());
+  const starLum=lerp(st.lumFactor[0],st.lumFactor[1],r())*SUN_LUMINOSITY;
+  const starPeakWavelength=WIEN/starTemp*1e9; // nm
+
+  // Orbit
+  const habZoneInner=Math.sqrt(starLum/SUN_LUMINOSITY)*0.95;
+  const habZoneOuter=Math.sqrt(starLum/SUN_LUMINOSITY)*1.4;
+  const orbitalAU=lerp(habZoneInner*0.5,habZoneOuter*1.8,r());
+  const eccentricity=r()*0.15;
+  const orbitalPeriod=Math.sqrt(orbitalAU**3/starMass)*365.25; // days
+
+  // Planet
+  const massFactor=lerp(0.1,5.0,r());
+  const planetMass=massFactor*EARTH_MASS;
+  const densityFactor=lerp(0.7,1.3,r());
+  const planetRadius=Math.pow(massFactor/densityFactor,1/3)*EARTH_RADIUS;
+  const surfaceGravity=G_CONST*planetMass/(planetRadius**2);
+  const escapeVelocity=Math.sqrt(2*G_CONST*planetMass/planetRadius);
+
+  // Rotation & tilt
+  const rotationPeriod=lerp(8,100,r()); // hours
+  const axialTilt=r()*45; // degrees
+
+  // Effective temperature from star
+  const distM=orbitalAU*AU;
+  const T_eff=Math.pow(starLum/(16*Math.PI*STEFAN_BOLTZMANN*distM**2),0.25);
+
+  // Atmosphere
+  const canRetainH2=escapeVelocity>20000;
+  const canRetainHe=escapeVelocity>10000;
+  const canRetainN2=escapeVelocity>3000;
+  const canRetainCO2=escapeVelocity>2500;
+  const canRetainH2O=escapeVelocity>2800;
+
+  let atmoComp={};
+  let surfacePressure;
+  if(!canRetainN2){
+    surfacePressure=lerp(0.0001,0.01,r());
+    atmoComp={CO2:0.9,Ar:0.08,SO2:0.02};
+  } else {
+    surfacePressure=lerp(0.2,5.0,r())*massFactor;
+    const hasO2=r()>0.6 && T_eff>180 && T_eff<380;
+    if(hasO2){
+      const o2=lerp(0.05,0.3,r());
+      const co2=lerp(0.0001,0.05,r());
+      const ar=lerp(0.005,0.02,r());
+      const ch4=r()>0.5?lerp(0.00001,0.005,r()):0;
+      const h2o=T_eff>270?lerp(0.001,0.04,r()):0;
+      const n2=1-o2-co2-ar-ch4-h2o;
+      atmoComp={N2:n2,O2:o2,CO2:co2,Ar:ar};
+      if(ch4>0) atmoComp.CH4=ch4;
+      if(h2o>0) atmoComp.H2O=h2o;
+    } else {
+      const co2=lerp(0.5,0.96,r());
+      const n2=lerp(0.01,0.4,r());
+      const so2=r()>0.5?lerp(0.001,0.05,r()):0;
+      const ar=1-co2-n2-so2;
+      atmoComp={CO2:co2,N2:n2,Ar:Math.max(0,ar)};
+      if(so2>0) atmoComp.SO2=so2;
+    }
+  }
+
+  // Greenhouse effect
+  const co2Frac=atmoComp.CO2||0;
+  const ch4Frac=atmoComp.CH4||0;
+  const greenhouse=1+co2Frac*surfacePressure*30+ch4Frac*surfacePressure*80;
+  const surfaceTemp=T_eff*Math.pow(greenhouse,0.25);
+
+  // Magnetic field
+  const magBase=lerp(5,80,r()); // μT at surface
+  const magStrength=magBase*Math.pow(massFactor,0.5)*(24/rotationPeriod);
+  const magDeclination=lerp(-25,25,r());
+
+  // Water
+  const hasLiquidWater=surfaceTemp>273&&surfaceTemp<373&&(atmoComp.H2O>0||co2Frac<0.95);
+  const waterCoverage=hasLiquidWater?lerp(0.05,0.8,r()):0;
+
+  // Life
+  // Life is EXTREMELY rare. Most planets are dead rocks. That's realistic.
+  // Microbial: ~3% of goldilocks planets, <1% otherwise
+  // Complex life: ~10% of the rare worlds that have any life at all
+  const lifeProbability=hasLiquidWater&&surfaceTemp>260&&surfaceTemp<330&&(atmoComp.O2||0)>0.01?0.03:
+    hasLiquidWater&&surfaceTemp>220&&surfaceTemp<400?0.008:0.001;
+  const hasLife=r()<lifeProbability;
+  const hasComplexLife=hasLife&&r()<0.1;
+
+  // Surface radiation (from star UV + cosmic rays, reduced by atmosphere + mag field)
+  // Most planets should have HIGH radiation - Earth's 0.0003 mSv/hr is the rare exception
+  const baseRadiation=lerp(5,50,r())*(1/(surfacePressure+0.1))*(1/(magStrength/30+0.5));
+  const surfaceRadiation=Math.max(1,baseRadiation);
+
+  // Terrain distribution weights based on conditions
+  let terrainWeights={plains:30,mountain:15,desert:10};
+  if(hasLiquidWater){terrainWeights.ocean=waterCoverage*60;terrainWeights.marsh=10;terrainWeights.forest=hasLife?20:0}
+  if(surfaceTemp>350) terrainWeights.volcanic=25;
+  if(surfaceTemp<250){terrainWeights.ice=30;terrainWeights.desert=0;terrainWeights.marsh=0}
+  terrainWeights.cave=5;
+
+  // Mineral composition
+  const minerals=['Iron','Silicon','Magnesium','Calcium','Aluminum','Titanium','Sulfur','Carbon'];
+  const planetMinerals={};
+  minerals.forEach(m=>{planetMinerals[m]=lerp(0.01,0.3,r())});
+  // normalize
+  const mTotal=Object.values(planetMinerals).reduce((a,b)=>a+b,0);
+  Object.keys(planetMinerals).forEach(k=>planetMinerals[k]/=mTotal);
+
+  // Constellations (for star tracker)
+  const constellations=[];
+  for(let i=0;i<Math.floor(lerp(6,14,r()));i++){
+    const nStars=Math.floor(lerp(3,8,r()));
+    const stars=[];
+    const cx=r()*360,cy=r()*180-90;
+    for(let j=0;j<nStars;j++) stars.push({ra:cx+r()*40-20,dec:cy+r()*30-15,mag:lerp(1,6,r())});
+    constellations.push({name:genName(seedRng(hashStr(seed+':const:'+i))),stars});
+  }
+
+  // Planet name
+  const planetName=genPlanetName(seedRng(hashStr(seed+':name')));
+
+  return {
+    seed, name:planetName,
+    star:{type:starTypeKey,temp:starTemp,mass:starMass,luminosity:starLum,peakWavelength:starPeakWavelength,color:st.color},
+    orbit:{au:orbitalAU,eccentricity,periodDays:orbitalPeriod},
+    mass:planetMass,radius:planetRadius,massFactor,densityFactor,
+    surfaceGravity,escapeVelocity,
+    rotationPeriod,axialTilt,
+    atmosphere:{composition:atmoComp,pressure:surfacePressure,greenhouse},
+    surfaceTemp,
+    magneticField:{strength:magStrength,declination:magDeclination},
+    hasLiquidWater,waterCoverage,hasLife,hasComplexLife,
+    surfaceRadiation,
+    terrainWeights,minerals:planetMinerals,
+    constellations
+  };
+}
+
+function genName(r){
+  const c='bcdfghjklmnpqrstvwxyz',v='aeiou';
+  let s='';
+  const len=Math.floor(r()*3)+2;
+  for(let i=0;i<len;i++) s+=(i%2===0?c:v)[Math.floor(r()*(i%2===0?c.length:v.length))];
+  return s.charAt(0).toUpperCase()+s.slice(1);
+}
+
+function genPlanetName(r){
+  const prefixes=['Nova','Kepler','Gliese','HD','TrES','WASP','Proxima','Tau','Wolf'];
+  const p=prefixes[Math.floor(r()*prefixes.length)];
+  const n=Math.floor(r()*9000)+100;
+  const suffix=String.fromCharCode(98+Math.floor(r()*5));
+  return p+' '+n+suffix;
+}
+
+// ═══════════════════════════════════════════════
+// TERRAIN & TILE GENERATION
+// ═══════════════════════════════════════════════
+function getTile(x,y){
+  const key=x+','+y;
+  if(state.tileCache&&state.tileCache[key]) return state.tileCache[key];
+
+  const r=tileRng(planet.seed,x,y);
+  // Pick biome from weights
+  const w=planet.terrainWeights;
+  const entries=Object.entries(w);
+  const total=entries.reduce((s,e)=>s+e[1],0);
+  let roll=r()*total, biome='plains';
+  for(const [b,wt] of entries){roll-=wt;if(roll<=0){biome=b;break}}
+
+  // Elevation
+  const baseElev=biome==='mountain'?lerp(800,4000,r()):biome==='ocean'?lerp(-200,-10,r()):biome==='volcanic'?lerp(200,1500,r()):biome==='cave'?lerp(50,300,r()):lerp(0,500,r());
+
+  // Local atmosphere variation
+  const localTempVar=lerp(-8,8,r())+(biome==='volcanic'?lerp(5,30,r()):0)+(biome==='ice'?lerp(-20,-5,r()):0);
+
+  // Flora & fauna
+  let flora=[],fauna=[];
+  if(planet.hasLife){
+    // Flora: sparse even on living worlds
+    const floraCount=biome==='forest'?Math.floor(r()*2)+1:biome==='marsh'?Math.floor(r()*2):biome==='ocean'?Math.floor(r()*1.5):biome==='ice'||biome==='volcanic'?0:Math.floor(r()*1.5);
+    for(let i=0;i<floraCount;i++) flora.push(genFlora(seedRng(hashStr(planet.seed+':flora:'+x+':'+y+':'+i)),biome));
+
+    // Fauna ONLY on complex life worlds, and still uncommon per tile
+    if(planet.hasComplexLife){
+      const faunaChance=biome==='forest'?0.15:biome==='marsh'?0.12:biome==='plains'?0.08:biome==='ocean'?0.06:0.02;
+      if(r()<faunaChance) fauna.push(genFauna(seedRng(hashStr(planet.seed+':fauna:'+x+':'+y)),biome));
+    }
+  }
+
+  // Minerals in ground
+  const localMinerals={};
+  const mEntries=Object.entries(planet.minerals);
+  mEntries.forEach(([m,base])=>{
+    let v=base+lerp(-0.1,0.1,r());
+    if(biome==='volcanic'&&(m==='Iron'||m==='Sulfur')) v+=0.15;
+    if(biome==='mountain'&&(m==='Silicon'||m==='Aluminum')) v+=0.1;
+    localMinerals[m]=Math.max(0,Math.min(1,v));
+  });
+
+  // Subsurface features
+  const hasCaveBelow=r()<0.15;
+  const hasWaterTable=planet.hasLiquidWater&&r()<0.3;
+  const hasMineralDeposit=r()<0.1;
+  const mineralType=hasMineralDeposit?mEntries[Math.floor(r()*mEntries.length)][0]:null;
+
+  // Radiation anomaly
+  const radMultiplier=biome==='volcanic'?lerp(1.2,2.5,r()):hasMineralDeposit&&mineralType==='Titanium'?lerp(1.5,3,r()):lerp(0.8,1.2,r());
+
+  // Geothermal
+  const hasGeothermal=biome==='volcanic'?r()<0.6:r()<0.05;
+  const geothermalTemp=hasGeothermal?lerp(60,350,r()):0;
+
+  const tile={
+    biome,elevation:baseElev,tempVariation:localTempVar,
+    flora,fauna,minerals:localMinerals,
+    subsurface:{cave:hasCaveBelow,waterTable:hasWaterTable,mineralDeposit:hasMineralDeposit,mineralType},
+    radMultiplier,hasGeothermal,geothermalTemp,
+    described:false
+  };
+
+  if(!state.tileCache) state.tileCache={};
+  state.tileCache[key]=tile;
+  return tile;
+}
+
+function lerp(a,b,t){return a+(b-a)*t}
+
+// ═══════════════════════════════════════════════
+// FLORA / FAUNA GENERATION
+// ═══════════════════════════════════════════════
+function genFlora(r,biome){
+  const types=['fungoid','photosynthetic','crystalline','moss-analog','vine-like','succulent','spore-bearing','colonial'];
+  const colors=['deep crimson','pale azure','golden','violet','emerald','silver-white','bioluminescent teal','dusty orange','iridescent','dark indigo'];
+  const sizes=['tiny (2-5cm)','small (10-30cm)','medium (0.5-1m)','tall (1-3m)','towering (3-8m)'];
+  const features=['spiral-patterned leaves','translucent membranes','fractal branching','pulsing bioluminescence','crystalline nodules','symbiotic root networks','airborne spore clouds','rhythmic swaying motion'];
+
+  const type=types[Math.floor(r()*types.length)];
+  const color=colors[Math.floor(r()*colors.length)];
+  const size=sizes[Math.floor(r()*sizes.length)];
+  const feature=features[Math.floor(r()*features.length)];
+  const name=genName(r)+' '+genName(r);
+
+  let desc=`A ${size} ${color} ${type} organism`;
+  if(biome==='ocean') desc+=', clustered along the waterline';
+  else if(biome==='marsh') desc+=', rooted in saturated soil';
+  else if(biome==='forest') desc+=', growing amid dense growth';
+  desc+=`. Notable for its ${feature}.`;
+
+  const biolum=r()<0.15;
+  if(biolum) desc+=` Emits a faint ${['blue-green','amber','violet','pale white'][Math.floor(r()*4)]} glow in low light.`;
+
+  return {name:`${name} (${type})`,desc,bioluminescent:biolum,type:'flora',id:name};
+}
+
+function genFauna(r,biome){
+  const bodyTypes=['arthropoid','vermiform','radial','bilateral','amorphous','colonial-swarm','sessile-filter'];
+  const locomotion=['crawling','gliding','burrowing','swimming','drifting','hopping','undulating'];
+  const coverings=['chitinous plates','smooth membrane','fine cilia','crystalline scales','mucous sheath','feathery filaments'];
+  const sizes=['minuscule (1-3cm)','small (5-15cm)','medium (20-50cm)','large (0.5-1.5m)','massive (2-4m)'];
+  const behaviors=['feeding on surface growths','slowly traversing the terrain','partially buried','resting motionless','clustered in a group','inspecting surroundings'];
+
+  const body=bodyTypes[Math.floor(r()*bodyTypes.length)];
+  const loco=locomotion[Math.floor(r()*locomotion.length)];
+  const cover=coverings[Math.floor(r()*coverings.length)];
+  const size=sizes[Math.floor(r()*sizes.length)];
+  const behavior=behaviors[Math.floor(r()*behaviors.length)];
+  const name=genName(r)+' '+genName(r);
+  const limbs=Math.floor(r()*8)+2;
+  const eyes=Math.floor(r()*6);
+
+  let desc=`A ${size} ${body} creature with ${cover} and ${limbs} limbs. Observed ${loco}, currently ${behavior}.`;
+  if(eyes===0) desc+=` No visible optical organs.`;
+  else desc+=` ${eyes} eye-like sensor${eyes>1?'s':''} visible.`;
+  if(r()<0.2) desc+=` Appears to respond to vibrations.`;
+  if(r()<0.1) desc+=` Produces faint clicking sounds.`;
+
+  return {name:`${name} (${body})`,desc,type:'fauna',id:name};
+}
+
+// ═══════════════════════════════════════════════
+// TIME & SKY
+// ═══════════════════════════════════════════════
+function getDayPhase(){
+  const rot=planet.rotationPeriod;
+  const h=state.timeHours%rot;
+  const dayFrac=h/rot;
+  // Simple model: sunrise at 0.25, sunset at 0.75
+  if(dayFrac<0.2) return 'night';
+  if(dayFrac<0.3) return 'dawn';
+  if(dayFrac<0.7) return 'day';
+  if(dayFrac<0.8) return 'dusk';
+  return 'night';
+}
+
+function isNight(){const p=getDayPhase();return p==='night'}
+function formatTime(){
+  const rot=planet.rotationPeriod;
+  const h=state.timeHours%rot;
+  const dayNum=Math.floor(state.timeHours/rot)+1;
+  return `Day ${dayNum}, ${h.toFixed(1)}h / ${rot.toFixed(1)}h (${getDayPhase()})`;
+}
+
+function getSunAltitude(){
+  const rot=planet.rotationPeriod;
+  const h=state.timeHours%rot;
+  const angle=(h/rot)*360-90;
+  const alt=Math.sin(angle*Math.PI/180)*90;
+  return alt; // degrees above horizon
+}
+
+// ═══════════════════════════════════════════════
+// PHYSICS CALCULATIONS
+// ═══════════════════════════════════════════════
+function getAtmoReading(tile){
+  const comp=planet.atmosphere.composition;
+  const baseP=planet.atmosphere.pressure;
+  const T=planet.surfaceTemp+tile.tempVariation;
+  // Pressure vs altitude: P = P0 * exp(-mgh/kT), m_avg ~29 amu for N2-rich, ~44 for CO2-rich
+  const m_avg=(comp.N2||0)>0.5?29*1.66e-27:44*1.66e-27;
+  const h=Math.max(0,tile.elevation);
+  const P=baseP*Math.exp(-m_avg*planet.surfaceGravity*h/(BOLTZMANN*T));
+
+  let lines=[];
+  lines.push(`┌─── ATMOSPHERIC ANALYSIS ───────────────┐`);
+  lines.push(`│ Temperature: ${(T-273.15).toFixed(1)}°C (${T.toFixed(1)} K)`);
+  lines.push(`│ Pressure:    ${(P*101.325).toFixed(2)} kPa (${P.toFixed(4)} atm)`);
+  lines.push(`│ Altitude:    ${tile.elevation.toFixed(0)} m`);
+  lines.push(`│`);
+  lines.push(`│ Composition:`);
+  Object.entries(comp).sort((a,b)=>b[1]-a[1]).forEach(([gas,frac])=>{
+    if(frac>0.0001){
+      const bar='█'.repeat(Math.max(1,Math.round(frac*30)));
+      lines.push(`│  ${gas.padEnd(4)} ${(frac*100).toFixed(frac<0.01?3:1).padStart(7)}%  ${bar}`);
+    }
+  });
+  lines.push(`│`);
+  lines.push(`│ Mean molecular mass: ${(m_avg/1.66e-27).toFixed(1)} amu`);
+  lines.push(`│ Scale height: ${(BOLTZMANN*T/(m_avg*planet.surfaceGravity)/1000).toFixed(1)} km`);
+  lines.push(`└────────────────────────────────────────┘`);
+  return lines.join('\n');
+}
+
+function getRadReading(tile){
+  const base=planet.surfaceRadiation*tile.radMultiplier;
+  const underground=state.underground;
+  // Shielding: I = I0 * e^(-μx), assume 5m rock, μ≈0.1/m
+  const rad=underground?base*Math.exp(-0.1*5):base;
+  const phase=getDayPhase();
+  const solarContrib=phase==='day'?1.0:phase==='dawn'||phase==='dusk'?0.3:0.05;
+  const total=rad*0.5+rad*0.5*solarContrib;
+
+  let level='NOMINAL';
+  if(total>5) level='ELEVATED';
+  if(total>10) level='HIGH';
+  if(total>50) level='DANGEROUS';
+
+  let lines=[];
+  lines.push(`┌─── RADIATION DOSIMETER ─────────────────┐`);
+  lines.push(`│ Dose rate: ${total.toFixed(3)} mSv/hr`);
+  lines.push(`│ Status:    ${level}`);
+  lines.push(`│ Source breakdown:`);
+  lines.push(`│   Cosmic:  ${(rad*0.3).toFixed(3)} mSv/hr`);
+  lines.push(`│   Stellar: ${(rad*0.5*solarContrib).toFixed(3)} mSv/hr`);
+  lines.push(`│   Surface: ${(rad*0.2).toFixed(3)} mSv/hr`);
+  if(underground) lines.push(`│ ⚠ Underground shielding active (est. 5m rock)`);
+  if(tile.radMultiplier>1.5) lines.push(`│ ⚠ Local anomaly detected — elevated readings`);
+  lines.push(`└─────────────────────────────────────────┘`);
+  return lines.join('\n');
+}
+
+function getStarReading(){
+  const phase=getDayPhase();
+  let lines=[];
+  lines.push(`┌─── STAR TRACKER / SEXTANT ─────────────┐`);
+  if(phase==='day'||phase==='dawn'||phase==='dusk'){
+    lines.push(`│ Sky too bright for stellar observations.`);
+    lines.push(`│ Wait for nightfall.`);
+    lines.push(`│ Current phase: ${phase}`);
+  } else {
+    lines.push(`│ Stellar observations — clear sky`);
+    lines.push(`│ Observer position: ${state.x}, ${state.y}`);
+    lines.push(`│`);
+    lines.push(`│ Visible constellations:`);
+    planet.constellations.forEach(c=>{
+      const visible=c.stars.filter(s=>s.mag<4.5);
+      if(visible.length>0){
+        lines.push(`│  ★ ${c.name} — ${visible.length} stars visible`);
+        visible.slice(0,3).forEach(s=>{
+          lines.push(`│    RA ${s.ra.toFixed(1)}° Dec ${s.dec.toFixed(1)}° mag ${s.mag.toFixed(1)}`);
+        });
+      }
+    });
+    // Estimate latitude from visible constellations
+    const zenithDec=state.y*-0.5; // rough mapping
+    lines.push(`│`);
+    lines.push(`│ Zenith declination: ~${zenithDec.toFixed(1)}°`);
+    lines.push(`│ Estimated latitude: ~${(-zenithDec).toFixed(1)}°`);
+  }
+  lines.push(`└─────────────────────────────────────────┘`);
+  return lines.join('\n');
+}
+
+function getSolarReading(){
+  const alt=getSunAltitude();
+  const phase=getDayPhase();
+  const rot=planet.rotationPeriod;
+  const h=state.timeHours%rot;
+  const sunrise=rot*0.25;
+  const sunset=rot*0.75;
+  const dayLength=(sunset-sunrise);
+
+  // Season effect from axial tilt
+  const dayOfYear=state.timeHours/(rot)*1; // simplified
+  const seasonAngle=Math.sin(dayOfYear*2*Math.PI/(planet.orbit.periodDays/(rot/24)))*planet.axialTilt;
+
+  let lines=[];
+  lines.push(`┌─── SOLAR TRACKER ──────────────────────┐`);
+  lines.push(`│ Star type:    ${planet.star.type}-class (${planet.star.temp.toFixed(0)} K)`);
+  lines.push(`│ Peak λ:       ${planet.star.peakWavelength.toFixed(0)} nm`);
+  lines.push(`│ Sun altitude: ${alt.toFixed(1)}°`);
+  lines.push(`│ Phase:        ${phase}`);
+  lines.push(`│`);
+  lines.push(`│ Rotation period: ${rot.toFixed(2)} hours`);
+  lines.push(`│ Day length:      ${dayLength.toFixed(2)} hours`);
+  lines.push(`│ Sunrise:         ${sunrise.toFixed(2)}h`);
+  lines.push(`│ Sunset:          ${sunset.toFixed(2)}h`);
+  lines.push(`│ Current:         ${h.toFixed(2)}h`);
+  lines.push(`│`);
+  lines.push(`│ Axial tilt:      ${planet.axialTilt.toFixed(1)}°`);
+  lines.push(`│ Season angle:    ${seasonAngle.toFixed(1)}°`);
+  lines.push(`│ Orbital period:  ${planet.orbit.periodDays.toFixed(1)} days`);
+  lines.push(`│ Distance:        ${planet.orbit.au.toFixed(3)} AU`);
+
+  // Sun arc visualization
+  lines.push(`│`);
+  lines.push(`│ Sun arc (E→W):`);
+  let arc='│  ';
+  for(let i=0;i<24;i++){
+    const frac=i/24;
+    const a=Math.sin((frac*360-90)*Math.PI/180)*90;
+    if(a>0) arc+=a>45?'█':a>20?'▓':a>5?'▒':'░';
+    else arc+='·';
+  }
+  lines.push(arc);
+  lines.push(`└─────────────────────────────────────────┘`);
+  return lines.join('\n');
+}
+
+function getMagReading(tile){
+  const B0=planet.magneticField.strength;
+  // Dipole: field varies with position (latitude proxy)
+  const latRad=state.y*0.01; // rough
+  const Br=2*B0*Math.sin(latRad);
+  const Bt=B0*Math.cos(latRad);
+  const Btotal=Math.sqrt(Br*Br+Bt*Bt);
+  const inclination=Math.atan2(Br,Bt)*180/Math.PI;
+  const declination=planet.magneticField.declination+Math.sin(state.x*0.05)*5;
+
+  // Direction to magnetic north
+  const magNorthDir=declination>0?`${Math.abs(declination).toFixed(1)}° E of grid N`:`${Math.abs(declination).toFixed(1)}° W of grid N`;
+
+  let lines=[];
+  lines.push(`┌─── MAGNETOMETER ───────────────────────┐`);
+  lines.push(`│ Field strength: ${Btotal.toFixed(2)} μT`);
+  lines.push(`│ Inclination:    ${inclination.toFixed(1)}°`);
+  lines.push(`│ Declination:    ${declination.toFixed(1)}°`);
+  lines.push(`│ Mag North:      ${magNorthDir}`);
+  lines.push(`│`);
+  lines.push(`│ Components:`);
+  lines.push(`│   Radial (Br):    ${Br.toFixed(2)} μT`);
+  lines.push(`│   Tangential (Bθ):${Bt.toFixed(2)} μT`);
+  lines.push(`│`);
+  lines.push(`│ Dipole model: B = B₀(R/r)³`);
+  lines.push(`│ B₀ (equatorial): ${B0.toFixed(2)} μT`);
+  if(Math.abs(inclination)>80) lines.push(`│ ⚠ Near magnetic pole!`);
+  lines.push(`└─────────────────────────────────────────┘`);
+  return lines.join('\n');
+}
+
+function getLidarReading(tile){
+  let lines=[];
+  lines.push(`┌─── LIDAR TOPOGRAPHY ───────────────────┐`);
+  lines.push(`│ Scan center: (${state.x}, ${state.y})`);
+  lines.push(`│ Biome: ${BIOME_NAMES[tile.biome]}`);
+  lines.push(`│ Elevation: ${tile.elevation.toFixed(0)} m`);
+  lines.push(`│`);
+  lines.push(`│ Local elevation map (±2 tiles):`);
+
+  for(let dy=-2;dy<=2;dy++){
+    let row='│  ';
+    for(let dx=-2;dx<=2;dx++){
+      const t=getTile(state.x+dx,state.y+dy);
+      const e=t.elevation;
+      if(dx===0&&dy===0) row+='['+e.toFixed(0).padStart(5)+']';
+      else row+=' '+e.toFixed(0).padStart(5)+' ';
+    }
+    lines.push(row);
+  }
+  lines.push(`│`);
+  lines.push(`│ Elevation range in scan: varies`);
+  lines.push(`│ Surface gravity: ${planet.surfaceGravity.toFixed(2)} m/s²`);
+  lines.push(`└─────────────────────────────────────────┘`);
+  return lines.join('\n');
+}
+
+function getRadarReading(tile){
+  let lines=[];
+  lines.push(`┌─── SUBSURFACE RADAR ───────────────────┐`);
+  lines.push(`│ Ground-penetrating scan at (${state.x}, ${state.y})`);
+  lines.push(`│ Depth range: 0-50m`);
+  lines.push(`│`);
+  if(tile.subsurface.cave){
+    lines.push(`│ ◉ CAVITY DETECTED at ~${Math.floor(Math.random()*20+5)}m depth`);
+    lines.push(`│   Estimated size: ${Math.floor(Math.random()*30+10)}m across`);
+  }
+  if(tile.subsurface.waterTable){
+    lines.push(`│ ≈ WATER TABLE detected at ~${Math.floor(Math.random()*15+3)}m`);
+    lines.push(`│   Liquid phase confirmed (impedance contrast)`);
+  }
+  if(tile.subsurface.mineralDeposit){
+    lines.push(`│ ◆ MINERAL DEPOSIT: ${tile.subsurface.mineralType}`);
+    lines.push(`│   High-density anomaly at ~${Math.floor(Math.random()*25+2)}m`);
+  }
+  if(!tile.subsurface.cave&&!tile.subsurface.waterTable&&!tile.subsurface.mineralDeposit){
+    lines.push(`│ No significant subsurface features detected.`);
+    lines.push(`│ Homogeneous regolith to scan depth.`);
+  }
+  lines.push(`│`);
+  lines.push(`│ Bedrock density: ~${(planet.densityFactor*2800+Math.random()*500).toFixed(0)} kg/m³`);
+  lines.push(`└─────────────────────────────────────────┘`);
+  return lines.join('\n');
+}
+
+function getIRReading(tile){
+  const T=planet.surfaceTemp+tile.tempVariation;
+  const phase=getDayPhase();
+  const solarHeating=phase==='day'?lerp(5,25,0.5):phase==='dawn'||phase==='dusk'?lerp(1,8,0.5):0;
+
+  let lines=[];
+  lines.push(`┌─── INFRARED CAMERA ────────────────────┐`);
+  lines.push(`│ Thermal scan at (${state.x}, ${state.y})`);
+  lines.push(`│`);
+  lines.push(`│ Ambient surface: ${(T-273.15+solarHeating).toFixed(1)}°C`);
+  lines.push(`│ Background:      ${(T-273.15).toFixed(1)}°C`);
+
+  if(tile.hasGeothermal){
+    lines.push(`│`);
+    lines.push(`│ ◉ THERMAL ANOMALY DETECTED`);
+    lines.push(`│   Geothermal source: ${tile.geothermalTemp.toFixed(0)}°C`);
+    lines.push(`│   Peak wavelength: ${(WIEN/(tile.geothermalTemp+273.15)*1e6).toFixed(1)} μm`);
+  }
+
+  if(tile.fauna.length>0){
+    lines.push(`│`);
+    lines.push(`│ Biological heat signatures:`);
+    tile.fauna.forEach(f=>{
+      const bodyTemp=T-273.15+lerp(2,15,Math.random());
+      lines.push(`│   ◦ ${bodyTemp.toFixed(1)}°C — moving target (${f.name.split('(')[0].trim()})`);
+    });
+  }
+
+  if(phase==='day'){
+    lines.push(`│`);
+    lines.push(`│ Solar-heated surfaces visible.`);
+    lines.push(`│ Rock faces: +${solarHeating.toFixed(1)}°C above ambient`);
+  }
+  lines.push(`└─────────────────────────────────────────┘`);
+  return lines.join('\n');
+}
+
+function getSpecReading(tile){
+  // Show emission/absorption lines based on local minerals
+  let lines=[];
+  lines.push(`┌─── SPECTROMETER ANALYSIS ──────────────┐`);
+  lines.push(`│ Sample: surface material at (${state.x}, ${state.y})`);
+  lines.push(`│ Biome: ${BIOME_NAMES[tile.biome]}`);
+  lines.push(`│`);
+  lines.push(`│ Detected emission lines (nm):`);
+
+  const sorted=Object.entries(tile.minerals).sort((a,b)=>b[1]-a[1]);
+  sorted.forEach(([element,abundance])=>{
+    if(abundance>0.05&&ELEMENTS_SPECTRAL[element]){
+      const spec=ELEMENTS_SPECTRAL[element];
+      const lineStr=spec.lines.slice(0,4).map(l=>l.toFixed(1)).join(', ');
+      const bar='█'.repeat(Math.max(1,Math.round(abundance*20)));
+      lines.push(`│  ${element.padEnd(10)} ${(abundance*100).toFixed(1).padStart(5)}%  λ: ${lineStr}`);
+      lines.push(`│  ${''.padEnd(10)} ${' '.padStart(5)}   ${bar}`);
+    }
+  });
+
+  if(tile.biome==='ocean'||tile.subsurface.waterTable){
+    lines.push(`│`);
+    lines.push(`│  H₂O absorption: 720nm, 820nm, 940nm`);
+  }
+  lines.push(`│`);
+  lines.push(`│ Note: Abundances are surface estimates.`);
+  lines.push(`│ Deep core samples may differ.`);
+  lines.push(`└─────────────────────────────────────────┘`);
+  return lines.join('\n');
+}
+
+// ═══════════════════════════════════════════════
+// LOCATION DESCRIPTIONS
+// ═══════════════════════════════════════════════
+function describeLocation(tile){
+  const phase=getDayPhase();
+  const T=planet.surfaceTemp+tile.tempVariation-273.15;
+  const biome=tile.biome;
+  const r=tileRng(planet.seed,state.x,state.y);
+  // consume some values to get varied descriptions
+  for(let i=0;i<10;i++) r();
+
+  const timeDescs={
+    night:'The sky is dark, lit by unfamiliar stars.',
+    dawn:'The horizon glows as the star rises, casting long shadows.',
+    day:`The ${planet.star.type}-class star hangs in the sky, bathing everything in ${planet.star.type==='M'?'reddish':planet.star.type==='K'?'amber':planet.star.type==='F'?'blue-white':'warm'} light.`,
+    dusk:'The star sinks toward the horizon. Colors shift and deepen.'
+  };
+
+  const biomeDescs={
+    plains:[
+      'A broad, open expanse stretches in every direction. The ground is covered in fine-grained sediment.',
+      'Flat terrain extends to the horizon. Subtle undulations hint at ancient geological processes.',
+      'An open plain of compacted regolith. Wind has carved faint ripple patterns into the surface.'
+    ],
+    mountain:[
+      'Jagged peaks rise sharply. Exposed rock strata reveal layers of geological history.',
+      'Rocky terrain climbs steeply here. Fractured cliff faces show mineral veins.',
+      'A mountainous ridge with weathered formations. The thin atmosphere is even thinner at this altitude.'
+    ],
+    cave:[
+      'A dark opening in the rock face leads underground. Cool air flows outward.',
+      'A cave entrance, partially obscured by debris. The walls show signs of fluid erosion.',
+      'A fissure in the terrain reveals a passage downward. Faint echoes suggest a large cavity below.'
+    ],
+    ocean:[
+      'Waves lap against a rocky shore. The liquid stretches to the horizon, its color shifted by the star\'s light.',
+      'A coastline of dark pebbles and tidal pools. Foam traces patterns on the shore.',
+      'The ocean meets the land in a gentle slope. The water is surprisingly clear near the edge.'
+    ],
+    volcanic:[
+      'Dark, hardened lava flows cover the ground. Wisps of gas rise from cracks in the surface.',
+      'A volcanic landscape of black rock and sulfurous vents. The ground radiates heat.',
+      'Cinder cones and old lava tubes dot this harsh terrain. The air tastes of sulfur.'
+    ],
+    ice:[
+      'A vast sheet of ice extends outward, cracked into geometric patterns. The cold is intense.',
+      'Frozen terrain. The ice has a faint blue tint and creaks under pressure.',
+      'An ice field with pressure ridges and shallow crevasses. Frost crystals catch the light.'
+    ],
+    forest:[
+      'Dense growths of alien organisms rise around you, forming a canopy of unfamiliar shapes and colors.',
+      'A forest of xeno-flora. The organisms here have evolved complex structures for light capture.',
+      'Tall, branching organisms crowd together, their various forms creating a layered ecosystem.'
+    ],
+    desert:[
+      'Arid, wind-scoured terrain. The ground is bare except for scattered rocks.',
+      'A desert landscape of fine dust and exposed bedrock. Heat shimmers rise from the surface.',
+      'Dry, barren ground stretches ahead. Wind has polished the rocks smooth.'
+    ],
+    marsh:[
+      'Saturated ground squelches underfoot. Pools of liquid dot the terrain.',
+      'A marshy area where liquid seeps from the ground. The air is thick with moisture.',
+      'Waterlogged terrain with standing pools. Dense, low-growing organisms thrive here.'
+    ]
+  };
+
+  const descs=biomeDescs[biome]||biomeDescs.plains;
+  const desc=descs[Math.floor(r()*descs.length)];
+
+  let text=[];
+  text.push(`<span class="location-name">${BIOME_NAMES[biome]} — (${state.x}, ${state.y})</span>`);
+  text.push(`<span class="dim">${timeDescs[phase]}</span>`);
+  text.push('');
+  text.push(desc);
+  text.push('');
+  text.push(`<span class="dim">Elevation: ${tile.elevation.toFixed(0)}m | Surface temp: ${T.toFixed(1)}°C</span>`);
+
+  if(tile.hasGeothermal){
+    text.push(`<span class="warn">A geothermal vent nearby radiates heat (${tile.geothermalTemp.toFixed(0)}°C).</span>`);
+  }
+
+  if(tile.flora.length>0){
+    text.push('');
+    text.push(`<span class="bio">Flora detected (${tile.flora.length} species):</span>`);
+    tile.flora.forEach(f=>{
+      const alreadyCatalogued=state.catalog.some(c=>c.id===f.id);
+      text.push(`<span class="bio">  • ${f.name}${alreadyCatalogued?' [catalogued]':' [NEW — click Catalog to record]'}</span>`);
+      text.push(`<span class="dim">    ${f.desc}</span>`);
+    });
+  }
+
+  if(tile.fauna.length>0){
+    text.push('');
+    text.push(`<span class="bio">Fauna observed (${tile.fauna.length} species):</span>`);
+    tile.fauna.forEach(f=>{
+      const alreadyCatalogued=state.catalog.some(c=>c.id===f.id);
+      text.push(`<span class="bio">  • ${f.name}${alreadyCatalogued?' [catalogued]':' [NEW]'}</span>`);
+      text.push(`<span class="dim">    ${f.desc}</span>`);
+    });
+  }
+
+  if(tile.flora.length===0&&tile.fauna.length===0&&planet.hasLife){
+    text.push(`<span class="dim">No biological activity detected in this area.</span>`);
+  }
+
+  return text.join('\n');
+}
+
+// ═══════════════════════════════════════════════
+// MAP
+// ═══════════════════════════════════════════════
+function renderMap(){
+  const radius=6;
+  let rows=[];
+  for(let dy=-radius;dy<=radius;dy++){
+    let row='';
+    for(let dx=-radius;dx<=radius;dx++){
+      const tx=state.x+dx, ty=state.y+dy;
+      const key=tx+','+ty;
+      if(dx===0&&dy===0){
+        row+=`<span class="you">@</span>`;
+      } else if(state.explored[key]){
+        const t=getTile(tx,ty);
+        const ch=BIOME_CHARS[t.biome]||'.';
+        row+=`<span class="explored" style="color:${BIOME_COLORS[t.biome]}">${ch}</span>`;
+      } else {
+        row+=' ';
+      }
+    }
+    rows.push(row);
+  }
+  document.getElementById('map-display').innerHTML=rows.join('\n');
+}
+
+// ═══════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════
+function move(dx,dy){
+  state.x+=dx;
+  state.y+=dy;
+  state.timeHours+=0.1; // 6 min per tile
+  const key=state.x+','+state.y;
+  state.explored[key]=true;
+  const tile=getTile(state.x,state.y);
+  printLocation();
+  saveState();
+}
+
+function showWait(){
+  state.timeHours+=1;
+  appendOutput(`<span class="dim">— One hour passes. —</span>`);
+  updateHUD();
+  saveState();
+}
+
+function printLocation(){
+  const tile=getTile(state.x,state.y);
+  const desc=describeLocation(tile);
+  setOutput(desc);
+  // Clear instrument readout when moving
+  const readoutEl=document.getElementById('instrument-readout');
+  if(readoutEl) readoutEl.innerHTML='';
+  updateHUD();
+  renderMap();
+}
+
+function setOutput(html){
+  document.getElementById('output').innerHTML=html;
+  document.getElementById('output').scrollTop=0;
+}
+
+function appendOutput(html){
+  const out=document.getElementById('output');
+  out.innerHTML+='\n<span class="separator">────────────────────────────────────────</span>\n'+html;
+  out.scrollTop=out.scrollHeight;
+}
+
+function useInstrument(type){
+  const tile=getTile(state.x,state.y);
+  let reading='';
+  switch(type){
+    case 'atmo': reading=getAtmoReading(tile); break;
+    case 'rad': reading=getRadReading(tile); break;
+    case 'star': reading=getStarReading(); break;
+    case 'solar': reading=getSolarReading(); break;
+    case 'mag': reading=getMagReading(tile); break;
+    case 'lidar': reading=getLidarReading(tile); break;
+    case 'radar': reading=getRadarReading(tile); break;
+    case 'ir': reading=getIRReading(tile); break;
+    case 'spec': reading=getSpecReading(tile); break;
+  }
+  // Replace readout area instead of appending
+  let readoutEl=document.getElementById('instrument-readout');
+  if(!readoutEl){
+    const out=document.getElementById('output');
+    out.insertAdjacentHTML('afterend','<div id="instrument-readout" style="padding:12px;border-top:1px solid var(--card-border);overflow-y:auto;max-height:40vh;flex-shrink:0;white-space:pre-wrap;font-size:13px;line-height:1.6"></div>');
+    readoutEl=document.getElementById('instrument-readout');
+  }
+  readoutEl.innerHTML=`<span class="reading">${reading}</span>`;
+  // Auto-log
+  state.autoLog.push({time:formatTime(),pos:`${state.x},${state.y}`,instrument:type,summary:reading.split('\n')[1]||''});
+  state.timeHours+=0.05; // instruments take ~3 min
+  updateHUD();
+  saveState();
+}
+
+function deployDrone(){
+  const radius=3;
+  let text=[];
+  text.push(`<span class="accent">┌─── DRONE AERIAL SURVEY ────────────────┐</span>`);
+  text.push(`<span class="accent">│ Surveying ${(radius*2+1)}×${(radius*2+1)} area around (${state.x}, ${state.y})</span>`);
+  text.push(`<span class="accent">│</span>`);
+
+  for(let dy=-radius;dy<=radius;dy++){
+    let row=`<span class="accent">│ </span>`;
+    let info=[];
+    for(let dx=-radius;dx<=radius;dx++){
+      const tx=state.x+dx,ty=state.y+dy;
+      const key=tx+','+ty;
+      state.explored[key]=true;
+      const t=getTile(tx,ty);
+      if(dx===0&&dy===0) row+=`<span class="you">@</span>`;
+      else row+=`<span style="color:${BIOME_COLORS[t.biome]}">${BIOME_CHARS[t.biome]}</span>`;
+    }
+    text.push(row);
+  }
+
+  text.push(`<span class="accent">│</span>`);
+  text.push(`<span class="accent">│ Legend: . plains  ^ mountain  ~ ocean  ▲ volcanic</span>`);
+  text.push(`<span class="accent">│         ❄ ice  ♣ forest  ○ cave  ░ desert  ≈ marsh</span>`);
+  text.push(`<span class="accent">│ Areas marked as explored on map.</span>`);
+  text.push(`<span class="accent">└─────────────────────────────────────────┘</span>`);
+
+  let readoutEl=document.getElementById('instrument-readout');
+  if(!readoutEl){
+    const out=document.getElementById('output');
+    out.insertAdjacentHTML('afterend','<div id="instrument-readout" style="padding:12px;border-top:1px solid var(--card-border);overflow-y:auto;max-height:40vh;flex-shrink:0;white-space:pre-wrap;font-size:13px;line-height:1.6"></div>');
+    readoutEl=document.getElementById('instrument-readout');
+  }
+  readoutEl.innerHTML=text.join('\n');
+  state.timeHours+=0.1; // drone ~6 min
+  updateHUD();
+  renderMap();
+  saveState();
+}
+
+function catalogAll(){
+  const tile=getTile(state.x,state.y);
+  const organisms=[...tile.flora,...tile.fauna];
+  let added=0;
+  organisms.forEach(o=>{
+    if(!state.catalog.some(c=>c.id===o.id)){
+      state.catalog.push({...o,location:`${state.x},${state.y}`,time:formatTime(),biome:tile.biome});
+      added++;
+    }
+  });
+  if(added>0){
+    appendOutput(`<span class="bio">Catalogued ${added} new species at this location.</span>`);
+    printLocation(); // refresh to show [catalogued]
+  } else if(organisms.length===0){
+    appendOutput(`<span class="dim">No organisms to catalog here.</span>`);
+  } else {
+    appendOutput(`<span class="dim">All species here already catalogued.</span>`);
+  }
+  renderCatalog();
+  saveState();
+}
+
+function renderCatalog(){
+  const el=document.getElementById('catalog-list');
+  if(state.catalog.length===0){
+    el.innerHTML='<span class="dim">No discoveries yet.</span>';
+    return;
+  }
+  el.innerHTML=state.catalog.map(c=>
+    `<div class="entry"><span class="entry-name">${c.type==='flora'?'🌿':'🐾'} ${c.name}</span><br><span class="entry-type">${BIOME_NAMES[c.biome]} (${c.location}) — ${c.time}</span><br><span class="dim">${c.desc}</span></div>`
+  ).join('');
+}
+
+function writeLog(){
+  const input=document.getElementById('log-input');
+  const text=input.value.trim();
+  if(!text) return;
+  state.logs.push({time:formatTime(),pos:`${state.x},${state.y}`,text});
+  input.value='';
+  renderLogs();
+  saveState();
+}
+
+function renderLogs(){
+  const el=document.getElementById('log-entries');
+  if(state.logs.length===0){
+    el.innerHTML='<span class="dim">No logs yet.</span>';
+    return;
+  }
+  el.innerHTML=state.logs.slice().reverse().map(l=>
+    `<div class="log-entry"><span class="log-time">${l.time} @ ${l.pos}</span><div class="log-text">${l.text}</div></div>`
+  ).join('');
+}
+
+function renderPlanetInfo(){
+  const p=planet;
+  const T=p.surfaceTemp-273.15;
+  const comp=Object.entries(p.atmosphere.composition).sort((a,b)=>b[1]-a[1]).map(([g,f])=>`${g}: ${(f*100).toFixed(2)}%`).join(', ');
+
+  document.getElementById('planet-info').innerHTML=`
+<div class="prop"><span class="prop-label">Name:</span> <span class="prop-value">${p.name}</span></div>
+<!-- seed hidden -->
+<div class="prop" style="margin-top:8px"><span class="prop-label">── Star ──</span></div>
+<div class="prop"><span class="prop-label">Type:</span> <span class="prop-value">${p.star.type}-class (${p.star.temp.toFixed(0)} K)</span></div>
+<div class="prop"><span class="prop-label">Mass:</span> <span class="prop-value">${p.star.mass.toFixed(2)} M☉</span></div>
+<div class="prop"><span class="prop-label">Luminosity:</span> <span class="prop-value">${(p.star.luminosity/SUN_LUMINOSITY).toFixed(4)} L☉</span></div>
+<div class="prop"><span class="prop-label">Peak λ:</span> <span class="prop-value">${p.star.peakWavelength.toFixed(0)} nm</span></div>
+<div class="prop" style="margin-top:8px"><span class="prop-label">── Orbit ──</span></div>
+<div class="prop"><span class="prop-label">Semi-major axis:</span> <span class="prop-value">${p.orbit.au.toFixed(3)} AU</span></div>
+<div class="prop"><span class="prop-label">Eccentricity:</span> <span class="prop-value">${p.orbit.eccentricity.toFixed(3)}</span></div>
+<div class="prop"><span class="prop-label">Orbital period:</span> <span class="prop-value">${p.orbit.periodDays.toFixed(1)} days</span></div>
+<div class="prop" style="margin-top:8px"><span class="prop-label">── Planet ──</span></div>
+<div class="prop"><span class="prop-label">Mass:</span> <span class="prop-value">${p.massFactor.toFixed(2)} M⊕</span></div>
+<div class="prop"><span class="prop-label">Radius:</span> <span class="prop-value">${(p.radius/EARTH_RADIUS).toFixed(2)} R⊕</span></div>
+<div class="prop"><span class="prop-label">Surface gravity:</span> <span class="prop-value">${p.surfaceGravity.toFixed(2)} m/s² (${(p.surfaceGravity/9.81).toFixed(2)} g)</span></div>
+<div class="prop"><span class="prop-label">Escape velocity:</span> <span class="prop-value">${(p.escapeVelocity/1000).toFixed(1)} km/s</span></div>
+<div class="prop"><span class="prop-label">Rotation:</span> <span class="prop-value">${p.rotationPeriod.toFixed(1)} hours</span></div>
+<div class="prop"><span class="prop-label">Axial tilt:</span> <span class="prop-value">${p.axialTilt.toFixed(1)}°</span></div>
+<div class="prop" style="margin-top:8px"><span class="prop-label">── Atmosphere ──</span></div>
+<div class="prop"><span class="prop-label">Pressure:</span> <span class="prop-value">${p.atmosphere.pressure.toFixed(3)} atm (${(p.atmosphere.pressure*101.325).toFixed(1)} kPa)</span></div>
+<div class="prop"><span class="prop-label">Composition:</span> <span class="prop-value">${comp}</span></div>
+<div class="prop"><span class="prop-label">Greenhouse factor:</span> <span class="prop-value">×${p.atmosphere.greenhouse.toFixed(2)}</span></div>
+<div class="prop" style="margin-top:8px"><span class="prop-label">── Surface ──</span></div>
+<div class="prop"><span class="prop-label">Temperature:</span> <span class="prop-value">${T.toFixed(1)}°C (${p.surfaceTemp.toFixed(1)} K)</span></div>
+<div class="prop"><span class="prop-label">Radiation:</span> <span class="prop-value">${p.surfaceRadiation.toFixed(3)} mSv/hr</span></div>
+<div class="prop"><span class="prop-label">Magnetic field:</span> <span class="prop-value">${p.magneticField.strength.toFixed(2)} μT</span></div>
+<div class="prop"><span class="prop-label">Liquid water:</span> <span class="prop-value">${p.hasLiquidWater?'Yes ('+Math.round(p.waterCoverage*100)+'% coverage)':'No'}</span></div>
+<div class="prop"><span class="prop-label">Biology:</span> <span class="prop-value">${p.hasLife?'Detected':'None detected'}</span></div>
+  `;
+}
+
+// ═══════════════════════════════════════════════
+// UI
+// ═══════════════════════════════════════════════
+function showTab(name){
+  document.querySelectorAll('.right-view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab-bar button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function updateHUD(){
+  const tile=getTile(state.x,state.y);
+  const T=planet.surfaceTemp+tile.tempVariation-273.15;
+  const rad=planet.surfaceRadiation*tile.radMultiplier;
+  document.getElementById('hud-pos').textContent=`${state.x}, ${state.y}`;
+  document.getElementById('hud-biome').textContent=BIOME_NAMES[tile.biome];
+  document.getElementById('hud-biome').style.color=BIOME_COLORS[tile.biome];
+  document.getElementById('hud-time').textContent=formatTime();
+  document.getElementById('hud-rad').textContent=rad.toFixed(2)+' mSv/hr';
+  document.getElementById('hud-rad').style.color=rad>10?'var(--accent3)':rad>5?'var(--orange)':'var(--green)';
+  document.getElementById('hud-grav').textContent=(planet.surfaceGravity/9.81).toFixed(2)+'g';
+}
+
+// ═══════════════════════════════════════════════
+// SAVE / LOAD
+// ═══════════════════════════════════════════════
+function saveState(){
+  const data={seed:planet.seed,state:{...state,tileCache:undefined}};
+  localStorage.setItem('expedition_save',JSON.stringify(data));
+}
+
+function loadState(){
+  const raw=localStorage.getItem('expedition_save');
+  if(!raw) return false;
+  try{
+    const data=JSON.parse(raw);
+    planet=generatePlanet(data.seed);
+    state=data.state;
+    state.tileCache={};
+    document.getElementById('seed-input').value=data.seed;
+    return true;
+  }catch(e){return false}
+}
+
+function loadSeed(){
+  const seed=document.getElementById('seed-input').value.trim();
+  if(!seed) return;
+  startGame(seed);
+}
+
+function randomPlanet(){
+  const seed=Math.random().toString(36).substr(2,8);
+  document.getElementById('seed-input').value=seed;
+  startGame(seed);
+}
+
+function startGame(seed){
+  planet=generatePlanet(seed);
+  state=initState();
+  state.tileCache={};
+  state.explored['0,0']=true;
+
+  // Landing description
+  const tile=getTile(0,0);
+  const T=planet.surfaceTemp-273.15;
+  let landing=[];
+  landing.push(`<span class="accent">═══════════════════════════════════════════</span>`);
+  landing.push(`<span class="accent">  PLANETARY EXPEDITION — FIELD COMPUTER</span>`);
+  landing.push(`<span class="accent">═══════════════════════════════════════════</span>`);
+  landing.push('');
+  landing.push(`Landing confirmed on <span class="location-name">${planet.name}</span>`);
+  landing.push('');
+  landing.push(`<span class="dim">── Initial Survey ──</span>`);
+  landing.push(`Star: ${planet.star.type}-class, ${planet.star.temp.toFixed(0)} K`);
+  landing.push(`Orbit: ${planet.orbit.au.toFixed(3)} AU`);
+  landing.push(`Mass: ${planet.massFactor.toFixed(2)} M⊕ | Radius: ${(planet.radius/EARTH_RADIUS).toFixed(2)} R⊕`);
+  landing.push(`Surface gravity: ${planet.surfaceGravity.toFixed(2)} m/s² (${(planet.surfaceGravity/9.81).toFixed(2)}g)`);
+  landing.push(`Surface temperature: ${T.toFixed(1)}°C`);
+  landing.push(`Atmosphere: ${planet.atmosphere.pressure.toFixed(2)} atm`);
+  landing.push(`Magnetic field: ${planet.magneticField.strength.toFixed(1)} μT`);
+  landing.push(`Liquid water: ${planet.hasLiquidWater?'YES':'NO'}`);
+  landing.push(`Biological signatures: ${planet.hasLife?'DETECTED':'NONE'}`);
+  landing.push('');
+  landing.push(`<span class="dim">Use instruments to take readings. Move to explore.</span>`);
+  landing.push(`<span class="dim">Arrow keys or direction buttons to move.</span>`);
+  landing.push(`<span class="dim">Deploy drone for aerial survey. Write logs to record findings.</span>`);
+  landing.push('');
+
+  setOutput(landing.join('\n'));
+
+  // Append location
+  setTimeout(()=>{
+    appendOutput(describeLocation(tile));
+    updateHUD();
+    renderMap();
+    renderPlanetInfo();
+    renderCatalog();
+    renderLogs();
+    saveState();
+  },100);
+}
+
+// ═══════════════════════════════════════════════
+// KEYBOARD
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if(!planet) return;
+  switch(e.key){
+    case 'ArrowUp': case 'w': move(0,-1); e.preventDefault(); break;
+    case 'ArrowDown': case 's': move(0,1); e.preventDefault(); break;
+    case 'ArrowLeft': case 'a': move(-1,0); e.preventDefault(); break;
+    case 'ArrowRight': case 'd': move(1,0); e.preventDefault(); break;
+    case 'c': catalogAll(); e.preventDefault(); break;
+  }
+});
+
+// Also add a catalog button
+document.querySelector('#instrument-bar').insertAdjacentHTML('beforeend',
+  ' <button onclick="catalogAll()" style="border-color:var(--accent3)">📋 Catalog</button>'+
+  ' <button onclick="observeFauna()" id="btn-observe" style="border-color:var(--orange);display:none">🔍 Observe</button>');
+
+function observeFauna(){
+  const tile=getTile(state.x,state.y);
+  if(tile.fauna.length===0) return;
+  const r=()=>Math.random();
+  const f=tile.fauna[Math.floor(r()*tile.fauna.length)];
+  
+  const behaviors=['Resting motionless. Appears to be conserving energy.','Moving slowly across the terrain. Stops periodically to inspect the ground.','Feeding on nearby organic material. Uses repetitive motion to consume.','Two individuals interacting — appears to be a social greeting or territorial display.','Digging or burrowing into the substrate. May be searching for food or building a shelter.','Emitting low-frequency vibrations. Possibly communication or echolocation.','Basking in sunlight. Thermoregulation behavior likely.','Grooming itself meticulously. Possible parasite removal or social signaling.','Frozen in place. May have detected your presence. Camouflage response?','Following a repeated path between two points. Patrol behavior or foraging route.','Interacting with local flora — rubbing against it or consuming parts of it.','Partially submerged or burrowed. Only heat signature visible on IR.','Sleeping or dormant. Breathing rate is very slow. Metabolic conservation.','Vocalizing — short rhythmic calls. Possibly attracting a mate or marking territory.','A juvenile spotted nearby. This individual appears protective — parental behavior.'];
+  
+  const activities=['Feeding patterns suggest herbivorous diet.','Movement speed: approximately '+((r()*3+0.5).toFixed(1))+' m/min.','Body temperature estimated at '+(r()*20+270).toFixed(1)+' K via IR.','Appears '+(r()>0.5?'solitary':'social — stays within range of others')+'.','Active during '+(r()>0.5?'daylight hours':'twilight periods')+'.','Estimated mass: '+(r()*50+0.5).toFixed(1)+' kg based on stride and footprint depth.','Respiratory rate: ~'+(Math.floor(r()*30)+5)+' cycles/min.','Skin/surface appears to '+(r()>0.7?'absorb':'reflect')+' significant IR radiation.','Shows '+(r()>0.5?'awareness':'no awareness')+' of observer presence at this distance.'];
+
+  let lines=[];
+  lines.push(`┌─── FIELD OBSERVATION LOG ───────────────┐`);
+  lines.push(`│ Subject: ${f.name}`);
+  lines.push(`│ Location: (${state.x}, ${state.y}) — ${BIOME_NAMES[tile.biome]}`);
+  lines.push(`│ Time: ${formatTime()}`);
+  lines.push(`│`);
+  lines.push(`│ <span style="color:var(--orange)">Observation (${Math.floor(r()*20+10)} min from cover):</span>`);
+  lines.push(`│`);
+  lines.push(`│ ${behaviors[Math.floor(r()*behaviors.length)]}`);
+  lines.push(`│`);
+  lines.push(`│ <span style="color:var(--text-dim)">Notes:</span>`);
+  lines.push(`│ • ${activities[Math.floor(r()*activities.length)]}`);
+  lines.push(`│ • ${activities[Math.floor(r()*activities.length)]}`);
+  lines.push(`│ • ${activities[Math.floor(r()*activities.length)]}`);
+  lines.push(`└─────────────────────────────────────────┘`);
+
+  let readoutEl=document.getElementById('instrument-readout');
+  if(!readoutEl){
+    const out=document.getElementById('output');
+    out.insertAdjacentHTML('afterend','<div id="instrument-readout" style="padding:12px;border-top:1px solid var(--card-border);overflow-y:auto;max-height:40vh;flex-shrink:0;white-space:pre-wrap;font-size:13px;line-height:1.6"></div>');
+    readoutEl=document.getElementById('instrument-readout');
+  }
+  readoutEl.innerHTML=`<span class="reading">${lines.join('\n')}</span>`;
+  
+  state.autoLog.push({time:formatTime(),pos:`${state.x},${state.y}`,instrument:'observe',summary:`Observed ${f.name}`});
+  state.timeHours+=0.3; // 18 min observation session
+  updateHUD();
+  saveState();
+}
+
+// Show/hide observe button based on fauna at current tile
+const origPrintLocation=printLocation;
+printLocation=function(){
+  origPrintLocation();
+  const tile=getTile(state.x,state.y);
+  const btn=document.getElementById('btn-observe');
+  if(btn) btn.style.display=tile.fauna.length>0?'inline-block':'none';
+};
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+if(!loadState()){
+  randomPlanet();
+} else {
+  printLocation();
+  renderPlanetInfo();
+  renderCatalog();
+  renderLogs();
+}
+</script>
+</body>
+</html>
