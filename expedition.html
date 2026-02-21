@@ -201,6 +201,10 @@ function tileRng(seed,x,y){return mulberry32(hashStr(seed+':'+x+':'+y))}
 // ═══════════════════════════════════════════════
 const G_CONST=6.674e-11, STEFAN_BOLTZMANN=5.670e-8, BOLTZMANN=1.381e-23, WIEN=2.898e-3;
 const EARTH_MASS=5.972e24, EARTH_RADIUS=6.371e6, SUN_LUMINOSITY=3.828e26, SUN_TEMP=5778, AU=1.496e11;
+const GALACTIC_CENTER_DIST_KPC=26.0; // Sun is ~26 kpc from Sagittarius A*
+const GALAXY_RADIUS_KPC=50.0;
+const SPIRAL_ARMS=['Perseus','Sagittarius','Scutum-Centaurus','Norma','Outer'];
+
 const STAR_TYPES={
   M:{tempRange:[2400,3700],massRange:[0.08,0.45],lumFactor:[0.001,0.08],color:'#ff6644'},
   K:{tempRange:[3700,5200],massRange:[0.45,0.8],lumFactor:[0.08,0.6],color:'#ffaa44'},
@@ -337,8 +341,8 @@ function generatePlanet(seed){
 
   // Surface radiation (from star UV + cosmic rays, reduced by atmosphere + mag field)
   // Most planets should have HIGH radiation - Earth's 0.0003 mSv/hr is the rare exception
-  const baseRadiation=lerp(5,50,r())*(1/(surfacePressure+0.1))*(1/(magStrength/30+0.5));
-  const surfaceRadiation=Math.max(1,baseRadiation);
+  // Radiation calculated after galactic position (needs galDist)
+  let surfaceRadiation; // set below after galactic coords
 
   // Terrain distribution weights based on conditions
   let terrainWeights={plains:30,mountain:15,desert:10};
@@ -355,7 +359,32 @@ function generatePlanet(seed){
   const mTotal=Object.values(planetMinerals).reduce((a,b)=>a+b,0);
   Object.keys(planetMinerals).forEach(k=>planetMinerals[k]/=mTotal);
 
-  // Constellations (for star tracker)
+  // Galactic position
+  const galDist=lerp(0.5,45,r()); // kpc from galactic center
+  const galAngle=r()*2*Math.PI; // angle in galactic plane (radians)
+  const galZ=lerp(-2,2,r()); // kpc above/below galactic plane
+  const galX=galDist*Math.cos(galAngle);
+  const galY=galDist*Math.sin(galAngle);
+  // Which spiral arm (closest)
+  const armAngles=SPIRAL_ARMS.map((_,i)=>i*(2*Math.PI/SPIRAL_ARMS.length));
+  const logSpiralAngle=galAngle-0.3*Math.log(galDist+0.1); // log spiral offset
+  const nearestArmIdx=armAngles.reduce((best,a,i)=>{
+    const diff=Math.abs(((logSpiralAngle-a)%(2*Math.PI)+Math.PI)%(2*Math.PI)-Math.PI);
+    return diff<best.d?{d:diff,i}:best;
+  },{d:999,i:0}).i;
+  const nearestArm=SPIRAL_ARMS[nearestArmIdx];
+  const armDist=Math.abs(((logSpiralAngle-armAngles[nearestArmIdx])%(2*Math.PI)+Math.PI)%(2*Math.PI)-Math.PI)*galDist;
+  const inArm=armDist<2.0; // within 2 kpc of arm centerline
+  // SMBH properties (Sagittarius A*-like)
+  const smbhMass=4.0e6; // solar masses
+  const galRegion=galDist<1?'core':galDist<3?'inner bulge':galDist<8?'inner disk':galDist<20?'disk':galDist<35?'outer disk':'halo';
+
+  // Surface radiation (now that we have galactic position)
+  const galacticRadBoost=galDist<3?lerp(5,20,1-galDist/3):galDist<8?lerp(1.5,5,1-galDist/8):1.0;
+  const baseRadiation=lerp(5,50,r())*(1/(surfacePressure+0.1))*(1/(magStrength/30+0.5))*galacticRadBoost;
+  surfaceRadiation=Math.max(1,baseRadiation);
+
+  // Constellations (for star tracker) — shifted by galactic position
   const constellations=[];
   for(let i=0;i<Math.floor(lerp(6,14,r()));i++){
     const nStars=Math.floor(lerp(3,8,r()));
@@ -381,7 +410,10 @@ function generatePlanet(seed){
     hasLiquidWater,waterCoverage,hasLife,hasComplexLife,
     surfaceRadiation,
     terrainWeights,minerals:planetMinerals,
-    constellations
+    constellations,
+    galactic:{x:galX,y:galY,z:galZ,dist:galDist,angle:galAngle,region:galRegion,
+      nearestArm,inArm,armDist,smbhMass,
+      smbhDirection:((galAngle+Math.PI)%(2*Math.PI))*180/Math.PI} // direction TO center from here
   };
 }
 
@@ -598,10 +630,14 @@ function getRadReading(tile){
   const solarContrib=phase==='day'?1.0:phase==='dawn'||phase==='dusk'?0.3:0.05;
   const total=rad*0.5+rad*0.5*solarContrib;
 
-  let level='NOMINAL';
-  if(total>5) level='ELEVATED';
-  if(total>10) level='HIGH';
-  if(total>50) level='DANGEROUS';
+  // Earth normal: ~0.0003 mSv/hr. Most planets should be dangerous.
+  let level='NOMINAL';        // Earth-like, shielded
+  if(total>0.01) level='LOW';
+  if(total>0.1) level='ELEVATED';
+  if(total>1) level='HIGH';
+  if(total>5) level='SEVERE';
+  if(total>20) level='DANGEROUS';
+  if(total>100) level='LETHAL';
 
   let lines=[];
   lines.push(`┌─── RADIATION DOSIMETER ─────────────────┐`);
@@ -644,6 +680,15 @@ function getStarReading(){
     lines.push(`│`);
     lines.push(`│ Zenith declination: ~${zenithDec.toFixed(1)}°`);
     lines.push(`│ Estimated latitude: ~${(-zenithDec).toFixed(1)}°`);
+    lines.push(`│`);
+    lines.push(`│ ── Galactic Position ──`);
+    lines.push(`│ Distance to Sagittarius A*: ${planet.galactic.dist.toFixed(1)} kpc (${(planet.galactic.dist*3261.56).toFixed(0)} ly)`);
+    lines.push(`│ Galactic region: ${planet.galactic.region}${planet.galactic.inArm?' ('+planet.galactic.nearestArm+' Arm)':''}`);
+    lines.push(`│ Bearing to galactic core: ${planet.galactic.smbhDirection.toFixed(1)}°`);
+    lines.push(`│ Height above plane: ${planet.galactic.z>0?'+':''}${planet.galactic.z.toFixed(2)} kpc`);
+    if(planet.galactic.dist<3) lines.push(`│ ⚠ CORE PROXIMITY — elevated radiation & stellar density`);
+    if(planet.galactic.dist>35) lines.push(`│ ⚠ GALACTIC HALO — sparse stellar neighborhood`);
+    if(!planet.galactic.inArm) lines.push(`│ Inter-arm region — lower stellar density`);
   }
   lines.push(`└─────────────────────────────────────────┘`);
   return lines.join('\n');
@@ -1182,6 +1227,13 @@ function renderPlanetInfo(){
 <div class="prop"><span class="prop-label">Magnetic field:</span> <span class="prop-value">${p.magneticField.strength.toFixed(2)} μT</span></div>
 <div class="prop"><span class="prop-label">Liquid water:</span> <span class="prop-value">${p.hasLiquidWater?'Yes ('+Math.round(p.waterCoverage*100)+'% coverage)':'No'}</span></div>
 <div class="prop"><span class="prop-label">Biology:</span> <span class="prop-value">${p.hasLife?'Detected':'None detected'}</span></div>
+<div class="prop" style="margin-top:8px"><span class="prop-label">── Galactic Position ──</span></div>
+<div class="prop"><span class="prop-label">Region:</span> <span class="prop-value">${p.galactic.region}</span></div>
+<div class="prop"><span class="prop-label">Spiral arm:</span> <span class="prop-value">${p.galactic.inArm?p.galactic.nearestArm+' Arm':'inter-arm (nearest: '+p.galactic.nearestArm+')'}</span></div>
+<div class="prop"><span class="prop-label">Dist. to Sgr A*:</span> <span class="prop-value">${p.galactic.dist.toFixed(1)} kpc (${(p.galactic.dist*3261.56).toFixed(0)} ly)</span></div>
+<div class="prop"><span class="prop-label">Bearing to core:</span> <span class="prop-value">${p.galactic.smbhDirection.toFixed(1)}°</span></div>
+<div class="prop"><span class="prop-label">Height above plane:</span> <span class="prop-value">${p.galactic.z>0?'+':''}${p.galactic.z.toFixed(2)} kpc</span></div>
+<div class="prop"><span class="prop-label">SMBH mass:</span> <span class="prop-value">~${p.galactic.smbhMass.toExponential(1)} M☉</span></div>
   `;
 }
 
@@ -1269,6 +1321,13 @@ function startGame(seed){
   landing.push(`Magnetic field: ${planet.magneticField.strength.toFixed(1)} μT`);
   landing.push(`Liquid water: ${planet.hasLiquidWater?'YES':'NO'}`);
   landing.push(`Biological signatures: ${planet.hasLife?'DETECTED':'NONE'}`);
+  landing.push('');
+  landing.push(`<span class="dim">── Galactic Position ──</span>`);
+  landing.push(`Region: ${planet.galactic.region}${planet.galactic.inArm?' — '+planet.galactic.nearestArm+' Arm':' — inter-arm space'}`);
+  landing.push(`Distance to Sagittarius A*: ${planet.galactic.dist.toFixed(1)} kpc (${(planet.galactic.dist*3261.56).toFixed(0)} ly)`);
+  landing.push(`Bearing to galactic core: ${planet.galactic.smbhDirection.toFixed(1)}°`);
+  if(planet.galactic.dist<3) landing.push(`<span class="warn">⚠ CORE PROXIMITY WARNING — high radiation environment</span>`);
+  if(planet.galactic.dist>35) landing.push(`<span class="dim">⚠ Deep halo — sparse stellar neighborhood</span>`);
   landing.push('');
   landing.push(`<span class="dim">Use instruments to take readings. Move to explore.</span>`);
   landing.push(`<span class="dim">Arrow keys or direction buttons to move.</span>`);
