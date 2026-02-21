@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Substrate Density Explorer</title>
+<style>
+body {
+  font-family: 'Courier New', monospace;
+  background: #0a0a1a;
+  color: #e0e0f0;
+  margin: 0;
+  padding: 20px;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+h1 {
+  background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+}
+.explorer {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+}
+.controls-panel {
+  background: #111128;
+  border: 1px solid #1a1a3a;
+  border-radius: 12px;
+  padding: 20px;
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+.viz-panel {
+  background: #111128;
+  border: 1px solid #1a1a3a;
+  border-radius: 12px;
+  padding: 20px;
+}
+.control-group {
+  margin: 20px 0;
+}
+.control-group label {
+  display: block;
+  color: #8888aa;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+input[type="range"] {
+  width: 100%;
+  margin: 10px 0;
+}
+.value-display {
+  background: #0d0d24;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 8px 12px;
+  text-align: center;
+  font-weight: bold;
+  color: #22c55e;
+}
+canvas {
+  width: 100%;
+  border-radius: 8px;
+  background: #0d0d24;
+  border: 1px solid #333;
+}
+.info-box {
+  background: #0d0d24;
+  border: 1px solid #1a1a3a;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+}
+.info-box h4 {
+  color: #6366f1;
+  margin-bottom: 10px;
+}
+.preset-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 15px 0;
+}
+.btn {
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+}
+.btn:hover {
+  background: #a855f7;
+}
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 15px;
+}
+.stat {
+  background: #0d0d24;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+}
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #22c55e;
+}
+.stat-label {
+  font-size: 0.8rem;
+  color: #8888aa;
+  margin-top: 3px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🌌 Substrate Density Explorer</h1>
+  
+  <div class="explorer">
+    <div class="controls-panel">
+      <h3>🎛️ Controls</h3>
+      
+      <div class="control-group">
+        <label>Distance from Center (r/rs):</label>
+        <input type="range" id="radiusSlider" min="0.1" max="10" step="0.1" value="2">
+        <div class="value-display" id="radiusValue">2.0</div>
+      </div>
+      
+      <div class="control-group">
+        <label>Mass Scale:</label>
+        <input type="range" id="massSlider" min="0.1" max="100" step="0.1" value="1">
+        <div class="value-display" id="massValue">1.0 M☉</div>
+      </div>
+      
+      <div class="preset-buttons">
+        <button class="btn" onclick="setPreset('neutron')">Neutron Star</button>
+        <button class="btn" onclick="setPreset('stellar')">Stellar BH</button>
+        <button class="btn" onclick="setPreset('supermassive')">Supermassive</button>
+        <button class="btn" onclick="setPreset('merger')">GW150914</button>
+      </div>
+      
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="zetaValue">1.000</div>
+          <div class="stat-label">ζ Factor</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="excessValue">0.0%</div>
+          <div class="stat-label">Substrate Excess</div>
+        </div>
+      </div>
+      
+      <div class="info-box">
+        <h4>📊 Current Position</h4>
+        <p id="positionInfo">2.0 Schwarzschild radii from center</p>
+        <p id="physicsInfo">Safe zone outside event horizon</p>
+      </div>
+      
+      <div class="info-box">
+        <h4>🔬 Physics</h4>
+        <p><strong>ζ Function:</strong> ζ(1 + (r/rs)³)</p>
+        <p><strong>Substrate Density:</strong> Higher ζ = more primes per unit volume</p>
+        <p><strong>Time Effects:</strong> More substrate slows time</p>
+      </div>
+    </div>
+    
+    <div class="viz-panel">
+      <canvas id="substrateCanvas" width="800" height="600"></canvas>
+      
+      <div class="info-box">
+        <h4>🎯 Interpretation</h4>
+        <p id="interpretation">Substrate density moderate. Time dilation effects present but manageable.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentRadius = 2.0;
+let currentMass = 1.0;
+
+// Zeta function approximation
+function zeta(s) {
+  if (s <= 1) return Infinity;
+  let sum = 0;
+  for (let n = 1; n <= 1000; n++) {
+    sum += 1 / Math.pow(n, s);
+  }
+  return sum;
+}
+
+// Calculate substrate density
+function calculateZeta(r_over_rs) {
+  const s = 1 + Math.pow(r_over_rs, 3);
+  return zeta(s);
+}
+
+// Update visualization
+function updateVisualization() {
+  const canvas = document.getElementById('substrateCanvas');
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  
+  // Clear canvas
+  ctx.fillStyle = '#0d0d24';
+  ctx.fillRect(0, 0, width, height);
+  
+  // Calculate current values
+  const zetaVal = calculateZeta(currentRadius);
+  const excess = (zetaVal - 1) * 100;
+  
+  // Update display values
+  document.getElementById('radiusValue').textContent = currentRadius.toFixed(1);
+  document.getElementById('massValue').textContent = currentMass.toFixed(1) + ' M☉';
+  document.getElementById('zetaValue').textContent = zetaVal.toFixed(3);
+  document.getElementById('excessValue').textContent = excess.toFixed(2) + '%';
+  
+  // Draw substrate density field
+  drawSubstrateField(ctx, width, height);
+  
+  // Draw current position marker
+  drawPositionMarker(ctx, width, height);
+  
+  // Update info text
+  updateInfoText(zetaVal, excess);
+}
+
+function drawSubstrateField(ctx, width, height) {
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const maxRadius = Math.min(width, height) * 0.4;
+  
+  // Draw concentric circles representing different r/rs values
+  const circles = [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.0, 10.0];
+  
+  circles.forEach(r_over_rs => {
+    const radius = (r_over_rs / 10.0) * maxRadius;
+    const zetaVal = calculateZeta(r_over_rs);
+    const intensity = Math.min((zetaVal - 1) * 10, 1); // Scale for visibility
+    
+    // Color based on substrate density
+    let color;
+    if (r_over_rs <= 1.0) {
+      color = `rgba(239, 68, 68, ${0.8})`; // Red for event horizon and inside
+    } else if (intensity > 0.1) {
+      color = `rgba(34, 197, 94, ${intensity * 0.7})`; // Green for high substrate
+    } else {
+      color = `rgba(99, 102, 241, ${0.3})`; // Blue for normal space
+    }
+    
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    ctx.stroke();
+    
+    // Label
+    if (radius > 20) {
+      ctx.fillStyle = color;
+      ctx.font = '12px Courier New';
+      ctx.fillText(r_over_rs.toFixed(1), centerX + radius + 5, centerY + 4);
+    }
+  });
+  
+  // Draw event horizon
+  const horizonRadius = (1.0 / 10.0) * maxRadius;
+  ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, horizonRadius, 0, 2 * Math.PI);
+  ctx.fill();
+  
+  // Center dot (black hole)
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
+  ctx.fill();
+  
+  // Labels
+  ctx.fillStyle = '#e0e0f0';
+  ctx.font = 'bold 16px Courier New';
+  ctx.textAlign = 'center';
+  ctx.fillText('Substrate Density Field', centerX, 30);
+  ctx.font = '12px Courier New';
+  ctx.fillText('r/rs values', centerX, 50);
+}
+
+function drawPositionMarker(ctx, width, height) {
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const maxRadius = Math.min(width, height) * 0.4;
+  
+  // Calculate position
+  const radius = (currentRadius / 10.0) * maxRadius;
+  const markerX = centerX + radius;
+  const markerY = centerY;
+  
+  // Draw marker
+  ctx.fillStyle = '#ec4899';
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(markerX, markerY, 12, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.stroke();
+  
+  // Draw line from center
+  ctx.strokeStyle = 'rgba(236, 72, 153, 0.5)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([5, 5]);
+  ctx.beginPath();
+  ctx.moveTo(centerX, centerY);
+  ctx.lineTo(markerX, markerY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  
+  // Position label
+  ctx.fillStyle = '#ec4899';
+  ctx.font = 'bold 14px Courier New';
+  ctx.textAlign = 'center';
+  ctx.fillText('YOU', markerX, markerY - 20);
+}
+
+function updateInfoText(zetaVal, excess) {
+  const positionInfo = document.getElementById('positionInfo');
+  const physicsInfo = document.getElementById('physicsInfo');
+  const interpretation = document.getElementById('interpretation');
+  
+  positionInfo.textContent = `${currentRadius.toFixed(1)} Schwarzschild radii from center`;
+  
+  if (currentRadius <= 1.0) {
+    physicsInfo.textContent = "Inside event horizon - causally disconnected";
+    physicsInfo.style.color = '#ef4444';
+  } else if (currentRadius <= 2.0) {
+    physicsInfo.textContent = "Close to black hole - extreme effects";
+    physicsInfo.style.color = '#f59e0b';
+  } else {
+    physicsInfo.textContent = "Safe zone outside event horizon";
+    physicsInfo.style.color = '#22c55e';
+  }
+  
+  // Interpretation
+  if (excess > 20) {
+    interpretation.textContent = "Extreme substrate density! Time significantly slowed. Gravitational wave signatures would be very strong.";
+  } else if (excess > 5) {
+    interpretation.textContent = "High substrate density. Noticeable time dilation. Clear deviations from standard GR.";
+  } else if (excess > 1) {
+    interpretation.textContent = "Moderate substrate effects. Subtle but measurable deviations from Einstein's equations.";
+  } else if (excess > 0.1) {
+    interpretation.textContent = "Low substrate enhancement. Effects at limit of current detection sensitivity.";
+  } else {
+    interpretation.textContent = "Minimal substrate effects. Standard General Relativity dominates.";
+  }
+}
+
+function setPreset(type) {
+  switch (type) {
+    case 'neutron':
+      currentRadius = 1.2;
+      currentMass = 1.4;
+      break;
+    case 'stellar':
+      currentRadius = 2.0;
+      currentMass = 7.0;
+      break;
+    case 'supermassive':
+      currentRadius = 5.0;
+      currentMass = 1000000;
+      break;
+    case 'merger':
+      currentRadius = 1.01; // Just outside horizon at merger
+      currentMass = 62; // GW150914 final mass
+      break;
+  }
+  
+  document.getElementById('radiusSlider').value = currentRadius;
+  document.getElementById('massSlider').value = Math.min(currentMass, 100);
+  updateVisualization();
+}
+
+// Event listeners
+document.getElementById('radiusSlider').addEventListener('input', function() {
+  currentRadius = parseFloat(this.value);
+  updateVisualization();
+});
+
+document.getElementById('massSlider').addEventListener('input', function() {
+  currentMass = parseFloat(this.value);
+  updateVisualization();
+});
+
+// Initialize
+window.onload = function() {
+  updateVisualization();
+};
+</script>
+
+</body>
+</html>

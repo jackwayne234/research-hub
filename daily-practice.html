@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Practice — Riner Research Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+<div class="main">
+<a href="index.html" class="back-link">← Back to Hub</a>
+<header class="header">
+  <h1>🧮 Daily Practice</h1>
+</header>
+<div class="card" id="math-qotd" style="border-color: var(--accent2);">
+  <div class="card-header" onclick="toggle(this)">
+    <h2>🧮 Math Question of the Day</h2>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="card-body">
+    <div id="mqotd-content"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const questions = [
+    {q:"Find  d/dx [x³ · sin(x)]", a:"Using the product rule: 3x² sin(x) + x³ cos(x)", cat:"Derivatives"},
+    {q:"Evaluate  ∫ (2x + 1)⁴ dx", a:"Let u = 2x+1, du = 2dx → (1/2) · u⁵/5 + C = (2x+1)⁵/10 + C", cat:"Integrals"},
+    {q:"Find  d/dx [ln(cos(x))]", a:"Chain rule: (1/cos(x)) · (−sin(x)) = −tan(x)", cat:"Chain Rule"},
+    {q:"Evaluate  lim(x→0) [sin(3x) / x]", a:"= 3 · lim(x→0) [sin(3x)/(3x)] = 3 · 1 = 3", cat:"Limits"},
+    {q:"Find the eigenvalues of  A = [[2, 1], [0, 3]]", a:"det(A − λI) = (2−λ)(3−λ) = 0  →  λ = 2, λ = 3", cat:"Eigenvalues"},
+    {q:"Compute  [1, 2, 3] · [4, −1, 2]  (dot product)", a:"1·4 + 2·(−1) + 3·2 = 4 − 2 + 6 = 8", cat:"Dot Product"},
+    {q:"Find  d/dx [eˣ² ]", a:"Chain rule: eˣ² · 2x = 2x eˣ²", cat:"Chain Rule"},
+    {q:"Evaluate  ∫₀¹ 3x² dx", a:"[x³]₀¹ = 1³ − 0³ = 1", cat:"Integrals"},
+    {q:"Find the cross product  [1,0,0] × [0,1,0]", a:"= [0·0−0·1, 0·0−1·0, 1·1−0·0] = [0, 0, 1]  (= k̂)", cat:"Cross Product"},
+    {q:"Compute  det([[3, 7], [1, 5]])", a:"3·5 − 7·1 = 15 − 7 = 8", cat:"Matrix Ops"},
+    {q:"Find  d/dx [arctan(x)]", a:"1 / (1 + x²)", cat:"Derivatives"},
+    {q:"Evaluate  ∫ sin²(x) dx", a:"Using half-angle: x/2 − sin(2x)/4 + C", cat:"Integrals"},
+    {q:"lim(x→∞) [(3x² + 1) / (x² − 2)]", a:"Divide top & bottom by x²: (3 + 1/x²) / (1 − 2/x²) → 3", cat:"Limits"},
+    {q:"If A = [[1,2],[3,4]], find A·[1,0]ᵀ", a:"[1·1+2·0, 3·1+4·0]ᵀ = [1, 3]ᵀ", cat:"Matrix Ops"},
+    {q:"Find  ∫ 1/(1+x²) dx", a:"arctan(x) + C", cat:"Integrals"},
+    {q:"Find  d/dx [x · eˣ]", a:"Product rule: eˣ + x·eˣ = eˣ(1 + x)", cat:"Derivatives"},
+    {q:"Is [[1,0],[0,1]] diagonalizable? What are its eigenvalues?", a:"Yes — it's already diagonal! Eigenvalues: λ₁ = 1, λ₂ = 1", cat:"Eigenvalues"},
+    {q:"Evaluate  lim(x→0) [(eˣ − 1) / x]", a:"L'Hôpital or Taylor: eˣ/1 → e⁰ = 1", cat:"Limits"},
+    {q:"Find  ∫₀^π sin(x) dx", a:"[−cos(x)]₀^π = −cos(π) + cos(0) = 1 + 1 = 2", cat:"Integrals"},
+    {q:"Find  d/dx [√(x² + 1)]", a:"Chain rule: x / √(x² + 1)", cat:"Chain Rule"},
+    {q:"Compute  ||[3, 4]||  (vector magnitude)", a:"√(9 + 16) = √25 = 5", cat:"Linear Algebra"},
+    {q:"Find  d²/dx² [x⁴ − 3x² + 2]", a:"f' = 4x³ − 6x,  f'' = 12x² − 6", cat:"Derivatives"},
+    {q:"Evaluate  ∫ x·cos(x) dx", a:"Integration by parts: x·sin(x) + cos(x) + C", cat:"Integrals"},
+    {q:"Find the trace of  [[5, 2, 0], [1, 3, 1], [0, 4, 7]]", a:"tr(A) = 5 + 3 + 7 = 15", cat:"Matrix Ops"},
+    {q:"lim(x→0) [x / sin(x)]", a:"= 1 / lim(x→0)[sin(x)/x] = 1/1 = 1", cat:"Limits"},
+    {q:"Find  d/dx [sec(x)]", a:"sec(x)·tan(x)", cat:"Derivatives"},
+    {q:"Evaluate  ∫ 1/x dx  for x > 0", a:"ln|x| + C = ln(x) + C  (since x > 0)", cat:"Integrals"},
+    {q:"Project [3,4] onto [1,0]", a:"proj = ((3·1+4·0)/(1²+0²))·[1,0] = 3·[1,0] = [3, 0]", cat:"Linear Algebra"},
+    {q:"Find  d/dx [ln(x²+1) · x]", a:"Product rule: x·(2x/(x²+1)) + ln(x²+1) = 2x²/(x²+1) + ln(x²+1)", cat:"Derivatives"},
+    {q:"Is  f(x) = x³  even, odd, or neither?", a:"f(−x) = −x³ = −f(x)  → odd function", cat:"Calculus"},
+  ];
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  const q = questions[dayOfYear % questions.length];
+  const el = document.getElementById('mqotd-content');
+  el.innerHTML = `
+    <div style="margin-bottom:8px;">
+      <span style="background:rgba(168,85,247,0.2);color:var(--accent2);padding:3px 10px;border-radius:99px;font-size:0.85rem;font-weight:600;">${q.cat}</span>
+    </div>
+    <p style="font-size:1.15rem;font-weight:600;color:var(--text);margin:12px 0 16px;line-height:1.6;">${q.q}</p>
+    <button onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block';this.textContent=this.nextElementSibling.style.display==='block'?'Hide Answer ▲':'Show Answer ▼'" style="background:linear-gradient(135deg,var(--accent1),var(--accent2));border:none;color:#fff;font-family:'JetBrains Mono',monospace;font-size:0.95rem;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:600;transition:transform 0.15s,box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 15px rgba(99,102,241,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">Show Answer ▼</button>
+    <div style="display:none;margin-top:14px;background:#0d0d24;border:1px solid var(--card-border);border-radius:8px;padding:16px;font-size:1.05rem;line-height:1.7;color:var(--green);">
+      ✅ ${q.a}
+    </div>
+  `;
+})();
+</script>
+
+<!-- Physics Equation of the Day -->
+<div class="card" id="physics-eotd" style="border-color: var(--accent3);">
+  <div class="card-header" onclick="toggle(this)">
+    <h2>⚛️ Physics Equation of the Day</h2>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="card-body">
+    <div id="peotd-streak" style="text-align:center;margin-bottom:12px;font-size:1.1rem;display:none;"></div>
+    <div id="peotd-content"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script>
+(function(){
+  const eqs = [
+    {eq:"E = mc²", name:"Mass–Energy Equivalence", choices:["Mass–Energy Equivalence","Planck–Einstein Relation","Lorentz Factor","de Broglie Wavelength"],
+     explain:"Energy equals mass times the speed of light squared. Shows mass and energy are interchangeable.",
+     vars:"E = energy, m = mass, c = speed of light (3×10⁸ m/s)",
+     practice:"How much energy is in 1 kg of matter?", practiceA:"E = 1 × (3×10⁸)² = 9×10¹⁶ J — about 21 megatons of TNT!",
+     physicist:"Einstein", quote:"😜 Nicht schlecht! (Not bad!)", correct:0},
+    {eq:"F = G·m₁m₂ / r²", name:"Newton's Law of Gravitation", choices:["Coulomb's Law","Newton's Law of Gravitation","Hooke's Law","Kepler's Third Law"],
+     explain:"The gravitational force between two masses is proportional to their product and inversely proportional to the square of the distance.",
+     vars:"F = force, G = gravitational constant, m₁,m₂ = masses, r = distance",
+     practice:"What happens to the force if you double the distance?", practiceA:"F drops to 1/4 — inverse square law!",
+     physicist:"Newton", quote:"🍎 That one was a no-brainer!", correct:1},
+    {eq:"ds² = −(1 − 2GM/rc²)c²dt² + (1 − 2GM/rc²)⁻¹dr² + r²dΩ²", name:"Schwarzschild Metric", choices:["Friedmann Equation","FLRW Metric","Schwarzschild Metric","Kerr Metric"],
+     explain:"Describes spacetime geometry around a non-rotating spherical mass. The foundation of black hole physics.",
+     vars:"ds² = spacetime interval, G = gravitational constant, M = mass, r = radial coordinate, dΩ² = angular part",
+     practice:"At what radius does the time component vanish?", practiceA:"When r = 2GM/c² — the Schwarzschild radius (event horizon)!",
+     physicist:"Einstein", quote:"😜 Gravity is not a force — it's geometry!", correct:2},
+    {eq:"Gμν + Λgμν = (8πG/c⁴) Tμν", name:"Einstein Field Equations", choices:["Maxwell's Equations","Einstein Field Equations","Navier-Stokes Equations","Yang-Mills Equations"],
+     explain:"Mass-energy tells spacetime how to curve; curved spacetime tells matter how to move.",
+     vars:"Gμν = Einstein tensor, Λ = cosmological constant, gμν = metric tensor, Tμν = stress-energy tensor",
+     practice:"What does Λ represent physically?", practiceA:"The cosmological constant — dark energy driving the universe's accelerating expansion!",
+     physicist:"Einstein", quote:"😜 God does not play dice… but he does curve spacetime!", correct:1},
+    {eq:"∇·E = ρ/ε₀ ,  ∇·B = 0 ,  ∇×E = −∂B/∂t ,  ∇×B = μ₀J + μ₀ε₀ ∂E/∂t", name:"Maxwell's Equations", choices:["Maxwell's Equations","Navier-Stokes Equations","Euler-Lagrange Equations","Hamilton's Equations"],
+     explain:"Four equations unifying electricity, magnetism, and light. One of the great triumphs of physics.",
+     vars:"E = electric field, B = magnetic field, ρ = charge density, J = current density, ε₀, μ₀ = vacuum constants",
+     practice:"What do Maxwell's equations predict travels at c?", practiceA:"Electromagnetic waves — light! ∇×(∇×E) gives a wave equation with speed 1/√(μ₀ε₀) = c",
+     physicist:"Maxwell", quote:"⚡ Electrifying performance!", correct:0},
+    {eq:"iℏ ∂Ψ/∂t = ĤΨ", name:"Schrödinger Equation", choices:["Dirac Equation","Schrödinger Equation","Klein-Gordon Equation","Heisenberg Equation"],
+     explain:"The master equation of quantum mechanics. Describes how the quantum state evolves in time.",
+     vars:"i = imaginary unit, ℏ = reduced Planck constant, Ψ = wave function, Ĥ = Hamiltonian operator",
+     practice:"What does |Ψ|² represent?", practiceA:"The probability density — the chance of finding the particle at that location!",
+     physicist:"Feynman", quote:"🤙 If you can't explain it simply, you understand it. And you do!", correct:1},
+    {eq:"T_H = ℏc³ / (8πGMk_B)", name:"Hawking Temperature", choices:["Planck Temperature","Hawking Temperature","CMB Temperature","Unruh Temperature"],
+     explain:"Black holes aren't completely black — they radiate thermally at this temperature. Smaller = hotter!",
+     vars:"T_H = temperature, ℏ = reduced Planck constant, c = speed of light, G = gravitational constant, M = black hole mass, k_B = Boltzmann constant",
+     practice:"What happens to temperature as M decreases?", practiceA:"T increases! Tiny black holes are incredibly hot — they evaporate explosively!",
+     physicist:"Hawking", quote:"🌌 Intelligence is the ability to adapt to change. You're adapting!", correct:1},
+    {eq:"E = hf = ℏω", name:"Planck–Einstein Relation", choices:["Mass–Energy Equivalence","Planck–Einstein Relation","de Broglie Relation","Rydberg Formula"],
+     explain:"Energy of a photon is proportional to its frequency. The birth of quantum theory!",
+     vars:"E = energy, h = Planck constant, f = frequency, ℏ = h/2π, ω = angular frequency",
+     practice:"A photon has f = 5×10¹⁴ Hz. What's its energy?", practiceA:"E = 6.626×10⁻³⁴ × 5×10¹⁴ ≈ 3.3×10⁻¹⁹ J ≈ 2.07 eV (visible light!)",
+     physicist:"Euler", quote:"🧠 A mathematician who is not somewhat of a poet will never be a complete mathematician.", correct:1},
+    {eq:"γ = 1 / √(1 − v²/c²)", name:"Lorentz Factor", choices:["Lorentz Factor","Hubble Parameter","Fine Structure Constant","Compton Wavelength"],
+     explain:"The factor that governs time dilation and length contraction in special relativity.",
+     vars:"γ = Lorentz factor, v = velocity, c = speed of light",
+     practice:"What is γ at v = 0.8c?", practiceA:"γ = 1/√(1−0.64) = 1/√0.36 = 1/0.6 ≈ 1.667 — time runs 60% slower!",
+     physicist:"Einstein", quote:"😜 Put your hand on a hot stove… that's relativity!", correct:0},
+    {eq:"S = k_B · ln(Ω)", name:"Boltzmann Entropy", choices:["Shannon Entropy","Boltzmann Entropy","Gibbs Free Energy","von Neumann Entropy"],
+     explain:"Connects the microscopic world (number of microstates Ω) to the macroscopic property of entropy.",
+     vars:"S = entropy, k_B = Boltzmann constant (1.38×10⁻²³ J/K), Ω = number of microstates",
+     practice:"If a system has 1 microstate, what is S?", practiceA:"S = k_B · ln(1) = 0 — perfect order, zero entropy!",
+     physicist:"Dirac", quote:"✨ The answer is beautiful, as expected.", correct:1},
+    {eq:"(iγᵘ∂μ − m)ψ = 0", name:"Dirac Equation", choices:["Schrödinger Equation","Klein-Gordon Equation","Dirac Equation","Proca Equation"],
+     explain:"Relativistic quantum equation for spin-½ particles. Predicted antimatter before it was discovered!",
+     vars:"γᵘ = Dirac gamma matrices, ∂μ = four-gradient, m = mass, ψ = four-component spinor",
+     practice:"What did Dirac's equation predict that shocked physics?", practiceA:"The existence of the positron (antielectron) — antimatter! Confirmed by Anderson in 1932.",
+     physicist:"Dirac", quote:"✨ The answer is beautiful, as expected.", correct:2},
+    {eq:"F = k_e · q₁q₂ / r²", name:"Coulomb's Law", choices:["Newton's Law of Gravitation","Coulomb's Law","Biot-Savart Law","Ampère's Force Law"],
+     explain:"The electric force between two charges — same inverse-square structure as gravity, but vastly stronger.",
+     vars:"F = force, k_e = Coulomb constant (8.99×10⁹), q₁,q₂ = charges, r = distance",
+     practice:"How much stronger is the electric force than gravity between two protons?", practiceA:"About 10³⁶ times stronger! Electromagnetism absolutely dwarfs gravity at particle scales.",
+     physicist:"Feynman", quote:"🤙 Nature uses only the longest threads to weave her patterns!", correct:1},
+    {eq:"(ȧ/a)² = (8πG/3)ρ − k/a² + Λ/3", name:"Friedmann Equation", choices:["Friedmann Equation","Schwarzschild Metric","Raychaudhuri Equation","de Sitter Solution"],
+     explain:"Governs the expansion of the universe. Relates the expansion rate to energy density, curvature, and dark energy.",
+     vars:"a = scale factor, ȧ = its time derivative, ρ = energy density, k = curvature, Λ = cosmological constant",
+     practice:"In a flat universe (k=0) with only matter, how does a(t) grow?", practiceA:"a(t) ∝ t^(2/3) — decelerating expansion. Add Λ and it accelerates!",
+     physicist:"Hawking", quote:"🌌 The universe doesn't allow perfection. But it does allow Friedmann equations!", correct:0},
+    {eq:"ρ ∂v/∂t + ρ(v·∇)v = −∇p + μ∇²v + f", name:"Navier-Stokes Equations", choices:["Euler Equations","Navier-Stokes Equations","Bernoulli's Equation","Stokes' Law"],
+     explain:"Describes fluid motion. One of the Millennium Prize Problems — smooth solutions in 3D are still unproven!",
+     vars:"ρ = density, v = velocity, p = pressure, μ = viscosity, f = external forces",
+     practice:"What makes Navier-Stokes a Millennium Prize Problem?", practiceA:"Nobody has proven whether smooth solutions always exist in 3D — $1M prize from Clay Institute!",
+     physicist:"Euler", quote:"🧠 Mathematics reveals its secrets only to those who approach with pure love!", correct:1},
+    {eq:"ζ(s) = Σ 1/nˢ = Π (1 − p⁻ˢ)⁻¹", name:"Euler Product (Riemann Zeta)", choices:["Euler Product (Riemann Zeta)","Dirichlet L-function","Dedekind Zeta","Ramanujan Tau"],
+     explain:"Connects the sum over all integers to a product over all primes — the bridge between analysis and number theory!",
+     vars:"ζ(s) = Riemann zeta function, n = positive integers, p = prime numbers, s = complex variable",
+     practice:"What does this equation say about primes?", practiceA:"Primes completely determine ζ(s)! The distribution of primes is encoded in the zeta function's zeros.",
+     physicist:"Euler", quote:"🧠 Mathematicians have tried in vain to discover some order in the sequence of prime numbers… the mystery remains.", correct:0},
+    {eq:"d²xᵘ/dτ² + Γᵘᵥσ (dxᵛ/dτ)(dxᵠ/dτ) = 0", name:"Geodesic Equation", choices:["Euler-Lagrange Equation","Geodesic Equation","Hamilton's Equation","Jacobi Equation"],
+     explain:"The path of a freely falling object through curved spacetime. Gravity isn't a force — it's geometry!",
+     vars:"xᵘ = spacetime coordinates, τ = proper time, Γᵘᵥσ = Christoffel symbols (encode curvature)",
+     practice:"What path does this equation describe in flat spacetime?", practiceA:"A straight line! Γ = 0 in flat space, so d²x/dτ² = 0 → constant velocity. Newton's first law!",
+     physicist:"Einstein", quote:"😜 Falling is just following geometry. Don't fight it!", correct:1},
+  ];
+
+  const wrongMsgs = [
+    "Hmm, even Einstein got things wrong sometimes. Try again! 🤔",
+    "Not quite! The universe is tricky. Give it another shot! 🌀",
+    "Close but no cigar! Feynman would say: try again, that's science! 🔬",
+    "The math says no… but your determination says yes! Try again! 💪",
+    "Wrong universe! Try a parallel one (another answer) 🌌",
+  ];
+
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  const eq = eqs[dayOfYear % eqs.length];
+  let streak = parseInt(localStorage.getItem('peotd-streak') || '0');
+  let lastDay = parseInt(localStorage.getItem('peotd-lastday') || '-1');
+  if (lastDay !== dayOfYear) { /* new day, keep streak but allow playing */ }
+  const alreadyCorrect = (lastDay === dayOfYear && localStorage.getItem('peotd-done') === '1');
+
+  function updateStreak() {
+    const el = document.getElementById('peotd-streak');
+    if (streak > 0) {
+      const fire = streak >= 7 ? '🔥🔥🔥' : streak >= 4 ? '🔥🔥' : '🔥';
+      el.style.display = 'block';
+      el.innerHTML = `<span style="background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(236,72,153,0.15));padding:6px 16px;border-radius:99px;font-weight:700;">${fire} ${streak}-day streak!</span>`;
+    }
+  }
+  updateStreak();
+
+  // Shuffle choices but track correct index
+  const correctAnswer = eq.choices[eq.correct];
+  let shuffled = [...eq.choices];
+  // Simple deterministic shuffle based on day
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = (dayOfYear * 7 + i * 13) % (i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  const correctIdx = shuffled.indexOf(correctAnswer);
+
+  const el = document.getElementById('peotd-content');
+
+  function renderStep1() {
+    el.innerHTML = `
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:0.9rem;color:var(--text-dim);margin-bottom:10px;">🔬 What is this equation?</div>
+        <div style="background:#0d0d24;border:1px solid var(--card-border);border-radius:12px;padding:24px;margin:12px 0;font-size:1.3rem;font-weight:600;color:var(--accent2);line-height:1.8;overflow-x:auto;">${eq.eq}</div>
+      </div>
+      <div id="peotd-choices" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        ${shuffled.map((c,i) => `<button class="peotd-btn" data-idx="${i}" style="background:var(--card);border:2px solid var(--card-border);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.95rem;padding:14px 12px;border-radius:10px;cursor:pointer;transition:all 0.2s;line-height:1.4;text-align:center;" onmouseover="this.style.borderColor='var(--accent1)';this.style.transform='translateY(-1px)'" onmouseout="if(!this.classList.contains('chosen'))this.style.borderColor='var(--card-border)';this.style.transform=''">${c}</button>`).join('')}
+      </div>
+      <div id="peotd-feedback" style="text-align:center;margin-top:14px;font-size:1rem;min-height:28px;"></div>
+    `;
+    document.querySelectorAll('.peotd-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const idx = parseInt(this.dataset.idx);
+        if (idx === correctIdx) {
+          handleCorrect(this);
+        } else {
+          handleWrong(this);
+        }
+      });
+    });
+  }
+
+  function handleWrong(btn) {
+    btn.style.borderColor = '#ef4444';
+    btn.style.background = 'rgba(239,68,68,0.15)';
+    btn.classList.add('chosen');
+    btn.style.pointerEvents = 'none';
+    const fb = document.getElementById('peotd-feedback');
+    fb.innerHTML = `<span style="color:#f87171;">${wrongMsgs[Math.floor(Math.random()*wrongMsgs.length)]}</span>`;
+    streak = 0;
+    localStorage.setItem('peotd-streak', '0');
+    updateStreak();
+  }
+
+  function handleCorrect(btn) {
+    btn.style.borderColor = 'var(--green)';
+    btn.style.background = 'rgba(34,197,94,0.15)';
+    btn.classList.add('chosen');
+    document.querySelectorAll('.peotd-btn').forEach(b => b.style.pointerEvents = 'none');
+
+    // Streak
+    if (lastDay !== dayOfYear) {
+      streak++;
+      localStorage.setItem('peotd-streak', String(streak));
+      localStorage.setItem('peotd-lastday', String(dayOfYear));
+      localStorage.setItem('peotd-done', '1');
+    }
+    updateStreak();
+
+    // Confetti!
+    if (typeof confetti === 'function') {
+      confetti({particleCount:150, spread:80, origin:{y:0.7}});
+      setTimeout(() => confetti({particleCount:80, spread:100, origin:{y:0.5}}), 300);
+      setTimeout(() => confetti({particleCount:60, spread:120, origin:{y:0.6}, colors:['#6366f1','#a855f7','#ec4899','#22c55e']}), 600);
+    }
+
+    // Physicist popup
+    const fb = document.getElementById('peotd-feedback');
+    fb.innerHTML = `
+      <div style="animation:peotdBounce 0.5s ease-out;margin:16px 0;">
+        <div style="font-size:2.5rem;margin-bottom:6px;">🎉</div>
+        <div style="background:linear-gradient(135deg,rgba(34,197,94,0.15),rgba(99,102,241,0.1));border:1px solid rgba(34,197,94,0.3);border-radius:12px;padding:16px 20px;display:inline-block;max-width:400px;">
+          <div style="font-weight:700;color:var(--green);font-size:1.1rem;margin-bottom:4px;">✅ Correct! — ${eq.name}</div>
+          <div style="color:var(--text);font-size:0.95rem;font-style:italic;">${eq.quote}</div>
+          <div style="color:var(--text-dim);font-size:0.85rem;margin-top:4px;">— ${eq.physicist}</div>
+        </div>
+      </div>
+    `;
+
+    // Reveal step 2 after a beat
+    setTimeout(renderStep2, 1200);
+  }
+
+  function renderStep2() {
+    const s2 = document.createElement('div');
+    s2.style.cssText = 'margin-top:20px;animation:peotdFadeIn 0.6s ease-out;';
+    s2.innerHTML = `
+      <div style="background:#0d0d24;border:1px solid var(--card-border);border-radius:12px;padding:20px;">
+        <h3 style="font-size:1.15rem;color:var(--accent2);margin-bottom:12px;">📖 ${eq.name}</h3>
+        <p style="font-size:1rem;line-height:1.7;margin-bottom:12px;color:var(--text);">${eq.explain}</p>
+        <div style="font-size:0.95rem;color:var(--text-dim);margin-bottom:16px;"><strong style="color:var(--text);">Variables:</strong> ${eq.vars}</div>
+        <div style="border-top:1px solid var(--card-border);padding-top:14px;">
+          <div style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:10px;">🧪 Practice Problem</div>
+          <p style="font-size:1rem;color:var(--text);margin-bottom:12px;">${eq.practice}</p>
+          <button onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block';this.textContent=this.nextElementSibling.style.display==='block'?'Hide Answer ▲':'Show Answer ▼'" style="background:linear-gradient(135deg,var(--accent1),var(--accent2));border:none;color:#fff;font-family:'JetBrains Mono',monospace;font-size:0.9rem;padding:7px 18px;border-radius:8px;cursor:pointer;font-weight:600;">Show Answer ▼</button>
+          <div style="display:none;margin-top:12px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:14px;font-size:1rem;line-height:1.7;color:var(--green);">✅ ${eq.practiceA}</div>
+        </div>
+      </div>
+    `;
+    el.appendChild(s2);
+  }
+
+  // If already completed today, show the full result
+  if (alreadyCorrect) {
+    el.innerHTML = `
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="background:#0d0d24;border:1px solid var(--card-border);border-radius:12px;padding:24px;margin:12px 0;font-size:1.3rem;font-weight:600;color:var(--accent2);line-height:1.8;overflow-x:auto;">${eq.eq}</div>
+        <div style="margin:12px 0;font-size:1.1rem;color:var(--green);font-weight:600;">✅ ${eq.name} — Already nailed it today!</div>
+        <div style="font-style:italic;color:var(--text-dim);font-size:0.95rem;">${eq.quote} — ${eq.physicist}</div>
+      </div>
+      <div style="background:#0d0d24;border:1px solid var(--card-border);border-radius:12px;padding:20px;">
+        <h3 style="font-size:1.15rem;color:var(--accent2);margin-bottom:12px;">📖 ${eq.name}</h3>
+        <p style="font-size:1rem;line-height:1.7;margin-bottom:12px;color:var(--text);">${eq.explain}</p>
+        <div style="font-size:0.95rem;color:var(--text-dim);margin-bottom:16px;"><strong style="color:var(--text);">Variables:</strong> ${eq.vars}</div>
+        <div style="border-top:1px solid var(--card-border);padding-top:14px;">
+          <div style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:10px;">🧪 Practice Problem</div>
+          <p style="font-size:1rem;color:var(--text);margin-bottom:12px;">${eq.practice}</p>
+          <button onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block';this.textContent=this.nextElementSibling.style.display==='block'?'Hide Answer ▲':'Show Answer ▼'" style="background:linear-gradient(135deg,var(--accent1),var(--accent2));border:none;color:#fff;font-family:'JetBrains Mono',monospace;font-size:0.9rem;padding:7px 18px;border-radius:8px;cursor:pointer;font-weight:600;">Show Answer ▼</button>
+          <div style="display:none;margin-top:12px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:14px;font-size:1rem;line-height:1.7;color:var(--green);">✅ ${eq.practiceA}</div>
+        </div>
+      </div>
+    `;
+  } else {
+    renderStep1();
+  }
+})();
+</script>
+
+<style>
+@keyframes peotdBounce { 0%{transform:scale(0.5);opacity:0} 50%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+@keyframes peotdFadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@media (max-width: 640px) { #peotd-choices { grid-template-columns: 1fr !important; } }
+</style>
+
+<!-- Big Picture -->
+<div class="footer">
+  <div style="font-size:0.72rem;color:var(--text-dim);">Riner Research Hub · Built by Barron 🐱 · <a href="index.html">Back to Hub</a></div>
+</div>
+</div>
+<script>
+function toggle(header) { header.parentElement.classList.toggle('collapsed'); }
+</script>
+</body>
+</html>

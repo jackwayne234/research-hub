@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Riner Research Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 32px 0;
+}
+.nav-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: block;
+}
+.nav-card:hover {
+  border-color: var(--accent2);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(99,102,241,0.15);
+}
+.nav-card .emoji { font-size: 2rem; margin-bottom: 10px; display: block; }
+.nav-card .title { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.nav-card .desc { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; }
+.nav-card { position: relative; }
+.nav-card .kbd-hint {
+  position: absolute; top: 10px; right: 12px; background: #1a1a3a; color: var(--accent1);
+  font-size: 0.7rem; padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+  opacity: 0.5; transition: opacity 0.2s; font-weight: 600;
+}
+.nav-card:hover .kbd-hint { opacity: 1; }
+.nav-card .tag-new {
+  display: inline-block; font-size: 0.75rem; padding: 3px 9px; border-radius: 99px;
+  background: rgba(99,102,241,0.15); color: var(--accent1); font-weight: 500; margin-left: 6px;
+}
+.breakthroughs {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; justify-content: center;
+}
+.bt {
+  background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.08));
+  border: 1px solid rgba(99,102,241,0.2); border-radius: 10px;
+  padding: 14px 20px; font-size: 0.95rem; max-width: 320px;
+  transition: border-color 0.3s, transform 0.2s;
+}
+.bt:hover { border-color: var(--accent2); transform: translateY(-2px); }
+.bt .bt-date { color: var(--accent1); font-weight: 600; font-size: 0.85rem; }
+.bt .bt-title { color: var(--text); font-weight: 600; margin: 4px 0; font-size: 1rem; }
+.bt .bt-desc { color: var(--text-dim); font-size: 0.88rem; line-height: 1.6; }
+.tools-link {
+  text-align: center; margin: 24px 0;
+}
+.tools-link a {
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: #fff; padding: 10px 24px; border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.95rem;
+  text-decoration: none; display: inline-block; transition: transform 0.2s;
+}
+.tools-link a:hover { transform: translateY(-2px); color: #fff; }
+</style>
+</head>
+<body>
+<div class="main">
+
+<header class="header">
+  <h1>Riner Research Hub</h1>
+  <div class="sub">CJ + Barron 🐱 &nbsp;·&nbsp; <span id="date"></span> &nbsp;·&nbsp; <span style="opacity:0.5;font-size:0.8rem;cursor:pointer;" onclick="document.getElementById('kb-help').style.display='flex'" title="Keyboard shortcuts">⌨️ press <kbd style="background:#1a1a3a;padding:1px 5px;border-radius:3px;font-size:0.75rem;color:var(--accent1);">?</kbd></span></div>
+</header>
+
+<!-- Outpost Link -->
+<div style="text-align:center;margin:20px 0 24px;">
+  <a href="outpost.html" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,var(--accent1),var(--accent2),var(--accent3));color:#fff;font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;border-radius:10px;text-decoration:none;letter-spacing:0.04em;transition:all 0.3s;box-shadow:0 4px 20px rgba(99,102,241,0.3);" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 8px 30px rgba(99,102,241,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(99,102,241,0.3)'">🚀 Enter the Outpost</a>
+</div>
+
+<!-- Daily Inspiration -->
+<div id="daily-quote" style="text-align:center;margin-bottom:24px;padding:16px 24px;font-style:italic;color:var(--text-dim);font-size:1rem;line-height:1.7;border-left:3px solid var(--accent2);background:rgba(168,85,247,0.04);border-radius:0 8px 8px 0;"></div>
+<script>
+(function(){
+  const q = [
+    ['"Imagination is more important than knowledge."','— Albert Einstein'],
+    ['"The important thing is not to stop questioning."','— Albert Einstein'],
+    ['"Do not worry about your difficulties in mathematics. I can assure you mine are still greater."','— Albert Einstein'],
+    ['"Mathematics is the language in which God has written the universe."','— Galileo Galilei'],
+    ['"Pure mathematics is, in its way, the poetry of logical ideas."','— Albert Einstein'],
+    ['"The book of nature is written in the language of mathematics."','— Galileo Galilei'],
+    ['"If I have seen further, it is by standing on the shoulders of giants."','— Isaac Newton'],
+    ['"Genius is patience."','— Isaac Newton'],
+    ['"An expert is a person who has made all the mistakes that can be made in a very narrow field."','— Niels Bohr'],
+    ['"Not only is the universe stranger than we imagine, it is stranger than we can imagine."','— Werner Heisenberg'],
+    ['"The first principle is that you must not fool yourself — and you are the easiest person to fool."','— Richard Feynman'],
+    ['"What I cannot create, I do not understand."','— Richard Feynman'],
+    ['"God used beautiful mathematics in creating the world."','— Paul Dirac'],
+    ['"A mathematician who is not somewhat of a poet will never be a complete mathematician."','— Karl Weierstrass'],
+    ['"In mathematics you don\'t understand things. You just get used to them."','— John von Neumann'],
+    ['"The miracle of the appropriateness of the language of mathematics for the formulation of the laws of physics is a wonderful gift."','— Eugene Wigner'],
+    ['"Black holes ain\'t so black."','— Stephen Hawking'],
+    ['"Intelligence is the ability to adapt to change."','— Stephen Hawking'],
+    ['"Euler calculated without apparent effort, as men breathe, or as eagles sustain themselves in the wind."','— François Arago'],
+    ['"Mathematics reveals its secrets only to those who approach it with pure love, for its own beauty."','— Archimedes'],
+    ['"The universe is under no obligation to make sense to you."','— Neil deGrasse Tyson'],
+  ];
+  const day = Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/86400000);
+  const pick = q[day % q.length];
+  document.getElementById('daily-quote').innerHTML = pick[0] + '<br><span style="color:var(--accent2);font-style:normal;font-size:0.9rem;">' + pick[1] + '</span>';
+})();
+</script>
+
+<!-- Key Breakthroughs -->
+<div class="breakthroughs">
+  <div class="bt">
+    <div class="bt-date">Feb 18, 2026</div>
+    <div class="bt-title">🔥 5D Metric Passes All Tests</div>
+    <div class="bt-desc">g₅₅ = 1/r. Hawking temp emerges exactly. Zero free parameters.</div>
+  </div>
+  <div class="bt">
+    <div class="bt-date">Feb 19, 2026</div>
+    <div class="bt-title">🔮 6th Dimension Discovered</div>
+    <div class="bt-desc">g₆₆ spikes to 3.97M at horizon — primes show their face.</div>
+  </div>
+  <div class="bt">
+    <div class="bt-date">Feb 19, 2026</div>
+    <div class="bt-title">📄 Paper 5 Published</div>
+    <div class="bt-desc">β = √(r_s/r) validated against GPS. Zero deviation.</div>
+  </div>
+</div>
+
+<!-- TL;DR -->
+<div style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(168,85,247,0.06),rgba(236,72,153,0.04));border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:24px 28px;margin-bottom:32px;font-size:1rem;line-height:1.9;color:#d0d0e8;">
+  <div style="font-size:0.7rem;color:var(--accent1);font-weight:600;margin-bottom:6px;letter-spacing:0.05em;">TL;DR — THE WHOLE THING IN 30 SECONDS</div>
+  <strong style="color:var(--text);">Primes are the atoms of numbers.</strong> They have zero internal order (anti-Benford), yet generate all numerical structure.
+  CJ embedded Euler's prime product directly into Einstein's gravity equation, replaced coordinate time with entropy rate (4th dim), and an emergent temperature dimension (5th) appeared naturally —
+  <strong style="color:var(--green);">every observational test passes</strong>,
+  singularities resolve into phase transitions,
+  Hawking temperature emerges <em>exactly</em>,
+  and <strong style="color:var(--accent2);">zero free parameters</strong> are needed.
+</div>
+
+<!-- Research Velocity Ticker -->
+<div style="display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:24px;padding:14px 20px;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:10px;">
+  <div style="text-align:center;">
+    <div style="font-size:1.6rem;font-weight:700;color:var(--green);" id="research-days">0</div>
+    <div style="font-size:0.85rem;color:var(--text-dim);">days of research</div>
+  </div>
+  <div class="ticker-div" style="width:1px;height:36px;background:var(--card-border);"></div>
+  <div style="text-align:center;">
+    <div style="font-size:1.6rem;font-weight:700;color:var(--accent1);">5</div>
+    <div style="font-size:0.85rem;color:var(--text-dim);">papers published</div>
+  </div>
+  <div class="ticker-div" style="width:1px;height:36px;background:var(--card-border);"></div>
+  <div style="text-align:center;">
+    <div style="font-size:1.6rem;font-weight:700;color:var(--accent2);">6</div>
+    <div style="font-size:0.85rem;color:var(--text-dim);">dimensions discovered</div>
+  </div>
+  <div class="ticker-div" style="width:1px;height:36px;background:var(--card-border);"></div>
+  <div style="text-align:center;">
+    <div style="font-size:1.6rem;font-weight:700;color:var(--accent3);">0</div>
+    <div style="font-size:0.85rem;color:var(--text-dim);">free parameters</div>
+  </div>
+</div>
+<script>
+(function(){
+  // Research started ~Jan 21, 2026
+  const start = new Date(2026, 0, 21);
+  const days = Math.floor((Date.now() - start) / 86400000);
+  const el = document.getElementById('research-days');
+  // Animate count-up
+  let c = 0;
+  const step = Math.max(1, Math.floor(days / 30));
+  const timer = setInterval(() => {
+    c = Math.min(c + step, days);
+    el.textContent = c;
+    if (c >= days) clearInterval(timer);
+  }, 40);
+})();
+</script>
+
+<!-- Today's Challenges Preview -->
+<div id="today-preview" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px;">
+</div>
+<script>
+(function(){
+  const mathQs = [
+    {q:"Find d/dx [x³·sin(x)]",cat:"Derivatives"},{q:"Evaluate ∫(2x+1)⁴ dx",cat:"Integrals"},
+    {q:"Find d/dx [ln(cos(x))]",cat:"Chain Rule"},{q:"lim(x→0) [sin(3x)/x]",cat:"Limits"},
+    {q:"Eigenvalues of [[2,1],[0,3]]",cat:"Eigenvalues"},{q:"[1,2,3]·[4,−1,2] dot product",cat:"Dot Product"},
+    {q:"Find d/dx [eˣ²]",cat:"Chain Rule"},{q:"Evaluate ∫₀¹ 3x² dx",cat:"Integrals"},
+    {q:"[1,0,0]×[0,1,0] cross product",cat:"Cross Product"},{q:"det([[3,7],[1,5]])",cat:"Matrix Ops"},
+    {q:"Find d/dx [arctan(x)]",cat:"Derivatives"},{q:"∫ sin²(x) dx",cat:"Integrals"},
+    {q:"lim(x→∞) (3x²+1)/(x²−2)",cat:"Limits"},{q:"A·[1,0]ᵀ where A=[[1,2],[3,4]]",cat:"Matrix Ops"},
+    {q:"∫ 1/(1+x²) dx",cat:"Integrals"},{q:"Find d/dx [x·eˣ]",cat:"Derivatives"},
+    {q:"Is [[1,0],[0,1]] diagonalizable?",cat:"Eigenvalues"},{q:"lim(x→0) (eˣ−1)/x",cat:"Limits"},
+    {q:"∫₀^π sin(x) dx",cat:"Integrals"},{q:"Find d/dx [√(x²+1)]",cat:"Chain Rule"},
+    {q:"||[3,4]|| magnitude",cat:"Linear Algebra"},{q:"d²/dx² [x⁴−3x²+2]",cat:"Derivatives"},
+    {q:"∫ x·cos(x) dx",cat:"Integrals"},{q:"Trace of [[5,2,0],[1,3,1],[0,4,7]]",cat:"Matrix Ops"},
+    {q:"lim(x→0) x/sin(x)",cat:"Limits"},{q:"Find d/dx [sec(x)]",cat:"Derivatives"},
+    {q:"∫ 1/x dx for x>0",cat:"Integrals"},{q:"Project [3,4] onto [1,0]",cat:"Linear Algebra"},
+    {q:"d/dx [ln(x²+1)·x]",cat:"Derivatives"},{q:"Is f(x)=x³ even, odd, or neither?",cat:"Calculus"},
+  ];
+  const physEqs = [
+    {eq:"E = mc²",name:"Mass–Energy Equivalence"},{eq:"F = G·m₁m₂/r²",name:"Newton's Gravitation"},
+    {eq:"ds² = −(1−2GM/rc²)c²dt²+…",name:"Schwarzschild Metric"},{eq:"Gμν + Λgμν = 8πG/c⁴ Tμν",name:"Einstein Field Equations"},
+    {eq:"∇·E = ρ/ε₀, ∇×B = …",name:"Maxwell's Equations"},{eq:"iℏ ∂Ψ/∂t = ĤΨ",name:"Schrödinger Equation"},
+    {eq:"T_H = ℏc³/(8πGMk_B)",name:"Hawking Temperature"},{eq:"E = hf = ℏω",name:"Planck–Einstein"},
+    {eq:"γ = 1/√(1−v²/c²)",name:"Lorentz Factor"},{eq:"S = k_B·ln(Ω)",name:"Boltzmann Entropy"},
+    {eq:"(iγᵘ∂μ−m)ψ = 0",name:"Dirac Equation"},{eq:"F = k_e·q₁q₂/r²",name:"Coulomb's Law"},
+    {eq:"(ȧ/a)² = 8πG/3 ρ−k/a²+Λ/3",name:"Friedmann Equation"},{eq:"ρ∂v/∂t+… = −∇p+μ∇²v",name:"Navier-Stokes"},
+    {eq:"ζ(s) = Σ1/nˢ = Π(1−p⁻ˢ)⁻¹",name:"Euler Product"},{eq:"d²xᵘ/dτ²+Γᵘᵥσ… = 0",name:"Geodesic Equation"},
+  ];
+  const day = Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/86400000);
+  const mq = mathQs[day % mathQs.length];
+  const pe = physEqs[day % physEqs.length];
+  const streak = parseInt(localStorage.getItem('peotd-streak')||'0');
+  const streakHTML = streak > 0 ? `<span style="color:var(--orange);font-size:0.85rem;"> ${streak >= 7?'🔥🔥🔥':streak>=4?'🔥🔥':'🔥'} ${streak}-day streak</span>` : '';
+  document.getElementById('today-preview').innerHTML = `
+    <a href="daily-practice.html" style="background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(99,102,241,0.06));border:1px solid rgba(168,85,247,0.25);border-radius:12px;padding:18px 20px;text-decoration:none;transition:all 0.3s;display:block;" onmouseover="this.style.borderColor='var(--accent2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(168,85,247,0.25)';this.style.transform=''">
+      <div style="font-size:0.85rem;color:var(--accent2);font-weight:600;margin-bottom:6px;">🧮 Today's Math — ${mq.cat}</div>
+      <div style="font-size:1.05rem;color:var(--text);line-height:1.5;">${mq.q}</div>
+      <div style="font-size:0.85rem;color:var(--accent1);margin-top:8px;">Tap to solve →</div>
+    </a>
+    <a href="daily-practice.html" style="background:linear-gradient(135deg,rgba(236,72,153,0.08),rgba(99,102,241,0.06));border:1px solid rgba(236,72,153,0.25);border-radius:12px;padding:18px 20px;text-decoration:none;transition:all 0.3s;display:block;" onmouseover="this.style.borderColor='var(--accent3)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(236,72,153,0.25)';this.style.transform=''">
+      <div style="font-size:0.85rem;color:var(--accent3);font-weight:600;margin-bottom:6px;">⚛️ Today's Physics${streakHTML}</div>
+      <div style="font-size:1.05rem;color:var(--text);line-height:1.5;">Can you identify: ${pe.eq}?</div>
+      <div style="font-size:0.85rem;color:var(--accent1);margin-top:8px;">Tap to play →</div>
+    </a>
+  `;
+})();
+</script>
+<style>
+@media (max-width: 640px) {
+  #today-preview { grid-template-columns: 1fr !important; }
+  .breakthroughs { flex-direction: column; align-items: stretch; }
+  .bt { max-width: 100% !important; }
+  .nav-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 480px) {
+  .nav-card { padding: 18px !important; }
+  .nav-card .emoji { font-size: 1.6rem !important; }
+  .ticker-div { display: none !important; }
+}
+</style>
+
+<!-- Navigation Grid -->
+<div class="nav-grid">
+  <a href="research-feed.html" class="nav-card">
+    <span class="emoji">📡</span>
+    <div class="title">Research Feed<span class="tag-new">NEW</span></div>
+    <div class="desc">Daily papers & news from arXiv, Zenodo, Semantic Scholar + science news — auto-updated</div>
+  </a>
+
+  <a href="daily-practice.html" class="nav-card">
+    <span class="kbd-hint">D</span><span class="emoji">🧮</span>
+    <div class="title">Daily Practice</div>
+    <div class="desc">Math Question & Physics Equation of the Day — quiz yourself daily</div>
+  </a>
+  <a href="big-picture.html" class="nav-card">
+    <span class="kbd-hint">B</span><span class="emoji">🌀</span>
+    <div class="title">The Big Picture</div>
+    <div class="desc">Substrate cycle, 6 dimensions overview, quantum gravity compatibility</div>
+  </a>
+  <a href="metric.html" class="nav-card">
+    <span class="kbd-hint">M</span><span class="emoji">📐</span>
+    <div class="title">5D Prime-Modified Metric</div>
+    <div class="desc">Full metric, validation results, Hawking connection, radial explorer</div>
+  </a>
+  <a href="math-journey.html" class="nav-card">
+    <span class="kbd-hint">J</span><span class="emoji">📊</span>
+    <div class="title">Math Journey</div>
+    <div class="desc">Skills progress, hand-derived equations, calc roadmap</div>
+  </a>
+  <a href="projects.html" class="nav-card">
+    <span class="kbd-hint">P</span><span class="emoji">🔧</span>
+    <div class="title">Projects</div>
+    <div class="desc">Optical computer, Benford physics, 5D metric, paper series</div>
+  </a>
+  <a href="publications.html" class="nav-card">
+    <span class="emoji">📄</span>
+    <div class="title">Publications</div>
+    <div class="desc">5 Zenodo papers, website, GitHub links</div>
+  </a>
+  <a href="visualizations.html" class="nav-card">
+    <span class="kbd-hint">V</span><span class="emoji">🎨</span>
+    <div class="title">Interactive Visualizations</div>
+    <div class="desc">7 HTML demos — black holes, wormholes, LIGO data</div>
+  </a>
+  <a href="substrate.html" class="nav-card">
+    <span class="kbd-hint">S</span><span class="emoji">🔮</span>
+    <div class="title">6th Dimension<span class="tag-new">NEW 02-19</span></div>
+    <div class="desc">Substrate topology — g₆₆ spikes 3.97M at horizon</div>
+  </a>
+  <a href="ligo.html" class="nav-card">
+    <span class="kbd-hint">L</span><span class="emoji">🔭</span>
+    <div class="title">LIGO Substrate Fingerprint<span class="tag-new">NEW 02-19</span></div>
+    <div class="desc">GW150914 analysis, substrate spectrum, speed of light = speed of substrate</div>
+  </a>
+  <a href="orbit-simulator.html" class="nav-card">
+    <span class="emoji">🪐</span>
+    <div class="title">Orbit Simulator<span class="tag-new">NEW</span></div>
+    <div class="desc">Schwarzschild geodesics — standard GR vs ζ-modified metric, effective potential, precession</div>
+  </a>
+  <a href="gps-analysis.html" class="nav-card">
+    <span class="emoji">📡</span>
+    <div class="title">GPS 24hr Analysis</div>
+    <div class="desc">Paper 5 data — β vs GR comparison at every hour, 0.0000% deviation</div>
+  </a>
+  <a href="blackhole-simulator.html" class="nav-card">
+    <span class="emoji">🕳️</span>
+    <div class="title">Black Hole Simulator</div>
+    <div class="desc">5D prime-modified metric visualizer — watch geometry change as you cross the horizon</div>
+  </a>
+  <a href="speculative.html" class="nav-card">
+    <span class="emoji">💡</span>
+    <div class="title">Speculative Ideas</div>
+    <div class="desc">Gravity as wave pressure, dark energy, wormholes — untested</div>
+  </a>
+  <a href="log-roadmap.html" class="nav-card">
+    <span class="emoji">🗺️</span>
+    <div class="title">Log, Roadmap & Notes</div>
+    <div class="desc">Session log, timeline, Barron's research notes</div>
+  </a>
+  <a href="editor.html" class="nav-card">
+    <span class="kbd-hint">E</span><span class="emoji">📝</span>
+    <div class="title">Paper Editor</div>
+    <div class="desc">Write and format papers</div>
+  </a>
+</div>
+
+<div class="tools-link">
+  <a href="working-index.html">🔧 Working Tools & Utilities</a>
+</div>
+
+<!-- Paper Strategy Roadmap -->
+<div style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.15);border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+  <div style="font-size:0.9rem;color:var(--accent1);font-weight:700;margin-bottom:14px;letter-spacing:0.03em;">📋 PAPER STRATEGY — STACK THE FOUNDATION</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+    <div style="background:#0d0d24;border-radius:8px;padding:14px;border-left:3px solid var(--green);">
+      <div style="font-size:0.85rem;color:var(--green);font-weight:600;">Paper 5 ✅</div>
+      <div style="font-size:0.95rem;color:var(--text);margin:4px 0;">β = √(r_s/r) — GPS validated</div>
+      <div style="font-size:0.85rem;color:var(--text-dim);">Pure data, zero deviation</div>
+    </div>
+    <div style="background:#0d0d24;border-radius:8px;padding:14px;border-left:3px solid var(--accent2);">
+      <div style="font-size:0.85rem;color:var(--accent2);font-weight:600;">Paper 6 — Next</div>
+      <div style="font-size:0.95rem;color:var(--text);margin:4px 0;">Entropy rate in Schwarzschild</div>
+      <div style="font-size:0.85rem;color:var(--text-dim);">Builds on Paper 5</div>
+    </div>
+    <div style="background:#0d0d24;border-radius:8px;padding:14px;border-left:3px solid var(--accent3);">
+      <div style="font-size:0.85rem;color:var(--accent3);font-weight:600;">Paper 7 — Goal</div>
+      <div style="font-size:0.95rem;color:var(--text);margin:4px 0;">Full 5D + Euler product</div>
+      <div style="font-size:0.85rem;color:var(--text-dim);">The big one</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div style="font-size:0.9rem;color:var(--text-dim);">Riner Research Hub · Built by Barron 🐱 · Last updated Feb 20, 2026</div>
+  <div style="font-size:0.85rem;color:var(--text-dim);margin-top:6px;"><a href="index-full-backup.html">View original single-page version</a></div>
+</div>
+
+</div>
+<script>
+document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+// Keyboard shortcuts: d=daily practice, 1-9=nav cards, ?=help
+(function(){
+  const shortcuts = {d:'daily-practice.html',b:'big-picture.html',m:'metric.html',j:'math-journey.html',
+    p:'projects.html',l:'ligo.html',e:'editor.html',s:'substrate.html',v:'visualizations.html'};
+  const helpEl = document.createElement('div');
+  helpEl.id = 'kb-help';
+  helpEl.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:999;display:none;align-items:center;justify-content:center;';
+  helpEl.innerHTML = `<div style="background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:24px 32px;max-width:360px;width:90%;">
+    <h3 style="font-size:1.1rem;margin-bottom:14px;color:var(--text);">⌨️ Keyboard Shortcuts</h3>
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:0.95rem;">
+      <kbd style="background:#1a1a3a;padding:2px 8px;border-radius:4px;color:var(--accent1);text-align:center;">D</kbd><span style="color:var(--text-dim);">Daily Practice</span>
+      <kbd style="background:#1a1a3a;padding:2px 8px;border-radius:4px;color:var(--accent1);text-align:center;">B</kbd><span style="color:var(--text-dim);">Big Picture</span>
+      <kbd style="background:#1a1a3a;padding:2px 8px;border-radius:4px;color:var(--accent1);text-align:center;">M</kbd><span style="color:var(--text-dim);">Metric</span>
+      <kbd style="background:#1a1a3a;padding:2px 8px;border-radius:4px;color:var(--accent1);text-align:center;">J</kbd><span style="color:var(--text-dim);">Math Journey</span>
+      <kbd style="background:#1a1a3a;padding:2px 8px;border-radius:4px;color:var(--accent1);text-align:center;">P</kbd><span style="color:var(--text-dim);">Projects</span>
+      <kbd style="background:#1a1a3a;padding:2px 8px;border-radius:4px;color:var(--accent1);text-align:center;">L</kbd><span style="color:var(--text-dim);">LIGO Fingerprint</span>
+      <kbd style="background:#1a1a3a;padding:2px 8px;border-radius:4px;color:var(--accent1);text-align:center;">S</kbd><span style="color:var(--text-dim);">Substrate (6th Dim)</span>
+      <kbd style="background:#1a1a3a;padding:2px 8px;border-radius:4px;color:var(--accent1);text-align:center;">V</kbd><span style="color:var(--text-dim);">Visualizations</span>
+      <kbd style="background:#1a1a3a;padding:2px 8px;border-radius:4px;color:var(--accent1);text-align:center;">E</kbd><span style="color:var(--text-dim);">Paper Editor</span>
+      <kbd style="background:#1a1a3a;padding:2px 8px;border-radius:4px;color:var(--accent1);text-align:center;">?</kbd><span style="color:var(--text-dim);">This help</span>
+    </div>
+    <div style="text-align:center;margin-top:14px;font-size:0.85rem;color:var(--text-dim);">Press any key or click to close</div>
+  </div>`;
+  helpEl.onclick = () => helpEl.style.display = 'none';
+  document.body.appendChild(helpEl);
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    const k = e.key.toLowerCase();
+    if (k === '?') { helpEl.style.display = helpEl.style.display === 'flex' ? 'none' : 'flex'; return; }
+    if (k === 'escape') { helpEl.style.display = 'none'; return; }
+    if (shortcuts[k]) window.location.href = shortcuts[k];
+  });
+})();
+</script>
+</body>
+</html>

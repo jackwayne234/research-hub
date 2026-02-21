@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Feed — Riner Research Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+.feed-header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 24px;
+}
+.feed-updated {
+  font-size: 0.85rem; color: var(--text-dim);
+}
+.feed-stats {
+  display: flex; gap: 16px; flex-wrap: wrap;
+}
+.feed-stat {
+  font-size: 0.85rem; color: var(--text-dim);
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: 8px; padding: 6px 14px;
+}
+.feed-stat strong { color: var(--accent1); }
+
+/* Filter bar */
+.filter-bar {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;
+}
+.filter-btn {
+  background: var(--card); border: 1px solid var(--card-border);
+  color: var(--text-dim); font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem; padding: 6px 14px; border-radius: 20px;
+  cursor: pointer; transition: all 0.2s;
+}
+.filter-btn:hover { border-color: var(--accent2); color: var(--text); }
+.filter-btn.active {
+  background: rgba(99,102,241,0.15); border-color: var(--accent1);
+  color: var(--accent1); font-weight: 600;
+}
+
+/* Tabs */
+.tabs {
+  display: flex; gap: 0; margin-bottom: 24px;
+  border-bottom: 1px solid var(--card-border);
+}
+.tab {
+  padding: 10px 24px; font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem; color: var(--text-dim); cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all 0.2s;
+  background: none; border-top: none; border-left: none; border-right: none;
+}
+.tab:hover { color: var(--text); }
+.tab.active {
+  color: var(--accent1); border-bottom-color: var(--accent1); font-weight: 600;
+}
+.tab .badge {
+  background: rgba(99,102,241,0.2); color: var(--accent1);
+  font-size: 0.7rem; padding: 2px 7px; border-radius: 10px;
+  margin-left: 6px; font-weight: 600;
+}
+
+/* Paper cards */
+.paper-list { display: flex; flex-direction: column; gap: 12px; }
+.paper-card {
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: 12px; padding: 20px; transition: all 0.3s;
+}
+.paper-card:hover {
+  border-color: var(--accent2); transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(99,102,241,0.1);
+}
+.paper-source {
+  display: inline-block; font-size: 0.7rem; padding: 2px 10px;
+  border-radius: 12px; font-weight: 600; margin-right: 8px;
+}
+.paper-source.arxiv { background: rgba(180,60,60,0.15); color: #e06060; }
+.paper-source.zenodo { background: rgba(60,130,200,0.15); color: #60a0e0; }
+.paper-source.semantic-scholar { background: rgba(100,180,100,0.15); color: #60c060; }
+.paper-source.news { background: rgba(245,158,11,0.15); color: var(--orange); }
+.paper-topic {
+  display: inline-block; font-size: 0.7rem; padding: 2px 10px;
+  border-radius: 12px; font-weight: 500;
+  background: rgba(168,85,247,0.12); color: var(--accent2);
+}
+.paper-title {
+  font-size: 1.05rem; font-weight: 600; color: var(--text);
+  margin: 10px 0 6px; line-height: 1.5;
+}
+.paper-title a { color: var(--text); }
+.paper-title a:hover { color: var(--accent1); }
+.paper-authors {
+  font-size: 0.85rem; color: var(--text-dim); margin-bottom: 8px;
+}
+.paper-abstract {
+  font-size: 0.88rem; color: var(--text-dim); line-height: 1.7;
+  max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+}
+.paper-abstract.expanded { max-height: 500px; }
+.paper-date { font-size: 0.8rem; color: var(--text-dim); }
+.paper-meta {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.expand-btn {
+  background: none; border: none; color: var(--accent1);
+  font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+  cursor: pointer; padding: 4px 0; margin-top: 6px;
+}
+.expand-btn:hover { color: var(--accent2); }
+
+.empty-state {
+  text-align: center; padding: 60px 20px; color: var(--text-dim);
+}
+.empty-state .emoji { font-size: 3rem; margin-bottom: 16px; display: block; }
+
+.loading {
+  text-align: center; padding: 60px; color: var(--text-dim);
+}
+.loading .spinner {
+  display: inline-block; width: 32px; height: 32px;
+  border: 3px solid var(--card-border); border-top-color: var(--accent1);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="main">
+
+<a href="index.html" class="back-link">← Back to Hub</a>
+
+<header class="header">
+  <h1>📡 Research Feed</h1>
+  <div class="sub">Papers & news matching your research interests · Updated daily</div>
+</header>
+
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  <div>Loading feed data...</div>
+</div>
+
+<div id="feed-content" style="display:none;">
+  <div class="feed-header">
+    <div class="feed-updated" id="feed-updated"></div>
+    <div class="feed-stats" id="feed-stats"></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-tab="papers" onclick="switchTab('papers')">
+      📚 Papers <span class="badge" id="papers-count">0</span>
+    </button>
+    <button class="tab" data-tab="news" onclick="switchTab('news')">
+      📰 News <span class="badge" id="news-count">0</span>
+    </button>
+  </div>
+
+  <!-- Topic filters (papers only) -->
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" data-topic="all" onclick="filterTopic('all')">All</button>
+  </div>
+
+  <!-- Paper list -->
+  <div class="paper-list" id="paper-list"></div>
+
+  <!-- Empty state -->
+  <div id="empty-state" class="empty-state" style="display:none;">
+    <span class="emoji">🔭</span>
+    <div style="font-size:1.1rem;margin-bottom:8px;">No results yet</div>
+    <div>The feed scanner runs daily. Check back soon!</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+let feedData = null;
+let currentTab = 'papers';
+let currentTopic = 'all';
+
+async function loadFeed() {
+  try {
+    const resp = await fetch('feed-data.json?t=' + Date.now());
+    if (!resp.ok) throw new Error('No feed data');
+    feedData = await resp.json();
+    renderFeed();
+  } catch (e) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('feed-content').style.display = 'block';
+    document.getElementById('empty-state').style.display = 'block';
+    document.getElementById('filter-bar').style.display = 'none';
+  }
+}
+
+function renderFeed() {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('feed-content').style.display = 'block';
+
+  // Header
+  document.getElementById('feed-updated').textContent = `Last updated: ${feedData.updated}`;
+  const stats = feedData.stats || {};
+  const sources = stats.sources || {};
+  document.getElementById('feed-stats').innerHTML = Object.entries(sources)
+    .map(([k,v]) => `<div class="feed-stat"><strong>${v}</strong> ${k}</div>`)
+    .join('');
+
+  // Counts
+  document.getElementById('papers-count').textContent = (feedData.papers || []).length;
+  document.getElementById('news-count').textContent = (feedData.news || []).length;
+
+  // Topic filters
+  const topics = [...new Set((feedData.papers || []).map(p => p.topic).filter(Boolean))];
+  const filterBar = document.getElementById('filter-bar');
+  topics.forEach(topic => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.dataset.topic = topic;
+    btn.textContent = topic;
+    btn.onclick = () => filterTopic(topic);
+    filterBar.appendChild(btn);
+  });
+
+  renderList();
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.getElementById('filter-bar').style.display = tab === 'papers' ? 'flex' : 'none';
+  renderList();
+}
+
+function filterTopic(topic) {
+  currentTopic = topic;
+  document.querySelectorAll('.filter-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.topic === topic)
+  );
+  renderList();
+}
+
+function renderList() {
+  const list = document.getElementById('paper-list');
+  const empty = document.getElementById('empty-state');
+
+  let items = currentTab === 'papers' ? (feedData.papers || []) : (feedData.news || []);
+
+  if (currentTab === 'papers' && currentTopic !== 'all') {
+    items = items.filter(p => p.topic === currentTopic);
+  }
+
+  if (items.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.innerHTML = items.map((item, i) => {
+    const sourceClass = (item.source || '').toLowerCase().replace(/[^a-z]/g, '-');
+    const isNews = item.type === 'news' || currentTab === 'news';
+    return `
+      <div class="paper-card">
+        <div class="paper-meta">
+          <span class="paper-source ${isNews ? 'news' : sourceClass}">${item.source || 'Unknown'}</span>
+          ${item.topic ? `<span class="paper-topic">${item.topic}</span>` : ''}
+          <span class="paper-date">${item.date || ''}</span>
+        </div>
+        <div class="paper-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>
+        ${item.authors ? `<div class="paper-authors">${item.authors}</div>` : ''}
+        ${item.abstract ? `
+          <div class="paper-abstract" id="abs-${i}">${item.abstract}</div>
+          <button class="expand-btn" onclick="toggleAbstract(${i}, this)">Show abstract ▾</button>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleAbstract(i, btn) {
+  const el = document.getElementById('abs-' + i);
+  const expanded = el.classList.toggle('expanded');
+  btn.textContent = expanded ? 'Hide abstract ▴' : 'Show abstract ▾';
+}
+
+loadFeed();
+</script>
+</body>
+</html>
