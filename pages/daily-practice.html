@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Daily Practice — Riner Research Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="../shared.css">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 <div class="main">
-<a href="index.html" class="back-link">← Back to Hub</a>
+<a href="../index.html" class="back-link">← Back to Hub</a>
 <header class="header">
   <h1>🧮 Daily Practice</h1>
 </header>
@@ -20,57 +20,827 @@
     <span class="chevron">▼</span>
   </div>
   <div class="card-body">
+    <div id="mqotd-streak" style="text-align:center;margin-bottom:12px;font-size:1.1rem;display:none;"></div>
     <div id="mqotd-content"></div>
   </div>
 </div>
 
 <script>
 (function(){
-  const questions = [
-    {q:"Find  d/dx [x³ · sin(x)]", a:"Using the product rule: 3x² sin(x) + x³ cos(x)", cat:"Derivatives"},
-    {q:"Evaluate  ∫ (2x + 1)⁴ dx", a:"Let u = 2x+1, du = 2dx → (1/2) · u⁵/5 + C = (2x+1)⁵/10 + C", cat:"Integrals"},
-    {q:"Find  d/dx [ln(cos(x))]", a:"Chain rule: (1/cos(x)) · (−sin(x)) = −tan(x)", cat:"Chain Rule"},
-    {q:"Evaluate  lim(x→0) [sin(3x) / x]", a:"= 3 · lim(x→0) [sin(3x)/(3x)] = 3 · 1 = 3", cat:"Limits"},
-    {q:"Find the eigenvalues of  A = [[2, 1], [0, 3]]", a:"det(A − λI) = (2−λ)(3−λ) = 0  →  λ = 2, λ = 3", cat:"Eigenvalues"},
-    {q:"Compute  [1, 2, 3] · [4, −1, 2]  (dot product)", a:"1·4 + 2·(−1) + 3·2 = 4 − 2 + 6 = 8", cat:"Dot Product"},
-    {q:"Find  d/dx [eˣ² ]", a:"Chain rule: eˣ² · 2x = 2x eˣ²", cat:"Chain Rule"},
-    {q:"Evaluate  ∫₀¹ 3x² dx", a:"[x³]₀¹ = 1³ − 0³ = 1", cat:"Integrals"},
-    {q:"Find the cross product  [1,0,0] × [0,1,0]", a:"= [0·0−0·1, 0·0−1·0, 1·1−0·0] = [0, 0, 1]  (= k̂)", cat:"Cross Product"},
-    {q:"Compute  det([[3, 7], [1, 5]])", a:"3·5 − 7·1 = 15 − 7 = 8", cat:"Matrix Ops"},
-    {q:"Find  d/dx [arctan(x)]", a:"1 / (1 + x²)", cat:"Derivatives"},
-    {q:"Evaluate  ∫ sin²(x) dx", a:"Using half-angle: x/2 − sin(2x)/4 + C", cat:"Integrals"},
-    {q:"lim(x→∞) [(3x² + 1) / (x² − 2)]", a:"Divide top & bottom by x²: (3 + 1/x²) / (1 − 2/x²) → 3", cat:"Limits"},
-    {q:"If A = [[1,2],[3,4]], find A·[1,0]ᵀ", a:"[1·1+2·0, 3·1+4·0]ᵀ = [1, 3]ᵀ", cat:"Matrix Ops"},
-    {q:"Find  ∫ 1/(1+x²) dx", a:"arctan(x) + C", cat:"Integrals"},
-    {q:"Find  d/dx [x · eˣ]", a:"Product rule: eˣ + x·eˣ = eˣ(1 + x)", cat:"Derivatives"},
-    {q:"Is [[1,0],[0,1]] diagonalizable? What are its eigenvalues?", a:"Yes — it's already diagonal! Eigenvalues: λ₁ = 1, λ₂ = 1", cat:"Eigenvalues"},
-    {q:"Evaluate  lim(x→0) [(eˣ − 1) / x]", a:"L'Hôpital or Taylor: eˣ/1 → e⁰ = 1", cat:"Limits"},
-    {q:"Find  ∫₀^π sin(x) dx", a:"[−cos(x)]₀^π = −cos(π) + cos(0) = 1 + 1 = 2", cat:"Integrals"},
-    {q:"Find  d/dx [√(x² + 1)]", a:"Chain rule: x / √(x² + 1)", cat:"Chain Rule"},
-    {q:"Compute  ||[3, 4]||  (vector magnitude)", a:"√(9 + 16) = √25 = 5", cat:"Linear Algebra"},
-    {q:"Find  d²/dx² [x⁴ − 3x² + 2]", a:"f' = 4x³ − 6x,  f'' = 12x² − 6", cat:"Derivatives"},
-    {q:"Evaluate  ∫ x·cos(x) dx", a:"Integration by parts: x·sin(x) + cos(x) + C", cat:"Integrals"},
-    {q:"Find the trace of  [[5, 2, 0], [1, 3, 1], [0, 4, 7]]", a:"tr(A) = 5 + 3 + 7 = 15", cat:"Matrix Ops"},
-    {q:"lim(x→0) [x / sin(x)]", a:"= 1 / lim(x→0)[sin(x)/x] = 1/1 = 1", cat:"Limits"},
-    {q:"Find  d/dx [sec(x)]", a:"sec(x)·tan(x)", cat:"Derivatives"},
-    {q:"Evaluate  ∫ 1/x dx  for x > 0", a:"ln|x| + C = ln(x) + C  (since x > 0)", cat:"Integrals"},
-    {q:"Project [3,4] onto [1,0]", a:"proj = ((3·1+4·0)/(1²+0²))·[1,0] = 3·[1,0] = [3, 0]", cat:"Linear Algebra"},
-    {q:"Find  d/dx [ln(x²+1) · x]", a:"Product rule: x·(2x/(x²+1)) + ln(x²+1) = 2x²/(x²+1) + ln(x²+1)", cat:"Derivatives"},
-    {q:"Is  f(x) = x³  even, odd, or neither?", a:"f(−x) = −x³ = −f(x)  → odd function", cat:"Calculus"},
+  /* ═══ Geometric context templates ═══ */
+  const geoText = {
+    'unit-circle':'On the unit circle, sin(x) is the height (y-coordinate) and cos(x) is the horizontal position (x-coordinate) of a point at angle x. As you sweep the angle from 0 to 2\u03C0, these values trace smooth waves — and their rates of change are each other\u2019s derivatives.',
+    'slope-tangent':'The derivative measures slope — the steepness of the tangent line at each point on the curve. Positive means rising, zero means a peak or valley, negative means falling. Zoom in far enough on any smooth curve, and it looks like a straight line — the derivative gives you that line\u2019s slope.',
+    'area-under':'The integral accumulates area under the curve. Picture sweeping a thin vertical strip from left to right — the integral at each x is the total area swept so far. Area above the x-axis counts positive; area below counts negative.'
+  };
+
+  /* ═══ 20 curated problems ═══ */
+  const problems = [
+  /* ── 0  Trig: d/dx[sin(x)] ── */
+  { cat:'Trig Derivatives', catIcon:'\uD83D\uDCD0',
+    q:'What is d/dx [sin(x)]?', qDisplay:'d/dx [sin(x)] = ?',
+    choices:['cos(x)','\u2212cos(x)','sin(x)','\u2212sin(x)'], correct:0,
+    vars:[
+      {symbol:'sin(x)',meaning:'Height (y-coordinate) on the unit circle at angle x'},
+      {symbol:'cos(x)',meaning:'Horizontal position (x-coordinate) on the unit circle'},
+      {symbol:'d/dx',meaning:'Rate of change of the function as x changes'}
+    ],
+    why:{title:'Why the derivative of sin is cos',
+      paragraphs:[
+        'Walk counterclockwise around the unit circle. sin(x) tracks your height. At x=0 you\u2019re about to climb at full speed \u2014 vertical velocity is 1 = cos(0).',
+        'At x=\u03C0/2 (the top), height momentarily stops changing \u2014 velocity is 0 = cos(\u03C0/2). At every angle, cos(x) tells you how fast sin(x) is changing.'
+      ], geometric:'unit-circle'},
+    connections:['d/dx[cos(x)] = \u2212sin(x) follows the same circle logic','Chain rule extends this: d/dx[sin(f(x))] = cos(f(x))\u00B7f\u2032(x)'],
+    practice:{question:'If f(x) = sin(x), find f\u2032(\u03C0/6).',
+      steps:['f\u2032(x) = cos(x)','f\u2032(\u03C0/6) = cos(\u03C0/6)','cos(\u03C0/6) = \u221A3/2 \u2248 0.866'],
+      answer:'f\u2032(\u03C0/6) = \u221A3/2'},
+    quote:'The circle speaks through its derivatives!',
+    wrongMsgs:['Think unit circle: sin traces height, its rate of change is\u2026','Remember: sin \u2192 cos \u2192 \u2212sin \u2192 \u2212cos','When sin peaks (slope=0), cos equals 0 too \u2014 which answer does that?']
+  },
+
+  /* ── 1  Trig: d/dx[cos(x)] ── */
+  { cat:'Trig Derivatives', catIcon:'\uD83D\uDCD0',
+    q:'What is d/dx [cos(x)]?', qDisplay:'d/dx [cos(x)] = ?',
+    choices:['\u2212sin(x)','sin(x)','\u2212cos(x)','cos(x)'], correct:0,
+    vars:[
+      {symbol:'cos(x)',meaning:'Horizontal position (x-coordinate) on the unit circle'},
+      {symbol:'sin(x)',meaning:'Height (y-coordinate) on the unit circle'},
+      {symbol:'d/dx',meaning:'Rate of change as x changes'}
+    ],
+    why:{title:'Why the derivative of cos is \u2212sin',
+      paragraphs:[
+        'cos(x) tracks your horizontal position on the unit circle. At x=0 you\u2019re at (1,0) \u2014 about to move left, so the rate of change of the x-coordinate is 0. But at x=\u03C0/2 (the top), you\u2019re moving leftward fastest \u2014 the rate is \u22121 = \u2212sin(\u03C0/2).',
+        'The minus sign reflects the direction: as you pass the top of the circle, your horizontal position is decreasing.'
+      ], geometric:'unit-circle'},
+    connections:['d/dx[sin(x)] = cos(x) is the companion rule','Second derivative: d\u00B2/dx\u00B2[cos(x)] = \u2212cos(x) \u2014 cosine is its own negative second derivative'],
+    practice:{question:'Find f\u2032(\u03C0/3) if f(x) = cos(x).',
+      steps:['f\u2032(x) = \u2212sin(x)','f\u2032(\u03C0/3) = \u2212sin(\u03C0/3)','= \u2212\u221A3/2 \u2248 \u22120.866'],
+      answer:'f\u2032(\u03C0/3) = \u2212\u221A3/2'},
+    quote:'Cosine\u2019s rate of change always looks backward to sine!',
+    wrongMsgs:['Trig derivative cycle: cos \u2192 \u2212sin. Don\u2019t forget the minus!','Think about horizontal motion on the unit circle.','At x=\u03C0/2 cos is decreasing \u2014 the derivative must be negative there.']
+  },
+
+  /* ── 2  Trig: d/dx[tan(x)] ── */
+  { cat:'Trig Derivatives', catIcon:'\uD83D\uDCD0',
+    q:'What is d/dx [tan(x)]?', qDisplay:'d/dx [tan(x)] = ?',
+    choices:['sec\u00B2(x)','csc\u00B2(x)','sec(x)\u00B7tan(x)','\u2212cot\u00B2(x)'], correct:0,
+    vars:[
+      {symbol:'tan(x)',meaning:'sin(x)/cos(x) \u2014 the slope of the line from the origin to the unit-circle point'},
+      {symbol:'sec(x)',meaning:'1/cos(x) \u2014 the reciprocal of the horizontal coordinate'},
+      {symbol:'sec\u00B2(x)',meaning:'Always \u2265 1, so tan(x) is always getting steeper (or less steep) \u2014 never flat'}
+    ],
+    why:{title:'Why d/dx[tan] = sec\u00B2',
+      paragraphs:[
+        'Write tan(x) = sin(x)/cos(x) and apply the quotient rule: [cos\u00B7cos \u2212 sin\u00B7(\u2212sin)] / cos\u00B2 = [cos\u00B2 + sin\u00B2] / cos\u00B2 = 1/cos\u00B2 = sec\u00B2(x).',
+        'The Pythagorean identity cos\u00B2+sin\u00B2=1 does the heavy lifting \u2014 it collapses the numerator beautifully.'
+      ], geometric:'unit-circle'},
+    connections:['tan relates to the slope of the terminal side on the unit circle','This also means \u222B sec\u00B2(x) dx = tan(x) + C'],
+    practice:{question:'Evaluate d/dx[tan(x)] at x = \u03C0/4.',
+      steps:['d/dx[tan(x)] = sec\u00B2(x)','sec(\u03C0/4) = 1/cos(\u03C0/4) = 1/(\u221A2/2) = \u221A2','sec\u00B2(\u03C0/4) = (\u221A2)\u00B2 = 2'],
+      answer:'f\u2032(\u03C0/4) = 2'},
+    quote:'Quotient rule + Pythagoras = elegance!',
+    wrongMsgs:['Try the quotient rule on sin/cos and simplify.','sec\u00B2 vs sec\u00B7tan \u2014 which one comes from the quotient rule?','Remember: cos\u00B2+sin\u00B2 = 1 simplifies the numerator.']
+  },
+
+  /* ── 3  Core: Product rule ── */
+  { cat:'Core Derivatives', catIcon:'\u2702\uFE0F',
+    q:'Find d/dx [x\u00B3 \u00B7 sin(x)]', qDisplay:'d/dx [x\u00B3 \u00B7 sin(x)] = ?',
+    choices:['3x\u00B2 sin(x) + x\u00B3 cos(x)','3x\u00B2 cos(x)','x\u00B3 cos(x)','3x\u00B2 sin(x) \u2212 x\u00B3 cos(x)'], correct:0,
+    vars:[
+      {symbol:'f(x) = x\u00B3',meaning:'The polynomial factor \u2014 f\u2032 = 3x\u00B2'},
+      {symbol:'g(x) = sin(x)',meaning:'The trig factor \u2014 g\u2032 = cos(x)'},
+      {symbol:'(fg)\u2032 = f\u2032g + fg\u2032',meaning:'Product rule: each factor takes a turn being differentiated'}
+    ],
+    why:{title:'Why the product rule has two terms',
+      paragraphs:[
+        'When two quantities multiply, the total change comes from two sources: (1) the first factor changes while the second stays put, and (2) the second changes while the first stays put. The product rule adds both contributions.',
+        'Think of area: if width and height both grow, the new area = (old width \u00D7 height change) + (old height \u00D7 width change).'
+      ], geometric:'slope-tangent'},
+    connections:['Product rule extends to 3+ factors: (fgh)\u2032 = f\u2032gh + fg\u2032h + fgh\u2032','Combine with chain rule for complex expressions like x\u00B3 sin(2x)'],
+    practice:{question:'Evaluate d/dx[x\u00B3 sin(x)] at x = \u03C0.',
+      steps:['f\u2032(\u03C0) = 3\u03C0\u00B2 sin(\u03C0) + \u03C0\u00B3 cos(\u03C0)','sin(\u03C0) = 0, cos(\u03C0) = \u22121','= 0 + \u03C0\u00B3(\u22121) = \u2212\u03C0\u00B3'],
+      answer:'f\u2032(\u03C0) = \u2212\u03C0\u00B3 \u2248 \u221231.01'},
+    quote:'Two terms, two contributions \u2014 that\u2019s the product rule!',
+    wrongMsgs:['Product rule: differentiate each factor separately, then add both terms.','Don\u2019t forget: (fg)\u2032 = f\u2032g + fg\u2032, not just one term.','Both x\u00B3 and sin(x) contribute to the rate of change.']
+  },
+
+  /* ── 4  Core: Power rule ── */
+  { cat:'Core Derivatives', catIcon:'\u2702\uFE0F',
+    q:'What is d/dx [x\u2075]?', qDisplay:'d/dx [x\u2075] = ?',
+    choices:['5x\u2074','4x\u2075','5x\u2075','x\u2074'], correct:0,
+    vars:[
+      {symbol:'x\u207F',meaning:'x raised to the nth power'},
+      {symbol:'nx\u207F\u207B\u00B9',meaning:'Power rule result: bring the exponent down, reduce it by 1'},
+      {symbol:'n',meaning:'The exponent \u2014 here n = 5'}
+    ],
+    why:{title:'Why the power rule works',
+      paragraphs:[
+        'Expand x\u207F as x\u00B7x\u00B7x\u2026 (n times). By the product rule on all n copies, each x gets a turn being differentiated (giving 1) while the others stay. That\u2019s n copies of x\u207F\u207B\u00B9.',
+        'This elegant pattern \u2014 d/dx[x\u207F] = nx\u207F\u207B\u00B9 \u2014 works for all real n, not just integers: fractions, negatives, even irrational exponents.'
+      ], geometric:'slope-tangent'},
+    connections:['Reverse it for integration: \u222B x\u207F dx = x\u207F\u207A\u00B9/(n+1) + C (when n \u2260 \u22121)','Combine with chain rule: d/dx[(f(x))\u207F] = n(f(x))\u207F\u207B\u00B9 \u00B7 f\u2032(x)'],
+    practice:{question:'Find f\u2032(2) if f(x) = x\u2075.',
+      steps:['f\u2032(x) = 5x\u2074','f\u2032(2) = 5 \u00B7 2\u2074','= 5 \u00B7 16 = 80'],
+      answer:'f\u2032(2) = 80'},
+    quote:'Bring it down, knock it back \u2014 the power rule!',
+    wrongMsgs:['Power rule: multiply by the exponent, then reduce it by 1.','d/dx[x\u207F] = nx\u207F\u207B\u00B9 \u2014 the exponent becomes the coefficient.','5 comes down in front, and the new exponent is 4.']
+  },
+
+  /* ── 5  Core: d/dx[e^x] ── */
+  { cat:'Core Derivatives', catIcon:'\u2702\uFE0F',
+    q:'What is d/dx [e\u02E3]?', qDisplay:'d/dx [e\u02E3] = ?',
+    choices:['e\u02E3','x\u00B7e\u02E3\u207B\u00B9','x\u00B7e\u02E3','ln(x)\u00B7e\u02E3'], correct:0,
+    vars:[
+      {symbol:'e',meaning:'Euler\u2019s number \u2248 2.71828 \u2014 the base of the natural logarithm'},
+      {symbol:'e\u02E3',meaning:'The exponential function \u2014 grows faster than any polynomial'},
+      {symbol:'d/dx[e\u02E3] = e\u02E3',meaning:'The unique function that equals its own derivative'}
+    ],
+    why:{title:'Why e\u02E3 is its own derivative',
+      paragraphs:[
+        'The number e is defined so that the slope of e\u02E3 at every point equals the value of e\u02E3 at that point. At x=0, the value is 1 and the slope is 1. At x=1, the value is e \u2248 2.718 and the slope is also e.',
+        'No other base does this: d/dx[2\u02E3] = ln(2)\u00B72\u02E3, d/dx[10\u02E3] = ln(10)\u00B710\u02E3. Only base e has that perfect coefficient of 1.'
+      ], geometric:'slope-tangent'},
+    connections:['This is why e appears everywhere in math and physics','Chain rule: d/dx[e^(f(x))] = e^(f(x)) \u00B7 f\u2032(x)'],
+    practice:{question:'What is the slope of e\u02E3 at x = 0?',
+      steps:['Slope = d/dx[e\u02E3] = e\u02E3','At x=0: e\u2070 = 1'],
+      answer:'Slope at x=0 is exactly 1'},
+    quote:'e\u02E3 is the fixed point of differentiation!',
+    wrongMsgs:['e\u02E3 is special: it doesn\u2019t change when you differentiate it.','Don\u2019t apply the power rule here \u2014 x is in the exponent, not the base.','The function that equals its own derivative is\u2026']
+  },
+
+  /* ── 6  Chain Rule: d/dx[e^(x\u00B2)] ── */
+  { cat:'Chain Rule', catIcon:'\uD83D\uDD17',
+    q:'Find d/dx [e^(x\u00B2)]', qDisplay:'d/dx [e^(x\u00B2)] = ?',
+    choices:['2x \u00B7 e^(x\u00B2)','e^(x\u00B2)','x\u00B2 \u00B7 e^(x\u00B2\u22121)','2x \u00B7 e^(2x)'], correct:0,
+    vars:[
+      {symbol:'e^(x\u00B2)',meaning:'e raised to the power x\u00B2 \u2014 the outer function is e^u, the inner is u = x\u00B2'},
+      {symbol:'2x',meaning:'The derivative of the inner function x\u00B2'},
+      {symbol:'chain rule',meaning:'d/dx[f(g(x))] = f\u2032(g(x)) \u00B7 g\u2032(x) \u2014 outer derivative \u00D7 inner derivative'}
+    ],
+    why:{title:'Chain rule: peel the onion',
+      paragraphs:[
+        'e^(x\u00B2) is a composition: the outer function e^u applied to the inner function u = x\u00B2. The chain rule says: differentiate the outside (leaving the inside alone), then multiply by the derivative of the inside.',
+        'd/dx[e^u] = e^u, and d/dx[x\u00B2] = 2x. Multiply: e^(x\u00B2) \u00B7 2x.'
+      ], geometric:'slope-tangent'},
+    connections:['This pattern works for any e^(f(x)): the answer is always f\u2032(x)\u00B7e^(f(x))','Reverse: \u222B 2x\u00B7e^(x\u00B2) dx = e^(x\u00B2) + C by substitution'],
+    practice:{question:'Find d/dx[e^(3x)] using the chain rule.',
+      steps:['Outer: e^u \u2192 d/du[e^u] = e^u','Inner: u = 3x \u2192 du/dx = 3','Chain rule: e^(3x) \u00B7 3 = 3e^(3x)'],
+      answer:'d/dx[e^(3x)] = 3e^(3x)'},
+    quote:'Peel the layers \u2014 outer times inner!',
+    wrongMsgs:['Chain rule: differentiate the outside, then multiply by the inside\u2019s derivative.','The inner function is x\u00B2 \u2014 its derivative is 2x.','Don\u2019t use the power rule on the exponent!']
+  },
+
+  /* ── 7  Chain Rule: d/dx[ln(cos(x))] ── */
+  { cat:'Chain Rule', catIcon:'\uD83D\uDD17',
+    q:'Find d/dx [ln(cos(x))]', qDisplay:'d/dx [ln(cos(x))] = ?',
+    choices:['\u2212tan(x)','tan(x)','\u22121/cos(x)','1/cos\u00B2(x)'], correct:0,
+    vars:[
+      {symbol:'ln(u)',meaning:'Natural log \u2014 outer function, with u = cos(x)'},
+      {symbol:'d/du[ln(u)] = 1/u',meaning:'Derivative of ln: the reciprocal'},
+      {symbol:'d/dx[cos(x)] = \u2212sin(x)',meaning:'Derivative of the inner function'}
+    ],
+    why:{title:'Two-layer chain rule',
+      paragraphs:[
+        'Outer function: ln(u) with derivative 1/u. Inner function: cos(x) with derivative \u2212sin(x).',
+        'Chain rule: (1/cos(x)) \u00B7 (\u2212sin(x)) = \u2212sin(x)/cos(x) = \u2212tan(x). The ratio sin/cos simplifies to tan!'
+      ], geometric:'slope-tangent'},
+    connections:['d/dx[ln(f(x))] = f\u2032(x)/f(x) \u2014 this pattern is called logarithmic differentiation','Useful in integration: \u222B tan(x) dx = \u2212ln|cos(x)| + C'],
+    practice:{question:'Find d/dx[ln(sin(x))].',
+      steps:['Outer: 1/sin(x)','Inner derivative: cos(x)','Chain rule: cos(x)/sin(x) = cot(x)'],
+      answer:'d/dx[ln(sin(x))] = cot(x)'},
+    quote:'Log + trig = beautiful simplification!',
+    wrongMsgs:['Outer: 1/cos(x). Inner: \u2212sin(x). Multiply them.','sin(x)/cos(x) has a name \u2014 what is it?','Don\u2019t forget the minus sign from differentiating cos.']
+  },
+
+  /* ── 8  Integrals: Power rule ── */
+  { cat:'Integrals', catIcon:'\u222B',
+    q:'Evaluate \u222B x\u00B3 dx', qDisplay:'\u222B x\u00B3 dx = ?',
+    choices:['x\u2074/4 + C','x\u2074 + C','3x\u00B2 + C','x\u00B3/3 + C'], correct:0,
+    vars:[
+      {symbol:'\u222B',meaning:'Integral sign \u2014 \u201Cundo\u201D the derivative, find the antiderivative'},
+      {symbol:'C',meaning:'Constant of integration \u2014 any constant vanishes when differentiated'},
+      {symbol:'x\u207F\u207A\u00B9/(n+1)',meaning:'Reverse power rule: increase exponent by 1, divide by the new exponent'}
+    ],
+    why:{title:'Reversing the power rule',
+      paragraphs:[
+        'Since d/dx[x\u2074] = 4x\u00B3, we need to undo that 4. Dividing by 4 gives d/dx[x\u2074/4] = x\u00B3. So x\u2074/4 is the antiderivative.',
+        'The +C accounts for the fact that d/dx[constant] = 0 \u2014 any constant could have been there before differentiating.'
+      ], geometric:'area-under'},
+    connections:['This reverses the power rule for derivatives','Exception: \u222B x\u207B\u00B9 dx = ln|x| + C (can\u2019t divide by 0)'],
+    practice:{question:'Evaluate \u222B x\u2077 dx.',
+      steps:['\u222B x\u207F dx = x\u207F\u207A\u00B9/(n+1) + C','n = 7: x\u2078/8 + C'],
+      answer:'\u222B x\u2077 dx = x\u2078/8 + C'},
+    quote:'Integration: the art of going backwards!',
+    wrongMsgs:['Reverse the power rule: raise the exponent by 1, divide by it.','3x\u00B2 is the derivative of x\u00B3, not its integral.','Increase the exponent, then divide.']
+  },
+
+  /* ── 9  Integrals: u-substitution ── */
+  { cat:'Integrals', catIcon:'\u222B',
+    q:'Evaluate \u222B 2x \u00B7 e^(x\u00B2) dx', qDisplay:'\u222B 2x \u00B7 e^(x\u00B2) dx = ?',
+    choices:['e^(x\u00B2) + C','x\u00B2 \u00B7 e\u02E3 + C','2e\u02E3 + C','e^(2x) + C'], correct:0,
+    vars:[
+      {symbol:'u = x\u00B2',meaning:'The substitution \u2014 the inner function inside e^(\u2026)'},
+      {symbol:'du = 2x dx',meaning:'Differentiating the substitution gives us exactly the leftover factor'},
+      {symbol:'\u222B e^u du = e^u + C',meaning:'Once substituted, it\u2019s just the basic exponential integral'}
+    ],
+    why:{title:'u-substitution undoes the chain rule',
+      paragraphs:[
+        'We know d/dx[e^(x\u00B2)] = 2x \u00B7 e^(x\u00B2) by the chain rule. Integration is the reverse \u2014 so \u222B 2x \u00B7 e^(x\u00B2) dx = e^(x\u00B2) + C.',
+        'The key insight: the 2x factor is exactly the derivative of x\u00B2. When you see f\u2032(x) \u00B7 g(f(x)), substitution collapses it to \u222B g(u) du.'
+      ], geometric:'area-under'},
+    connections:['u-substitution is the integration version of the chain rule','Pattern: \u222B f\u2032(x) \u00B7 e^(f(x)) dx = e^(f(x)) + C always works'],
+    practice:{question:'Evaluate \u222B 6x\u00B2 \u00B7 e^(x\u00B3) dx.',
+      steps:['u = x\u00B3, du = 3x\u00B2 dx','Rewrite: 2\u222B 3x\u00B2 \u00B7 e^(x\u00B3) dx = 2\u222B e^u du','= 2e^(x\u00B3) + C'],
+      answer:'2e^(x\u00B3) + C'},
+    quote:'Spot the chain-rule pattern and substitution writes itself!',
+    wrongMsgs:['Look for a function and its derivative sitting together.','u = x\u00B2, du = 2x dx \u2014 everything matches perfectly!','This reverses the chain rule: d/dx[e^(x\u00B2)] = 2x\u00B7e^(x\u00B2).']
+  },
+
+  /* ── 10  Integrals: by parts ── */
+  { cat:'Integrals', catIcon:'\u222B',
+    q:'Evaluate \u222B x \u00B7 e\u02E3 dx', qDisplay:'\u222B x \u00B7 e\u02E3 dx = ?',
+    choices:['x\u00B7e\u02E3 \u2212 e\u02E3 + C','x\u00B7e\u02E3 + C','x\u00B2e\u02E3/2 + C','e\u02E3(x+1) + C'], correct:0,
+    vars:[
+      {symbol:'u = x, dv = e\u02E3 dx',meaning:'Choose u to differentiate (simplifies) and dv to integrate'},
+      {symbol:'du = dx, v = e\u02E3',meaning:'After choosing, differentiate u and integrate dv'},
+      {symbol:'\u222B u dv = uv \u2212 \u222B v du',meaning:'The integration-by-parts formula'}
+    ],
+    why:{title:'Integration by parts: the product rule in reverse',
+      paragraphs:[
+        'The product rule says d/dx[uv] = u\u2032v + uv\u2032. Rearranging: uv\u2032 = d/dx[uv] \u2212 u\u2032v. Integrate both sides: \u222B u dv = uv \u2212 \u222B v du.',
+        'Choose u = x (which simplifies when differentiated to 1) and dv = e\u02E3 dx. Then uv \u2212 \u222B v du = xe\u02E3 \u2212 \u222B e\u02E3 dx = xe\u02E3 \u2212 e\u02E3 + C.'
+      ], geometric:'area-under'},
+    connections:['Mnemonic LIATE: Log, Inverse trig, Algebraic, Trig, Exponential \u2014 pick u from left','Note: x\u00B7e\u02E3 \u2212 e\u02E3 = e\u02E3(x\u22121) \u2014 but the first form is the standard answer'],
+    practice:{question:'Evaluate \u222B x\u00B7cos(x) dx.',
+      steps:['u = x, dv = cos(x) dx','du = dx, v = sin(x)','= x\u00B7sin(x) \u2212 \u222B sin(x) dx = x\u00B7sin(x) + cos(x) + C'],
+      answer:'x\u00B7sin(x) + cos(x) + C'},
+    quote:'When substitution won\u2019t work, try parts!',
+    wrongMsgs:['Integration by parts: \u222B u dv = uv \u2212 \u222B v du','Let u = x and dv = e\u02E3 dx. What do you get?','e\u02E3(x+1) has the wrong sign \u2014 check the subtraction.']
+  },
+
+  /* ── 11  Integrals: Definite ── */
+  { cat:'Integrals', catIcon:'\u222B',
+    q:'Evaluate \u222B\u2080\u00B9 3x\u00B2 dx', qDisplay:'\u222B\u2080\u00B9 3x\u00B2 dx = ?',
+    choices:['1','3','0','1/3'], correct:0,
+    vars:[
+      {symbol:'\u222B\u2080\u00B9',meaning:'Definite integral from 0 to 1 \u2014 evaluate the antiderivative at the bounds'},
+      {symbol:'3x\u00B2',meaning:'The integrand \u2014 the function whose area we\u2019re computing'},
+      {symbol:'F(b) \u2212 F(a)',meaning:'Fundamental Theorem: evaluate antiderivative at top bound minus bottom bound'}
+    ],
+    why:{title:'The Fundamental Theorem in action',
+      paragraphs:[
+        'First find the antiderivative: \u222B 3x\u00B2 dx = x\u00B3. Then evaluate at the bounds: F(1) \u2212 F(0) = 1\u00B3 \u2212 0\u00B3 = 1.',
+        'Geometrically, this is the area under the parabola y = 3x\u00B2 from x = 0 to x = 1. The area happens to be exactly 1 square unit.'
+      ], geometric:'area-under'},
+    connections:['The antiderivative of 3x\u00B2 is x\u00B3 \u2014 power rule in reverse','FTC connects slopes (derivatives) to areas (integrals)'],
+    practice:{question:'Evaluate \u222B\u2080\u00B2 x\u00B3 dx.',
+      steps:['\u222B x\u00B3 dx = x\u2074/4','F(2) \u2212 F(0) = 16/4 \u2212 0 = 4'],
+      answer:'\u222B\u2080\u00B2 x\u00B3 dx = 4'},
+    quote:'Boundaries make it concrete \u2014 a definite answer!',
+    wrongMsgs:['Find the antiderivative first, then plug in the bounds.','Antiderivative of 3x\u00B2 is x\u00B3 \u2014 now evaluate at 1 and 0.','Don\u2019t forget to subtract: F(1) \u2212 F(0).']
+  },
+
+  /* ── 12  Limits: sin(x)/x ── */
+  { cat:'Limits', catIcon:'\uD83C\uDFAF',
+    q:'Evaluate lim(x\u21920) sin(x)/x', qDisplay:'lim(x\u21920) sin(x)/x = ?',
+    choices:['1','0','\u221E','DNE'], correct:0,
+    vars:[
+      {symbol:'lim(x\u21920)',meaning:'The value the expression approaches as x gets arbitrarily close to 0'},
+      {symbol:'sin(x)/x',meaning:'Both top and bottom \u2192 0 as x\u21920 (an indeterminate 0/0 form)'},
+      {symbol:'squeeze theorem',meaning:'sin(x)/x is squeezed between cos(x) and 1 near 0, both \u2192 1'}
+    ],
+    why:{title:'The most important limit in calculus',
+      paragraphs:[
+        'At x = 0, sin(0)/0 is undefined (0/0). But as x shrinks toward 0, sin(x) and x become nearly identical \u2014 for small angles, sin(x) \u2248 x.',
+        'The squeeze theorem proves it rigorously: cos(x) \u2264 sin(x)/x \u2264 1 for small x, and since cos(0) = 1, the limit is squeezed to exactly 1.'
+      ], geometric:'unit-circle'},
+    connections:['This limit is used to prove d/dx[sin(x)] = cos(x)','Variant: lim(x\u21920) sin(kx)/x = k (the constant pulls out)'],
+    practice:{question:'Evaluate lim(x\u21920) sin(5x)/x.',
+      steps:['Rewrite: 5 \u00B7 sin(5x)/(5x)','Let u = 5x \u2192 sin(u)/u \u2192 1','= 5 \u00B7 1 = 5'],
+      answer:'lim(x\u21920) sin(5x)/x = 5'},
+    quote:'Small angles, big consequences!',
+    wrongMsgs:['This is 0/0, not 0 or \u221E \u2014 need more analysis.','For tiny x, sin(x) \u2248 x, so the ratio approaches\u2026','The squeeze theorem pins it to exactly 1.']
+  },
+
+  /* ── 13  Limits: L\u2019H\u00F4pital ── */
+  { cat:'Limits', catIcon:'\uD83C\uDFAF',
+    q:'Evaluate lim(x\u21920) (e\u02E3 \u2212 1)/x', qDisplay:'lim(x\u21920) (e\u02E3 \u2212 1)/x = ?',
+    choices:['1','0','e','\u221E'], correct:0,
+    vars:[
+      {symbol:'e\u02E3 \u2212 1',meaning:'Numerator \u2192 0 as x\u21920 (since e\u2070 = 1)'},
+      {symbol:'x',meaning:'Denominator \u2192 0 as x\u21920'},
+      {symbol:'L\u2019H\u00F4pital\u2019s Rule',meaning:'For 0/0 or \u221E/\u221E, take derivatives of top and bottom separately'}
+    ],
+    why:{title:'L\u2019H\u00F4pital turns 0/0 into something computable',
+      paragraphs:[
+        'Both numerator and denominator \u2192 0 as x\u21920, giving 0/0. L\u2019H\u00F4pital says: differentiate top and bottom separately.',
+        'd/dx[e\u02E3 \u2212 1] = e\u02E3, and d/dx[x] = 1. So the limit becomes lim(x\u21920) e\u02E3/1 = e\u2070 = 1.'
+      ], geometric:'slope-tangent'},
+    connections:['This limit equals d/dx[e\u02E3] evaluated at x=0 (definition of derivative!)','L\u2019H\u00F4pital also works for \u221E/\u221E forms'],
+    practice:{question:'Evaluate lim(x\u21920) (e\u00B3\u02E3 \u2212 1)/x.',
+      steps:['0/0 form \u2192 apply L\u2019H\u00F4pital','d/dx[e\u00B3\u02E3 \u2212 1] = 3e\u00B3\u02E3, d/dx[x] = 1','lim(x\u21920) 3e\u00B3\u02E3/1 = 3'],
+      answer:'lim(x\u21920) (e\u00B3\u02E3 \u2212 1)/x = 3'},
+    quote:'When 0/0 blocks the way, L\u2019H\u00F4pital clears the path!',
+    wrongMsgs:['This is 0/0 \u2014 not 0 and not e.','Differentiate top and bottom separately (not quotient rule!).','d/dx[e\u02E3 \u2212 1] = e\u02E3. At x=0 that\u2019s\u2026']
+  },
+
+  /* ── 14  Limits: at infinity ── */
+  { cat:'Limits', catIcon:'\uD83C\uDFAF',
+    q:'Evaluate lim(x\u2192\u221E) (3x\u00B2+1)/(x\u00B2\u22122)', qDisplay:'lim(x\u2192\u221E) (3x\u00B2+1)/(x\u00B2\u22122) = ?',
+    choices:['3','1','\u221E','0'], correct:0,
+    vars:[
+      {symbol:'x\u2192\u221E',meaning:'x grows without bound \u2014 we want the long-run behavior'},
+      {symbol:'highest-degree terms',meaning:'For rational functions, only the leading terms matter as x\u2192\u221E'},
+      {symbol:'3x\u00B2/x\u00B2 = 3',meaning:'Divide everything by x\u00B2 and the small terms vanish'}
+    ],
+    why:{title:'Dominant terms determine the limit at infinity',
+      paragraphs:[
+        'Divide numerator and denominator by x\u00B2: (3 + 1/x\u00B2)/(1 \u2212 2/x\u00B2). As x\u2192\u221E, 1/x\u00B2 \u2192 0 and 2/x\u00B2 \u2192 0.',
+        'The limit becomes 3/1 = 3. The rule: when degrees match, the limit is the ratio of leading coefficients.'
+      ], geometric:'slope-tangent'},
+    connections:['Same degree \u2192 ratio of coefficients; higher on top \u2192 \u221E; higher on bottom \u2192 0','This determines horizontal asymptotes of rational functions'],
+    practice:{question:'Evaluate lim(x\u2192\u221E) (5x\u00B3+x)/(2x\u00B3\u22127).',
+      steps:['Same degree (3) in top and bottom','Ratio of leading coefficients: 5/2'],
+      answer:'5/2'},
+    quote:'At infinity, only the biggest terms survive!',
+    wrongMsgs:['Look at the highest power of x in top and bottom.','Both are degree 2 \u2014 so take the ratio of leading coefficients.','Divide everything by x\u00B2 to see what survives.']
+  },
+
+  /* ── 15  LinAlg: Eigenvalues ── */
+  { cat:'Linear Algebra', catIcon:'\uD83D\uDCCA',
+    q:'Find the eigenvalues of A = [[2,1],[0,3]]', qDisplay:'Eigenvalues of [[2,1],[0,3]] = ?',
+    choices:['\u03BB = 2, 3','\u03BB = 1, 6','\u03BB = 2, 1','\u03BB = 0, 5'], correct:0,
+    vars:[
+      {symbol:'\u03BB (lambda)',meaning:'Eigenvalue \u2014 the scalar by which eigenvectors are stretched'},
+      {symbol:'det(A \u2212 \u03BBI) = 0',meaning:'The characteristic equation that eigenvalues satisfy'},
+      {symbol:'triangular matrix',meaning:'A matrix with all zeros below (or above) the diagonal'}
+    ],
+    why:{title:'Triangular matrices reveal eigenvalues instantly',
+      paragraphs:[
+        'For a triangular matrix, det(A \u2212 \u03BBI) = (a\u2081\u2081 \u2212 \u03BB)(a\u2082\u2082 \u2212 \u03BB)\u2026 because the off-diagonal terms don\u2019t contribute to the determinant.',
+        'So eigenvalues = diagonal entries. Here: (2\u2212\u03BB)(3\u2212\u03BB) = 0 gives \u03BB = 2 and \u03BB = 3.'
+      ], geometric:null},
+    connections:['Trace = sum of eigenvalues: 2+3 = 5 = tr(A)','Determinant = product of eigenvalues: 2\u00D73 = 6 = det(A)'],
+    practice:{question:'Find eigenvalues of [[5,2],[0,\u22121]].',
+      steps:['Triangular \u2192 eigenvalues are diagonal entries','(5\u2212\u03BB)(\u22121\u2212\u03BB) = 0'],
+      answer:'\u03BB = 5, \u03BB = \u22121'},
+    quote:'Triangular matrices don\u2019t hide their eigenvalues!',
+    wrongMsgs:['For triangular matrices, eigenvalues sit on the diagonal.','Compute det(A \u2212 \u03BBI) and set it to 0.','The zero below the diagonal is the key \u2014 it\u2019s triangular!']
+  },
+
+  /* ── 16  LinAlg: Dot product ── */
+  { cat:'Linear Algebra', catIcon:'\uD83D\uDCCA',
+    q:'Compute [1,2,3] \u00B7 [4,\u22121,2]', qDisplay:'[1,2,3] \u00B7 [4,\u22121,2] = ?',
+    choices:['8','6','10','12'], correct:0,
+    vars:[
+      {symbol:'a \u00B7 b',meaning:'Dot product \u2014 multiply corresponding components and sum'},
+      {symbol:'\u03A3 a\u1D62b\u1D62',meaning:'Sum of products: a\u2081b\u2081 + a\u2082b\u2082 + a\u2083b\u2083'},
+      {symbol:'a \u00B7 b = |a||b|cos\u03B8',meaning:'Geometrically: relates to the angle between vectors'}
+    ],
+    why:{title:'Component-by-component multiplication and sum',
+      paragraphs:[
+        '1\u00D74 + 2\u00D7(\u22121) + 3\u00D72 = 4 \u2212 2 + 6 = 8. Each pair of components contributes to the total.',
+        'The dot product measures how much two vectors point in the same direction. Positive = similar direction, zero = perpendicular, negative = opposite.'
+      ], geometric:null},
+    connections:['If a \u00B7 b = 0, the vectors are orthogonal (perpendicular)','Used to compute projections: proj\u2090b = (a\u00B7b/a\u00B7a) \u00B7 a'],
+    practice:{question:'Compute [2,\u22121] \u00B7 [3,6]. Are they perpendicular?',
+      steps:['2\u00D73 + (\u22121)\u00D76 = 6 \u2212 6 = 0','Dot product is 0 \u2192 they ARE perpendicular!'],
+      answer:'0 \u2014 yes, they\u2019re perpendicular'},
+    quote:'Multiply, sum, done \u2014 the dot product is fast!',
+    wrongMsgs:['Multiply each pair of components: 1\u00D74, 2\u00D7(\u22121), 3\u00D72, then add.','Don\u2019t forget the sign: 2\u00D7(\u22121) = \u22122.','4 \u2212 2 + 6 = ?']
+  },
+
+  /* ── 17  LinAlg: Determinant ── */
+  { cat:'Linear Algebra', catIcon:'\uD83D\uDCCA',
+    q:'Compute det([[3,7],[1,5]])', qDisplay:'det [[3,7],[1,5]] = ?',
+    choices:['8','22','\u22122','15'], correct:0,
+    vars:[
+      {symbol:'det(A)',meaning:'Determinant \u2014 a single number capturing how the matrix scales area'},
+      {symbol:'ad \u2212 bc',meaning:'For a 2\u00D72 matrix [[a,b],[c,d]], the determinant is ad \u2212 bc'},
+      {symbol:'det = 0',meaning:'Would mean the matrix is singular (non-invertible, squishes to lower dimension)'}
+    ],
+    why:{title:'The 2\u00D72 determinant formula',
+      paragraphs:[
+        'For [[3,7],[1,5]]: det = 3\u00D75 \u2212 7\u00D71 = 15 \u2212 7 = 8. The cross-multiplication pattern goes: main diagonal minus off-diagonal.',
+        'Geometrically, |det| = 8 means this matrix scales areas by a factor of 8. Since det > 0, it preserves orientation (no reflection).'
+      ], geometric:null},
+    connections:['det(A) = product of eigenvalues','If det(A) \u2260 0, the matrix is invertible: A\u207B\u00B9 exists'],
+    practice:{question:'Find det([[1,2],[3,4]]).',
+      steps:['ad \u2212 bc = 1\u00D74 \u2212 2\u00D73','= 4 \u2212 6 = \u22122'],
+      answer:'det = \u22122 (invertible, orientation-reversing)'},
+    quote:'Two products, one subtraction \u2014 the determinant!',
+    wrongMsgs:['Formula: ad \u2212 bc for [[a,b],[c,d]].','3\u00D75 = 15, 7\u00D71 = 7. Now subtract.','Don\u2019t add \u2014 the determinant subtracts the diagonals.']
+  },
+
+  /* ── 18  Connections: FTC ── */
+  { cat:'Connections', catIcon:'\uD83D\uDD17',
+    q:'What is d/dx [\u222B\u2080\u02E3 sin(t) dt]?', qDisplay:'d/dx [\u222B\u2080\u02E3 sin(t) dt] = ?',
+    choices:['sin(x)','\u2212cos(x)','cos(x)','\u222B sin(x) dx'], correct:0,
+    vars:[
+      {symbol:'\u222B\u2080\u02E3 f(t) dt',meaning:'Area under f from 0 to x \u2014 a function of the upper limit x'},
+      {symbol:'FTC Part 1',meaning:'d/dx[\u222B\u2080\u02E3 f(t) dt] = f(x) \u2014 differentiating the area gives back the function'},
+      {symbol:'f(t) = sin(t)',meaning:'The integrand \u2014 we evaluate it at the upper limit x'}
+    ],
+    why:{title:'The Fundamental Theorem of Calculus',
+      paragraphs:[
+        'The FTC says differentiation and integration are inverse operations. If you accumulate area under f(t) from 0 to x, the rate at which that area grows at x is exactly f(x).',
+        'Think of it physically: if \u222B measures total distance, then d/dx of that total gives instantaneous speed = the original function.'
+      ], geometric:'area-under'},
+    connections:['FTC Part 2 connects this to evaluation: \u222B\u2090\u1D47 f = F(b)\u2212F(a)','With chain rule: d/dx[\u222B\u2080^(x\u00B2) f(t) dt] = f(x\u00B2)\u00B72x'],
+    practice:{question:'Find d/dx [\u222B\u2080\u02E3 e^(t\u00B2) dt].',
+      steps:['By FTC Part 1: d/dx[\u222B\u2080\u02E3 f(t) dt] = f(x)','f(t) = e^(t\u00B2), so f(x) = e^(x\u00B2)'],
+      answer:'e^(x\u00B2)'},
+    quote:'Derivatives and integrals: two sides of one coin!',
+    wrongMsgs:['FTC says: differentiate the integral \u2192 get the integrand back at x.','Don\u2019t actually compute the integral! FTC gives the answer directly.','Just replace t with x in the integrand.']
+  },
+
+  /* ── 19  Connections: Odd/Even ── */
+  { cat:'Connections', catIcon:'\uD83D\uDD17',
+    q:'Is f(x) = x\u00B3 even, odd, or neither?', qDisplay:'f(x) = x\u00B3 \u2014 even, odd, or neither?',
+    choices:['Odd','Even','Neither','Both'], correct:0,
+    vars:[
+      {symbol:'f(\u2212x) = \u2212f(x)',meaning:'Definition of an odd function \u2014 symmetric about the origin'},
+      {symbol:'f(\u2212x) = f(x)',meaning:'Definition of an even function \u2014 symmetric about the y-axis'},
+      {symbol:'x\u00B3',meaning:'A cubic \u2014 f(\u2212x) = (\u2212x)\u00B3 = \u2212x\u00B3 = \u2212f(x)'}
+    ],
+    why:{title:'Odd means origin-symmetric',
+      paragraphs:[
+        'Test: f(\u2212x) = (\u2212x)\u00B3 = \u2212x\u00B3 = \u2212f(x). Since f(\u2212x) = \u2212f(x) for all x, the function is odd.',
+        'Visually: rotate the graph 180\u00B0 around the origin and it looks the same. Every point (a, a\u00B3) has a mirror (\u2212a, \u2212a\u00B3).'
+      ], geometric:null},
+    connections:['\u222B\u208B\u2090\u1D43 (odd function) dx = 0 \u2014 positive and negative areas cancel perfectly','All x\u207F with odd n are odd functions; even n gives even functions'],
+    practice:{question:'Is f(x) = x\u2074 + x\u00B2 even, odd, or neither?',
+      steps:['f(\u2212x) = (\u2212x)\u2074 + (\u2212x)\u00B2 = x\u2074 + x\u00B2','f(\u2212x) = f(x) \u2192 even!'],
+      answer:'Even \u2014 symmetric about the y-axis'},
+    quote:'Symmetry reveals deep structure!',
+    wrongMsgs:['Check: does f(\u2212x) = \u2212f(x) or f(\u2212x) = f(x)?','(\u2212x)\u00B3 = \u2212x\u00B3. What does that tell you?','Odd: origin symmetry. Even: y-axis symmetry. Which fits?']
+  }
   ];
+  /* ═══ end of problems array ═══ */
+
+  /* ── Day selection & localStorage ── */
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
-  const q = questions[dayOfYear % questions.length];
+  const prob = problems[dayOfYear % problems.length];
+  window.mqotdProblem = prob; // expose for Claude chat
+
+  let streak = parseInt(localStorage.getItem('mqotd-streak') || '0');
+  let lastDay = parseInt(localStorage.getItem('mqotd-lastday') || '-1');
+  const alreadyDone = (lastDay === dayOfYear && localStorage.getItem('mqotd-done') === '1');
+
+  function updateStreak() {
+    const el = document.getElementById('mqotd-streak');
+    if (streak > 0) {
+      const fire = streak >= 7 ? '\uD83D\uDD25\uD83D\uDD25\uD83D\uDD25' : streak >= 4 ? '\uD83D\uDD25\uD83D\uDD25' : '\uD83D\uDD25';
+      el.style.display = 'block';
+      el.innerHTML = '<span style="background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(236,72,153,0.15));padding:6px 16px;border-radius:99px;font-weight:700;">' + fire + ' ' + streak + '-day streak!</span>';
+    }
+  }
+  updateStreak();
+
+  /* ── Shuffle choices deterministically ── */
+  const correctAnswer = prob.choices[prob.correct];
+  let shuffled = [...prob.choices];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = (dayOfYear * 7 + i * 13) % (i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  const correctIdx = shuffled.indexOf(correctAnswer);
+
   const el = document.getElementById('mqotd-content');
-  el.innerHTML = `
-    <div style="margin-bottom:8px;">
-      <span style="background:rgba(168,85,247,0.2);color:var(--accent2);padding:3px 10px;border-radius:99px;font-size:0.85rem;font-weight:600;">${q.cat}</span>
-    </div>
-    <p style="font-size:1.15rem;font-weight:600;color:var(--text);margin:12px 0 16px;line-height:1.6;">${q.q}</p>
-    <button onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block';this.textContent=this.nextElementSibling.style.display==='block'?'Hide Answer ▲':'Show Answer ▼'" style="background:linear-gradient(135deg,var(--accent1),var(--accent2));border:none;color:#fff;font-family:'JetBrains Mono',monospace;font-size:0.95rem;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:600;transition:transform 0.15s,box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 15px rgba(99,102,241,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">Show Answer ▼</button>
-    <div style="display:none;margin-top:14px;background:#0d0d24;border:1px solid var(--card-border);border-radius:8px;padding:16px;font-size:1.05rem;line-height:1.7;color:var(--green);">
-      ✅ ${q.a}
-    </div>
-  `;
+
+  /* ═══ Stage 1: Quiz ═══ */
+  function renderQuiz() {
+    el.innerHTML =
+      '<div style="text-align:center;margin-bottom:20px;">' +
+        '<div style="margin-bottom:10px;"><span class="mqotd-cat-pill">' + prob.catIcon + ' ' + prob.cat + '</span></div>' +
+        '<div class="mqotd-eq-box">' + prob.qDisplay + '</div>' +
+      '</div>' +
+      '<div id="mqotd-choices" class="mqotd-grid">' +
+        shuffled.map(function(c, i) {
+          return '<button class="mqotd-btn" data-idx="' + i + '">' + c + '</button>';
+        }).join('') +
+      '</div>' +
+      '<div id="mqotd-feedback" style="text-align:center;margin-top:14px;font-size:1rem;min-height:28px;"></div>';
+
+    document.querySelectorAll('.mqotd-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx = parseInt(this.dataset.idx);
+        if (idx === correctIdx) handleCorrect(this); else handleWrong(this);
+      });
+    });
+  }
+
+  /* ═══ Stage 2: Wrong answer ═══ */
+  function handleWrong(btn) {
+    btn.style.borderColor = '#ef4444';
+    btn.style.background = 'rgba(239,68,68,0.15)';
+    btn.style.pointerEvents = 'none';
+    var fb = document.getElementById('mqotd-feedback');
+    var msg = prob.wrongMsgs[Math.floor(Math.random() * prob.wrongMsgs.length)];
+    fb.innerHTML = '<span style="color:#f87171;">' + msg + '</span>';
+    streak = 0;
+    localStorage.setItem('mqotd-streak', '0');
+    updateStreak();
+  }
+
+  /* ═══ Stage 2: Correct answer ═══ */
+  function handleCorrect(btn) {
+    btn.style.borderColor = 'var(--green)';
+    btn.style.background = 'rgba(34,197,94,0.15)';
+    document.querySelectorAll('.mqotd-btn').forEach(function(b) { b.style.pointerEvents = 'none'; });
+
+    if (lastDay !== dayOfYear) {
+      streak++;
+      localStorage.setItem('mqotd-streak', String(streak));
+      localStorage.setItem('mqotd-lastday', String(dayOfYear));
+      localStorage.setItem('mqotd-done', '1');
+    }
+    updateStreak();
+
+    if (typeof confetti === 'function') {
+      confetti({particleCount:150, spread:80, origin:{y:0.7}});
+      setTimeout(function(){ confetti({particleCount:80, spread:100, origin:{y:0.5}}); }, 300);
+      setTimeout(function(){ confetti({particleCount:60, spread:120, origin:{y:0.6}, colors:['#6366f1','#a855f7','#ec4899','#22c55e']}); }, 600);
+    }
+
+    var fb = document.getElementById('mqotd-feedback');
+    fb.innerHTML =
+      '<div style="animation:mqotdBounce 0.5s ease-out;margin:16px 0;">' +
+        '<div style="font-size:2.5rem;margin-bottom:6px;">\uD83C\uDF89</div>' +
+        '<div style="background:linear-gradient(135deg,rgba(34,197,94,0.15),rgba(99,102,241,0.1));border:1px solid rgba(34,197,94,0.3);border-radius:12px;padding:16px 20px;display:inline-block;max-width:400px;">' +
+          '<div style="font-weight:700;color:var(--green);font-size:1.1rem;margin-bottom:4px;">\u2705 Correct!</div>' +
+          '<div style="color:var(--text);font-size:0.95rem;font-style:italic;">' + prob.quote + '</div>' +
+        '</div>' +
+      '</div>';
+
+    setTimeout(renderExplanation, 1200);
+  }
+
+  /* ═══ Stage 3: Deep Explanation ═══ */
+  function renderExplanation() {
+    var html = '<div class="mqotd-explain" style="animation:mqotdSlideIn 0.6s ease-out;">';
+
+    /* Why it works */
+    html += '<h3 style="font-size:1.15rem;color:var(--accent2);margin-bottom:12px;">\uD83D\uDCA1 ' + prob.why.title + '</h3>';
+    prob.why.paragraphs.forEach(function(p) {
+      html += '<p style="font-size:1rem;line-height:1.7;margin-bottom:10px;color:var(--text);">' + p + '</p>';
+    });
+
+    /* Geometric callout */
+    if (prob.why.geometric && geoText[prob.why.geometric]) {
+      html += '<div class="mqotd-geo-callout"><strong style="color:var(--accent2);">' +
+        (prob.why.geometric === 'unit-circle' ? '\uD83D\uDD35 Unit Circle Intuition' :
+         prob.why.geometric === 'slope-tangent' ? '\uD83D\uDCC8 Slope / Tangent Line' :
+         '\u222B Area Under the Curve') +
+        '</strong><p style="margin-top:6px;font-size:0.95rem;line-height:1.6;color:var(--text);">' + geoText[prob.why.geometric] + '</p></div>';
+    }
+
+    /* Variables grid */
+    html += '<div class="mqotd-var-section"><h4 style="font-size:1rem;color:var(--text);margin-bottom:8px;">\uD83D\uDD24 Variables</h4><div class="mqotd-var-grid">';
+    prob.vars.forEach(function(v) {
+      html += '<div class="mqotd-var"><span class="mqotd-var-sym">' + v.symbol + '</span><span class="mqotd-var-mean">' + v.meaning + '</span></div>';
+    });
+    html += '</div></div>';
+
+    /* Connections */
+    if (prob.connections.length > 0) {
+      html += '<div class="mqotd-conn-section"><h4 style="font-size:1rem;color:var(--text);margin-bottom:8px;">\u2194\uFE0F Connections</h4>';
+      prob.connections.forEach(function(c) {
+        html += '<div class="mqotd-conn">\u2192 ' + c + '</div>';
+      });
+      html += '</div>';
+    }
+
+    /* Practice problem (Stage 4) */
+    html += '<div class="mqotd-practice">' +
+      '<h4 style="font-size:1rem;color:var(--text);margin-bottom:8px;">\uD83E\uDDEA Practice Problem</h4>' +
+      '<p style="font-size:1rem;color:var(--text);margin-bottom:12px;">' + prob.practice.question + '</p>' +
+      '<div id="mqotd-steps">';
+    prob.practice.steps.forEach(function(s, i) {
+      html += '<div class="mqotd-step" id="mqotd-step-' + i + '" style="display:none;"><span class="mqotd-step-num">Step ' + (i+1) + '</span> ' + s + '</div>';
+    });
+    html += '<div class="mqotd-step" id="mqotd-step-answer" style="display:none;border-color:var(--green);"><strong style="color:var(--green);">\u2705 ' + prob.practice.answer + '</strong></div>';
+    html += '</div>';
+    html += '<div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">' +
+      '<button id="mqotd-next-step" class="mqotd-action-btn">Next Step \u25B6</button>' +
+      '<button id="mqotd-show-all" class="mqotd-action-btn" style="background:transparent;border:1px solid var(--accent2);color:var(--accent2);">Show All</button>' +
+    '</div></div>';
+
+    html += '</div>';
+
+    var wrapper = document.createElement('div');
+    wrapper.style.cssText = 'margin-top:20px;';
+    wrapper.innerHTML = html;
+    el.appendChild(wrapper);
+
+    /* Step-by-step reveal logic */
+    var stepIdx = 0;
+    var totalSteps = prob.practice.steps.length + 1; // +1 for answer
+    document.getElementById('mqotd-next-step').addEventListener('click', function() {
+      if (stepIdx < totalSteps) {
+        var id = stepIdx < prob.practice.steps.length ? 'mqotd-step-' + stepIdx : 'mqotd-step-answer';
+        var stepEl = document.getElementById(id);
+        stepEl.style.display = 'block';
+        stepEl.style.animation = 'mqotdSlideIn 0.3s ease-out';
+        stepIdx++;
+        if (stepIdx >= totalSteps) this.textContent = 'All Done \u2713';
+      }
+    });
+    document.getElementById('mqotd-show-all').addEventListener('click', function() {
+      for (var i = 0; i < prob.practice.steps.length; i++) {
+        document.getElementById('mqotd-step-' + i).style.display = 'block';
+      }
+      document.getElementById('mqotd-step-answer').style.display = 'block';
+      stepIdx = totalSteps;
+      document.getElementById('mqotd-next-step').textContent = 'All Done \u2713';
+    });
+  }
+
+  /* ═══ Already-completed state ═══ */
+  function renderCompleted() {
+    el.innerHTML =
+      '<div style="text-align:center;margin-bottom:16px;">' +
+        '<div style="margin-bottom:10px;"><span class="mqotd-cat-pill">' + prob.catIcon + ' ' + prob.cat + '</span></div>' +
+        '<div class="mqotd-eq-box">' + prob.qDisplay + '</div>' +
+        '<div style="margin:12px 0;font-size:1.1rem;color:var(--green);font-weight:600;">\u2705 ' + correctAnswer + ' \u2014 Already nailed it today!</div>' +
+        '<div style="font-style:italic;color:var(--text-dim);font-size:0.95rem;">' + prob.quote + '</div>' +
+      '</div>';
+    renderExplanation();
+  }
+
+  /* ── Init ── */
+  if (alreadyDone) { renderCompleted(); } else { renderQuiz(); }
+
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- CLAUDE AI CHAT HELPER (floating widget)     -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="claude-float">
+  <div id="claude-float-header" onclick="document.getElementById('claude-float').classList.toggle('collapsed')">
+    <span>🤖 Ask Claude</span>
+    <span id="claude-float-toggle">▾</span>
+  </div>
+  <div id="claude-float-body">
+    <div id="claude-chat-root"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root = document.getElementById('claude-chat-root');
+  var history = [];
+  var apiKey = localStorage.getItem('claude-api-key') || '';
+
+  function buildSystemPrompt() {
+    var p = window.mqotdProblem;
+    if (!p) return 'You are a friendly math tutor. Explain concepts simply. Use geometric intuition when possible.';
+    var s = 'You are a friendly math tutor helping a student learn. The student is currently working on this problem:\n\n';
+    s += 'Category: ' + p.cat + '\n';
+    s += 'Question: ' + p.q + '\n';
+    s += 'Correct answer: ' + p.choices[p.correct] + '\n\n';
+    s += 'Explanation: ' + p.why.paragraphs.join(' ') + '\n\n';
+    s += 'Variables:\n';
+    p.vars.forEach(function(v) { s += '- ' + v.symbol + ': ' + v.meaning + '\n'; });
+    s += '\nExplain concepts simply. Use geometric intuition when possible (unit circle for trig, slopes for derivatives, area for integrals). Be encouraging. Keep responses concise (2-4 paragraphs max).';
+    return s;
+  }
+
+  function render() {
+    var html = '';
+
+    /* API key section */
+    if (!apiKey) {
+      html += '<div class="claude-key-section">' +
+        '<p style="font-size:0.9rem;color:var(--text-dim);margin-bottom:8px;">Enter your Anthropic API key to chat with Claude about this problem. Your key is stored locally and never sent anywhere except Anthropic\u2019s API.</p>' +
+        '<div style="display:flex;gap:8px;">' +
+          '<input type="password" id="claude-key-input" placeholder="sk-ant-..." style="flex:1;background:var(--bg);border:1px solid var(--card-border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;font-size:0.9rem;">' +
+          '<button id="claude-key-save" class="mqotd-action-btn" style="white-space:nowrap;">Save Key</button>' +
+        '</div></div>';
+    } else {
+      /* Chat header with clear button */
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+        '<span style="font-size:0.85rem;color:var(--text-dim);">Ask follow-up questions about the current math problem</span>' +
+        '<div style="display:flex;gap:6px;">' +
+          '<button id="claude-clear" class="claude-small-btn">Clear Chat</button>' +
+          '<button id="claude-remove-key" class="claude-small-btn" style="color:var(--accent3);">Remove Key</button>' +
+        '</div></div>';
+
+      /* Messages */
+      html += '<div id="claude-messages" class="claude-messages">';
+      if (history.length === 0) {
+        html += '<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:0.9rem;">Ask me anything about the current math problem!</div>';
+      }
+      history.forEach(function(m) {
+        var cls = m.role === 'user' ? 'claude-msg-user' : 'claude-msg-assistant';
+        html += '<div class="claude-msg ' + cls + '">' + escapeHtml(m.content) + '</div>';
+      });
+      html += '</div>';
+
+      /* Input bar */
+      html += '<div class="claude-input-bar">' +
+        '<input type="text" id="claude-input" placeholder="Ask about derivatives, integrals, trig..." style="flex:1;background:var(--bg);border:1px solid var(--card-border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;font-size:0.9rem;">' +
+        '<button id="claude-send" class="mqotd-action-btn">Send</button>' +
+      '</div>';
+    }
+
+    root.innerHTML = html;
+    bindEvents();
+
+    /* Scroll messages to bottom */
+    var msgBox = document.getElementById('claude-messages');
+    if (msgBox) msgBox.scrollTop = msgBox.scrollHeight;
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  }
+
+  function bindEvents() {
+    var saveBtn = document.getElementById('claude-key-save');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function() {
+        var val = document.getElementById('claude-key-input').value.trim();
+        if (val) { apiKey = val; localStorage.setItem('claude-api-key', val); render(); }
+      });
+      document.getElementById('claude-key-input').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') saveBtn.click();
+      });
+    }
+
+    var clearBtn = document.getElementById('claude-clear');
+    if (clearBtn) clearBtn.addEventListener('click', function() { history = []; render(); });
+
+    var removeBtn = document.getElementById('claude-remove-key');
+    if (removeBtn) removeBtn.addEventListener('click', function() {
+      apiKey = ''; localStorage.removeItem('claude-api-key'); history = []; render();
+    });
+
+    var sendBtn = document.getElementById('claude-send');
+    var inputEl = document.getElementById('claude-input');
+    if (sendBtn && inputEl) {
+      sendBtn.addEventListener('click', function() { sendMessage(); });
+      inputEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
+    }
+  }
+
+  function sendMessage() {
+    var inputEl = document.getElementById('claude-input');
+    var text = inputEl.value.trim();
+    if (!text) return;
+
+    history.push({role:'user', content:text});
+    inputEl.value = '';
+    render();
+
+    /* Show loading */
+    var msgBox = document.getElementById('claude-messages');
+    var loadingDiv = document.createElement('div');
+    loadingDiv.className = 'claude-msg claude-msg-assistant';
+    loadingDiv.innerHTML = '<span class="claude-typing">Thinking...</span>';
+    msgBox.appendChild(loadingDiv);
+    msgBox.scrollTop = msgBox.scrollHeight;
+
+    var msgs = history.map(function(m) { return {role:m.role, content:m.content}; });
+
+    fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:1024,
+        system: buildSystemPrompt(),
+        messages: msgs
+      })
+    })
+    .then(function(res) {
+      if (!res.ok) throw new Error('API error: ' + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      var reply = data.content && data.content[0] && data.content[0].text ? data.content[0].text : 'No response received.';
+      history.push({role:'assistant', content:reply});
+      render();
+    })
+    .catch(function(err) {
+      if (loadingDiv.parentNode) loadingDiv.parentNode.removeChild(loadingDiv);
+      var errDiv = document.createElement('div');
+      errDiv.className = 'claude-msg claude-msg-assistant';
+      errDiv.style.color = '#f87171';
+      errDiv.textContent = err.message.indexOf('401') >= 0 ? 'Invalid API key. Please check and try again.' :
+        err.message.indexOf('429') >= 0 ? 'Rate limited. Please wait a moment and try again.' :
+        'Error: ' + err.message;
+      msgBox.appendChild(errDiv);
+    });
+  }
+
+  render();
 })();
 </script>
 
@@ -329,14 +1099,166 @@
 </script>
 
 <style>
+/* ── Physics EOTD animations ── */
 @keyframes peotdBounce { 0%{transform:scale(0.5);opacity:0} 50%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
 @keyframes peotdFadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 @media (max-width: 640px) { #peotd-choices { grid-template-columns: 1fr !important; } }
+
+/* ══════════════════════════════════════════════ */
+/* MATH QOTD STYLES                              */
+/* ══════════════════════════════════════════════ */
+@keyframes mqotdBounce { 0%{transform:scale(0.5);opacity:0} 50%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+@keyframes mqotdSlideIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.mqotd-cat-pill {
+  background:rgba(168,85,247,0.2); color:var(--accent2); padding:4px 14px;
+  border-radius:99px; font-size:0.85rem; font-weight:600;
+}
+.mqotd-eq-box {
+  background:#0d0d24; border:1px solid var(--card-border); border-radius:12px;
+  padding:24px; margin:12px 0; font-size:1.3rem; font-weight:600;
+  color:var(--accent2); line-height:1.8; overflow-x:auto;
+}
+.mqotd-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+}
+.mqotd-btn {
+  background:var(--card); border:2px solid var(--card-border); color:var(--text);
+  font-family:'JetBrains Mono',monospace; font-size:0.95rem; padding:14px 12px;
+  border-radius:10px; cursor:pointer; transition:all 0.2s; line-height:1.4; text-align:center;
+}
+.mqotd-btn:hover {
+  border-color:var(--accent1); transform:translateY(-1px);
+}
+
+/* Explanation panel */
+.mqotd-explain {
+  background:#0d0d24; border:1px solid var(--card-border); border-radius:12px; padding:20px;
+}
+.mqotd-geo-callout {
+  background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2);
+  border-left:3px solid var(--accent1); border-radius:8px; padding:14px 16px; margin:14px 0;
+}
+
+/* Variables grid */
+.mqotd-var-section { margin:16px 0; }
+.mqotd-var-grid { display:grid; grid-template-columns:1fr; gap:8px; }
+.mqotd-var {
+  display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:start;
+  background:rgba(168,85,247,0.05); border:1px solid rgba(168,85,247,0.15);
+  border-radius:8px; padding:10px 14px;
+}
+.mqotd-var-sym {
+  font-weight:700; color:var(--accent2); white-space:nowrap; font-size:0.95rem;
+}
+.mqotd-var-mean {
+  color:var(--text-dim); font-size:0.9rem; line-height:1.5;
+}
+
+/* Connections */
+.mqotd-conn-section { margin:16px 0; }
+.mqotd-conn {
+  border-left:3px solid var(--accent3); padding:6px 12px; margin-bottom:6px;
+  font-size:0.95rem; color:var(--text); line-height:1.5;
+}
+
+/* Practice steps */
+.mqotd-practice {
+  border-top:1px solid var(--card-border); padding-top:16px; margin-top:16px;
+}
+.mqotd-step {
+  border-left:3px solid var(--accent1); padding:8px 14px; margin-bottom:8px;
+  font-size:0.95rem; color:var(--text); line-height:1.5; border-radius:0 6px 6px 0;
+  background:rgba(99,102,241,0.05);
+}
+.mqotd-step-num {
+  color:var(--accent1); font-weight:600; margin-right:6px;
+}
+.mqotd-action-btn {
+  background:linear-gradient(135deg,var(--accent1),var(--accent2)); border:none;
+  color:#fff; font-family:'JetBrains Mono',monospace; font-size:0.9rem;
+  padding:8px 18px; border-radius:8px; cursor:pointer; font-weight:600;
+  transition:transform 0.15s,box-shadow 0.15s;
+}
+.mqotd-action-btn:hover {
+  transform:translateY(-1px); box-shadow:0 4px 15px rgba(99,102,241,0.3);
+}
+
+/* ══════════════════════════════════════════════ */
+/* CLAUDE FLOATING CHAT WIDGET                   */
+/* ══════════════════════════════════════════════ */
+#claude-float {
+  position:fixed; bottom:16px; right:16px; z-index:9999;
+  width:360px;
+  background:rgba(17,17,40,0.97); border:1px solid var(--accent1);
+  border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  backdrop-filter:blur(12px);
+  display:flex; flex-direction:column;
+  transition:height 0.3s ease, width 0.3s ease;
+  overflow:hidden;
+}
+#claude-float-header {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 16px; cursor:pointer; user-select:none;
+  background:rgba(99,102,241,0.12); border-bottom:1px solid var(--card-border);
+  font-size:0.95rem; font-weight:600; color:var(--text);
+  flex-shrink:0;
+}
+#claude-float-header:hover { background:rgba(99,102,241,0.2); }
+#claude-float-toggle {
+  font-size:0.8rem; color:var(--text-dim); transition:transform 0.3s;
+}
+#claude-float-body {
+  padding:12px 14px; overflow:hidden;
+  max-height:420px; transition:max-height 0.3s ease, padding 0.3s ease;
+}
+#claude-float.collapsed #claude-float-body {
+  max-height:0; padding-top:0; padding-bottom:0;
+}
+#claude-float.collapsed #claude-float-toggle {
+  transform:rotate(-90deg);
+}
+
+.claude-key-section { padding:4px 0; }
+.claude-messages {
+  max-height:280px; overflow-y:auto; padding:6px 0; margin-bottom:8px;
+  display:flex; flex-direction:column; gap:8px;
+}
+.claude-msg {
+  padding:8px 12px; border-radius:10px; font-size:0.85rem; line-height:1.5;
+  max-width:88%; word-wrap:break-word;
+}
+.claude-msg-user {
+  background:rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.25);
+  color:var(--text); align-self:flex-end; border-bottom-right-radius:3px;
+}
+.claude-msg-assistant {
+  background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.2);
+  color:var(--text); align-self:flex-start; border-bottom-left-radius:3px;
+}
+.claude-input-bar {
+  display:flex; gap:8px;
+}
+.claude-small-btn {
+  background:transparent; border:1px solid var(--card-border); color:var(--text-dim);
+  font-family:'JetBrains Mono',monospace; font-size:0.7rem; padding:3px 8px;
+  border-radius:6px; cursor:pointer; transition:border-color 0.2s;
+}
+.claude-small-btn:hover { border-color:var(--accent1); }
+.claude-typing { color:var(--text-dim); animation:mqotdSlideIn 0.3s ease-out; }
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .mqotd-grid { grid-template-columns:1fr; }
+  .mqotd-var { grid-template-columns:1fr; }
+  .claude-msg { max-width:95%; }
+  #claude-float { width:calc(100vw - 24px); right:12px; bottom:12px; }
+}
 </style>
 
 <!-- Big Picture -->
 <div class="footer">
-  <div style="font-size:0.72rem;color:var(--text-dim);">Riner Research Hub · Built by Barron 🐱 · <a href="index.html">Back to Hub</a></div>
+  <div style="font-size:0.72rem;color:var(--text-dim);">Riner Research Hub · Built by Barron 🐱 · <a href="../index.html">Back to Hub</a></div>
 </div>
 </div>
 <script>

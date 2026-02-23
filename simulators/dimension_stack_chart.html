@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spacetime Composition — Riner 6D Framework</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a1a;color:#e0e0e0;font-family:'JetBrains Mono',monospace;overflow-x:hidden;display:flex;flex-direction:column;height:100vh}
+#title-bar{text-align:center;padding:18px 10px 4px}
+#title-bar h1{font-size:1.4em;color:#fff;letter-spacing:2px}
+#title-bar .sub{font-size:0.75em;color:#888;margin-top:4px}
+#chart-wrap{flex:1;position:relative;padding:10px 40px 0 60px}
+canvas{display:block;width:100%;height:100%}
+#tooltip{position:absolute;display:none;background:rgba(10,10,26,0.95);border:1px solid #444;border-radius:6px;padding:8px 12px;font-size:0.72em;pointer-events:none;z-index:10;max-width:260px;line-height:1.5}
+#controls{background:#111128;padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-top:1px solid #333}
+#controls label{font-size:0.75em;color:#aaa}
+#controls input[type=range]{flex:1;min-width:200px;accent-color:#7ee787}
+#controls button{background:#222244;color:#ddd;border:1px solid #555;border-radius:4px;padding:5px 14px;cursor:pointer;font-family:inherit;font-size:0.75em}
+#controls button:hover{background:#333366}
+#controls button.active{background:#7ee787;color:#000;border-color:#7ee787}
+#radius-readout{font-size:0.85em;color:#ffcc44;min-width:120px;text-align:center}
+#legend{display:flex;gap:14px;justify-content:center;padding:6px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:0.7em}
+.leg-swatch{width:14px;height:14px;border-radius:2px}
+</style>
+</head>
+<body>
+<div id="title-bar">
+<h1>Spacetime Composition — Riner 6D Framework</h1>
+<div class="sub">Stacked dimensions from far field through horizon to singularity</div>
+</div>
+<div id="legend"></div>
+<div id="chart-wrap">
+<canvas id="canvas"></canvas>
+<div id="tooltip"></div>
+</div>
+<div id="controls">
+<button id="btn-play">▶ Play</button>
+<button id="btn-mode" class="active">Percentage</button>
+<label>r/r<sub>s</sub>:</label>
+<input type="range" id="slider" min="0" max="49" value="0" step="1">
+<div id="radius-readout">r = 10.00 r<sub>s</sub></div>
+</div>
+
+<script>
+// ---- Physics computation ----
+const N_POINTS = 50;
+const layers = [
+  {name:'Prime Substrate (g₆₆)', color:'#ff4040'},
+  {name:'Temperature (g₅₅)', color:'#ffcc44'},
+  {name:'Entropy Rate (Ṡ²)', color:'#ff7b72'},
+  {name:'Radial (g_rr)', color:'#7ee787'},
+  {name:'Polar (g_θθ)', color:'#ffa657'},
+  {name:'Azimuthal (g_φφ)', color:'#d2a8ff'}
+];
+
+// Log-spaced radii from 10 down to 0.1
+const radii = [];
+for(let i=0;i<N_POINTS;i++){
+  const t = i/(N_POINTS-1);
+  radii.push(Math.pow(10, Math.log10(10)*(1-t) + Math.log10(0.1)*t));
+}
+
+function zeta(s){let sum=0;for(let n=1;n<=1000;n++)sum+=Math.pow(n,-s);return sum;}
+const sin60sq = Math.pow(Math.sin(Math.PI/3),2);
+
+// Compute raw values for each radius
+const data = radii.map((r,i)=>{
+  const s = 1 + r*r*r;
+  const z = zeta(s);
+  const g_rr = Math.min(Math.abs(1/(1-1/r))*z, 100);
+  const g_tt = r*r*z;
+  const g_pp = r*r*sin60sq*z;
+  const g_55 = 1/r;
+  // Entropy rate: numerical gradient of spatial components
+  let dS = 0;
+  if(i>0 && i<N_POINTS-1){
+    const dr = radii[i-1]-radii[i+1];
+    const s_prev = 1+Math.pow(radii[i-1],3), s_next = 1+Math.pow(radii[i+1],3);
+    const z_prev = zeta(s_prev), z_next = zeta(s_next);
+    const dgrr = (Math.min(Math.abs(1/(1-1/radii[i-1]))*z_prev,100) - Math.min(Math.abs(1/(1-1/radii[i+1]))*z_next,100))/dr;
+    const dgtt = (radii[i-1]*radii[i-1]*z_prev - radii[i+1]*radii[i+1]*z_next)/dr;
+    dS = Math.sqrt(dgrr*dgrr + dgtt*dgtt);
+  }
+  // Substrate: prime gradient differences
+  const primeGrad = (v, r2) => {
+    // approximate d(component)/d(prime_index) via component value modulated by prime proximity
+    const primes = [2,3,5,7,11,13];
+    return primes.map(p => v * Math.exp(-Math.abs(r2 - p)/3));
+  };
+  const comps = [g_rr, g_tt, g_pp, g_55];
+  let g66 = 0;
+  for(let a=0;a<comps.length;a++){
+    for(let b=a+1;b<comps.length;b++){
+      const ga = primeGrad(comps[a],r), gb = primeGrad(comps[b],r);
+      let ss=0; for(let k=0;k<ga.length;k++) ss+=(ga[k]-gb[k])*(ga[k]-gb[k]);
+      g66 += Math.sqrt(ss);
+    }
+  }
+  return {r, g66, g55:g_55, entropy:dS*dS, g_rr, g_tt, g_pp};
+});
+// Fix boundary entropy
+data[0].entropy = data[1].entropy;
+data[N_POINTS-1].entropy = data[N_POINTS-2].entropy;
+
+// Build legend
+const legendEl = document.getElementById('legend');
+layers.forEach(l=>{
+  const d=document.createElement('div');d.className='leg-item';
+  d.innerHTML=`<div class="leg-swatch" style="background:${l.color}"></div>${l.name}`;
+  legendEl.appendChild(d);
+});
+
+// ---- Rendering ----
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const tooltip = document.getElementById('tooltip');
+const slider = document.getElementById('slider');
+const readout = document.getElementById('radius-readout');
+const btnPlay = document.getElementById('btn-play');
+const btnMode = document.getElementById('btn-mode');
+
+let percentMode = true;
+let playing = false;
+let animFrame = null;
+let highlightIdx = -1;
+let highlightLayer = -1;
+let barRects = []; // [{x,y,w,h,layerIdx,pointIdx}]
+
+const annotations = [
+  {r:1.4, text:'Substrate becomes visible', color:'#ff4040'},
+  {r:1.0, text:'EVENT HORIZON — Substrate spike', color:'#ffcc44'},
+  {r:0.4, text:'5th dim overtakes 3D space', color:'#d2a8ff'}
+];
+
+function getValues(d){return [d.g66, d.g55, d.entropy, d.g_rr, d.g_tt, d.g_pp];}
+
+function resize(){
+  const wrap = canvas.parentElement;
+  canvas.width = wrap.clientWidth * devicePixelRatio;
+  canvas.height = wrap.clientHeight * devicePixelRatio;
+  canvas.style.width = wrap.clientWidth+'px';
+  canvas.style.height = wrap.clientHeight+'px';
+  draw();
+}
+
+function draw(){
+  const W=canvas.width, H=canvas.height;
+  const dpr=devicePixelRatio;
+  const pad={l:50*dpr,r:20*dpr,t:10*dpr,b:50*dpr};
+  const cw=W-pad.l-pad.r, ch=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  barRects=[];
+
+  const barW = Math.max(1, cw/N_POINTS - 1*dpr);
+  const gap = (cw - barW*N_POINTS)/(N_POINTS);
+
+  // Compute max for absolute mode (log)
+  let globalMax = 1;
+  if(!percentMode){
+    data.forEach(d=>{let s=0;getValues(d).forEach(v=>s+=Math.abs(v));if(s>globalMax)globalMax=s;});
+  }
+
+  // Draw bars
+  for(let i=0;i<N_POINTS;i++){
+    const vals = getValues(data[i]);
+    const total = vals.reduce((a,v)=>a+Math.abs(v),0) || 1;
+    const x = pad.l + i*(barW+gap);
+    let yOff = 0;
+
+    for(let j=0;j<6;j++){
+      const v = Math.abs(vals[j]);
+      let h;
+      if(percentMode){
+        h = (v/total)*ch;
+      } else {
+        h = (Math.log10(1+v)/Math.log10(1+globalMax))*ch;
+      }
+      const y = pad.t + ch - yOff - h;
+      ctx.fillStyle = layers[j].color;
+      if(highlightIdx===i && highlightLayer===j) ctx.globalAlpha=1; else ctx.globalAlpha=0.85;
+      ctx.fillRect(x,y,barW,Math.max(h,0.5));
+      barRects.push({x:x/dpr, y:y/dpr, w:barW/dpr, h:Math.max(h,0.5)/dpr, li:j, pi:i});
+      yOff+=h;
+    }
+  }
+  ctx.globalAlpha=1;
+
+  // Annotation lines
+  annotations.forEach(a=>{
+    // find nearest index
+    let best=0,bd=999;
+    radii.forEach((r,i)=>{const d=Math.abs(r-a.r);if(d<bd){bd=d;best=i;}});
+    const x = pad.l + best*(barW+gap) + barW/2;
+    ctx.strokeStyle=a.color;
+    ctx.lineWidth=1.5*dpr;
+    ctx.setLineDash([4*dpr,4*dpr]);
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+ch);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=a.color;
+    ctx.font=`${10*dpr}px JetBrains Mono`;
+    ctx.save();ctx.translate(x+4*dpr,pad.t+20*dpr);
+    ctx.fillText(a.text,0,0);
+    ctx.restore();
+  });
+
+  // Slider highlight line
+  const si = parseInt(slider.value);
+  const sx = pad.l + si*(barW+gap) + barW/2;
+  ctx.strokeStyle='#fff';ctx.lineWidth=2*dpr;
+  ctx.beginPath();ctx.moveTo(sx,pad.t);ctx.lineTo(sx,pad.t+ch);ctx.stroke();
+
+  // X-axis labels
+  ctx.fillStyle='#888';ctx.font=`${10*dpr}px JetBrains Mono`;ctx.textAlign='center';
+  [0,12,24,36,49].forEach(i=>{
+    const x=pad.l+i*(barW+gap)+barW/2;
+    ctx.fillText(radii[i].toFixed(2),x,pad.t+ch+16*dpr);
+  });
+  ctx.textAlign='left';
+  ctx.fillText('r/rₛ →',pad.l,pad.t+ch+34*dpr);
+
+  // Y-axis label
+  ctx.save();ctx.translate(14*dpr,pad.t+ch/2);ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center';
+  ctx.fillText(percentMode?'Proportion (%)':'log scale',0,0);
+  ctx.restore();
+}
+
+// Hover
+canvas.addEventListener('mousemove',e=>{
+  const rect=canvas.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  let found=false;
+  highlightIdx=-1;highlightLayer=-1;
+  for(let k=barRects.length-1;k>=0;k--){
+    const b=barRects[k];
+    if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h){
+      highlightIdx=b.pi;highlightLayer=b.li;
+      const d=data[b.pi];const vals=getValues(d);
+      const total=vals.reduce((a,v)=>a+Math.abs(v),0);
+      tooltip.style.display='block';
+      tooltip.style.left=(e.clientX+12)+'px';
+      tooltip.style.top=(e.clientY-10)+'px';
+      tooltip.innerHTML=`<b>r = ${d.r.toFixed(4)} r<sub>s</sub></b><br>`+
+        layers.map((l,i)=>`<span style="color:${l.color}">■</span> ${l.name}: ${vals[i].toFixed(4)} (${(vals[i]/total*100).toFixed(1)}%)`).join('<br>');
+      found=true;break;
+    }
+  }
+  if(!found) tooltip.style.display='none';
+  draw();
+});
+canvas.addEventListener('mouseleave',()=>{tooltip.style.display='none';highlightIdx=-1;highlightLayer=-1;draw();});
+
+// Slider
+slider.addEventListener('input',()=>{
+  const i=parseInt(slider.value);
+  readout.innerHTML=`r = ${radii[i].toFixed(2)} r<sub>s</sub>`;
+  draw();
+});
+
+// Mode toggle
+btnMode.addEventListener('click',()=>{
+  percentMode=!percentMode;
+  btnMode.textContent=percentMode?'Percentage':'Absolute';
+  draw();
+});
+
+// Play
+btnPlay.addEventListener('click',()=>{
+  if(playing){playing=false;btnPlay.textContent='▶ Play';return;}
+  playing=true;btnPlay.textContent='⏸ Pause';
+  let idx=parseInt(slider.value);
+  function step(){
+    if(!playing)return;
+    idx++;if(idx>=N_POINTS){playing=false;btnPlay.textContent='▶ Play';return;}
+    slider.value=idx;
+    readout.innerHTML=`r = ${radii[idx].toFixed(2)} r<sub>s</sub>`;
+    draw();
+    setTimeout(()=>requestAnimationFrame(step),120);
+  }
+  step();
+});
+
+window.addEventListener('resize',resize);
+resize();
+</script>
+</body>
+</html>

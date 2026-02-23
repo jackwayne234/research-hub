@@ -68,26 +68,47 @@ padding:8px 20px;background:rgba(10,10,26,.82);backdrop-filter:blur(8px);border-
   width:30px;height:1px;background:var(--card-border);margin:6px 0;
 }
 
-/* ── Zoom ── */
-#zoom-overlay{
-  position:fixed;inset:0;z-index:200;background:rgba(5,5,15,.9);
-  display:none;opacity:0;transition:opacity .3s;
+/* ── Floating Windows ── */
+.float-win{
+  position:fixed;z-index:200;
+  background:rgba(10,10,26,.95);
+  border:1px solid var(--accent1);
+  border-radius:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6);
+  display:flex;flex-direction:column;
+  min-width:320px;min-height:240px;
+  overflow:hidden;
+  backdrop-filter:blur(12px);
 }
-#zoom-overlay.active{display:block;opacity:1}
-#zoom-frame{
-  position:fixed;z-index:201;border:none;
-  transition:all .7s cubic-bezier(.22,1,.36,1);
+.float-win .win-titlebar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 10px;
+  background:rgba(17,17,40,.9);
+  border-bottom:1px solid var(--card-border);
+  cursor:grab;user-select:none;
+  flex-shrink:0;
 }
-#zoom-frame.fullscreen{
-  top:36px!important;left:0!important;width:100vw!important;height:calc(100vh - 36px)!important;
-  border-radius:0!important;
+.float-win .win-titlebar:active{cursor:grabbing}
+.float-win .win-title{font-size:11px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase}
+.float-win .win-btns{display:flex;gap:4px}
+.float-win .win-btn{
+  width:24px;height:24px;border-radius:4px;border:1px solid var(--card-border);
+  background:rgba(17,17,40,.8);color:var(--text-dim);font-size:12px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
 }
-
-#back-btn{position:fixed;top:6px;right:20px;z-index:300;display:none;padding:6px 14px;
-background:rgba(10,10,26,.95);border:1px solid var(--accent1);border-radius:4px;
-color:var(--accent1);font:12px 'JetBrains Mono',monospace;cursor:pointer;backdrop-filter:blur(6px);transition:all .2s}
-#back-btn:hover{color:var(--text);background:rgba(99,102,241,.2)}
-#back-btn.show{display:block}
+.float-win .win-btn:hover{border-color:var(--accent1);color:var(--text)}
+.float-win .win-btn.close:hover{border-color:var(--accent3);color:var(--accent3)}
+.float-win iframe{flex:1;border:none;width:100%;height:100%;border-radius:0 0 9px 9px}
+.float-win .win-resize{
+  position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:nwse-resize;
+}
+.float-win .win-resize::after{
+  content:'';position:absolute;bottom:3px;right:3px;
+  width:8px;height:8px;
+  border-right:2px solid var(--text-dim);border-bottom:2px solid var(--text-dim);
+  opacity:.4;
+}
 
 /* ── Controls ── */
 #controls{position:fixed;bottom:14px;right:14px;z-index:100;display:flex;gap:8px;align-items:flex-end}
@@ -136,10 +157,8 @@ border-radius:6px;padding:6px 0;display:none;min-width:220px;backdrop-filter:blu
 <!-- Sidebar -->
 <nav id="sidebar"></nav>
 
-<!-- Zoom elements -->
-<div id="zoom-overlay"></div>
-<iframe id="zoom-frame"></iframe>
-<button id="back-btn" onclick="zoomOut()">◂ ESC — Back to Outpost</button>
+<!-- Floating windows container -->
+<div id="windows"></div>
 
 <!-- Controls -->
 <div id="controls">
@@ -166,25 +185,26 @@ const SCENES=[
 ];
 
 const NAV=[
-{icon:'📐',label:'5D Prime Metric',href:'metric.html'},
-{icon:'📡',label:'Research Feed',href:'research-feed.html'},
-{icon:'🌀',label:'Big Picture',href:'big-picture.html'},
-{icon:'🧮',label:'Daily Practice',href:'daily-practice.html'},
-{icon:'📊',label:'Math Journey',href:'math-journey.html'},
+{icon:'📐',label:'5D Prime Metric',href:'simulators/metric.html'},
+{icon:'📡',label:'Research Feed',href:'pages/research-feed.html'},
+{icon:'🌀',label:'Big Picture',href:'pages/big-picture.html'},
+{icon:'🧮',label:'Daily Practice',href:'pages/daily-practice.html'},
+{icon:'📊',label:'Math Journey',href:'pages/math-journey.html'},
 {divider:true},
-{icon:'🪐',label:'Expedition',href:'expedition.html'},
-{icon:'🔧',label:'Projects',href:'projects.html'},
-{icon:'📄',label:'Publications',href:'publications.html'},
-{icon:'🎨',label:'Visualizations',href:'visualizations.html'},
-{icon:'🔮',label:'6th Dimension',href:'substrate.html'},
-{icon:'🔭',label:'LIGO Analysis',href:'ligo.html'},
+{icon:'🪐',label:'Expedition',href:'simulators/expedition.html'},
+{icon:'🔧',label:'Projects',href:'pages/projects.html'},
+{icon:'📄',label:'Publications',href:'pages/publications.html'},
+{icon:'🎨',label:'Visualizations',href:'pages/visualizations.html'},
+{icon:'🔮',label:'6th Dimension',href:'pages/substrate.html'},
+{icon:'🔭',label:'LIGO Analysis',href:'analysis/ligo.html'},
 {divider:true},
-{icon:'💡',label:'Speculative',href:'speculative.html'},
-{icon:'🗺️',label:'Log & Roadmap',href:'log-roadmap.html'},
-{icon:'📝',label:'Paper Editor',href:'editor.html'},
+{icon:'💡',label:'Speculative',href:'pages/speculative.html'},
+{icon:'🗺️',label:'Log & Roadmap',href:'pages/log-roadmap.html'},
+{icon:'📝',label:'Paper Editor',href:'tools/editor.html'},
 ];
 
-let player,currentScene=0,isMuted=true,isZoomed=false;
+let player,currentScene=0,isMuted=true;
+let winZ=200,winCount=0,winOffset=0;
 
 // YouTube API
 const tag=document.createElement('script');
@@ -197,9 +217,21 @@ videoId:SCENES[0].id,
 playerVars:{autoplay:1,mute:1,controls:0,showinfo:0,modestbranding:1,rel:0,
 loop:1,playlist:SCENES[0].id,playsinline:1,disablekb:1,fs:0,iv_load_policy:3,
 origin:window.location.origin},
-events:{onReady:function(e){e.target.playVideo()}}
+events:{onReady:function(e){e.target.playVideo()},
+onStateChange:function(e){
+// If video pauses unexpectedly (e.g. from iframe focus), resume it
+if(e.data===YT.PlayerState.PAUSED){
+setTimeout(()=>{try{e.target.playVideo()}catch(ex){}},200);
+}
+}}
 });
 };
+// Keep video playing even when iframes steal focus
+setInterval(()=>{
+if(player&&player.getPlayerState&&player.getPlayerState()===YT.PlayerState.PAUSED){
+try{player.playVideo()}catch(e){}
+}
+},2000);
 
 function switchScene(i){
 currentScene=i;
@@ -241,51 +273,116 @@ return;
 const a=document.createElement('div');
 a.className='nav-item';
 a.innerHTML=`<span class="nav-icon">${item.icon}</span><span class="nav-label">${item.label}</span>`;
-a.onclick=()=>zoomIn(item.href,a);
+a.onclick=()=>openWindow(item.href,item.label);
 sidebar.appendChild(a);
 });
 
-// Zoom
-const overlay=document.getElementById('zoom-overlay');
-const frame=document.getElementById('zoom-frame');
-const backBtn=document.getElementById('back-btn');
+// Floating windows
+const winsEl=document.getElementById('windows');
 
-function zoomIn(href,el){
-if(isZoomed)return;
-isZoomed=true;
-const r=el.getBoundingClientRect();
-// Start from the icon position
-frame.style.transition='none';
-frame.style.left=r.left+'px';
-frame.style.top=r.top+'px';
-frame.style.width=r.width+'px';
-frame.style.height=r.height+'px';
-frame.style.borderRadius='8px';
-frame.style.display='block';
-frame.src=href;
-overlay.classList.add('active');
-frame.offsetHeight; // reflow
-requestAnimationFrame(()=>{
-frame.style.transition='all .7s cubic-bezier(.22,1,.36,1)';
-frame.classList.add('fullscreen');
+function openWindow(href,title){
+href+=(href.includes('?')?'&':'?')+'_t='+Date.now();
+winCount++;winZ++;winOffset=(winOffset+30)%150;
+const w=Math.min(560,window.innerWidth-200);
+const h=Math.min(420,window.innerHeight-160);
+const x=Math.max(70,120+winOffset);
+const y=Math.max(50,80+winOffset);
+const win=document.createElement('div');
+win.className='float-win';
+win.id='win-'+winCount;
+win.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px;z-index:${winZ}`;
+const iframeId='iframe-'+winCount;
+win.innerHTML=`
+<div class="win-titlebar" data-win="${win.id}">
+<span class="win-title">${title}</span>
+<div class="win-btns">
+<button class="win-btn" onclick="maxWin('${win.id}')" title="Maximize">&#9633;</button>
+<button class="win-btn close" onclick="closeWin('${win.id}')" title="Close">&times;</button>
+</div>
+</div>
+<iframe id="${iframeId}" src="${href}"></iframe>
+<div class="win-resize" data-win="${win.id}"></div>`;
+winsEl.appendChild(win);
+// Hide "Back to Hub" links inside iframe to prevent loading index.html in the window
+const ifr=document.getElementById(iframeId);
+ifr.addEventListener('load',()=>{
+try{
+const s=ifr.contentDocument.createElement('style');
+s.textContent='.back-link{display:none!important}';
+ifr.contentDocument.head.appendChild(s);
+// Prevent links to index.html from navigating inside the iframe
+ifr.contentDocument.querySelectorAll('a[href*="index.html"]').forEach(a=>{
+a.style.display='none';
 });
-backBtn.classList.add('show');
+}catch(e){}
+});
+win.addEventListener('mousedown',()=>{winZ++;win.style.zIndex=winZ});
+initDrag(win);
+initResize(win);
 }
 
-function zoomOut(){
-if(!isZoomed)return;
-isZoomed=false;
-frame.classList.remove('fullscreen');
-overlay.classList.remove('active');
-backBtn.classList.remove('show');
-setTimeout(()=>{
-frame.style.display='none';
-frame.src='about:blank';
-},700);
+function closeWin(id){
+const w=document.getElementById(id);
+if(w)w.remove();
 }
 
-document.addEventListener('keydown',e=>{if(e.key==='Escape')zoomOut()});
-overlay.addEventListener('click',zoomOut);
+function maxWin(id){
+const w=document.getElementById(id);
+if(!w)return;
+if(w.dataset.maximized==='1'){
+w.style.left=w.dataset.ox;w.style.top=w.dataset.oy;
+w.style.width=w.dataset.ow;w.style.height=w.dataset.oh;
+w.style.borderRadius='10px';
+w.dataset.maximized='0';
+}else{
+w.dataset.ox=w.style.left;w.dataset.oy=w.style.top;
+w.dataset.ow=w.style.width;w.dataset.oh=w.style.height;
+w.style.left='56px';w.style.top='36px';
+w.style.width='calc(100vw - 56px)';w.style.height='calc(100vh - 36px)';
+w.style.borderRadius='0';
+w.dataset.maximized='1';
+}
+}
+
+function initDrag(win){
+const bar=win.querySelector('.win-titlebar');
+let dx,dy,dragging=false;
+bar.addEventListener('mousedown',e=>{
+if(e.target.closest('.win-btn'))return;
+dragging=true;dx=e.clientX-win.offsetLeft;dy=e.clientY-win.offsetTop;
+win.dataset.maximized='0';win.style.borderRadius='10px';
+e.preventDefault();
+});
+document.addEventListener('mousemove',e=>{
+if(!dragging)return;
+win.style.left=Math.max(0,e.clientX-dx)+'px';
+win.style.top=Math.max(0,e.clientY-dy)+'px';
+});
+document.addEventListener('mouseup',()=>{dragging=false});
+}
+
+function initResize(win){
+const handle=win.querySelector('.win-resize');
+let rx,ry,rw,rh,resizing=false;
+handle.addEventListener('mousedown',e=>{
+resizing=true;rx=e.clientX;ry=e.clientY;
+rw=win.offsetWidth;rh=win.offsetHeight;
+e.preventDefault();e.stopPropagation();
+});
+document.addEventListener('mousemove',e=>{
+if(!resizing)return;
+win.style.width=Math.max(320,rw+(e.clientX-rx))+'px';
+win.style.height=Math.max(240,rh+(e.clientY-ry))+'px';
+});
+document.addEventListener('mouseup',()=>{resizing=false});
+}
+
+document.addEventListener('keydown',e=>{
+if(e.key==='Escape'){
+const wins=winsEl.querySelectorAll('.float-win');
+if(wins.length)wins[wins.length-1].remove();
+}
+});
 
 // Clock & Day Counter
 function updateClock(){

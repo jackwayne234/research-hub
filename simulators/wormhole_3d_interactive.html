@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Wormhole Geometry — Morris-Thorne Traversal</title>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  #horizon-banner {
+    text-align: center;
+    padding: 16px 20px;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    transition: background 0.3s, color 0.3s;
+  }
+  #horizon-banner.approaching {
+    background: linear-gradient(90deg, #1a1a2e, #1a3322, #1a1a2e);
+    color: #44ff88;
+    border-bottom: 3px solid #44ff88;
+  }
+  #horizon-banner.floor-zone {
+    background: linear-gradient(90deg, #1a1a2e, #332a1a, #1a1a2e);
+    color: #ff9944;
+    border-bottom: 3px solid #ff9944;
+  }
+  #horizon-banner.throat {
+    background: linear-gradient(90deg, #1a1a2e, #331a1a, #1a1a2e);
+    color: #ff5555;
+    border-bottom: 3px solid #ff5555;
+  }
+  #horizon-banner.exiting {
+    background: linear-gradient(90deg, #1a1a2e, #1a2233, #1a1a2e);
+    color: #44bbff;
+    border-bottom: 3px solid #44bbff;
+  }
+  #horizon-r {
+    font-weight: 400;
+    font-size: 1rem;
+    opacity: 0.7;
+    margin-left: 20px;
+    letter-spacing: 0;
+  }
+
+  #header {
+    text-align: center;
+    padding: 12px 10px 6px;
+  }
+  #header h1 {
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+  #header p {
+    font-size: 0.8rem;
+    color: #aaa;
+  }
+  #main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  #plot-container {
+    flex: 1 1 68%;
+    min-width: 500px;
+    height: 580px;
+  }
+  #sidebar {
+    flex: 0 0 300px;
+    padding: 12px 20px;
+  }
+  #controls {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 10px 20px 20px;
+  }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+  .slider-row label {
+    font-size: 0.85rem;
+    color: #aaa;
+    white-space: nowrap;
+    min-width: 80px;
+  }
+  #l-slider {
+    flex: 1;
+    accent-color: #ff6644;
+    height: 6px;
+  }
+  #l-display {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ff6644;
+    min-width: 130px;
+    text-align: right;
+  }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  button {
+    padding: 8px 18px;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: #2a2a4e;
+    color: #e0e0e0;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  button:hover { background: #3a3a6e; }
+  button.active {
+    background: #ff6644;
+    color: #fff;
+    border-color: #ff6644;
+  }
+  .info-card {
+    background: #22223a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .info-card h3 {
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    font-size: 0.82rem;
+  }
+  .info-row .label { color: #aaa; }
+  .info-row .value { color: #fff; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .info-row .value.red { color: #ff5555; }
+  .info-row .value.green { color: #44ff88; }
+  .info-row .value.orange { color: #ff9944; }
+  .info-row .value.yellow { color: #ffff44; }
+  .info-row .value.cyan { color: #44ddff; }
+  .info-row .value.purple { color: #cc88ff; }
+  #floor-status {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 5px;
+    border-radius: 4px;
+    margin-top: 4px;
+  }
+  #floor-status.active { background: #442200; color: #ff9944; }
+  #floor-status.inactive { background: #1a3322; color: #44ff88; }
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #666;
+    padding: 0 2px;
+    margin-top: -4px;
+  }
+  #colorbar-container {
+    margin-top: 8px;
+  }
+  #colorbar {
+    width: 100%;
+    height: 12px;
+    border-radius: 3px;
+    background: linear-gradient(to right, #0d0887, #46039f, #7201a8, #9c179e, #bd3786, #d8576b, #ed7953, #fb9f3a, #fdca26, #f0f921);
+  }
+  .cb-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    color: #888;
+    margin-top: 2px;
+  }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div id="horizon-banner" class="approaching">
+  <span id="horizon-text">APPROACHING WORMHOLE</span>
+  <span id="horizon-r">l / b<sub>0</sub> = &minus;100.0</span>
+</div>
+
+<div id="header">
+  <h1>Morris-Thorne Wormhole — 4D Benford Metric Traversal</h1>
+  <p>Drag to rotate, scroll to zoom, slider to traverse through the wormhole | Space: play, 1-3: modes, arrows: step</p>
+</div>
+
+<div id="main">
+  <div id="plot-container"></div>
+  <div id="sidebar">
+
+    <div class="info-card">
+      <h3>Metric Components</h3>
+      <div class="info-row">
+        <span class="label">g<sub>ll</sub> (radial)</span>
+        <span class="value red" id="info-gll">1.0000</span>
+      </div>
+      <div class="info-row">
+        <span class="label">g<sub>&theta;&theta;</sub> (angular)</span>
+        <span class="value green" id="info-gtt">10001.0</span>
+      </div>
+      <div class="info-row hidden" id="row-gdelta">
+        <span class="label">g<sub>&delta;&#770;</sub> (CS dim)</span>
+        <span class="value yellow" id="info-gdelta">1.47</span>
+      </div>
+      <div class="info-row">
+        <span class="label">det(g<sub>spatial</sub>)</span>
+        <span class="value cyan" id="info-det">1.0e8</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h3>Benford Floor</h3>
+      <div class="info-row">
+        <span class="label">Floor value</span>
+        <span class="value orange" id="info-floor">0.4068</span>
+      </div>
+      <div id="floor-status" class="inactive">Standard GR (no floor)</div>
+    </div>
+
+    <div class="info-card">
+      <h3>Measurements</h3>
+      <div class="info-row">
+        <span class="label">CS &delta;<sub>B</sub></span>
+        <span class="value yellow" id="info-db">0.03401</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Entropy rate</span>
+        <span class="value" id="info-erate" style="color:#00ccff">200.0</span>
+      </div>
+      <div class="info-row hidden" id="row-coupling">
+        <span class="label">CS carries</span>
+        <span class="value purple" id="info-coupling">0%</span>
+      </div>
+    </div>
+
+    <div id="colorbar-container">
+      <div style="font-size:0.7rem;color:#888;margin-bottom:2px">CS &delta;<sub>B</sub> (surface color)</div>
+      <div id="colorbar"></div>
+      <div class="cb-labels">
+        <span>0.03 (conforms)</span>
+        <span>0.11 (deviates)</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="controls">
+  <div class="btn-row">
+    <button id="btn-play" onclick="togglePlay()">&#9654; Play traversal</button>
+    <button id="btn-standard" class="active" onclick="setMode('standard')">Standard GR</button>
+    <button id="btn-benford" onclick="setMode('benford')">3D Benford</button>
+    <button id="btn-4d" onclick="setMode('4d')">4D Benford + CS</button>
+  </div>
+  <div class="slider-row">
+    <label>l / b<sub>0</sub></label>
+    <input type="range" id="l-slider" min="0" max="1" step="0.0005" value="0">
+    <span id="l-display">l / b₀ = &minus;100.0</span>
+  </div>
+  <div class="slider-labels">
+    <span>Approaching (l = &minus;100)</span>
+    <span>Throat (l = 0)</span>
+    <span>Exiting (l = +100)</span>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+//  WORMHOLE PHYSICS DATA & CONSTANTS
+// ════════════════════════════════════════════════════════════════
+
+const B0 = 0.1;  // Throat radius
+
+// Benford floor
+const BENFORD_PROBS = [];
+for (let d = 1; d <= 9; d++) BENFORD_PROBS.push(Math.log10(1 + 1/d));
+const FLOOR_VAL = Math.sqrt(BENFORD_PROBS.reduce((s, p) => s + p*p, 0));
+
+// CS Wormhole data — 22 positive-l points (including throat l=0)
+// Interpolate on |l| for symmetry
+const CS_POSITIVE_L  = [0.0, 0.001, 0.002, 0.005, 0.01, 0.02, 0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 2.0, 3.0, 5.0, 7.0, 10.0];
+const CS_POSITIVE_DB = [0.053134, 0.053162, 0.053086, 0.052646, 0.051016, 0.049459, 0.055167, 0.054867, 0.060177, 0.051888, 0.059727, 0.032515, 0.078334, 0.057310, 0.055346, 0.058440, 0.065096, 0.105850, 0.089252, 0.038157, 0.031026, 0.034009];
+
+// Linear interpolation on |l|
+function interpDeltaB(l) {
+  const al = Math.abs(l);
+  const ls = CS_POSITIVE_L;
+  const dbs = CS_POSITIVE_DB;
+  if (al <= ls[0]) return dbs[0];
+  if (al >= ls[ls.length - 1]) {
+    // Extrapolate linearly from last two points
+    const n = ls.length;
+    const slope = (dbs[n-1] - dbs[n-2]) / (ls[n-1] - ls[n-2]);
+    return dbs[n-1] + slope * (al - ls[n-1]);
+  }
+  // Binary search
+  let lo = 0, hi = ls.length - 1;
+  while (hi - lo > 1) {
+    const mid = (lo + hi) >> 1;
+    if (ls[mid] <= al) lo = mid; else hi = mid;
+  }
+  const t = (al - ls[lo]) / (ls[hi] - ls[lo]);
+  return dbs[lo] + t * (dbs[hi] - dbs[lo]);
+}
+
+// g_delta: Benford's equation applied to deviation
+function gDelta(db) {
+  return Math.log10(1 + 1 / Math.max(db, 1e-6));
+}
+
+// l values: linear from -100 to +100 (in units of b0, so l_physical = l * b0)
+// We use 401 steps for smooth animation
+const N_STEPS = 400;
+const L_MIN = -100, L_MAX = 100;
+const L_VALUES = [];
+for (let i = 0; i <= N_STEPS; i++) {
+  L_VALUES.push(L_MIN + (L_MAX - L_MIN) * i / N_STEPS);
+}
+
+// ════════════════════════════════════════════════════════════════
+//  METRIC FUNCTIONS (ported from morris_thorne_benford_4d.py)
+// ════════════════════════════════════════════════════════════════
+
+// Standard GR wormhole (Morris-Thorne)
+function metricStandard(l) {
+  const r2 = l*l + B0*B0;
+  return { gll: 1, gtt: r2, gpp: r2 };
+}
+
+// 3D Benford floor
+function metric3D(l) {
+  const r2 = l*l + B0*B0;
+  const det = r2 * r2;  // g_ll * g_tt * g_pp with g_ll=1
+  const gtt = r2;
+  const gpp = r2;
+  if (det >= FLOOR_VAL) {
+    return { gll: 1, gtt, gpp, floorActive: false };
+  }
+  const gll = FLOOR_VAL / (gtt * gpp);
+  return { gll, gtt, gpp, floorActive: true };
+}
+
+// 4D Benford + CS
+function metric4D(l) {
+  const db = interpDeltaB(l);
+  const gd = gDelta(db);
+  const r2 = l*l + B0*B0;
+  const gtt = r2;
+  const gpp = r2;
+  const det = r2 * r2 * gd;
+  if (det >= FLOOR_VAL) {
+    return { gll: 1, gtt, gpp, gd, db, floorActive: false };
+  }
+  const gll = FLOOR_VAL / (gtt * gpp * gd);
+  return { gll, gtt, gpp, gd, db, floorActive: true };
+}
+
+// Entropy rate (numerical derivative for 4D)
+function entropyRate(l, mode) {
+  const dl = 0.01;
+  const lp = l + dl;
+  const lm = l - dl;
+  let m1, m2;
+  if (mode === 'standard') {
+    m1 = metricStandard(lm); m2 = metricStandard(lp);
+    const dgll = (m2.gll - m1.gll) / (2*dl);
+    const dgtt = (m2.gtt - m1.gtt) / (2*dl);
+    const dgpp = (m2.gpp - m1.gpp) / (2*dl);
+    return Math.sqrt(dgll*dgll + dgtt*dgtt + dgpp*dgpp);
+  } else if (mode === 'benford') {
+    m1 = metric3D(lm); m2 = metric3D(lp);
+    const dgll = (m2.gll - m1.gll) / (2*dl);
+    const dgtt = (m2.gtt - m1.gtt) / (2*dl);
+    const dgpp = (m2.gpp - m1.gpp) / (2*dl);
+    return Math.sqrt(dgll*dgll + dgtt*dgtt + dgpp*dgpp);
+  } else {
+    m1 = metric4D(lm); m2 = metric4D(lp);
+    const dgll = (m2.gll - m1.gll) / (2*dl);
+    const dgtt = (m2.gtt - m1.gtt) / (2*dl);
+    const dgpp = (m2.gpp - m1.gpp) / (2*dl);
+    const dgd  = (m2.gd  - m1.gd)  / (2*dl);
+    return Math.sqrt(dgll*dgll + dgtt*dgtt + dgpp*dgpp + dgd*dgd);
+  }
+}
+
+// Color range for wormhole
+const DB_MIN = 0.03, DB_MAX = 0.11;
+
+// ════════════════════════════════════════════════════════════════
+//  3D SURFACE GENERATION
+// ════════════════════════════════════════════════════════════════
+
+const N_THETA = 32, N_PHI = 48;
+
+function generateSurface(l, mode) {
+  let m, db;
+  if (mode === 'standard') {
+    m = metricStandard(l);
+    db = interpDeltaB(l);
+  } else if (mode === 'benford') {
+    m = metric3D(l);
+    db = interpDeltaB(l);
+  } else {
+    m = metric4D(l);
+    db = m.db;
+  }
+
+  // Equatorial radius = sqrt(g_theta) = sqrt(l^2 + b0^2)
+  const eqRadius = Math.sqrt(m.gtt);
+  // Polar radius = sqrt(g_ll) — shows the radial stretching
+  const polRadius = Math.sqrt(m.gll);
+
+  // Log-scale display (same approach as BH viewer)
+  let displayEq = Math.log10(1 + eqRadius);
+  let displayPol = Math.log10(1 + polRadius);
+  displayEq = Math.max(displayEq, 0.015);
+
+  const x = [], y = [], z = [], surfColor = [];
+
+  for (let i = 0; i <= N_THETA; i++) {
+    const theta = Math.PI * i / N_THETA;
+    const xr = [], yr = [], zr = [], cr = [];
+    for (let j = 0; j <= N_PHI; j++) {
+      const phi = 2 * Math.PI * j / N_PHI;
+      xr.push(displayEq * Math.sin(theta) * Math.cos(phi));
+      yr.push(displayEq * Math.sin(theta) * Math.sin(phi));
+      zr.push(displayPol * Math.cos(theta));
+      cr.push(db);
+    }
+    x.push(xr); y.push(yr); z.push(zr); surfColor.push(cr);
+  }
+  return { x, y, z, surfColor };
+}
+
+// ════════════════════════════════════════════════════════════════
+//  PLOTLY SETUP
+// ════════════════════════════════════════════════════════════════
+
+let currentMode = 'standard';
+let currentLIndex = 0;
+let playing = false;
+let animTimer = null;
+
+function getTrace(l, mode) {
+  const s = generateSurface(l, mode);
+  return {
+    type: 'surface',
+    x: s.x, y: s.y, z: s.z,
+    surfacecolor: s.surfColor,
+    colorscale: 'Plasma',
+    cmin: DB_MIN, cmax: DB_MAX,
+    showscale: false,
+    lighting: { ambient: 0.4, diffuse: 0.7, specular: 0.3, roughness: 0.5 },
+    lightposition: { x: 1000, y: 1000, z: 1000 },
+    contours: {
+      x: { show: false }, y: { show: false }, z: { show: false }
+    },
+    hoverinfo: 'skip'
+  };
+}
+
+const layout = {
+  paper_bgcolor: '#1a1a2e',
+  plot_bgcolor: '#1a1a2e',
+  scene: {
+    bgcolor: '#1a1a2e',
+    xaxis: { range: [-2.5, 2.5], showgrid: false, zeroline: false, showticklabels: false, title: '' },
+    yaxis: { range: [-2.5, 2.5], showgrid: false, zeroline: false, showticklabels: false, title: '' },
+    zaxis: { range: [-2.5, 2.5], showgrid: false, zeroline: false, showticklabels: false, title: '' },
+    aspectratio: { x: 1, y: 1, z: 1 },
+    camera: { eye: { x: 1.6, y: 1.6, z: 0.8 } }
+  },
+  margin: { l: 0, r: 0, t: 0, b: 0 },
+  font: { color: '#e0e0e0' }
+};
+
+const config = { responsive: true, displayModeBar: false };
+
+const initTrace = getTrace(L_VALUES[0], currentMode);
+Plotly.newPlot('plot-container', [initTrace], layout, config);
+
+// ════════════════════════════════════════════════════════════════
+//  UPDATE
+// ════════════════════════════════════════════════════════════════
+
+function updatePlot(lIdx) {
+  currentLIndex = lIdx;
+  const l = L_VALUES[lIdx];
+  const tr = getTrace(l, currentMode);
+  Plotly.react('plot-container', [tr], layout, config);
+  updateInfo(l);
+}
+
+function fmt(v) {
+  if (!isFinite(v) || isNaN(v)) return '---';
+  if (v >= 1e8) return (v / 1e9).toFixed(1) + 'B';
+  if (v >= 1e5) return (v / 1e6).toFixed(1) + 'M';
+  if (v >= 1e4) return (v / 1e3).toFixed(1) + 'K';
+  if (v >= 100) return v.toFixed(0);
+  if (v >= 1) return v.toFixed(4);
+  if (v >= 0.001) return v.toFixed(5);
+  return v.toExponential(2);
+}
+
+function updateInfo(l) {
+  const db = interpDeltaB(l);
+  let m, det, coupling = 0;
+
+  if (currentMode === 'standard') {
+    m = metricStandard(l);
+    det = m.gll * m.gtt * m.gpp;
+  } else if (currentMode === 'benford') {
+    m = metric3D(l);
+    det = m.gll * m.gtt * m.gpp;
+  } else {
+    m = metric4D(l);
+    det = m.gll * m.gtt * m.gpp * m.gd;
+    // Emergent coupling
+    const m3 = metric3D(l);
+    if (m3.floorActive && m.floorActive) {
+      coupling = 1 - (m.gll / m3.gll);
+    } else if (m3.floorActive && !m.floorActive) {
+      coupling = 1 - (1 / m3.gll);
+    }
+  }
+
+  const erate = entropyRate(l, currentMode);
+
+  // ── Banner: symmetric wormhole zones ──
+  const banner = document.getElementById('horizon-banner');
+  const hText = document.getElementById('horizon-text');
+  const hR = document.getElementById('horizon-r');
+
+  const al = Math.abs(l);
+  // Floor boundary at approximately |l| ~ 0.79 (where (l^2+b0^2)^2 < FLOOR_VAL)
+  const floorBound = Math.sqrt(Math.sqrt(FLOOR_VAL) - B0*B0);
+
+  if (al < 0.05) {
+    banner.className = 'throat';
+    hText.textContent = 'THROAT';
+  } else if (al < floorBound * 1.1) {
+    banner.className = 'floor-zone';
+    hText.textContent = 'FLOOR ZONE';
+  } else if (l < 0) {
+    banner.className = 'approaching';
+    hText.textContent = 'APPROACHING WORMHOLE';
+  } else {
+    banner.className = 'exiting';
+    hText.textContent = 'EXITING WORMHOLE';
+  }
+
+  const sign = l < 0 ? '\u2212' : '+';
+  hR.innerHTML = 'l / b<sub>0</sub> = ' + sign + Math.abs(l).toFixed(1);
+
+  // ── Metric values ──
+  document.getElementById('info-gll').textContent = fmt(m.gll);
+  document.getElementById('info-gtt').textContent = fmt(m.gtt);
+  document.getElementById('info-det').textContent = fmt(det);
+  document.getElementById('info-floor').textContent = FLOOR_VAL.toFixed(4);
+  document.getElementById('info-db').textContent = db.toFixed(5);
+  document.getElementById('info-erate').textContent = fmt(erate);
+
+  // g_delta row (4D only)
+  const gdRow = document.getElementById('row-gdelta');
+  if (currentMode === '4d') {
+    gdRow.classList.remove('hidden');
+    document.getElementById('info-gdelta').textContent = fmt(m.gd);
+  } else {
+    gdRow.classList.add('hidden');
+  }
+
+  // Coupling row (4D only)
+  const cpRow = document.getElementById('row-coupling');
+  if (currentMode === '4d') {
+    cpRow.classList.remove('hidden');
+    const m3 = metric3D(l);
+    if (m3.floorActive) {
+      document.getElementById('info-coupling').textContent = (coupling * 100).toFixed(1) + '%';
+    } else {
+      document.getElementById('info-coupling').textContent = '0%';
+    }
+  } else {
+    cpRow.classList.add('hidden');
+  }
+
+  // Floor status
+  const fs = document.getElementById('floor-status');
+  if (currentMode === 'standard') {
+    fs.textContent = 'Standard GR (no floor)';
+    fs.className = 'inactive';
+  } else if (currentMode === 'benford') {
+    const m3 = metric3D(l);
+    if (m3.floorActive) {
+      fs.textContent = '3D FLOOR ACTIVE';
+      fs.className = 'active';
+    } else {
+      fs.textContent = 'Floor inactive';
+      fs.className = 'inactive';
+    }
+  } else {
+    if (m.floorActive) {
+      fs.textContent = '4D FLOOR ACTIVE';
+      fs.className = 'active';
+    } else {
+      const m3 = metric3D(l);
+      if (m3.floorActive) {
+        fs.textContent = '4D floor not needed (CS helps)';
+        fs.className = 'inactive';
+      } else {
+        fs.textContent = 'Floor inactive';
+        fs.className = 'inactive';
+      }
+    }
+  }
+
+  const signD = l < 0 ? '\u2212' : '';
+  document.getElementById('l-display').textContent = 'l / b\u2080 = ' + signD + Math.abs(l).toFixed(1);
+}
+
+// ════════════════════════════════════════════════════════════════
+//  CONTROLS
+// ════════════════════════════════════════════════════════════════
+
+const slider = document.getElementById('l-slider');
+slider.addEventListener('input', () => {
+  const idx = Math.round(parseFloat(slider.value) * N_STEPS);
+  updatePlot(idx);
+});
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('btn-standard').className = mode === 'standard' ? 'active' : '';
+  document.getElementById('btn-benford').className = mode === 'benford' ? 'active' : '';
+  document.getElementById('btn-4d').className = mode === '4d' ? 'active' : '';
+  updatePlot(currentLIndex);
+}
+
+function togglePlay() {
+  playing ? stopPlay() : startPlay();
+}
+
+function startPlay() {
+  playing = true;
+  document.getElementById('btn-play').textContent = '\u23F8 Pause';
+  document.getElementById('btn-play').classList.add('active');
+  if (currentLIndex >= N_STEPS) currentLIndex = 0;
+  advanceFrame();
+}
+
+function stopPlay() {
+  playing = false;
+  document.getElementById('btn-play').textContent = '\u25B6 Play traversal';
+  document.getElementById('btn-play').classList.remove('active');
+  if (animTimer) { clearTimeout(animTimer); animTimer = null; }
+}
+
+function advanceFrame() {
+  if (!playing || currentLIndex >= N_STEPS) { stopPlay(); return; }
+  currentLIndex++;
+  slider.value = currentLIndex / N_STEPS;
+  updatePlot(currentLIndex);
+
+  const l = L_VALUES[currentLIndex];
+  const erate = entropyRate(l, currentMode);
+  // Slow down near throat (low entropy rate), speed up far away
+  const delay = Math.max(16, Math.min(200, 80 / Math.max(0.01, Math.sqrt(erate) * 0.05)));
+  animTimer = setTimeout(advanceFrame, delay);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+  if (e.key === 'ArrowRight') {
+    const idx = Math.min(N_STEPS, currentLIndex + 1);
+    slider.value = idx / N_STEPS;
+    updatePlot(idx);
+  }
+  if (e.key === 'ArrowLeft') {
+    const idx = Math.max(0, currentLIndex - 1);
+    slider.value = idx / N_STEPS;
+    updatePlot(idx);
+  }
+  if (e.key === '1') setMode('standard');
+  if (e.key === '2') setMode('benford');
+  if (e.key === '3') setMode('4d');
+});
+
+updateInfo(L_VALUES[0]);
+</script>
+</body>
+</html>

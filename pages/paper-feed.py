@@ -15,7 +15,7 @@ import os
 import re
 import time
 
-FEED_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "feed-data.json")
+FEED_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "feed-data.json")
 
 # Search queries grouped by topic
 TOPICS = {

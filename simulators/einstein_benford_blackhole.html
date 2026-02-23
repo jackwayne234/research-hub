@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Falling Into a Black Hole — First Person — Einstein + Benford Floor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;600;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    color: #e0e0e0;
+    font-family: 'Inter', system-ui, sans-serif;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  #canvas-container {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+  }
+
+  /* --- Title Overlay --- */
+  #title-overlay {
+    position: absolute;
+    top: 20px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    text-align: center;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.8s;
+  }
+  #title-overlay h1 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(100,140,255,0.5), 0 2px 8px rgba(0,0,0,0.8);
+    margin-bottom: 4px;
+  }
+  #title-overlay .subtitle {
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: #d4af37;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(212,175,55,0.4);
+  }
+
+  /* --- Event Banners --- */
+  #event-banner {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 200;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  #event-banner.show { opacity: 1; }
+  #event-banner .event-text {
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    padding: 16px 40px;
+    border-radius: 4px;
+  }
+  #event-banner .event-sub {
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    opacity: 0.8;
+  }
+
+  /* --- HUD Panel --- */
+  #hud {
+    position: absolute;
+    top: 90px; right: 20px;
+    z-index: 100;
+    width: 320px;
+    pointer-events: none;
+  }
+  .hud-card {
+    background: rgba(10, 10, 30, 0.85);
+    border: 1px solid rgba(100, 140, 255, 0.2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .hud-card.gold-active {
+    border-color: rgba(212, 175, 55, 0.6);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+  }
+  .hud-card.red-active {
+    border-color: rgba(255, 60, 60, 0.6);
+    box-shadow: 0 0 20px rgba(255, 60, 60, 0.15);
+  }
+  .hud-title {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #667;
+    margin-bottom: 10px;
+  }
+  .hud-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 3px 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .hud-label {
+    font-size: 0.75rem;
+    color: #8899aa;
+  }
+  .hud-value {
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s;
+  }
+  .hud-value.green { color: #44ff88; }
+  .hud-value.red { color: #ff4444; }
+  .hud-value.gold { color: #d4af37; }
+  .hud-value.white { color: #ffffff; }
+
+  .hud-equation {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: #d4af37;
+    text-align: center;
+    padding: 8px 0 2px;
+    opacity: 0.9;
+    line-height: 1.5;
+  }
+
+  /* --- Progress bar --- */
+  #progress-bar-container {
+    position: absolute;
+    bottom: 80px; left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    max-width: 80vw;
+    z-index: 100;
+    pointer-events: none;
+  }
+  #progress-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    position: relative;
+    overflow: visible;
+  }
+  #progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.1s linear;
+    background: linear-gradient(90deg, #44ff88, #44ff88 60%, #ff4444 75%, #d4af37 100%);
+  }
+  .progress-marker {
+    position: absolute;
+    top: -8px;
+    width: 2px; height: 22px;
+    transform: translateX(-50%);
+  }
+  .progress-marker-label {
+    position: absolute;
+    top: -20px;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+
+  /* --- Controls --- */
+  #controls {
+    position: absolute;
+    bottom: 20px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(10, 10, 30, 0.85);
+    border: 1px solid rgba(100, 140, 255, 0.2);
+    border-radius: 12px;
+    padding: 10px 20px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  #controls button {
+    background: rgba(50, 50, 90, 0.8);
+    border: 1px solid rgba(100, 140, 255, 0.3);
+    color: #ccc;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.5px;
+  }
+  #controls button:hover {
+    background: rgba(80, 80, 140, 0.9);
+    border-color: rgba(140, 170, 255, 0.5);
+    color: #fff;
+  }
+  #controls button.active {
+    background: rgba(212, 175, 55, 0.3);
+    border-color: #d4af37;
+    color: #d4af37;
+  }
+  #controls button.play-btn {
+    background: rgba(68, 255, 136, 0.15);
+    border-color: rgba(68, 255, 136, 0.4);
+    color: #44ff88;
+    min-width: 70px;
+  }
+  #controls button.play-btn:hover {
+    background: rgba(68, 255, 136, 0.25);
+  }
+  #controls button.play-btn.paused {
+    background: rgba(255, 170, 50, 0.15);
+    border-color: rgba(255, 170, 50, 0.4);
+    color: #ffaa32;
+  }
+
+  .speed-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .speed-control label {
+    font-size: 0.7rem;
+    color: #778;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .speed-control input[type="range"] {
+    width: 80px;
+    accent-color: #6688ff;
+    height: 4px;
+  }
+
+  .toggle-group {
+    display: flex;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(100, 140, 255, 0.2);
+  }
+  .toggle-group button {
+    border: none;
+    border-radius: 0;
+    padding: 8px 12px;
+    font-size: 0.7rem;
+  }
+  .toggle-group button:first-child { border-right: 1px solid rgba(100, 140, 255, 0.2); }
+  .toggle-group button.active {
+    background: rgba(100, 140, 255, 0.25);
+    color: #aaccff;
+    border-color: rgba(100, 140, 255, 0.2);
+  }
+
+  /* --- Region label --- */
+  #region-label {
+    position: absolute;
+    top: 90px; left: 20px;
+    z-index: 100;
+    pointer-events: none;
+  }
+  #region-label .region-name {
+    font-size: 1.0rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.5s;
+  }
+  #region-label .region-desc {
+    font-size: 0.7rem;
+    font-weight: 300;
+    color: #889;
+    margin-top: 2px;
+    max-width: 220px;
+    line-height: 1.4;
+  }
+
+  /* --- Full-screen flash --- */
+  #screen-flash {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 150;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+  #screen-flash.flash-red { background: radial-gradient(ellipse at center, rgba(255,30,30,0.4), transparent 70%); opacity: 1; }
+  #screen-flash.flash-gold { background: radial-gradient(ellipse at center, rgba(212,175,55,0.5), transparent 70%); opacity: 1; }
+</style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+
+<div id="title-overlay">
+  <h1>First Person: Falling Into a Black Hole</h1>
+  <div class="subtitle">You are the observer. The singularity is gone. Geometry survives.</div>
+</div>
+
+<div id="event-banner">
+  <div class="event-text" id="event-text"></div>
+  <div class="event-sub" id="event-sub"></div>
+</div>
+
+<div id="screen-flash"></div>
+
+<div id="region-label">
+  <div class="region-name" id="region-name" style="color:#44ff88;">EXTERIOR SPACETIME</div>
+  <div class="region-desc" id="region-desc">Pure Schwarzschild geometry. Time flows forward.</div>
+</div>
+
+<div id="hud">
+  <div class="hud-card" id="hud-main">
+    <div class="hud-title">Observer Telemetry</div>
+    <div class="hud-row">
+      <span class="hud-label">&rho; / r<sub>s</sub></span>
+      <span class="hud-value green" id="hud-rho">3.000</span>
+    </div>
+    <div class="hud-row">
+      <span class="hud-label">|det(g)|</span>
+      <span class="hud-value green" id="hud-det">81.000</span>
+    </div>
+    <div class="hud-row">
+      <span class="hud-label">g<sub>tt</sub></span>
+      <span class="hud-value green" id="hud-gtt">-0.6667</span>
+    </div>
+    <div class="hud-row">
+      <span class="hud-label">g<sub>rr</sub></span>
+      <span class="hud-value green" id="hud-grr">1.5000</span>
+    </div>
+  </div>
+  <div class="hud-card" id="hud-benford">
+    <div class="hud-title">Benford Floor Status</div>
+    <div class="hud-row">
+      <span class="hud-label">Floor value</span>
+      <span class="hud-value white" id="hud-floor">0.4068</span>
+    </div>
+    <div class="hud-row">
+      <span class="hud-label">Floor active</span>
+      <span class="hud-value" id="hud-active" style="color:#556;">NO</span>
+    </div>
+    <div class="hud-row">
+      <span class="hud-label">&rho;<sub>floor</sub></span>
+      <span class="hud-value white">0.7986</span>
+    </div>
+    <div class="hud-equation">
+      Floor = &radic;(&Sigma; [log<sub>10</sub>(1+1/d)]&sup2;)<br>
+      = 0.4068 &nbsp;&rarr;&nbsp; &rho;<sub>floor</sub> = 0.7986 r<sub>s</sub>
+    </div>
+  </div>
+</div>
+
+<div id="progress-bar-container">
+  <div id="progress-track">
+    <div id="progress-fill"></div>
+    <div class="progress-marker" style="left: 75.5%; background: #ff4444;">
+      <div class="progress-marker-label" style="color: #ff4444;">&rho;=1 Horizon</div>
+    </div>
+    <div class="progress-marker" style="left: 83.1%; background: #d4af37;">
+      <div class="progress-marker-label" style="color: #d4af37;">&rho;=0.7986 Floor</div>
+    </div>
+  </div>
+</div>
+
+<div id="controls">
+  <button class="play-btn" id="btn-play" onclick="togglePlay()">PLAY</button>
+  <button id="btn-reset" onclick="resetSimulation()">RESET</button>
+  <div class="speed-control">
+    <label>Speed</label>
+    <input type="range" id="speed-slider" min="1" max="100" value="15" oninput="updateSpeed(this.value)">
+  </div>
+  <div class="toggle-group">
+    <button id="btn-benford" class="active" onclick="setMode('benford')">Einstein + Benford</button>
+    <button id="btn-classical" onclick="setMode('classical')">Einstein Only</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONSTANTS
+// ============================================================
+const BENFORD_FLOOR = 0.4068;
+const RHO_FLOOR = Math.pow(BENFORD_FLOOR, 0.25); // 0.7986
+const RHO_START = 3.0;
+const RHO_HORIZON = 1.0;
+const RHO_END_BENFORD = 0.35;
+const RHO_END_CLASSICAL = 0.05;
+const VISUAL_SCALE = 10.0;
+
+// ============================================================
+// STATE
+// ============================================================
+let playing = false;
+let rho = RHO_START;
+let speed = 0.15; // slower default for first-person drama
+let cameraAngle = 0; // angle around the funnel axis for camera path
+let mode = 'benford'; // 'benford' or 'classical'
+let horizonCrossed = false;
+let floorCrossed = false;
+let eventBannerTimeout = null;
+let time = 0;
+
+// ============================================================
+// THREE.JS SETUP
+// ============================================================
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.05, 2000);
+// Start at observer's initial position on the funnel
+const startAngle = 0;
+const startPos = rhoToPositionEarly(RHO_START, startAngle);
+camera.position.set(startPos.x, startPos.y + 1.5, startPos.z);
+camera.lookAt(0, startPos.y - 5, 0);
+
+// Early version of rhoToPosition for init (before full function defined)
+function rhoToPositionEarly(rhoVal, angle) {
+  angle = angle || 0;
+  if (rhoVal > 1.0) {
+    const r = rhoVal;
+    const z = -2.0 * Math.sqrt(Math.max(0, r - 1.0));
+    const rVisual = r * VISUAL_SCALE * 0.7;
+    const zVisual = z * VISUAL_SCALE * 0.8;
+    return new THREE.Vector3(rVisual * Math.cos(angle), zVisual, rVisual * Math.sin(angle));
+  } else {
+    const t = (1.0 - rhoVal) / (1.0 - 0.2);
+    const rVisual = rhoVal * VISUAL_SCALE * 0.7;
+    const zBase = -2.0 * Math.sqrt(1.01 - 1.0) * VISUAL_SCALE * 0.8;
+    const zVisual = zBase - t * 12;
+    return new THREE.Vector3(rVisual * Math.cos(angle), zVisual, rVisual * Math.sin(angle));
+  }
+}
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.minDistance = 1;
+controls.maxDistance = 150;
+controls.maxPolarAngle = Math.PI * 0.95;
+controls.target.set(0, startPos.y - 5, 0);
+
+// Saved camera state for restoring after play stops
+let savedCamPos = null;
+let savedCamTarget = null;
+
+// ============================================================
+// STARFIELD
+// ============================================================
+function createStarfield() {
+  const starCount = 4000;
+  const geo = new THREE.BufferGeometry();
+  const positions = new Float32Array(starCount * 3);
+  const sizes = new Float32Array(starCount);
+  const colors = new Float32Array(starCount * 3);
+
+  for (let i = 0; i < starCount; i++) {
+    const r = 200 + Math.random() * 600;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    positions[i*3]     = r * Math.sin(phi) * Math.cos(theta);
+    positions[i*3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    positions[i*3 + 2] = r * Math.cos(phi);
+    sizes[i] = 0.5 + Math.random() * 2.0;
+    const temp = Math.random();
+    if (temp < 0.3) {
+      colors[i*3] = 0.7; colors[i*3+1] = 0.8; colors[i*3+2] = 1.0;
+    } else if (temp < 0.6) {
+      colors[i*3] = 1.0; colors[i*3+1] = 1.0; colors[i*3+2] = 0.9;
+    } else {
+      colors[i*3] = 1.0; colors[i*3+1] = 0.85; colors[i*3+2] = 0.7;
+    }
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+  const mat = new THREE.PointsMaterial({
+    size: 1.2,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.8,
+    sizeAttenuation: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  scene.add(new THREE.Points(geo, mat));
+}
+createStarfield();
+
+// ============================================================
+// FLAMM'S PARABOLOID (Embedding Diagram)
+// ============================================================
+function createFlammParaboloid() {
+  const segments = 128;
+  const rings = 80;
+  const rMin = 1.01; // just above horizon in Schwarzschild radii
+  const rMax = 4.0;
+
+  const geo = new THREE.BufferGeometry();
+  const positions = [];
+  const colors = [];
+  const indices = [];
+
+  for (let j = 0; j <= rings; j++) {
+    const r = rMin + (rMax - rMin) * (j / rings);
+    const z = -2.0 * Math.sqrt(r - 1.0); // Flamm's: z = 2*sqrt(r_s*(r - r_s)), r_s=1
+    const rVisual = r * VISUAL_SCALE * 0.7;
+    const zVisual = z * VISUAL_SCALE * 0.8;
+
+    // Color: dark blue far away, deeper blue near horizon
+    const t = j / rings;
+    const cr = 0.02 + 0.08 * (1 - t);
+    const cg = 0.03 + 0.12 * (1 - t);
+    const cb = 0.15 + 0.35 * (1 - t);
+
+    for (let i = 0; i <= segments; i++) {
+      const theta = (i / segments) * Math.PI * 2;
+      positions.push(
+        rVisual * Math.cos(theta),
+        zVisual,
+        rVisual * Math.sin(theta)
+      );
+      colors.push(cr, cg, cb);
+    }
+  }
+
+  for (let j = 0; j < rings; j++) {
+    for (let i = 0; i < segments; i++) {
+      const a = j * (segments + 1) + i;
+      const b = a + segments + 1;
+      indices.push(a, b, a + 1);
+      indices.push(b, b + 1, a + 1);
+    }
+  }
+
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+
+  const mat = new THREE.MeshPhongMaterial({
+    vertexColors: true,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.55,
+    shininess: 60,
+    specular: new THREE.Color(0x334488),
+    flatShading: false
+  });
+
+  const mesh = new THREE.Mesh(geo, mat);
+  scene.add(mesh);
+
+  // Wireframe overlay
+  const wireMat = new THREE.MeshBasicMaterial({
+    color: 0x2244aa,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.12,
+  });
+  const wireMesh = new THREE.Mesh(geo.clone(), wireMat);
+  scene.add(wireMesh);
+
+  return mesh;
+}
+const paraboloid = createFlammParaboloid();
+
+// ============================================================
+// INTERIOR FUNNEL (below horizon)
+// ============================================================
+function createInteriorFunnel() {
+  const segments = 96;
+  const rings = 50;
+  const geo = new THREE.BufferGeometry();
+  const positions = [];
+  const colors = [];
+  const indices = [];
+
+  for (let j = 0; j <= rings; j++) {
+    const t = j / rings;
+    const rhoVal = 1.0 - t * (1.0 - 0.2);
+    const rVisual = rhoVal * VISUAL_SCALE * 0.7;
+    // Funnel continues downward
+    const zBase = -2.0 * Math.sqrt(1.01 - 1.0) * VISUAL_SCALE * 0.8;
+    const zVisual = zBase - t * 12;
+
+    const floorRho = RHO_FLOOR;
+    const isAboveFloor = rhoVal > floorRho;
+
+    for (let i = 0; i <= segments; i++) {
+      const theta = (i / segments) * Math.PI * 2;
+      positions.push(
+        rVisual * Math.cos(theta),
+        zVisual,
+        rVisual * Math.sin(theta)
+      );
+      if (isAboveFloor) {
+        // Red zone (inside horizon, above floor)
+        colors.push(0.25 + 0.15 * (1-t), 0.03, 0.05);
+      } else {
+        // Gold zone (floor active)
+        const gold = 0.5 + 0.3 * Math.sin(t * 5);
+        colors.push(0.7 * gold + 0.15, 0.55 * gold + 0.08, 0.1 * gold + 0.02);
+      }
+    }
+  }
+
+  for (let j = 0; j < rings; j++) {
+    for (let i = 0; i < segments; i++) {
+      const a = j * (segments + 1) + i;
+      const b = a + segments + 1;
+      indices.push(a, b, a + 1);
+      indices.push(b, b + 1, a + 1);
+    }
+  }
+
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+
+  const mat = new THREE.MeshPhongMaterial({
+    vertexColors: true,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.5,
+    shininess: 30,
+  });
+
+  const mesh = new THREE.Mesh(geo, mat);
+  scene.add(mesh);
+  return mesh;
+}
+const interiorFunnel = createInteriorFunnel();
+
+// ============================================================
+// EVENT HORIZON RING
+// ============================================================
+function createHorizonRing() {
+  const rVisual = 1.0 * VISUAL_SCALE * 0.7;
+  const zVisual = -2.0 * Math.sqrt(1.01 - 1.0) * VISUAL_SCALE * 0.8;
+
+  const geo = new THREE.TorusGeometry(rVisual, 0.25, 24, 128);
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0xff2222,
+    transparent: true,
+    opacity: 0.9,
+  });
+  const ring = new THREE.Mesh(geo, mat);
+  ring.rotation.x = Math.PI / 2;
+  ring.position.y = zVisual;
+  scene.add(ring);
+
+  // Glow ring - wider for first-person visibility
+  const glowGeo = new THREE.TorusGeometry(rVisual, 1.2, 24, 128);
+  const glowMat = new THREE.MeshBasicMaterial({
+    color: 0xff3333,
+    transparent: true,
+    opacity: 0.2,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  const glow = new THREE.Mesh(glowGeo, glowMat);
+  glow.rotation.x = Math.PI / 2;
+  glow.position.y = zVisual;
+  scene.add(glow);
+
+  // Label sprite
+  const labelCanvas = document.createElement('canvas');
+  labelCanvas.width = 512; labelCanvas.height = 64;
+  const ctx = labelCanvas.getContext('2d');
+  ctx.fillStyle = '#ff4444';
+  ctx.font = 'bold 32px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('EVENT HORIZON  \u03C1 = 1.0', 256, 40);
+  const labelTex = new THREE.CanvasTexture(labelCanvas);
+  const labelMat = new THREE.SpriteMaterial({ map: labelTex, transparent: true, opacity: 0.7, depthTest: false });
+  const label = new THREE.Sprite(labelMat);
+  label.position.set(rVisual + 3, zVisual + 1.5, 0);
+  label.scale.set(8, 1, 1);
+  scene.add(label);
+
+  return { ring, glow };
+}
+const horizon = createHorizonRing();
+
+// ============================================================
+// BENFORD FLOOR RING
+// ============================================================
+function createBenfordFloorRing() {
+  const rhoFloor = RHO_FLOOR;
+  // Position along the interior funnel
+  const t = (1.0 - rhoFloor) / (1.0 - 0.2);
+  const rVisual = rhoFloor * VISUAL_SCALE * 0.7;
+  const zBase = -2.0 * Math.sqrt(1.01 - 1.0) * VISUAL_SCALE * 0.8;
+  const zVisual = zBase - t * 12;
+
+  const geo = new THREE.TorusGeometry(rVisual, 0.3, 24, 128);
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0xd4af37,
+    transparent: true,
+    opacity: 0.95,
+  });
+  const ring = new THREE.Mesh(geo, mat);
+  ring.rotation.x = Math.PI / 2;
+  ring.position.y = zVisual;
+  scene.add(ring);
+
+  // Glow - wider for first-person
+  const glowGeo = new THREE.TorusGeometry(rVisual, 1.5, 24, 128);
+  const glowMat = new THREE.MeshBasicMaterial({
+    color: 0xd4af37,
+    transparent: true,
+    opacity: 0.15,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  const glow = new THREE.Mesh(glowGeo, glowMat);
+  glow.rotation.x = Math.PI / 2;
+  glow.position.y = zVisual;
+  scene.add(glow);
+
+  // Label
+  const labelCanvas = document.createElement('canvas');
+  labelCanvas.width = 512; labelCanvas.height = 64;
+  const ctx = labelCanvas.getContext('2d');
+  ctx.fillStyle = '#d4af37';
+  ctx.font = 'bold 32px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('BENFORD FLOOR  \u03C1 = 0.7986', 256, 40);
+  const labelTex = new THREE.CanvasTexture(labelCanvas);
+  const labelMat = new THREE.SpriteMaterial({ map: labelTex, transparent: true, opacity: 0.7, depthTest: false });
+  const label = new THREE.Sprite(labelMat);
+  label.position.set(rVisual + 3.5, zVisual + 1.5, 0);
+  label.scale.set(8, 1, 1);
+  scene.add(label);
+
+  return { ring, glow, zVisual, rVisual };
+}
+const benfordFloor = createBenfordFloorRing();
+
+// ============================================================
+// BOUNDED CORE (golden region inside Benford floor)
+// ============================================================
+function createBoundedCore() {
+  const group = new THREE.Group();
+
+  // The bounded core sphere - larger for first-person immersion
+  const coreGeo = new THREE.SphereGeometry(RHO_FLOOR * VISUAL_SCALE * 0.7 * 0.8, 48, 48);
+  const coreMat = new THREE.MeshBasicMaterial({
+    color: 0xd4af37,
+    transparent: true,
+    opacity: 0.12,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+  const core = new THREE.Mesh(coreGeo, coreMat);
+  // position at bottom of funnel
+  const t = (1.0 - 0.35) / (1.0 - 0.2);
+  const zBase = -2.0 * Math.sqrt(1.01 - 1.0) * VISUAL_SCALE * 0.8;
+  const bottomZ = zBase - t * 12;
+  core.position.y = benfordFloor.zVisual - 3;
+  group.add(core);
+
+  // Inner glow particles
+  const pCount = 300;
+  const pGeo = new THREE.BufferGeometry();
+  const pPositions = new Float32Array(pCount * 3);
+  for (let i = 0; i < pCount; i++) {
+    const r = Math.random() * RHO_FLOOR * VISUAL_SCALE * 0.7 * 0.5;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    pPositions[i*3]     = r * Math.sin(phi) * Math.cos(theta);
+    pPositions[i*3 + 1] = core.position.y + r * Math.sin(phi) * Math.sin(theta) * 0.5;
+    pPositions[i*3 + 2] = r * Math.cos(phi);
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+  const pMat = new THREE.PointsMaterial({
+    color: 0xd4af37,
+    size: 0.25,
+    transparent: true,
+    opacity: 0.5,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  group.add(new THREE.Points(pGeo, pMat));
+
+  scene.add(group);
+  return { group, core, coreMat };
+}
+const boundedCore = createBoundedCore();
+
+// ============================================================
+// SINGULARITY POINT (for classical mode)
+// ============================================================
+function createSingularity() {
+  const group = new THREE.Group();
+  const tEnd = (1.0 - 0.05) / (1.0 - 0.2);
+  const zBase = -2.0 * Math.sqrt(1.01 - 1.0) * VISUAL_SCALE * 0.8;
+  const yPos = zBase - tEnd * 12;
+
+  // Small intense white point
+  const geo = new THREE.SphereGeometry(0.3, 32, 32);
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.0
+  });
+  const point = new THREE.Mesh(geo, mat);
+  point.position.y = yPos;
+  group.add(point);
+
+  // Harsh glow
+  const glowGeo = new THREE.SphereGeometry(1.5, 32, 32);
+  const glowMat = new THREE.MeshBasicMaterial({
+    color: 0xff4444,
+    transparent: true,
+    opacity: 0.0,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  const glow = new THREE.Mesh(glowGeo, glowMat);
+  glow.position.y = yPos;
+  group.add(glow);
+
+  scene.add(group);
+  return { group, mat, glowMat, yPos };
+}
+const singularity = createSingularity();
+
+// ============================================================
+// INFALLING OBSERVER MARKER
+// ============================================================
+function createObserver() {
+  const group = new THREE.Group();
+
+  // Main sphere
+  const geo = new THREE.SphereGeometry(0.35, 24, 24);
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0x44ff88,
+    transparent: true,
+    opacity: 0.9
+  });
+  const sphere = new THREE.Mesh(geo, mat);
+  group.add(sphere);
+
+  // Outer glow
+  const glowGeo = new THREE.SphereGeometry(0.7, 16, 16);
+  const glowMat = new THREE.MeshBasicMaterial({
+    color: 0x44ff88,
+    transparent: true,
+    opacity: 0.25,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  const glow = new THREE.Mesh(glowGeo, glowMat);
+  group.add(glow);
+
+  scene.add(group);
+  return { group, mat, glowMat };
+}
+const observer = createObserver();
+
+// ============================================================
+// PARTICLE TRAIL
+// ============================================================
+const trailMaxPoints = 200;
+const trailPositions = new Float32Array(trailMaxPoints * 3);
+const trailColors = new Float32Array(trailMaxPoints * 3);
+const trailGeo = new THREE.BufferGeometry();
+trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
+trailGeo.setAttribute('color', new THREE.BufferAttribute(trailColors, 3));
+const trailMat = new THREE.PointsMaterial({
+  size: 0.18,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.7,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+});
+const trailPoints = new THREE.Points(trailGeo, trailMat);
+scene.add(trailPoints);
+let trailIndex = 0;
+let trailCount = 0;
+let trailTimer = 0;
+
+// ============================================================
+// INFALLING PARTICLE STREAMS
+// ============================================================
+const NUM_STREAMS = 6;
+const PARTICLES_PER_STREAM = 40;
+const streamParticles = [];
+
+function createParticleStreams() {
+  for (let s = 0; s < NUM_STREAMS; s++) {
+    const angle = (s / NUM_STREAMS) * Math.PI * 2;
+    const pGeo = new THREE.BufferGeometry();
+    const positions = new Float32Array(PARTICLES_PER_STREAM * 3);
+    const opacities = new Float32Array(PARTICLES_PER_STREAM);
+
+    for (let i = 0; i < PARTICLES_PER_STREAM; i++) {
+      const rhoP = RHO_START - (i / PARTICLES_PER_STREAM) * (RHO_START - 0.3);
+      const pos = rhoToPosition(rhoP, angle + Math.sin(i * 0.3) * 0.15);
+      positions[i*3] = pos.x;
+      positions[i*3+1] = pos.y;
+      positions[i*3+2] = pos.z;
+      opacities[i] = 0.4 * (1 - i / PARTICLES_PER_STREAM);
+    }
+
+    pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const pMat = new THREE.PointsMaterial({
+      color: 0x6688ff,
+      size: 0.2,
+      transparent: true,
+      opacity: 0.4,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+
+    const points = new THREE.Points(pGeo, pMat);
+    scene.add(points);
+    streamParticles.push({ points, positions, angle, geo: pGeo });
+  }
+}
+createParticleStreams();
+
+// ============================================================
+// ACCRETION DISK (thin ring of particles around horizon)
+// ============================================================
+function createAccretionDisk() {
+  const count = 2000;
+  const geo = new THREE.BufferGeometry();
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const rVisualHorizon = 1.0 * VISUAL_SCALE * 0.7;
+  const zVisualHorizon = -2.0 * Math.sqrt(1.01 - 1.0) * VISUAL_SCALE * 0.8;
+
+  for (let i = 0; i < count; i++) {
+    const r = rVisualHorizon * (1.2 + Math.random() * 1.5);
+    const theta = Math.random() * Math.PI * 2;
+    const yOff = (Math.random() - 0.5) * 0.4;
+    positions[i*3]     = r * Math.cos(theta);
+    positions[i*3 + 1] = zVisualHorizon + 2 + yOff;
+    positions[i*3 + 2] = r * Math.sin(theta);
+
+    const temp = Math.random();
+    if (temp < 0.4) {
+      colors[i*3] = 1.0; colors[i*3+1] = 0.4; colors[i*3+2] = 0.1;
+    } else if (temp < 0.7) {
+      colors[i*3] = 1.0; colors[i*3+1] = 0.7; colors[i*3+2] = 0.2;
+    } else {
+      colors[i*3] = 0.8; colors[i*3+1] = 0.3; colors[i*3+2] = 0.6;
+    }
+  }
+
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+  const mat = new THREE.PointsMaterial({
+    size: 0.15,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.5,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+
+  const disk = new THREE.Points(geo, mat);
+  scene.add(disk);
+  return { disk, positions: geo.attributes.position.array, geo };
+}
+const accretionDisk = createAccretionDisk();
+
+// ============================================================
+// LIGHTING
+// ============================================================
+const ambientLight = new THREE.AmbientLight(0x223355, 0.6);
+scene.add(ambientLight);
+
+const pointLight1 = new THREE.PointLight(0x6688ff, 1.5, 100);
+pointLight1.position.set(20, 15, 20);
+scene.add(pointLight1);
+
+const pointLight2 = new THREE.PointLight(0x4444aa, 0.8, 80);
+pointLight2.position.set(-15, 10, -15);
+scene.add(pointLight2);
+
+const horizonLight = new THREE.PointLight(0xff4444, 0.5, 30);
+horizonLight.position.set(0, -1, 0);
+scene.add(horizonLight);
+
+// ============================================================
+// HELPER: rho to 3D position
+// ============================================================
+function rhoToPosition(rhoVal, angle) {
+  angle = angle || 0;
+  if (rhoVal > 1.0) {
+    // On the paraboloid
+    const r = rhoVal;
+    const z = -2.0 * Math.sqrt(Math.max(0, r - 1.0));
+    const rVisual = r * VISUAL_SCALE * 0.7;
+    const zVisual = z * VISUAL_SCALE * 0.8;
+    return new THREE.Vector3(
+      rVisual * Math.cos(angle),
+      zVisual,
+      rVisual * Math.sin(angle)
+    );
+  } else {
+    // Interior funnel
+    const t = (1.0 - rhoVal) / (1.0 - 0.2);
+    const rVisual = rhoVal * VISUAL_SCALE * 0.7;
+    const zBase = -2.0 * Math.sqrt(1.01 - 1.0) * VISUAL_SCALE * 0.8;
+    const zVisual = zBase - t * 12;
+    return new THREE.Vector3(
+      rVisual * Math.cos(angle),
+      zVisual,
+      rVisual * Math.sin(angle)
+    );
+  }
+}
+
+// ============================================================
+// PHYSICS COMPUTATIONS
+// ============================================================
+function computeMetric(rhoVal) {
+  const useBenford = (mode === 'benford');
+  const epsilon = 0.0001;
+  const rhoSafe = Math.max(rhoVal, epsilon);
+
+  let g_tt, g_rr, det_g, floorActive;
+
+  if (rhoSafe > 1.0) {
+    // Outside horizon: pure GR
+    g_tt = -(1 - 1 / rhoSafe);
+    g_rr = 1 / (1 - 1 / rhoSafe);
+    det_g = Math.pow(rhoSafe, 4);
+    floorActive = false;
+  } else {
+    // Inside horizon
+    g_tt = (1 / rhoSafe - 1); // flipped sign: positive (time is spacelike)
+    const rawDet = Math.pow(rhoSafe, 4);
+
+    if (useBenford && rawDet < BENFORD_FLOOR) {
+      // Floor active
+      floorActive = true;
+      det_g = BENFORD_FLOOR;
+      const g_rr_old = 1 / (1 / rhoSafe - 1);
+      g_rr = g_rr_old * (BENFORD_FLOOR / rawDet);
+    } else {
+      floorActive = false;
+      det_g = rawDet;
+      g_rr = 1 / (1 / rhoSafe - 1);
+    }
+  }
+
+  return { g_tt, g_rr, det_g, floorActive };
+}
+
+// ============================================================
+// UPDATE OBSERVER POSITION
+// ============================================================
+function updateObserverPosition() {
+  // Use same angle as camera for consistency in first-person mode
+  const angle = cameraAngle || time * 0.15;
+  const pos = rhoToPosition(rho, angle);
+  observer.group.position.copy(pos);
+
+  // Color based on region
+  if (rho > 1.0) {
+    observer.mat.color.setHex(0x44ff88);
+    observer.glowMat.color.setHex(0x44ff88);
+  } else if (rho > RHO_FLOOR || mode === 'classical') {
+    observer.mat.color.setHex(0xff4444);
+    observer.glowMat.color.setHex(0xff4444);
+  } else {
+    observer.mat.color.setHex(0xd4af37);
+    observer.glowMat.color.setHex(0xd4af37);
+  }
+}
+
+// ============================================================
+// UPDATE HUD
+// ============================================================
+function updateHUD() {
+  const metric = computeMetric(rho);
+  const rhoEl = document.getElementById('hud-rho');
+  const detEl = document.getElementById('hud-det');
+  const gttEl = document.getElementById('hud-gtt');
+  const grrEl = document.getElementById('hud-grr');
+  const activeEl = document.getElementById('hud-active');
+  const hudMain = document.getElementById('hud-main');
+  const hudBenford = document.getElementById('hud-benford');
+
+  rhoEl.textContent = rho.toFixed(4);
+  detEl.textContent = metric.det_g.toFixed(4);
+  gttEl.textContent = metric.g_tt.toFixed(4);
+  grrEl.textContent = metric.g_rr.toFixed(4);
+
+  // Color coding
+  let colorClass;
+  if (rho > 1.0) {
+    colorClass = 'green';
+    hudMain.className = 'hud-card';
+    hudBenford.className = 'hud-card';
+  } else if (metric.floorActive) {
+    colorClass = 'gold';
+    hudMain.className = 'hud-card gold-active';
+    hudBenford.className = 'hud-card gold-active';
+  } else {
+    colorClass = 'red';
+    hudMain.className = 'hud-card red-active';
+    hudBenford.className = 'hud-card';
+  }
+
+  rhoEl.className = 'hud-value ' + colorClass;
+  detEl.className = 'hud-value ' + colorClass;
+  gttEl.className = 'hud-value ' + colorClass;
+  grrEl.className = 'hud-value ' + colorClass;
+
+  if (metric.floorActive) {
+    activeEl.textContent = 'YES';
+    activeEl.style.color = '#d4af37';
+  } else {
+    activeEl.textContent = 'NO';
+    activeEl.style.color = '#556';
+  }
+
+  // Region label
+  const regionName = document.getElementById('region-name');
+  const regionDesc = document.getElementById('region-desc');
+  if (rho > 1.0) {
+    regionName.textContent = 'EXTERIOR SPACETIME';
+    regionName.style.color = '#44ff88';
+    regionDesc.textContent = 'Pure Schwarzschild geometry. Time flows forward. g_tt < 0.';
+  } else if (metric.floorActive) {
+    regionName.textContent = 'BENFORD FLOOR ACTIVE';
+    regionName.style.color = '#d4af37';
+    regionDesc.textContent = 'Geometry bounded. |det(g)| held at 0.4068. Singularity prevented. g_rr compensates.';
+  } else if (rho <= 1.0) {
+    regionName.textContent = 'INSIDE HORIZON';
+    regionName.style.color = '#ff4444';
+    regionDesc.textContent = 'Time and space swap roles. g_tt > 0. Falling is inevitable.';
+  }
+
+  // Progress bar
+  const totalRange = RHO_START - (mode === 'benford' ? RHO_END_BENFORD : RHO_END_CLASSICAL);
+  const progress = (RHO_START - rho) / totalRange;
+  document.getElementById('progress-fill').style.width = (Math.min(1, Math.max(0, progress)) * 100) + '%';
+}
+
+// ============================================================
+// EVENT BANNERS
+// ============================================================
+function showEventBanner(text, sub, color, duration) {
+  const banner = document.getElementById('event-banner');
+  const textEl = document.getElementById('event-text');
+  const subEl = document.getElementById('event-sub');
+  const flash = document.getElementById('screen-flash');
+
+  textEl.textContent = text;
+  textEl.style.color = color;
+  textEl.style.textShadow = `0 0 40px ${color}, 0 0 80px ${color}`;
+  subEl.textContent = sub;
+  subEl.style.color = color;
+  banner.classList.add('show');
+
+  // Screen flash
+  if (color === '#ff4444' || color === '#ff2222') {
+    flash.className = 'flash-red';
+  } else {
+    flash.className = 'flash-gold';
+  }
+
+  if (eventBannerTimeout) clearTimeout(eventBannerTimeout);
+  eventBannerTimeout = setTimeout(() => {
+    banner.classList.remove('show');
+    flash.className = '';
+    flash.style.opacity = '0';
+  }, duration || 2500);
+}
+
+// ============================================================
+// ANIMATION UPDATE
+// ============================================================
+function updateTrail(dt) {
+  trailTimer += dt;
+  if (trailTimer > 0.05) {
+    trailTimer = 0;
+    const pos = observer.group.position;
+    trailPositions[trailIndex * 3]     = pos.x;
+    trailPositions[trailIndex * 3 + 1] = pos.y;
+    trailPositions[trailIndex * 3 + 2] = pos.z;
+
+    // Color
+    if (rho > 1.0) {
+      trailColors[trailIndex * 3]     = 0.27;
+      trailColors[trailIndex * 3 + 1] = 1.0;
+      trailColors[trailIndex * 3 + 2] = 0.53;
+    } else if (rho > RHO_FLOOR || mode === 'classical') {
+      trailColors[trailIndex * 3]     = 1.0;
+      trailColors[trailIndex * 3 + 1] = 0.2;
+      trailColors[trailIndex * 3 + 2] = 0.2;
+    } else {
+      trailColors[trailIndex * 3]     = 0.83;
+      trailColors[trailIndex * 3 + 1] = 0.69;
+      trailColors[trailIndex * 3 + 2] = 0.22;
+    }
+
+    trailIndex = (trailIndex + 1) % trailMaxPoints;
+    trailCount = Math.min(trailCount + 1, trailMaxPoints);
+    trailGeo.attributes.position.needsUpdate = true;
+    trailGeo.attributes.color.needsUpdate = true;
+    trailGeo.setDrawRange(0, trailCount);
+  }
+}
+
+function updateParticleStreams(dt) {
+  for (let s = 0; s < NUM_STREAMS; s++) {
+    const stream = streamParticles[s];
+    const posArr = stream.positions;
+
+    for (let i = 0; i < PARTICLES_PER_STREAM; i++) {
+      // Move each particle inward
+      let rhoP = RHO_START - ((i + time * speed * 2) % PARTICLES_PER_STREAM) / PARTICLES_PER_STREAM * (RHO_START - 0.3);
+      const angle = stream.angle + Math.sin(i * 0.3 + time * 0.5) * 0.15;
+      const pos = rhoToPosition(rhoP, angle);
+      posArr[i*3]     = pos.x;
+      posArr[i*3 + 1] = pos.y;
+      posArr[i*3 + 2] = pos.z;
+    }
+    stream.geo.attributes.position.needsUpdate = true;
+  }
+}
+
+function updateAccretionDisk(dt) {
+  const positions = accretionDisk.positions;
+  const count = positions.length / 3;
+  const rVisualHorizon = 1.0 * VISUAL_SCALE * 0.7;
+  const zVisualHorizon = -2.0 * Math.sqrt(1.01 - 1.0) * VISUAL_SCALE * 0.8;
+
+  for (let i = 0; i < count; i++) {
+    const x = positions[i*3];
+    const z = positions[i*3 + 2];
+    const r = Math.sqrt(x*x + z*z);
+    let angle = Math.atan2(z, x);
+    // Keplerian rotation: faster at smaller radii
+    const angVel = 0.3 / Math.pow(r / rVisualHorizon, 1.5);
+    angle += angVel * dt;
+    positions[i*3]     = r * Math.cos(angle);
+    positions[i*3 + 2] = r * Math.sin(angle);
+  }
+  accretionDisk.geo.attributes.position.needsUpdate = true;
+}
+
+// ============================================================
+// MODE SWITCHING
+// ============================================================
+function updateModeVisuals() {
+  if (mode === 'benford') {
+    benfordFloor.ring.visible = true;
+    benfordFloor.glow.visible = true;
+    boundedCore.group.visible = true;
+    singularity.mat.opacity = 0;
+    singularity.glowMat.opacity = 0;
+  } else {
+    benfordFloor.ring.visible = false;
+    benfordFloor.glow.visible = false;
+    boundedCore.group.visible = false;
+    singularity.mat.opacity = 0.8;
+    singularity.glowMat.opacity = 0.3;
+  }
+}
+
+// ============================================================
+// FIRST-PERSON CAMERA LOGIC
+// ============================================================
+function updateFirstPersonCamera() {
+  // Camera follows the infall path
+  // Slow spiral: the camera angle advances slowly as we fall
+  cameraAngle = time * 0.15;
+
+  const camPos = rhoToPosition(rho, cameraAngle);
+
+  // Offset camera slightly above the funnel surface so we're not clipping it
+  // The offset depends on rho: larger offset outside, smaller inside
+  let upOffset = 1.2;
+  if (rho <= 1.0) {
+    upOffset = 0.8;
+  }
+  if (rho <= RHO_FLOOR && mode === 'benford') {
+    upOffset = 0.5;
+  }
+
+  camera.position.set(camPos.x, camPos.y + upOffset, camPos.z);
+
+  // Look direction: look toward a point further down/inward along the funnel
+  // We look at a point at a lower rho value (ahead of us on our trajectory)
+  let lookRho = rho - 0.5;
+  if (lookRho < 0.1) lookRho = 0.1;
+
+  // The look angle is slightly ahead in the spiral
+  const lookAngle = cameraAngle + 0.2;
+  const lookTarget = rhoToPosition(lookRho, lookAngle);
+
+  // Blend between looking at the target ahead and looking at the center
+  // As we fall deeper, we look more toward center
+  let centerWeight = 0;
+  if (rho < 2.0) {
+    centerWeight = Math.min(1, (2.0 - rho) * 0.5);
+  }
+
+  // Center point (deep in funnel)
+  const centerTarget = rhoToPosition(Math.max(0.2, rho - 1.5), 0);
+
+  const finalLookX = lookTarget.x * (1 - centerWeight) + centerTarget.x * centerWeight;
+  const finalLookY = lookTarget.y * (1 - centerWeight) + centerTarget.y * centerWeight;
+  const finalLookZ = lookTarget.z * (1 - centerWeight) + centerTarget.z * centerWeight;
+
+  camera.lookAt(finalLookX, finalLookY, finalLookZ);
+
+  // Update orbit controls target to match (so when paused, it orbits from here)
+  controls.target.set(finalLookX, finalLookY, finalLookZ);
+
+  // Increase FOV as we approach the horizon for a stretching/warping feel
+  if (rho > 1.2) {
+    camera.fov = 70;
+  } else if (rho > 1.0) {
+    // Approaching horizon: widen FOV for spaghettification feel
+    const horizonProximity = (1.2 - rho) / 0.2;
+    camera.fov = 70 + horizonProximity * 25;
+  } else if (rho > RHO_FLOOR) {
+    // Inside horizon: wide FOV
+    camera.fov = 95;
+  } else if (mode === 'benford') {
+    // Inside Benford floor: FOV settles back down
+    const floorDepth = (RHO_FLOOR - rho) / (RHO_FLOOR - RHO_END_BENFORD);
+    camera.fov = 95 - floorDepth * 20;
+  } else {
+    // Classical singularity: extreme FOV
+    camera.fov = 95 + (RHO_FLOOR - rho) / RHO_FLOOR * 30;
+  }
+  camera.updateProjectionMatrix();
+}
+
+// ============================================================
+// MAIN ANIMATION LOOP
+// ============================================================
+let lastTime = performance.now();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const now = performance.now();
+  const dt = Math.min((now - lastTime) / 1000, 0.05);
+  lastTime = now;
+
+  time += dt;
+
+  // Animate infall
+  if (playing) {
+    // Disable orbit controls while playing (camera is locked to trajectory)
+    controls.enabled = false;
+
+    const rhoEnd = (mode === 'benford') ? RHO_END_BENFORD : RHO_END_CLASSICAL;
+
+    // Variable fall speed: accelerate near horizon, slow near floor for drama
+    let fallRate = speed * 0.12 * dt;
+
+    // Gradual acceleration approaching horizon
+    if (rho < 2.5 && rho > 1.0) {
+      fallRate *= 1.0 + (2.5 - rho) * 0.5;
+    }
+    // Slow down just above horizon for dramatic approach
+    if (rho < 1.15 && rho > 1.0) {
+      fallRate *= 0.35;
+    }
+    // Inside horizon: moderate speed
+    if (rho <= 1.0 && rho > RHO_FLOOR + 0.05) {
+      fallRate *= 1.0;
+    }
+    // Near Benford floor: slow down for drama
+    if (mode === 'benford' && rho < RHO_FLOOR + 0.15 && rho > RHO_FLOOR - 0.05) {
+      fallRate *= 0.25;
+    }
+    // Past Benford floor in Benford mode: slow drift into the bounded core
+    if (mode === 'benford' && rho < RHO_FLOOR) {
+      fallRate *= 0.15;
+    }
+
+    rho -= fallRate;
+
+    // Check horizon crossing
+    if (!horizonCrossed && rho <= 1.0) {
+      horizonCrossed = true;
+      showEventBanner('HORIZON CROSSED', '\u03C1 = 1.0 \u2014 No return. Time and space swap.', '#ff2222', 3000);
+    }
+
+    // Check floor crossing
+    if (!floorCrossed && rho <= RHO_FLOOR && mode === 'benford') {
+      floorCrossed = true;
+      showEventBanner('BENFORD FLOOR ACTIVE', '|det(g)| = 0.4068 \u2014 Geometry holds. The singularity is gone.', '#d4af37', 4000);
+    }
+
+    // Classical singularity warning
+    if (mode === 'classical' && rho <= 0.15 && !floorCrossed) {
+      floorCrossed = true; // reuse flag
+      showEventBanner('SINGULARITY', 'Curvature \u2192 \u221E \u2014 Physics breaks down.', '#ff2222', 4000);
+    }
+
+    // End of journey
+    if (rho <= rhoEnd) {
+      rho = rhoEnd;
+      playing = false;
+      controls.enabled = true;
+      document.getElementById('btn-play').textContent = 'PLAY';
+      document.getElementById('btn-play').classList.remove('paused');
+      if (mode === 'benford') {
+        showEventBanner('GEOMETRY SURVIVES', 'You are inside the bounded core. No singularity forms.', '#d4af37', 5000);
+      }
+    }
+
+    // Hide the observer marker during first-person play (YOU are the observer)
+    observer.group.visible = false;
+
+    // Update first-person camera position
+    updateFirstPersonCamera();
+  } else {
+    // When paused, re-enable orbit controls so user can look around
+    controls.enabled = true;
+    // Show observer marker when paused (so user can see where they are)
+    observer.group.visible = true;
+  }
+
+  // Update everything
+  updateObserverPosition();
+  updateHUD();
+  updateTrail(dt);
+  updateParticleStreams(dt);
+  updateAccretionDisk(dt);
+
+  // Animate Benford floor glow pulse
+  const pulse = 0.12 + 0.06 * Math.sin(time * 2.5);
+  benfordFloor.glow.material.opacity = pulse;
+  const corePulse = 0.06 + 0.04 * Math.sin(time * 1.8 + 1);
+  boundedCore.coreMat.opacity = corePulse;
+
+  // Animate horizon glow
+  horizon.glow.material.opacity = 0.12 + 0.05 * Math.sin(time * 3.0);
+
+  // Animate singularity in classical mode
+  if (mode === 'classical') {
+    singularity.glowMat.opacity = 0.2 + 0.15 * Math.sin(time * 4);
+  }
+
+  updateModeVisuals();
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// ============================================================
+// CONTROLS
+// ============================================================
+function togglePlay() {
+  const btn = document.getElementById('btn-play');
+  playing = !playing;
+  if (playing) {
+    btn.textContent = 'PAUSE';
+    btn.classList.add('paused');
+    // If at end, restart
+    const rhoEnd = (mode === 'benford') ? RHO_END_BENFORD : RHO_END_CLASSICAL;
+    if (rho <= rhoEnd + 0.01) {
+      resetSimulation();
+      playing = true;
+      btn.textContent = 'PAUSE';
+      btn.classList.add('paused');
+    }
+    // Disable orbit controls during play
+    controls.enabled = false;
+  } else {
+    btn.textContent = 'PLAY';
+    btn.classList.remove('paused');
+    // Re-enable orbit controls when paused
+    controls.enabled = true;
+  }
+}
+
+function resetSimulation() {
+  playing = false;
+  rho = RHO_START;
+  cameraAngle = 0;
+  horizonCrossed = false;
+  floorCrossed = false;
+  trailIndex = 0;
+  trailCount = 0;
+  trailGeo.setDrawRange(0, 0);
+  time = 0;
+  document.getElementById('btn-play').textContent = 'PLAY';
+  document.getElementById('btn-play').classList.remove('paused');
+  document.getElementById('event-banner').classList.remove('show');
+  document.getElementById('screen-flash').className = '';
+
+  // Reset camera to starting position
+  const resetPos = rhoToPosition(RHO_START, 0);
+  camera.position.set(resetPos.x, resetPos.y + 1.5, resetPos.z);
+  camera.lookAt(0, resetPos.y - 5, 0);
+  camera.fov = 70;
+  camera.updateProjectionMatrix();
+  controls.target.set(0, resetPos.y - 5, 0);
+  controls.enabled = true;
+  observer.group.visible = true;
+}
+
+function updateSpeed(val) {
+  speed = val / 100 * 1.0; // max speed 1.0, default slider=15 -> 0.15
+}
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('btn-benford').classList.toggle('active', m === 'benford');
+  document.getElementById('btn-classical').classList.toggle('active', m === 'classical');
+  // Reset crossings since behavior differs
+  if (rho <= 1.0) {
+    floorCrossed = false;
+  }
+  updateModeVisuals();
+}
+
+// ============================================================
+// RESIZE
+// ============================================================
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ============================================================
+// KEYBOARD SHORTCUTS
+// ============================================================
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  if (e.code === 'KeyR') resetSimulation();
+  if (e.code === 'KeyB') setMode('benford');
+  if (e.code === 'KeyC') setMode('classical');
+});
+
+// ============================================================
+// INITIAL STATE
+// ============================================================
+updateModeVisuals();
+updateObserverPosition();
+updateHUD();
+
+// Set up initial camera using the real rhoToPosition
+const initPos = rhoToPosition(RHO_START, 0);
+camera.position.set(initPos.x, initPos.y + 1.5, initPos.z);
+camera.lookAt(0, initPos.y - 5, 0);
+controls.target.set(0, initPos.y - 5, 0);
+
+animate();
+</script>
+</body>
+</html>

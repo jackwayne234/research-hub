@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Black Hole Simulator — Riner 5D Metric Framework</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a1a;
+    color: #c9d1d9;
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── Stars background ─── */
+  #stars-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  body > *:not(#stars-bg) {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── Top header ─── */
+  #header {
+    text-align: center;
+    padding: 22px 20px 10px;
+  }
+  #header h1 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    background: linear-gradient(90deg, #ff7b72, #ffa657, #d2a8ff, #ffcc44);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+  #header .subtitle {
+    font-size: 0.65rem;
+    color: #484d58;
+    letter-spacing: 0.08em;
+  }
+
+  /* ─── Status banner ─── */
+  #zone-banner {
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    transition: all 0.4s;
+    border-bottom: 2px solid transparent;
+  }
+  #zone-banner.safe {
+    background: linear-gradient(90deg, #0a0a1a, #0a1a12, #0a0a1a);
+    color: #7ee787; border-color: #7ee787;
+  }
+  #zone-banner.caution {
+    background: linear-gradient(90deg, #0a0a1a, #1a1508, #0a0a1a);
+    color: #ffa657; border-color: #ffa657;
+  }
+  #zone-banner.danger {
+    background: linear-gradient(90deg, #0a0a1a, #1a0808, #0a0a1a);
+    color: #ff7b72; border-color: #ff7b72;
+  }
+  #zone-banner.horizon {
+    background: linear-gradient(90deg, #0a0a1a, #1a0505, #0a0a1a);
+    color: #ff4040; border-color: #ff4040;
+    animation: horizonPulse 1.2s ease-in-out infinite;
+  }
+  #zone-banner.floor-active {
+    background: linear-gradient(90deg, #0a0a1a, #0a101a, #0a0a1a);
+    color: #58a6ff; border-color: #58a6ff;
+  }
+  @keyframes horizonPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  /* ─── Main layout ─── */
+  #main-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px 1fr;
+    gap: 16px;
+    padding: 16px 20px;
+    max-width: 1440px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  @media (max-width: 1100px) {
+    #main-grid { grid-template-columns: 1fr; max-width: 520px; }
+  }
+
+  /* ─── Column helpers ─── */
+  #left-col, #center-col, #right-col {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  /* ─── Panel base ─── */
+  .panel {
+    background: rgba(13, 17, 23, 0.9);
+    border: 1px solid #21262d;
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .panel-title {
+    font-size: 0.62rem;
+    color: #484d58;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 10px;
+  }
+  .panel-title-center { text-align: center; }
+
+  /* ─── Canvases ─── */
+  #bh-canvas { width: 100%; height: 320px; display: block; border-radius: 8px; }
+  #ellipsoid-canvas { width: 100%; height: 220px; display: block; border-radius: 8px; }
+  #det-canvas { width: 100%; height: 200px; display: block; border-radius: 8px; }
+
+  /* ─── Tensor matrix ─── */
+  #matrix-panel { padding: 18px; background: rgba(13,17,23,0.95); }
+  .matrix-wrapper {
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .matrix-bracket {
+    font-size: 3.2rem; color: #30363d; font-weight: 200;
+    line-height: 1; user-select: none;
+  }
+  #tensor-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px;
+  }
+  .tensor-cell {
+    width: 58px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.62rem; font-weight: 500; border-radius: 4px;
+    background: rgba(22, 27, 34, 0.6); transition: all 0.15s;
+  }
+  .tensor-cell.diagonal {
+    background: rgba(22, 27, 34, 0.9);
+    border: 1px solid rgba(60, 64, 80, 0.3);
+  }
+  .tensor-cell.zero { color: #21262d; font-size: 0.55rem; }
+  .tensor-cell.c-gS  { color: #ff7b72; }
+  .tensor-cell.c-grr { color: #7ee787; }
+  .tensor-cell.c-gth { color: #ffa657; }
+  .tensor-cell.c-gph { color: #d2a8ff; }
+  .tensor-cell.c-gz  { color: #ffcc44; }
+  .tensor-cell.flash { animation: cellFlash 0.4s ease-out; }
+  @keyframes cellFlash {
+    0% { box-shadow: 0 0 14px rgba(255,255,255,0.35); }
+    100% { box-shadow: none; }
+  }
+  .tensor-labels {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 2px; text-align: center;
+  }
+  .tensor-label { font-size: 0.52rem; letter-spacing: 0.04em; }
+  .tl-gS  { color: rgba(255,123,114,0.6); }
+  .tl-grr { color: rgba(126,231,135,0.6); }
+  .tl-gth { color: rgba(255,166,87,0.6); }
+  .tl-gph { color: rgba(210,168,255,0.6); }
+  .tl-gz  { color: rgba(255,204,68,0.6); }
+  .matrix-row-labels {
+    display: flex; flex-direction: column; gap: 2px; justify-content: center;
+  }
+  .matrix-row-label {
+    height: 40px; display: flex; align-items: center;
+    font-size: 0.52rem; padding-right: 6px;
+  }
+
+  /* ─── Equations panel ─── */
+  #equations-panel { background: rgba(13,17,23,0.95); }
+  .eq-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 4px 0; border-bottom: 1px solid rgba(33,38,45,0.6);
+    font-size: 0.68rem;
+  }
+  .eq-row:last-child { border-bottom: none; }
+  .eq-name { color: #6a6d78; }
+  .eq-formula { color: #484d58; font-size: 0.6rem; }
+  .eq-value { font-weight: 600; min-width: 80px; text-align: right; }
+
+  /* ─── Readout cards ─── */
+  .readout-card {
+    background: rgba(13,17,23,0.9);
+    border: 1px solid #21262d; border-radius: 10px;
+    padding: 12px 16px; transition: border-color 0.3s;
+  }
+  .readout-card.alert { border-color: rgba(255,123,114,0.5); }
+  .readout-card.floor-glow { border-color: rgba(88,166,255,0.5); }
+  .readout-label {
+    font-size: 0.58rem; color: #484d58;
+    text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px;
+  }
+  .readout-value {
+    font-size: 1.4rem; font-weight: 600; line-height: 1.2; transition: color 0.3s;
+  }
+  .readout-sub { font-size: 0.55rem; color: #3a3d48; margin-top: 2px; }
+
+  /* ─── Component bars ─── */
+  .comp-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .comp-row:last-child { margin-bottom: 0; }
+  .comp-name { font-size: 0.6rem; width: 36px; text-align: right; font-weight: 500; }
+  .comp-bar-track {
+    flex: 1; height: 14px;
+    background: rgba(22,27,34,0.8); border-radius: 7px; overflow: hidden;
+  }
+  .comp-bar-fill {
+    height: 100%; border-radius: 7px; transition: width 0.1s; min-width: 2px;
+  }
+  .comp-val {
+    font-size: 0.58rem; width: 60px; text-align: right;
+    color: #8b949e; font-weight: 500;
+  }
+
+  /* ─── Controls bar ─── */
+  #controls {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    padding: 14px 24px;
+    display: flex; align-items: center; gap: 16px; justify-content: center;
+    background: rgba(10,10,26,0.92);
+    border-top: 1px solid rgba(33,38,45,0.6);
+    backdrop-filter: blur(12px);
+  }
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; padding: 7px 18px;
+    border: 1px solid rgba(80,84,100,0.5); border-radius: 6px;
+    background: rgba(24,24,44,0.8); color: #c8cad0;
+    cursor: pointer; letter-spacing: 0.05em;
+    transition: all 0.2s; user-select: none;
+  }
+  .btn:hover { border-color: rgba(120,124,150,0.7); background: rgba(34,34,58,0.9); }
+  .btn.active { border-color: #ff7b72; color: #ff7b72; }
+
+  #mainSlider {
+    -webkit-appearance: none; appearance: none;
+    width: 340px; height: 6px; border-radius: 3px;
+    background: linear-gradient(90deg, #ff4040 0%, #ff7b72 15%, #ffa657 50%, #7ee787 100%);
+    outline: none; cursor: pointer; opacity: 0.85; transition: opacity 0.2s;
+  }
+  #mainSlider:hover { opacity: 1; }
+  #mainSlider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+    background: #e8eaf0; border: 3px solid #0a0a1a; cursor: pointer;
+    box-shadow: 0 0 8px rgba(255,255,255,0.15);
+  }
+  #mainSlider::-moz-range-thumb {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #e8eaf0; border: 3px solid #0a0a1a; cursor: pointer;
+  }
+  #speedSlider {
+    -webkit-appearance: none; appearance: none;
+    width: 80px; height: 4px; border-radius: 2px;
+    background: rgba(50,54,70,0.6); outline: none; cursor: pointer;
+  }
+  #speedSlider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%;
+    background: #c8cad0; border: 2px solid #0a0a1a; cursor: pointer;
+  }
+  .ctrl-label {
+    font-size: 0.58rem; color: #484d58;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .slider-readout {
+    font-size: 0.72rem; color: #8b949e; min-width: 58px; font-weight: 500;
+  }
+
+  #spacer { height: 70px; }
+
+  /* ─── Floor indicator ─── */
+  .floor-indicator {
+    font-size: 0.55rem; color: #58a6ff; margin-top: 3px; display: none;
+  }
+  .floor-indicator.visible {
+    display: block;
+    animation: floorBlink 1.5s ease-in-out infinite;
+  }
+  @keyframes floorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* ─── Tooltips ─── */
+  .info-tip {
+    display: inline-block; width: 14px; height: 14px;
+    line-height: 14px; text-align: center; font-size: 0.5rem;
+    color: #484d58; border: 1px solid #30363d; border-radius: 50%;
+    cursor: help; position: relative; margin-left: 4px; vertical-align: middle;
+  }
+  .info-tip:hover::after {
+    content: attr(data-tip);
+    position: absolute; bottom: 120%; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(22,27,34,0.98); border: 1px solid #30363d;
+    border-radius: 6px; padding: 8px 12px;
+    font-size: 0.55rem; color: #8b949e;
+    max-width: 280px; white-space: normal;
+    z-index: 200; line-height: 1.4; pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars-bg"></canvas>
+
+<!-- Header -->
+<div id="header">
+  <h1>BLACK HOLE SIMULATOR</h1>
+  <div class="subtitle">Riner (2026) 5D Metric Framework &mdash; Entropy replaces time &middot; Euler prime substrate prevents singularity</div>
+</div>
+
+<!-- Zone banner -->
+<div id="zone-banner" class="safe">
+  <span id="zone-text">SAFE ZONE &mdash; Gravitational effects mild</span>
+  <span id="zone-r" style="font-weight:400;opacity:0.6;margin-left:16px;font-size:0.8rem;">r = 20.000 r&#x209B;</span>
+</div>
+
+<!-- ════════════════════ MAIN 3-COLUMN GRID ════════════════════ -->
+<div id="main-grid">
+
+  <!-- LEFT COLUMN -->
+  <div id="left-col">
+    <div class="panel" id="bh-viz">
+      <div class="panel-title">Approach Visualization
+        <span class="info-tip" data-tip="The black circle is the event horizon (r = r_s). The colored dot is you. Watch the lensing ring brighten and the accretion disk glow as you fall in.">?</span>
+      </div>
+      <canvas id="bh-canvas"></canvas>
+    </div>
+    <div class="panel" id="ellipsoid-panel">
+      <div class="panel-title">Metric Tensor Shape
+        <span class="info-tip" data-tip="This ellipsoid shows how space itself stretches near the black hole. The radial direction (green) gets stretched while angular directions shrink. Near the horizon it becomes extremely elongated -- that is tidal stretching (spaghettification).">?</span>
+      </div>
+      <canvas id="ellipsoid-canvas"></canvas>
+    </div>
+  </div>
+
+  <!-- CENTER COLUMN -->
+  <div id="center-col">
+    <div class="panel" id="matrix-panel">
+      <div class="panel-title panel-title-center">5D Metric Tensor g<sub>&mu;&nu;</sub>
+        <span class="info-tip" data-tip="The heart of the Riner framework. Unlike standard GR (time as a dimension), the first component is entropy rate (S-dot), and a 5th dimension is the Euler prime substrate g_zeta. Only the diagonal has nonzero values -- this is a diagonal metric.">?</span>
+      </div>
+      <div class="tensor-labels" style="margin-bottom:6px;padding-left:24px;">
+        <div class="tensor-label tl-gS">&#x1E60;</div>
+        <div class="tensor-label tl-grr">r</div>
+        <div class="tensor-label tl-gth">&theta;</div>
+        <div class="tensor-label tl-gph">&phi;</div>
+        <div class="tensor-label tl-gz">&zeta;</div>
+      </div>
+      <div class="matrix-wrapper">
+        <div class="matrix-row-labels">
+          <div class="matrix-row-label" style="color:rgba(255,123,114,0.5);">&#x1E60;</div>
+          <div class="matrix-row-label" style="color:rgba(126,231,135,0.5);">r</div>
+          <div class="matrix-row-label" style="color:rgba(255,166,87,0.5);">&theta;</div>
+          <div class="matrix-row-label" style="color:rgba(210,168,255,0.5);">&phi;</div>
+          <div class="matrix-row-label" style="color:rgba(255,204,68,0.5);">&zeta;</div>
+        </div>
+        <span class="matrix-bracket">[</span>
+        <div id="tensor-grid"></div>
+        <span class="matrix-bracket">]</span>
+      </div>
+    </div>
+
+    <div class="panel" id="equations-panel">
+      <div class="panel-title panel-title-center">Live Equations</div>
+      <div class="eq-row">
+        <span class="eq-name" style="color:#ff7b72;">&beta;</span>
+        <span class="eq-formula">= &radic;(r&#x209B;/r)</span>
+        <span class="eq-value" id="eq-beta" style="color:#ff7b72;">0.2236</span>
+      </div>
+      <div class="eq-row">
+        <span class="eq-name" style="color:#7ee787;">Clock</span>
+        <span class="eq-formula">= &radic;(1 &minus; &beta;&sup2;)</span>
+        <span class="eq-value" id="eq-clock" style="color:#7ee787;">0.9747</span>
+      </div>
+      <div class="eq-row">
+        <span class="eq-name" style="color:#ff7b72;">g<sub>&#x1E60;</sub></span>
+        <span class="eq-formula">= &beta; = &radic;(r&#x209B;/r)</span>
+        <span class="eq-value" id="eq-gS" style="color:#ff7b72;">0.2236</span>
+      </div>
+      <div class="eq-row">
+        <span class="eq-name" style="color:#7ee787;">g<sub>rr</sub></span>
+        <span class="eq-formula">= 1 + r&#x209B;/r</span>
+        <span class="eq-value" id="eq-grr" style="color:#7ee787;">1.050</span>
+      </div>
+      <div class="eq-row">
+        <span class="eq-name" style="color:#ffa657;">g<sub>&theta;&theta;</sub></span>
+        <span class="eq-formula">= r&sup2;</span>
+        <span class="eq-value" id="eq-gth" style="color:#ffa657;">400.0</span>
+      </div>
+      <div class="eq-row">
+        <span class="eq-name" style="color:#d2a8ff;">g<sub>&phi;&phi;</sub></span>
+        <span class="eq-formula">= r&sup2;sin&sup2;&theta;</span>
+        <span class="eq-value" id="eq-gph" style="color:#d2a8ff;">300.0</span>
+      </div>
+      <div class="eq-row">
+        <span class="eq-name" style="color:#ffcc44;">g<sub>&zeta;</sub></span>
+        <span class="eq-formula">= ln &zeta;(2) = ln(&pi;&sup2;/6)</span>
+        <span class="eq-value" id="eq-gz" style="color:#ffcc44;">0.4977</span>
+      </div>
+      <div class="eq-row" style="border-top:1px solid #21262d;padding-top:8px;">
+        <span class="eq-name" style="color:#58a6ff;">det</span>
+        <span class="eq-formula">= g<sub>rr</sub>&middot;g<sub>&theta;&theta;</sub>&middot;g<sub>&phi;&phi;</sub>&middot;g<sub>&zeta;</sub></span>
+        <span class="eq-value" id="eq-det" style="color:#58a6ff;">&mdash;</span>
+      </div>
+      <div class="eq-row">
+        <span class="eq-name" style="color:#ffcc44;">Floor</span>
+        <span class="eq-formula" style="color:#58a6ff;">det &ge; 0.4068 always</span>
+        <span class="eq-value floor-indicator" id="floor-ind">ACTIVE</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div id="right-col">
+    <div class="readout-card" id="card-beta">
+      <div class="readout-label">Beta (&beta;) &mdash; Entropy Rate Parameter
+        <span class="info-tip" data-tip="Beta replaces the time dilation factor in standard GR. It measures how entropy rate couples to the metric. At the event horizon, beta reaches 1.0.">?</span>
+      </div>
+      <div class="readout-value" id="val-beta" style="color:#ff7b72;">0.2236</div>
+      <div class="readout-sub">Approaches 1.0 at event horizon</div>
+    </div>
+
+    <div class="readout-card" id="card-clock">
+      <div class="readout-label">Clock Rate
+        <span class="info-tip" data-tip="How fast your clock ticks compared to a distant observer. At the event horizon it would reach zero in standard GR, but the Riner framework prevents true zero through the prime substrate.">?</span>
+      </div>
+      <div class="readout-value" id="val-clock" style="color:#7ee787;">0.9747</div>
+      <div class="readout-sub">Your time vs distant observer time</div>
+    </div>
+
+    <div class="readout-card" id="card-det">
+      <div class="readout-label">Spatial Determinant
+        <span class="info-tip" data-tip="The determinant of the spatial part of the metric measures the volume element of space. In standard GR it collapses to zero at the singularity. The Riner framework floors it at 0.4068 -- the primes prevent total collapse.">?</span>
+      </div>
+      <div class="readout-value" id="val-det" style="color:#58a6ff;">&mdash;</div>
+      <div class="readout-sub">Floor: 0.4068 (prime substrate prevents zero)</div>
+      <div class="floor-indicator" id="floor-readout">BENFORD FLOOR ACTIVE &mdash; PRIMES PREVENT COLLAPSE</div>
+    </div>
+
+    <div class="panel" id="det-chart-panel">
+      <div class="panel-title">Determinant vs Distance
+        <span class="info-tip" data-tip="Blue line = Riner 5D determinant (floored). Gray dashed = classical GR (collapses). Gold dashed line at 0.4068 is where primes kick in. The dot shows your current position.">?</span>
+      </div>
+      <canvas id="det-canvas"></canvas>
+    </div>
+
+    <div class="panel" id="component-panel">
+      <div class="panel-title">Metric Component Magnitudes</div>
+      <div class="comp-row">
+        <span class="comp-name" style="color:#ff7b72;">g<sub>&#x1E60;</sub></span>
+        <div class="comp-bar-track"><div class="comp-bar-fill" id="bar-gS" style="background:linear-gradient(90deg,#ff7b72,#ff9b92);width:20%;"></div></div>
+        <span class="comp-val" id="bval-gS">0.224</span>
+      </div>
+      <div class="comp-row">
+        <span class="comp-name" style="color:#7ee787;">g<sub>rr</sub></span>
+        <div class="comp-bar-track"><div class="comp-bar-fill" id="bar-grr" style="background:linear-gradient(90deg,#7ee787,#a0f0a8);width:30%;"></div></div>
+        <span class="comp-val" id="bval-grr">1.050</span>
+      </div>
+      <div class="comp-row">
+        <span class="comp-name" style="color:#ffa657;">g<sub>&theta;&theta;</sub></span>
+        <div class="comp-bar-track"><div class="comp-bar-fill" id="bar-gth" style="background:linear-gradient(90deg,#ffa657,#ffc080);width:80%;"></div></div>
+        <span class="comp-val" id="bval-gth">400.0</span>
+      </div>
+      <div class="comp-row">
+        <span class="comp-name" style="color:#d2a8ff;">g<sub>&phi;&phi;</sub></span>
+        <div class="comp-bar-track"><div class="comp-bar-fill" id="bar-gph" style="background:linear-gradient(90deg,#d2a8ff,#e4c8ff);width:60%;"></div></div>
+        <span class="comp-val" id="bval-gph">300.0</span>
+      </div>
+      <div class="comp-row">
+        <span class="comp-name" style="color:#ffcc44;">g<sub>&zeta;</sub></span>
+        <div class="comp-bar-track"><div class="comp-bar-fill" id="bar-gz" style="background:linear-gradient(90deg,#ffcc44,#ffe080);width:15%;"></div></div>
+        <span class="comp-val" id="bval-gz">0.498</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="spacer"></div>
+
+<!-- ════════════════════ CONTROLS BAR ════════════════════ -->
+<div id="controls">
+  <button class="btn" id="btnPlay">&#9654; PLAY</button>
+  <button class="btn" id="btnReset">&#8634; RESET</button>
+  <span class="ctrl-label">Distance</span>
+  <input type="range" id="mainSlider" min="0" max="10000" value="10000" step="1">
+  <span class="slider-readout" id="sliderReadout">r = 20.0 r&#x209B;</span>
+  <span class="ctrl-label" style="margin-left:12px;">Speed</span>
+  <input type="range" id="speedSlider" min="1" max="10" value="3" step="1">
+  <span class="slider-readout" style="min-width:30px;" id="speedVal">3x</span>
+</div>
+
+<!-- ════════════════════ JAVASCRIPT ════════════════════ -->
+<script>
+(function() {
+"use strict";
+
+// =================================================================
+// PHYSICS ENGINE -- Riner (2026) 5D Metric Framework
+// =================================================================
+
+var RS = 1.0;                                     // Schwarzschild radius (units of r_s)
+var THETA = Math.PI / 3;                           // fixed theta = 60 degrees
+var SIN2_THETA = Math.pow(Math.sin(THETA), 2);     // sin^2(60) = 0.75
+var LN_ZETA_2 = Math.log(Math.PI * Math.PI / 6.0); // ln(zeta(2)) = ln(pi^2/6) ~ 0.4977
+var DET_FLOOR = 0.4068;                            // Benford floor
+var R_MAX = 20.0;                                  // farthest distance
+var R_MIN = 0.15;                                  // closest approach (inside horizon)
+
+function computeMetric(r) {
+  var rRatio = RS / r;                              // r_s / r
+  var beta = Math.sqrt(Math.max(rRatio, 0));        // entropy rate parameter
+  var clockRate = Math.sqrt(Math.max(1 - rRatio, 0)); // clock rate
+
+  // Metric components
+  var gS    = beta;                     // entropy rate: beta = sqrt(r_s/r)
+  var grr   = 1 + rRatio;              // radial: 1 + r_s/r
+  var gthth = r * r;                   // theta: r^2
+  var gphph = r * r * SIN2_THETA;      // phi: r^2 sin^2(theta)
+  var gz    = LN_ZETA_2;               // prime substrate: ln(zeta(2))
+
+  // Spatial determinant = g_rr * g_thth * g_phph * g_zeta
+  var detRaw = grr * gthth * gphph * gz;
+  var floorActive = detRaw < DET_FLOOR;
+  var det = floorActive ? DET_FLOOR : detRaw;
+
+  // Zone classification
+  var zone, zoneClass;
+  if (r > 3 * RS) {
+    zone = 'SAFE ZONE \u2014 Gravitational effects mild';
+    zoneClass = 'safe';
+  } else if (r > 1.5 * RS) {
+    zone = 'CAUTION \u2014 Strong gravitational field';
+    zoneClass = 'caution';
+  } else if (r > 1.02 * RS) {
+    zone = 'DANGER \u2014 Approaching event horizon';
+    zoneClass = 'danger';
+  } else if (r > 0.98 * RS) {
+    zone = 'EVENT HORIZON \u2014 r \u2248 r\u209B';
+    zoneClass = 'horizon';
+  } else if (floorActive) {
+    zone = 'INSIDE HORIZON \u2014 BENFORD FLOOR ACTIVE';
+    zoneClass = 'floor-active';
+  } else {
+    zone = 'INSIDE HORIZON';
+    zoneClass = 'danger';
+  }
+
+  return {
+    r: r, rRatio: rRatio, beta: beta, clockRate: clockRate,
+    gS: gS, grr: grr, gthth: gthth, gphph: gphph, gz: gz,
+    detRaw: detRaw, det: det, floorActive: floorActive,
+    zone: zone, zoneClass: zoneClass
+  };
+}
+
+// =================================================================
+// STATE
+// =================================================================
+
+var currentR = R_MAX;
+var playing = false;
+var speed = 3;
+
+// Slider maps exponentially: 10000 = far, 0 = close
+function sliderToR(val) {
+  var t = val / 10000;
+  var logMin = Math.log(R_MIN);
+  var logMax = Math.log(R_MAX);
+  return Math.exp(logMin + t * (logMax - logMin));
+}
+
+// =================================================================
+// STARFIELD
+// =================================================================
+
+var starsCvs = document.getElementById('stars-bg');
+var starsCtx = starsCvs.getContext('2d');
+var stars = [];
+
+function initStars() {
+  starsCvs.width = window.innerWidth;
+  starsCvs.height = window.innerHeight;
+  stars = [];
+  var count = Math.floor((starsCvs.width * starsCvs.height) / 3200);
+  for (var i = 0; i < count; i++) {
+    stars.push({
+      x: Math.random() * starsCvs.width,
+      y: Math.random() * starsCvs.height,
+      rad: Math.random() * 1.2 + 0.2,
+      a: Math.random() * 0.5 + 0.1,
+      tw: Math.random() * 0.02 + 0.005
+    });
+  }
+}
+function drawStars(time) {
+  starsCtx.clearRect(0, 0, starsCvs.width, starsCvs.height);
+  for (var i = 0; i < stars.length; i++) {
+    var s = stars[i];
+    var flicker = 0.5 + 0.5 * Math.sin(time * s.tw + s.x);
+    starsCtx.beginPath();
+    starsCtx.arc(s.x, s.y, s.rad, 0, Math.PI * 2);
+    starsCtx.fillStyle = 'rgba(200,210,230,' + (s.a * flicker) + ')';
+    starsCtx.fill();
+  }
+}
+initStars();
+
+// =================================================================
+// BLACK HOLE VISUALIZATION
+// =================================================================
+
+var bhCanvas = document.getElementById('bh-canvas');
+var bhCtx = bhCanvas.getContext('2d');
+
+function drawBlackHole(m) {
+  var dpr = window.devicePixelRatio || 1;
+  var rect = bhCanvas.getBoundingClientRect();
+  bhCanvas.width  = rect.width * dpr;
+  bhCanvas.height = rect.height * dpr;
+  bhCtx.scale(dpr, dpr);
+  var W = rect.width, H = rect.height;
+  var cx = W / 2, cy = H / 2;
+  bhCtx.clearRect(0, 0, W, H);
+
+  var proximity = 1 - Math.min(m.r / R_MAX, 1);
+  var maxPx = Math.min(W, H) * 0.42;
+  var horizPx = maxPx * 0.15;
+
+  // Accretion disk glow
+  var dg = bhCtx.createRadialGradient(cx, cy, 10, cx, cy, maxPx);
+  dg.addColorStop(0,   'rgba(255,100,50,'  + (0.02 + proximity * 0.18) + ')');
+  dg.addColorStop(0.3, 'rgba(255,150,50,'  + (0.01 + proximity * 0.10) + ')');
+  dg.addColorStop(0.6, 'rgba(200,100,255,' + (0.005 + proximity * 0.05) + ')');
+  dg.addColorStop(1,   'rgba(0,0,0,0)');
+  bhCtx.fillStyle = dg;
+  bhCtx.fillRect(0, 0, W, H);
+
+  // Photon ring at 1.5 r_s
+  bhCtx.beginPath();
+  bhCtx.arc(cx, cy, horizPx * 1.5, 0, Math.PI * 2);
+  bhCtx.strokeStyle = 'rgba(255,200,100,' + (0.15 + proximity * 0.45) + ')';
+  bhCtx.lineWidth = 1.5 + proximity * 3;
+  bhCtx.stroke();
+
+  // Accretion disk ellipses
+  for (var i = 0; i < 7; i++) {
+    var rr = horizPx * (2.2 + i * 0.85);
+    if (rr > maxPx) break;
+    bhCtx.beginPath();
+    bhCtx.ellipse(cx, cy, rr, rr * 0.22, 0, 0, Math.PI * 2);
+    var al = Math.max((0.04 + proximity * 0.07) * (1 - i * 0.13), 0.005);
+    bhCtx.strokeStyle = 'rgba(255,' + (140 + i * 18) + ',' + (40 + i * 30) + ',' + al + ')';
+    bhCtx.lineWidth = 2.5 - i * 0.3;
+    bhCtx.stroke();
+  }
+
+  // ISCO ring at 3 r_s
+  var iscoPx = horizPx * 3;
+  if (iscoPx < maxPx) {
+    bhCtx.beginPath();
+    bhCtx.arc(cx, cy, iscoPx, 0, Math.PI * 2);
+    bhCtx.strokeStyle = 'rgba(88,166,255,0.10)';
+    bhCtx.lineWidth = 1;
+    bhCtx.setLineDash([4, 6]);
+    bhCtx.stroke();
+    bhCtx.setLineDash([]);
+    bhCtx.font = '8px "JetBrains Mono", monospace';
+    bhCtx.fillStyle = 'rgba(88,166,255,0.25)';
+    bhCtx.textAlign = 'center';
+    bhCtx.fillText('ISCO (3r\u209B)', cx, cy - iscoPx - 4);
+  }
+
+  // Event horizon (black disc)
+  bhCtx.beginPath();
+  bhCtx.arc(cx, cy, horizPx, 0, Math.PI * 2);
+  var bg = bhCtx.createRadialGradient(cx, cy, 0, cx, cy, horizPx);
+  bg.addColorStop(0, '#000000');
+  bg.addColorStop(0.7, '#020205');
+  bg.addColorStop(1, '#08080f');
+  bhCtx.fillStyle = bg;
+  bhCtx.fill();
+
+  // Lensing ring glow
+  bhCtx.beginPath();
+  bhCtx.arc(cx, cy, horizPx + 1, 0, Math.PI * 2);
+  var la = 0.3 + proximity * 0.7;
+  bhCtx.strokeStyle = 'rgba(255,180,80,' + la + ')';
+  bhCtx.lineWidth = 1.5 + proximity * 4;
+  bhCtx.shadowBlur = 10 + proximity * 30;
+  bhCtx.shadowColor = 'rgba(255,150,50,' + la + ')';
+  bhCtx.stroke();
+  bhCtx.shadowBlur = 0;
+
+  // Observer position (mapped logarithmically)
+  var logMin = Math.log(R_MIN), logMax = Math.log(R_MAX);
+  var logR = Math.log(Math.max(m.r, R_MIN));
+  var t = (logR - logMin) / (logMax - logMin); // 0 = close, 1 = far
+  var obsDist = horizPx * 0.3 + t * (maxPx - horizPx * 0.3);
+  var obsX = cx + obsDist, obsY = cy;
+
+  var obsColor = m.r > RS ? '#7ee787' : (m.floorActive ? '#58a6ff' : '#ff7b72');
+  var obsRGB   = m.r > RS ? '126,231,135' : (m.floorActive ? '88,166,255' : '255,123,114');
+  var obsR = 4 + (1 - t) * 8;
+
+  // Observer glow
+  bhCtx.beginPath();
+  bhCtx.arc(obsX, obsY, obsR * 3, 0, Math.PI * 2);
+  bhCtx.fillStyle = 'rgba(' + obsRGB + ',0.12)';
+  bhCtx.fill();
+
+  // Observer dot
+  bhCtx.beginPath();
+  bhCtx.arc(obsX, obsY, obsR, 0, Math.PI * 2);
+  bhCtx.fillStyle = obsColor;
+  bhCtx.shadowBlur = 15;
+  bhCtx.shadowColor = obsColor;
+  bhCtx.fill();
+  bhCtx.shadowBlur = 0;
+
+  // Distance dashed line
+  if (obsDist > horizPx + obsR + 10) {
+    bhCtx.beginPath();
+    bhCtx.setLineDash([3, 4]);
+    bhCtx.moveTo(cx + horizPx + 4, cy);
+    bhCtx.lineTo(obsX - obsR - 4, obsY);
+    bhCtx.strokeStyle = 'rgba(200,210,230,0.12)';
+    bhCtx.lineWidth = 1;
+    bhCtx.stroke();
+    bhCtx.setLineDash([]);
+  }
+
+  // Labels
+  bhCtx.font = '10px "JetBrains Mono", monospace';
+  bhCtx.fillStyle = 'rgba(200,210,230,0.35)';
+  bhCtx.textAlign = 'center';
+  bhCtx.fillText('Event Horizon (r\u209B)', cx, cy + horizPx + 18);
+
+  bhCtx.fillStyle = obsColor;
+  bhCtx.fillText('r = ' + m.r.toFixed(2) + ' r\u209B', obsX, obsY - obsR - 10);
+
+  // Floor zone indicator inside horizon
+  if (m.floorActive) {
+    bhCtx.beginPath();
+    bhCtx.arc(cx, cy, horizPx * 0.55, 0, Math.PI * 2);
+    bhCtx.strokeStyle = 'rgba(255,204,68,0.4)';
+    bhCtx.lineWidth = 1.5;
+    bhCtx.setLineDash([3, 3]);
+    bhCtx.stroke();
+    bhCtx.setLineDash([]);
+    bhCtx.font = '8px "JetBrains Mono", monospace';
+    bhCtx.fillStyle = 'rgba(255,204,68,0.5)';
+    bhCtx.fillText('Benford Floor Zone', cx, cy - horizPx * 0.55 - 6);
+  }
+}
+
+// =================================================================
+// TENSOR ELLIPSOID
+// =================================================================
+
+var ellCvs = document.getElementById('ellipsoid-canvas');
+var ellCtx = ellCvs.getContext('2d');
+var ellRot = 0;
+
+function drawEllipsoid(m) {
+  var dpr = window.devicePixelRatio || 1;
+  var rect = ellCvs.getBoundingClientRect();
+  ellCvs.width  = rect.width * dpr;
+  ellCvs.height = rect.height * dpr;
+  ellCtx.scale(dpr, dpr);
+  var W = rect.width, H = rect.height;
+  var cx = W / 2, cy = H / 2;
+  ellCtx.clearRect(0, 0, W, H);
+
+  var base = 45;
+  var radFactor = Math.min(m.grr / 1.5, 5);
+  var angFactor = Math.min(m.r / R_MAX, 1.2);
+  var rx = Math.max(radFactor * base * 0.5, 10);
+  var ry = Math.max(angFactor * base * 0.7, 10);
+
+  ellRot += 0.01;
+
+  // Background grid
+  ellCtx.strokeStyle = 'rgba(33,38,45,0.3)';
+  ellCtx.lineWidth = 0.5;
+  for (var gi = -3; gi <= 3; gi++) {
+    var off = gi * 25;
+    ellCtx.beginPath(); ellCtx.moveTo(cx + off, cy - 90); ellCtx.lineTo(cx + off, cy + 90); ellCtx.stroke();
+    ellCtx.beginPath(); ellCtx.moveTo(cx - 90, cy + off); ellCtx.lineTo(cx + 90, cy + off); ellCtx.stroke();
+  }
+
+  ellCtx.save();
+  ellCtx.translate(cx, cy);
+
+  // Glow
+  var glowSz = Math.max(rx, ry) * 1.4;
+  var prox = 1 - Math.min(m.r / R_MAX, 1);
+  var gc = m.floorActive ? '88,166,255' : '126,231,135';
+  var gg = ellCtx.createRadialGradient(0, 0, 0, 0, 0, glowSz);
+  gg.addColorStop(0, 'rgba(' + gc + ',' + (0.04 + prox * 0.08) + ')');
+  gg.addColorStop(1, 'rgba(0,0,0,0)');
+  ellCtx.fillStyle = gg;
+  ellCtx.beginPath();
+  ellCtx.arc(0, 0, glowSz, 0, Math.PI * 2);
+  ellCtx.fill();
+
+  // Wireframe longitude
+  var step;
+  for (var li = 0; li < 12; li++) {
+    var angle = (li / 12) * Math.PI + ellRot;
+    ellCtx.beginPath();
+    for (step = 0; step <= Math.PI * 2 + 0.01; step += 0.05) {
+      var px = rx * Math.cos(step) * Math.cos(angle);
+      var py = ry * Math.sin(step);
+      if (step < 0.01) ellCtx.moveTo(px, py);
+      else ellCtx.lineTo(px, py);
+    }
+    ellCtx.strokeStyle = 'rgba(126,231,135,' + (0.06 + 0.04 * Math.abs(Math.cos(angle))) + ')';
+    ellCtx.lineWidth = 0.8;
+    ellCtx.stroke();
+  }
+
+  // Wireframe latitude
+  for (var li2 = 1; li2 < 8; li2++) {
+    var lt = (li2 / 8) * Math.PI;
+    var lrx = rx * Math.sin(lt);
+    var lry = Math.max(rx * Math.sin(lt) * 0.3, 2);
+    var lcy = ry * Math.cos(lt);
+    if (lrx < 3) continue;
+    ellCtx.beginPath();
+    ellCtx.ellipse(0, lcy, lrx, lry, 0, 0, Math.PI * 2);
+    ellCtx.strokeStyle = 'rgba(255,166,87,0.08)';
+    ellCtx.lineWidth = 0.6;
+    ellCtx.stroke();
+  }
+
+  // Main outline
+  ellCtx.beginPath();
+  ellCtx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+  var mg = ellCtx.createLinearGradient(-rx, 0, rx, 0);
+  mg.addColorStop(0, 'rgba(126,231,135,0.55)');
+  mg.addColorStop(0.5, 'rgba(255,166,87,0.35)');
+  mg.addColorStop(1, 'rgba(210,168,255,0.55)');
+  ellCtx.strokeStyle = mg;
+  ellCtx.lineWidth = 2;
+  ellCtx.stroke();
+
+  // Fill
+  var fg = ellCtx.createRadialGradient(0, 0, 0, 0, 0, Math.max(rx, ry));
+  fg.addColorStop(0, 'rgba(126,231,135,0.05)');
+  fg.addColorStop(0.5, 'rgba(255,166,87,0.02)');
+  fg.addColorStop(1, 'rgba(0,0,0,0)');
+  ellCtx.fillStyle = fg;
+  ellCtx.beginPath();
+  ellCtx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+  ellCtx.fill();
+
+  // Axis labels
+  ellCtx.font = '9px "JetBrains Mono", monospace';
+  ellCtx.textAlign = 'center';
+
+  // Radial (horizontal)
+  ellCtx.fillStyle = '#7ee787';
+  ellCtx.fillText('r  (g_rr=' + m.grr.toFixed(2) + ')', rx + 35, 4);
+  ellCtx.beginPath();
+  ellCtx.moveTo(-rx - 10, 0); ellCtx.lineTo(rx + 10, 0);
+  ellCtx.strokeStyle = 'rgba(126,231,135,0.25)';
+  ellCtx.lineWidth = 1;
+  ellCtx.setLineDash([3, 3]); ellCtx.stroke(); ellCtx.setLineDash([]);
+
+  // Angular (vertical)
+  ellCtx.fillStyle = '#ffa657';
+  ellCtx.fillText('\u03B8,\u03C6', 0, -ry - 10);
+  ellCtx.beginPath();
+  ellCtx.moveTo(0, -ry - 6); ellCtx.lineTo(0, ry + 6);
+  ellCtx.strokeStyle = 'rgba(255,166,87,0.25)';
+  ellCtx.setLineDash([3, 3]); ellCtx.stroke(); ellCtx.setLineDash([]);
+
+  ellCtx.restore();
+
+  // Shape text
+  ellCtx.font = '9px "JetBrains Mono", monospace';
+  ellCtx.fillStyle = '#484d58';
+  ellCtx.textAlign = 'center';
+  var ratio = rx / Math.max(ry, 1);
+  var desc = 'Nearly spherical (flat space)';
+  if (ratio > 4)       desc = 'Extreme radial stretching!';
+  else if (ratio > 2.5) desc = 'Strongly radially elongated';
+  else if (ratio > 1.5) desc = 'Radially elongated';
+  else if (ratio > 1.1) desc = 'Slightly elongated';
+  ellCtx.fillText(desc, W / 2, H - 6);
+}
+
+// =================================================================
+// DETERMINANT CHART
+// =================================================================
+
+var detCvs = document.getElementById('det-canvas');
+var detCtx2 = detCvs.getContext('2d');
+
+var DET_PTS = 300;
+var detRiner = [], detClassical = [];
+
+function precomputeDet() {
+  detRiner = []; detClassical = [];
+  for (var i = 0; i < DET_PTS; i++) {
+    var t = i / (DET_PTS - 1);
+    var r = R_MIN + t * (R_MAX - R_MIN);
+    var mm = computeMetric(r);
+    detRiner.push({ r: r, d: mm.det });
+    detClassical.push({ r: r, d: mm.detRaw });
+  }
+}
+precomputeDet();
+
+function drawDetChart(m) {
+  var dpr = window.devicePixelRatio || 1;
+  var rect = detCvs.getBoundingClientRect();
+  detCvs.width  = rect.width * dpr;
+  detCvs.height = rect.height * dpr;
+  detCtx2.scale(dpr, dpr);
+  var W = rect.width, H = rect.height;
+  var pad = { t: 22, r: 16, b: 30, l: 52 };
+  var pw = W - pad.l - pad.r;
+  var ph = H - pad.t - pad.b;
+
+  detCtx2.clearRect(0, 0, W, H);
+
+  var lrMin = Math.log10(R_MIN), lrMax = Math.log10(R_MAX);
+  var ldMin = -2, ldMax = 6;
+
+  function xM(r) {
+    return pad.l + ((Math.log10(Math.max(r, R_MIN)) - lrMin) / (lrMax - lrMin)) * pw;
+  }
+  function yM(d) {
+    return pad.t + ph - ((Math.log10(Math.max(d, 0.01)) - ldMin) / (ldMax - ldMin)) * ph;
+  }
+
+  // Y grid
+  detCtx2.font = '8px "JetBrains Mono", monospace';
+  for (var p = ldMin; p <= ldMax; p += 2) {
+    var yy = yM(Math.pow(10, p));
+    if (yy < pad.t || yy > H - pad.b) continue;
+    detCtx2.beginPath();
+    detCtx2.moveTo(pad.l, yy); detCtx2.lineTo(W - pad.r, yy);
+    detCtx2.strokeStyle = 'rgba(33,38,45,0.5)';
+    detCtx2.lineWidth = 0.5;
+    detCtx2.stroke();
+    detCtx2.fillStyle = '#3a3d48';
+    detCtx2.textAlign = 'right';
+    detCtx2.fillText('10^' + p, pad.l - 4, yy + 3);
+  }
+
+  // X labels
+  var xLab = [0.2, 0.5, 1, 2, 5, 10, 20];
+  detCtx2.textAlign = 'center';
+  for (var xi = 0; xi < xLab.length; xi++) {
+    var rv = xLab[xi];
+    if (rv < R_MIN || rv > R_MAX) continue;
+    var xx = xM(rv);
+    detCtx2.beginPath();
+    detCtx2.moveTo(xx, pad.t); detCtx2.lineTo(xx, H - pad.b);
+    detCtx2.strokeStyle = 'rgba(33,38,45,0.3)';
+    detCtx2.lineWidth = 0.5;
+    detCtx2.stroke();
+    detCtx2.fillStyle = '#3a3d48';
+    detCtx2.fillText(rv.toString(), xx, H - pad.b + 12);
+  }
+  detCtx2.fillStyle = '#484d58';
+  detCtx2.fillText('r / r\u209B', pad.l + pw / 2, H - 3);
+
+  // Floor line (gold dashed)
+  var fy = yM(DET_FLOOR);
+  detCtx2.beginPath();
+  detCtx2.setLineDash([6, 4]);
+  detCtx2.moveTo(pad.l, fy); detCtx2.lineTo(W - pad.r, fy);
+  detCtx2.strokeStyle = '#ffcc44';
+  detCtx2.lineWidth = 1.5;
+  detCtx2.stroke();
+  detCtx2.setLineDash([]);
+  detCtx2.fillStyle = '#ffcc44';
+  detCtx2.textAlign = 'right';
+  detCtx2.fillText('Floor = 0.4068', W - pad.r, fy - 5);
+
+  // Horizon line (red dashed)
+  var hx = xM(RS);
+  detCtx2.beginPath();
+  detCtx2.setLineDash([4, 4]);
+  detCtx2.moveTo(hx, pad.t); detCtx2.lineTo(hx, H - pad.b);
+  detCtx2.strokeStyle = 'rgba(255,123,114,0.4)';
+  detCtx2.lineWidth = 1;
+  detCtx2.stroke();
+  detCtx2.setLineDash([]);
+  detCtx2.fillStyle = 'rgba(255,123,114,0.5)';
+  detCtx2.textAlign = 'center';
+  detCtx2.fillText('r\u209B', hx, pad.t - 5);
+
+  // Classical curve (gray dashed)
+  detCtx2.beginPath();
+  detCtx2.setLineDash([3, 3]);
+  var started = false;
+  for (var ci = 0; ci < detClassical.length; ci++) {
+    var cp = detClassical[ci];
+    var cpx = xM(cp.r), cpy = yM(cp.d);
+    if (cpy > H - pad.b + 2 || cpy < pad.t - 2) { started = false; continue; }
+    if (!started) { detCtx2.moveTo(cpx, cpy); started = true; }
+    else detCtx2.lineTo(cpx, cpy);
+  }
+  detCtx2.strokeStyle = 'rgba(139,148,158,0.3)';
+  detCtx2.lineWidth = 1.5;
+  detCtx2.stroke();
+  detCtx2.setLineDash([]);
+
+  // Riner curve (blue solid)
+  detCtx2.beginPath();
+  started = false;
+  for (var ri = 0; ri < detRiner.length; ri++) {
+    var rp = detRiner[ri];
+    var rpx = xM(rp.r), rpy = yM(rp.d);
+    if (rpy > H - pad.b + 2 || rpy < pad.t - 2) { started = false; continue; }
+    if (!started) { detCtx2.moveTo(rpx, rpy); started = true; }
+    else detCtx2.lineTo(rpx, rpy);
+  }
+  detCtx2.strokeStyle = '#58a6ff';
+  detCtx2.lineWidth = 2;
+  detCtx2.stroke();
+
+  // Current position dot
+  var cx2 = xM(m.r), cy2 = yM(m.det);
+  if (cy2 >= pad.t - 4 && cy2 <= H - pad.b + 4) {
+    detCtx2.beginPath();
+    detCtx2.arc(cx2, cy2, 5, 0, Math.PI * 2);
+    detCtx2.fillStyle = m.floorActive ? '#ffcc44' : '#58a6ff';
+    detCtx2.shadowBlur = 12;
+    detCtx2.shadowColor = m.floorActive ? '#ffcc44' : '#58a6ff';
+    detCtx2.fill();
+    detCtx2.shadowBlur = 0;
+
+    // Drop line
+    detCtx2.beginPath();
+    detCtx2.setLineDash([2, 3]);
+    detCtx2.moveTo(cx2, Math.min(cy2 + 7, H - pad.b));
+    detCtx2.lineTo(cx2, H - pad.b);
+    detCtx2.strokeStyle = 'rgba(88,166,255,0.25)';
+    detCtx2.lineWidth = 1;
+    detCtx2.stroke();
+    detCtx2.setLineDash([]);
+  }
+
+  // Legend
+  detCtx2.font = '8px "JetBrains Mono", monospace';
+  detCtx2.textAlign = 'left';
+  detCtx2.fillStyle = '#58a6ff';
+  detCtx2.fillRect(pad.l + 4, pad.t + 3, 14, 2);
+  detCtx2.fillText('Riner 5D', pad.l + 22, pad.t + 7);
+  detCtx2.fillStyle = 'rgba(139,148,158,0.5)';
+  detCtx2.fillRect(pad.l + 4, pad.t + 15, 14, 2);
+  detCtx2.fillText('Classical GR', pad.l + 22, pad.t + 19);
+}
+
+// =================================================================
+// 5x5 TENSOR MATRIX
+// =================================================================
+
+var tensorGrid = document.getElementById('tensor-grid');
+var cells = [];
+var colorClasses = ['c-gS', 'c-grr', 'c-gth', 'c-gph', 'c-gz'];
+
+for (var row = 0; row < 5; row++) {
+  for (var col = 0; col < 5; col++) {
+    var cell = document.createElement('div');
+    cell.className = 'tensor-cell';
+    if (row === col) {
+      cell.classList.add('diagonal');
+      cell.classList.add(colorClasses[row]);
+    } else {
+      cell.classList.add('zero');
+    }
+    tensorGrid.appendChild(cell);
+    cells.push(cell);
+  }
+}
+
+var prevVals = [0, 0, 0, 0, 0];
+
+function updateMatrix(m) {
+  var vals = [m.gS, m.grr, m.gthth, m.gphph, m.gz];
+  for (var r2 = 0; r2 < 5; r2++) {
+    for (var c2 = 0; c2 < 5; c2++) {
+      var idx = r2 * 5 + c2;
+      var cl = cells[idx];
+      if (r2 === c2) {
+        var v = vals[r2];
+        var disp;
+        if (v >= 1000)     disp = v.toFixed(0);
+        else if (v >= 100) disp = v.toFixed(1);
+        else if (v >= 10)  disp = v.toFixed(2);
+        else               disp = v.toFixed(3);
+        cl.textContent = disp;
+        if (Math.abs(v - prevVals[r2]) / Math.max(Math.abs(prevVals[r2]), 0.001) > 0.025) {
+          cl.classList.remove('flash');
+          void cl.offsetWidth;
+          cl.classList.add('flash');
+        }
+      } else {
+        cl.textContent = '0';
+      }
+    }
+  }
+  prevVals = vals.slice();
+}
+
+// =================================================================
+// MASTER UPDATE
+// =================================================================
+
+function fmt(v, dec) {
+  if (Math.abs(v) >= 100000) return v.toExponential(2);
+  if (Math.abs(v) >= 100)    return v.toFixed(1);
+  if (Math.abs(v) >= 10)     return v.toFixed(2);
+  return v.toFixed(dec || 4);
+}
+
+function updateAll(r) {
+  var m = computeMetric(r);
+  currentR = r;
+
+  // Zone banner
+  var banner = document.getElementById('zone-banner');
+  banner.className = m.zoneClass;
+  document.getElementById('zone-text').textContent = m.zone;
+  document.getElementById('zone-r').innerHTML = 'r = ' + m.r.toFixed(3) + ' r<sub>s</sub>';
+
+  // Matrix
+  updateMatrix(m);
+
+  // Equations
+  document.getElementById('eq-beta').textContent  = fmt(m.beta, 4);
+  document.getElementById('eq-clock').textContent  = fmt(m.clockRate, 4);
+  document.getElementById('eq-gS').textContent     = fmt(m.gS, 4);
+  document.getElementById('eq-grr').textContent    = fmt(m.grr, 3);
+  document.getElementById('eq-gth').textContent    = fmt(m.gthth, 2);
+  document.getElementById('eq-gph').textContent    = fmt(m.gphph, 2);
+  document.getElementById('eq-gz').textContent     = fmt(m.gz, 4);
+  document.getElementById('eq-det').textContent    = fmt(m.det, 2);
+  document.getElementById('eq-det').style.color    = m.floorActive ? '#ffcc44' : '#58a6ff';
+
+  var fi = document.getElementById('floor-ind');
+  if (m.floorActive) fi.classList.add('visible');
+  else fi.classList.remove('visible');
+
+  // Readout cards
+  var be = document.getElementById('val-beta');
+  be.textContent = m.beta.toFixed(4);
+  be.style.color = m.beta > 0.9 ? '#ff4040' : m.beta > 0.7 ? '#ffa657' : '#ff7b72';
+  var cb = document.getElementById('card-beta');
+  if (m.beta > 0.8) cb.classList.add('alert'); else cb.classList.remove('alert');
+
+  var ce = document.getElementById('val-clock');
+  ce.textContent = m.clockRate.toFixed(4);
+  ce.style.color = m.clockRate < 0.2 ? '#ff4040' : m.clockRate < 0.5 ? '#ffa657' : '#7ee787';
+
+  var de = document.getElementById('val-det');
+  de.textContent = fmt(m.det, 2);
+  de.style.color = m.floorActive ? '#ffcc44' : '#58a6ff';
+  var cd = document.getElementById('card-det');
+  if (m.floorActive) cd.classList.add('floor-glow'); else cd.classList.remove('floor-glow');
+  var fr = document.getElementById('floor-readout');
+  if (m.floorActive) fr.classList.add('visible'); else fr.classList.remove('visible');
+
+  // Component bars
+  var bars = [
+    { id: 'gS',  val: m.gS,    mx: 1.2 },
+    { id: 'grr', val: m.grr,   mx: 10 },
+    { id: 'gth', val: m.gthth, mx: R_MAX * R_MAX },
+    { id: 'gph', val: m.gphph, mx: R_MAX * R_MAX },
+    { id: 'gz',  val: m.gz,    mx: 1 }
+  ];
+  for (var bi = 0; bi < bars.length; bi++) {
+    var b = bars[bi];
+    var pct = Math.min(Math.max((b.val / b.mx) * 100, 0.5), 100);
+    document.getElementById('bar-'  + b.id).style.width = pct + '%';
+    document.getElementById('bval-' + b.id).textContent  = fmt(b.val, 3);
+  }
+
+  // Slider readout
+  document.getElementById('sliderReadout').innerHTML = 'r = ' + m.r.toFixed(3) + ' r<sub>s</sub>';
+
+  // Draw all canvases
+  drawBlackHole(m);
+  drawEllipsoid(m);
+  drawDetChart(m);
+}
+
+// =================================================================
+// CONTROLS
+// =================================================================
+
+var mainSlider  = document.getElementById('mainSlider');
+var speedSlider = document.getElementById('speedSlider');
+var btnPlay     = document.getElementById('btnPlay');
+var btnReset    = document.getElementById('btnReset');
+
+mainSlider.addEventListener('input', function() {
+  updateAll(sliderToR(parseInt(mainSlider.value)));
+});
+
+speedSlider.addEventListener('input', function() {
+  speed = parseInt(speedSlider.value);
+  document.getElementById('speedVal').textContent = speed + 'x';
+});
+
+btnPlay.addEventListener('click', function() {
+  playing = !playing;
+  btnPlay.innerHTML = playing ? '&#9646;&#9646; PAUSE' : '&#9654; PLAY';
+  if (playing) btnPlay.classList.add('active'); else btnPlay.classList.remove('active');
+});
+
+btnReset.addEventListener('click', function() {
+  playing = false;
+  btnPlay.innerHTML = '&#9654; PLAY';
+  btnPlay.classList.remove('active');
+  mainSlider.value = 10000;
+  updateAll(R_MAX);
+});
+
+// =================================================================
+// ANIMATION LOOP
+// =================================================================
+
+var lastTime = 0;
+
+function animate(time) {
+  var dt = Math.min(time - lastTime, 50);
+  lastTime = time;
+
+  drawStars(time);
+
+  if (playing) {
+    var sv = parseInt(mainSlider.value);
+    var step = speed * dt * 0.06;
+    sv = Math.max(0, sv - step);
+    mainSlider.value = Math.round(sv);
+    updateAll(sliderToR(sv));
+    if (sv <= 0) {
+      playing = false;
+      btnPlay.innerHTML = '&#9654; PLAY';
+      btnPlay.classList.remove('active');
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+// Resize handler
+window.addEventListener('resize', function() {
+  initStars();
+  updateAll(currentR);
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    btnPlay.click();
+  } else if (e.code === 'KeyR') {
+    btnReset.click();
+  } else if (e.code === 'ArrowLeft') {
+    var sv = Math.min(parseInt(mainSlider.value) + 200, 10000);
+    mainSlider.value = sv;
+    updateAll(sliderToR(sv));
+  } else if (e.code === 'ArrowRight') {
+    var sv2 = Math.max(parseInt(mainSlider.value) - 200, 0);
+    mainSlider.value = sv2;
+    updateAll(sliderToR(sv2));
+  }
+});
+
+// =================================================================
+// INITIALIZE
+// =================================================================
+
+updateAll(R_MAX);
+requestAnimationFrame(animate);
+
+})();
+</script>
+</body>
+</html>
