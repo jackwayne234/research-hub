@@ -35,6 +35,9 @@ TOPICS = {
         "Riemann zeta function gravity",
         "number theory quantum gravity",
         "Euler product physics",
+        "zeta function Schwarzschild metric",
+        "complete monotonicity gravity",
+        "Dirichlet series spacetime",
     ],
     "Optical Computing": [
         "optical computing ternary",
@@ -47,6 +50,7 @@ TOPICS = {
         "emergent dimensions quantum gravity",
         "discrete spacetime",
         "entropic gravity",
+        "holographic principle number theory",
     ],
     "Dark Energy & Cosmology": [
         "dark energy emergent",

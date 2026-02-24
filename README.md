@@ -2,7 +2,7 @@
 
 **[Launch Live Dashboard](https://jackwayne234.github.io/research-hub/)**
 
-An interactive research dashboard for independent physics, mathematics, and engineering research by Christopher Riner.
+An interactive research dashboard for independent physics, mathematics, and engineering research by Christopher Riner. 7 published papers, 7 interactive visualizations.
 
 No build step required — pure HTML/CSS/JS. Open `index.html` locally or visit the live site above.
 
@@ -30,6 +30,7 @@ No build step required — pure HTML/CSS/JS. Open `index.html` locally or visit 
 | 4 | Optical AI Accelerator | [Zenodo 18501296](https://zenodo.org/records/18501296) |
 | 5 | River Velocity as Time Dilation: GPS Comparison | [Zenodo 18705437](https://zenodo.org/records/18705437) |
 | 6 | Prime Numbers as Causal Set Theory | [Zenodo 18731508](https://zenodo.org/records/18731508) |
+| 7 | Emergence of General Relativity from the Prime Number Structure of the Riemann Zeta Function | [Zenodo 18751909](https://zenodo.org/records/18751909) |
 
 ## Directory Structure
 

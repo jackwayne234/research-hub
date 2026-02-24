@@ -18,7 +18,7 @@ research-hub/
 │   ├── daily-practice.html # Math practice tracker
 │   ├── math-journey.html   # Notation learning progress
 │   ├── projects.html       # Active research projects
-│   ├── publications.html   # 6 published Zenodo papers
+│   ├── publications.html   # 7 published Zenodo papers
 │   ├── research-feed.html  # Automated paper feed
 │   ├── speculative.html    # Untested theoretical directions
 │   ├── substrate.html      # 6th dimension substrate theory
@@ -60,17 +60,18 @@ Three interconnected threads:
 
 ## Key Files
 - `index.html` — Entry point. OS-style UI with sidebar navigation and floating windows.
-- `pages/publications.html` — Lists all 6 Zenodo papers with DOIs.
+- `pages/publications.html` — Lists all 7 Zenodo papers with DOIs.
 - `simulators/metric.html` — The flagship 5D prime metric visualization.
 - `analysis/gw150914_visualization.html` — Real LIGO data with zeta-predicted overlay.
 
-## Published Papers (6 total)
+## Published Papers (7 total)
 1. Modified Schwarzschild Metric via Benford's Law
 2. Bose-Einstein Condensates + Benford's Law
 3. Wavelength-Division Ternary Logic
 4. Optical AI Accelerator
 5. River Velocity as Time Dilation: GPS Comparison
 6. Prime Numbers as Causal Set Theory
+7. Emergence of General Relativity from the Prime Number Structure of the Riemann Zeta Function
 
 ## GitHub
 - Repo: github.com/jackwayne234/research-hub
