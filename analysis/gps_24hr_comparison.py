@@ -3,7 +3,7 @@
 GPS 24-Hour Time Dilation Comparison
 =====================================
 Method 1: Standard GR (Einstein's g_tt)
-Method 2: Entropy Rate (β = √(r_s/r), no time dimension)
+Method 2: Beta Parameter (β = √(r_s/r), no time dimension)
 
 Generates hour-by-hour tables for a 24-hour UTC period showing:
 - Earth surface clock time
@@ -41,7 +41,7 @@ vel_gr = -(v_gps**2) / (2 * c**2)
 net_gr = grav_gr + vel_gr
 
 # ═══════════════════════════════════════════════════════════
-# METHOD 2: ENTROPY RATE (β = √(r_s/r))
+# METHOD 2: BETA PARAMETER (β = √(r_s/r))
 # ═══════════════════════════════════════════════════════════
 # β = river velocity = escape velocity / c
 # Clock rate = √(1 - β²) — derived purely from spatial geometry
@@ -53,11 +53,11 @@ clock_earth = math.sqrt(1 - beta_earth**2)
 clock_gps = math.sqrt(1 - beta_gps**2)
 
 # Gravitational part
-grav_entropy = clock_gps - clock_earth
+grav_beta = clock_gps - clock_earth
 # Velocity correction (same as SR)
-vel_entropy = -(v_gps**2) / (2 * c**2)
+vel_beta = -(v_gps**2) / (2 * c**2)
 # Net
-net_entropy = grav_entropy + vel_entropy
+net_beta = grav_beta + vel_beta
 
 # ═══════════════════════════════════════════════════════════
 # CONSTANTS SUMMARY
@@ -78,8 +78,8 @@ print(f"    β_earth = {beta_earth:.10e}")
 print(f"    β_gps   = {beta_gps:.10e}")
 print()
 print(f"  GR net dilation rate:      {net_gr:+.6e} s/s")
-print(f"  Entropy net dilation rate:  {net_entropy:+.6e} s/s")
-print(f"  Difference between methods: {abs(net_gr - net_entropy):.6e} s/s")
+print(f"  Beta net dilation rate:     {net_beta:+.6e} s/s")
+print(f"  Difference between methods: {abs(net_gr - net_beta):.6e} s/s")
 print()
 
 # ═══════════════════════════════════════════════════════════
@@ -109,51 +109,51 @@ print(f"  24-hour total dilation: {gr_rows[-1][3]:+.3f} μs")
 print()
 
 # ═══════════════════════════════════════════════════════════
-# 24-HOUR TABLE — METHOD 2: ENTROPY RATE
+# 24-HOUR TABLE — METHOD 2: BETA PARAMETER
 # ═══════════════════════════════════════════════════════════
 print("=" * 80)
-print("  TABLE 2: ENTROPY RATE (β = √(r_s/r), no time dimension)")  
+print("  TABLE 2: BETA PARAMETER (β = √(r_s/r), no time dimension)")  
 print("  Satellite altitude: 20,200 km (constant)")
 print("=" * 80)
 print()
 print(f"  {'UTC Hour':<12s} {'Earth Clock (s)':<20s} {'Satellite Clock (s)':<22s} {'Dilation (μs)':<16s}")
 print(f"  {'─'*12} {'─'*20} {'─'*22} {'─'*16}")
 
-ent_rows = []
+beta_rows = []
 for hour in range(25):
     earth_seconds = hour * 3600.0
-    sat_seconds = earth_seconds * (1 + net_entropy)
+    sat_seconds = earth_seconds * (1 + net_beta)
     dilation_us = (sat_seconds - earth_seconds) * 1e6
     
     label = f"{hour:02d}:00 UTC"
-    ent_rows.append((label, earth_seconds, sat_seconds, dilation_us))
+    beta_rows.append((label, earth_seconds, sat_seconds, dilation_us))
     print(f"  {label:<12s} {earth_seconds:<20.3f} {sat_seconds:<22.9f} {dilation_us:<+16.3f}")
 
 print()
-print(f"  24-hour total dilation: {ent_rows[-1][3]:+.3f} μs")
+print(f"  24-hour total dilation: {beta_rows[-1][3]:+.3f} μs")
 print()
 
 # ═══════════════════════════════════════════════════════════
 # COMPARISON TABLE
 # ═══════════════════════════════════════════════════════════
 print("=" * 80)
-print("  TABLE 3: COMPARISON — GR vs ENTROPY RATE")
+print("  TABLE 3: COMPARISON — GR vs BETA PARAMETER")
 print("=" * 80)
 print()
-print(f"  {'UTC Hour':<12s} {'GR Dilation (μs)':<20s} {'Entropy Dilation (μs)':<24s} {'Difference (μs)':<18s}")
+print(f"  {'UTC Hour':<12s} {'GR Dilation (μs)':<20s} {'Beta Dilation (μs)':<24s} {'Difference (μs)':<18s}")
 print(f"  {'─'*12} {'─'*20} {'─'*24} {'─'*18}")
 
 for i in range(25):
     label = gr_rows[i][0]
     gr_d = gr_rows[i][3]
-    ent_d = ent_rows[i][3]
-    diff = abs(gr_d - ent_d)
-    print(f"  {label:<12s} {gr_d:<+20.3f} {ent_d:<+24.3f} {diff:<18.6f}")
+    beta_d = beta_rows[i][3]
+    diff = abs(gr_d - beta_d)
+    print(f"  {label:<12s} {gr_d:<+20.3f} {beta_d:<+24.3f} {diff:<18.6f}")
 
 print()
-total_diff = abs(gr_rows[-1][3] - ent_rows[-1][3])
+total_diff = abs(gr_rows[-1][3] - beta_rows[-1][3])
 print(f"  24-hour GR total:       {gr_rows[-1][3]:+.3f} μs")
-print(f"  24-hour Entropy total:  {ent_rows[-1][3]:+.3f} μs")
+print(f"  24-hour Beta total:     {beta_rows[-1][3]:+.3f} μs")
 print(f"  24-hour difference:     {total_diff:.6f} μs")
 print(f"  Percent deviation:      {total_diff/abs(gr_rows[-1][3])*100:.10f}%")
 print()
@@ -172,7 +172,7 @@ print("""
     Velocity:      Δτ/τ = -v²/(2c²)
     Clock rate:    √(1 - r_s/r) × √(1 - v²/c²)
 
-  METHOD 2 — Entropy Rate:
+  METHOD 2 — Beta Parameter:
     β = √(r_s/r)            (river velocity, from spatial geometry)
     Clock rate = √(1 - β²)  (no g_tt needed)
     Velocity:   Δτ/τ = -v²/(2c²)  (same as SR)

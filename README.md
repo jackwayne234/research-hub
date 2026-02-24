@@ -50,7 +50,7 @@ research-hub/
 ## Research Threads
 
 1. **Mathematics** — Prime numbers, zeta functions, causal set theory
-2. **Physics** — Benford's Law in gravitational systems, 5D prime-modified Schwarzschild metric
+2. **Physics** — Benford's Law in gravitational systems, prime-modified Schwarzschild metric
 3. **Engineering** — Wavelength-division ternary optical computing, CubeSat lens design
 
 ## License

@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 """
-ζ EMBEDDED vs ζ AS ITS OWN DIMENSION
-======================================
-Compare two approaches:
+ζ EMBEDDED vs ζ AS SEPARATE FACTOR
+====================================
+Compare two approaches in standard 4D spacetime:
 
-  A) ζ embedded: g_μν = diag(-(1-r_s/r)·ζ, g_rr·ζ, g_θθ·ζ, g_φφ·ζ, Ṡ², 1/r)
+  A) ζ embedded: g_μν = diag(-(1-r_s/r)·ζ, g_rr·ζ, g_θθ·ζ, g_φφ·ζ)
      Primes modify all 4 spacetime metric components.
 
-  B) ζ as dimension: g_μν = diag(-(1-r_s/r), g_rr, g_θθ, g_φφ, Ṡ², ζ(s))
-     Primes live in their own metric component, replacing temperature.
-     Standard GR spacetime untouched.
+  B) ζ separate: g_μν = diag(-(1-r_s/r), g_rr, g_θθ, g_φφ) with ζ(s) as a scalar factor.
+     Standard GR spacetime untouched; ζ tracked separately.
 
 Question: What are the physical differences?
 """
@@ -62,66 +61,58 @@ def s_of_r(r, r_s):
 # APPROACH A: ζ EMBEDDED IN SPACETIME
 # ═══════════════════════════════════════════════════════════
 def approach_A(r, r_s, theta=math.pi/2):
-    """Returns dict of all metric components with ζ embedded"""
+    """Returns dict of 4D metric components with ζ embedded"""
     s = s_of_r(r, r_s)
     z = zeta(s)
-    
+
     g_tt = -(1 - r_s/r) * z
     g_rr = (1 / (1 - r_s/r)) * z if r != r_s else float('inf')
     g_thth = r**2 * z
     g_phph = r**2 * math.sin(theta)**2 * z
-    S_dot = 1.0  # normalized entropy rate
-    g_55 = 1.0 / r
-    
-    # Total geometric content = product of |diagonal elements|
-    # (determinant-like measure)
+
     clock_rate = math.sqrt(abs(g_tt)) if g_tt != 0 else 0
-    
+
     return {
         'g_tt': g_tt, 'g_rr': g_rr, 'g_thth': g_thth, 'g_phph': g_phph,
-        'g_55': g_55, 'g_66': None,  # no separate prime dimension
         'zeta': z, 's': s,
         'clock': clock_rate,
         'label': 'ζ embedded'
     }
 
 # ═══════════════════════════════════════════════════════════
-# APPROACH B: ζ AS ITS OWN DIMENSION (replaces temperature)
+# APPROACH B: ζ AS SEPARATE SCALAR FACTOR
 # ═══════════════════════════════════════════════════════════
 def approach_B(r, r_s, theta=math.pi/2):
-    """Returns dict of all metric components with ζ as own dimension"""
+    """Returns dict of standard 4D metric components with ζ tracked separately"""
     s = s_of_r(r, r_s)
     z = zeta(s)
-    
+
     # Standard GR — untouched
     g_tt = -(1 - r_s/r)
     g_rr = 1 / (1 - r_s/r) if r != r_s else float('inf')
     g_thth = r**2
     g_phph = r**2 * math.sin(theta)**2
-    S_dot = 1.0
-    g_55 = z  # prime dimension replaces 1/r temperature
-    
+
     clock_rate = math.sqrt(abs(g_tt)) if g_tt != 0 else 0
-    
+
     return {
         'g_tt': g_tt, 'g_rr': g_rr, 'g_thth': g_thth, 'g_phph': g_phph,
-        'g_55': g_55, 'g_66': None,
         'zeta': z, 's': s,
         'clock': clock_rate,
-        'label': 'ζ as dimension'
+        'label': 'ζ separate'
     }
 
 # ═══════════════════════════════════════════════════════════
 # COMPARISON
 # ═══════════════════════════════════════════════════════════
 print("=" * 100)
-print("  ζ EMBEDDED IN SPACETIME  vs  ζ AS ITS OWN DIMENSION")
+print("  ζ EMBEDDED IN SPACETIME  vs  ζ AS SEPARATE FACTOR")
 print("=" * 100)
 print()
-print("  Approach A: g_μν = diag( -(1-r_s/r)·ζ,  g_rr·ζ,  g_θθ·ζ,  g_φφ·ζ,  Ṡ²,  1/r )")
-print("  Approach B: g_μν = diag( -(1-r_s/r),     g_rr,    g_θθ,    g_φφ,    Ṡ²,   ζ  )")
+print("  Approach A: g_μν = diag( -(1-r_s/r)·ζ,  g_rr·ζ,  g_θθ·ζ,  g_φφ·ζ )  — 4D, primes modify metric")
+print("  Approach B: g_μν = diag( -(1-r_s/r),     g_rr,    g_θθ,    g_φφ    )  — 4D standard GR, ζ separate")
 print()
-print("  In A, primes touch everything. In B, primes live in their own house.")
+print("  In A, primes modify the metric directly. In B, primes are tracked as a separate scalar.")
 print()
 
 # ═══════════════════════════════════════════════════════════
@@ -138,10 +129,10 @@ b_gps = approach_B(R_gps, r_s_earth)
 
 print(f"  At Earth surface:")
 print(f"    A (embedded):  g_tt = {a_earth['g_tt']:.12f}   clock = {a_earth['clock']:.12f}   ζ = {a_earth['zeta']:.15f}")
-print(f"    B (dimension): g_tt = {b_earth['g_tt']:.12f}   clock = {b_earth['clock']:.12f}   ζ = {b_earth['zeta']:.15f}")
+print(f"    B (separate):  g_tt = {b_earth['g_tt']:.12f}   clock = {b_earth['clock']:.12f}   ζ = {b_earth['zeta']:.15f}")
 print(f"  At GPS orbit:")
 print(f"    A (embedded):  g_tt = {a_gps['g_tt']:.12f}   clock = {a_gps['clock']:.12f}")
-print(f"    B (dimension): g_tt = {b_gps['g_tt']:.12f}   clock = {b_gps['clock']:.12f}")
+print(f"    B (separate):  g_tt = {b_gps['g_tt']:.12f}   clock = {b_gps['clock']:.12f}")
 print(f"  → Both identical at GPS distances (ζ = 1)")
 print()
 
@@ -157,7 +148,7 @@ r_s = r_s_sun
 print(f"  r_s = {r_s:.2f} m ({r_s/1000:.3f} km)")
 print()
 
-header = f"  {'r/r_s':<8s} │ {'s(r)':<10s} │ {'ζ(s)':<12s} │ {'A: g_tt':<14s} │ {'B: g_tt':<14s} │ {'A: clock':<12s} │ {'B: clock':<12s} │ {'A: g_rr':<14s} │ {'B: g_rr':<14s} │ {'A: g_55':<12s} │ {'B: g_55(=ζ)':<12s}"
+header = f"  {'r/r_s':<8s} │ {'s(r)':<10s} │ {'ζ(s)':<12s} │ {'A: g_tt':<14s} │ {'B: g_tt':<14s} │ {'A: clock':<12s} │ {'B: clock':<12s} │ {'A: g_rr':<14s} │ {'B: g_rr':<14s}"
 print(header)
 print("  " + "─" * (len(header) - 2))
 
@@ -176,7 +167,7 @@ for rr in test_radii:
     
     z_str = f"{a['zeta']:.6f}" if a['zeta'] < 1e6 else f"{a['zeta']:.2e}"
     
-    print(f"  {rr:<8.2f} │ {a['s']:<10.4f} │ {z_str:<12s} │ {fmt(a['g_tt'],14)} │ {fmt(b['g_tt'],14)} │ {fmt(a['clock'])} │ {fmt(b['clock'])} │ {fmt(a['g_rr'],14)} │ {fmt(b['g_rr'],14)} │ {fmt(a['g_55'])} │ {fmt(b['g_55'])}")
+    print(f"  {rr:<8.2f} │ {a['s']:<10.4f} │ {z_str:<12s} │ {fmt(a['g_tt'],14)} │ {fmt(b['g_tt'],14)} │ {fmt(a['clock'])} │ {fmt(b['clock'])} │ {fmt(a['g_rr'],14)} │ {fmt(b['g_rr'],14)}")
 
 print()
 
@@ -189,7 +180,7 @@ print("=" * 100)
 print()
 
 print("  ┌─────────────────────────────────────────────────────────────────────────────────────┐")
-print("  │ PROPERTY                    │ A (ζ EMBEDDED)              │ B (ζ AS DIMENSION)       │")
+print("  │ PROPERTY                    │ A (ζ EMBEDDED)              │ B (ζ SEPARATE)           │")
 print("  ├─────────────────────────────┼─────────────────────────────┼──────────────────────────┤")
 
 # Time at horizon
@@ -202,11 +193,6 @@ a15 = approach_A(1.5 * r_s, r_s)
 b15 = approach_B(1.5 * r_s, r_s)
 print(f"  │ g_rr at r=1.5r_s            │ {a15['g_rr']:.4f} (amplified)       │ {b15['g_rr']:.4f} (standard)       │")
 
-# 5th dimension at r=2
-a2 = approach_A(2 * r_s, r_s)
-b2 = approach_B(2 * r_s, r_s)
-print(f"  │ g_55 at r=2r_s              │ {a2['g_55']:.6f} (= 1/r, temp)   │ {b2['g_55']:.6f} (= ζ, primes) │")
-
 # GPS
 print(f"  │ GPS time dilation           │ Identical to GR             │ Identical to GR          │")
 
@@ -217,13 +203,7 @@ print(f"  │ Time at horizon             │ Slowed but primes resist    │ St
 print(f"  │ Spacetime geometry          │ Modified by primes          │ Standard GR untouched    │")
 
 # Where do primes live?
-print(f"  │ Where primes act            │ Inside all 4 dimensions     │ In their own dimension   │")
-
-# Temperature dimension
-print(f"  │ Temperature (1/r)           │ ✅ Present (g_55 = 1/r)     │ ❌ Replaced by ζ          │")
-
-# Hawking connection
-print(f"  │ Hawking temp at horizon     │ ✅ g_55 = 4π·T_H exactly    │ ❌ Lost (no 1/r)          │")
+print(f"  │ Where primes act            │ Inside all 4 components     │ As separate scalar       │")
 
 print("  └─────────────────────────────┴─────────────────────────────┴──────────────────────────┘")
 print()
@@ -243,10 +223,9 @@ for rr in [100, 10, 5, 3, 2, 1.5, 1.2, 1.1, 1.05]:
     a = approach_A(r, r_s)
     b = approach_B(r, r_s)
     
-    # Volume = |g_tt * g_rr * g_thth * g_phph * g_55|
-    # (skip Ṡ² since it's the same)
-    vol_a = abs(a['g_tt'] * a['g_rr'] * a['g_thth'] * a['g_phph'] * a['g_55'])
-    vol_b = abs(b['g_tt'] * b['g_rr'] * b['g_thth'] * b['g_phph'] * b['g_55'])
+    # Volume = |g_tt * g_rr * g_thth * g_phph| (standard 4D determinant proxy)
+    vol_a = abs(a['g_tt'] * a['g_rr'] * a['g_thth'] * a['g_phph'])
+    vol_b = abs(b['g_tt'] * b['g_rr'] * b['g_thth'] * b['g_phph'])
     
     ratio = vol_a / vol_b if vol_b > 0 else float('inf')
     
@@ -258,8 +237,8 @@ for rr in [100, 10, 5, 3, 2, 1.5, 1.2, 1.1, 1.05]:
     print(f"  {rr:<10.2f} {vfmt(vol_a):<20s} {vfmt(vol_b):<20s} {ratio:<16.6f}")
 
 print()
-print("  In approach A, ζ⁴ multiplies the 4D volume (ζ on each of 4 components).")
-print("  In approach B, ζ only enters as its own dimension — 4D spacetime volume is standard GR.")
+print("  In approach A, ζ⁴ multiplies the 4D volume (ζ on each of 4 metric components).")
+print("  In approach B, the 4D spacetime volume is standard GR (ζ tracked separately).")
 print()
 
 # ═══════════════════════════════════════════════════════════
@@ -269,23 +248,20 @@ print("=" * 100)
 print("  ANALYSIS")
 print("=" * 100)
 print("""
-  APPROACH A (ζ embedded in spacetime):
-    ✅ Primes modify spacetime directly — "if it's matter, treat it like matter"
-    ✅ Temperature dimension preserved (Hawking connection intact)
-    ✅ Time doesn't fully stop at horizon (primes keep cycle alive)
-    ✅ Consistent: same physics in all dimensions
-    ⚠️  ζ⁴ amplification could be too aggressive deep inside
+  APPROACH A (ζ embedded in 4D spacetime):
+    Primes modify spacetime directly — "if it's matter, treat it like matter"
+    Time doesn't fully stop at horizon (primes keep cycle alive)
+    Consistent: same physics in all 4 components
+    Note: ζ⁴ amplification could be too aggressive deep inside
 
-  APPROACH B (ζ as own dimension):
-    ✅ Standard GR spacetime completely preserved
-    ✅ Clean separation: GR does GR, primes do primes
-    ✅ Easier to test — any deviation from GR is in the new dimension only
-    ❌ Loses temperature dimension (Hawking connection broken)
-    ❌ Time still stops at horizon (no prime resistance)
-    ❌ Primes are "next to" spacetime but don't touch it — observationally harder to detect
+  APPROACH B (ζ as separate scalar):
+    Standard 4D GR spacetime completely preserved
+    Clean separation: GR does GR, primes tracked separately
+    Easier to test — any deviation from GR is in the scalar factor only
+    Time still stops at horizon (no prime resistance)
+    Primes are "next to" spacetime but don't modify it — observationally harder to detect
 
   THE TRADE-OFF:
-    A says primes ARE the fabric. B says primes live alongside the fabric.
-    A modifies gravity. B adds to gravity.
-    A keeps Hawking. B loses Hawking.
+    A says primes ARE the fabric. B says primes accompany the fabric.
+    A modifies gravity. B supplements gravity.
 """)
