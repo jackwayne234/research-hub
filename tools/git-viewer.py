@@ -173,8 +173,8 @@ class GitViewerHandler(http.server.SimpleHTTPRequestHandler):
             <h2>🌑 benford-fun Repository</h2>
             <div class="file-grid">
                 <div class="file-card">
-                    <h3>🌑 5D Prime Black Hole Simulator</h3>
-                    <p>Interactive 5D prime-modified metric visualization</p>
+                    <h3>🌑 Prime Black Hole Simulator</h3>
+                    <p>Interactive prime-modified metric visualization</p>
                     <a href="/view/benford-fun/main/results/html/blackhole_simulator_5D_prime.html" target="_blank">🚀 View Live</a>
                 </div>
                 <div class="file-card">

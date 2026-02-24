@@ -12,11 +12,11 @@ No build step required — pure HTML/CSS/JS. Open `index.html` locally or visit 
 
 | Visualization | Description |
 |---|---|
-| [5D Prime-Modified Metric](https://jackwayne234.github.io/research-hub/simulators/metric.html) | Flagship — prime-modified Schwarzschild metric in 5 dimensions |
+| [Prime-Modified Metric](https://jackwayne234.github.io/research-hub/simulators/metric.html) | Flagship — Schwarzschild metric parameterized by ζ(s) |
 | [GW150914 Zeta Fingerprint](https://jackwayne234.github.io/research-hub/analysis/gw150914_visualization.html) | Real LIGO data overlaid with zeta-predicted waveform |
 | [Wormhole 3D Interactive](https://jackwayne234.github.io/research-hub/simulators/wormhole_3d_interactive.html) | 3D wormhole geometry from orbiting black holes |
-| [Dimension Stack Chart](https://jackwayne234.github.io/research-hub/simulators/dimension_stack_chart.html) | All 6 dimensions stacked — contributions from far field to singularity |
-| [5D Black Hole Simulator](https://jackwayne234.github.io/research-hub/simulators/blackhole-simulator.html) | Fall through the horizon, watch dimensions evolve |
+| [Dimension Stack Chart](https://jackwayne234.github.io/research-hub/simulators/dimension_stack_chart.html) | Metric components stacked — contributions from far field to singularity |
+| [Black Hole Simulator](https://jackwayne234.github.io/research-hub/simulators/blackhole-simulator.html) | Fall through the horizon, watch metric components evolve |
 | [Einstein-Benford Black Hole](https://jackwayne234.github.io/research-hub/simulators/einstein_benford_blackhole.html) | Original Benford metric visualization |
 | [Benford BH Bars](https://jackwayne234.github.io/research-hub/simulators/benford_blackhole_bars.html) | Bar chart analysis of Benford distributions in black hole data |
 

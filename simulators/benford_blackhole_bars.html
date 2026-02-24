@@ -519,7 +519,7 @@ function drawBarChart(data, time) {
   const chartW = W - marginLeft - marginRight;
   const chartH = H - marginTop - marginBottom;
 
-  // ===== COMPUTE 5D METRIC VALUES =====
+  // ===== COMPUTE METRIC COMPONENT VALUES =====
   const rho = data.r;   // r / r_s
   const db = data.delta_b;
 
@@ -551,10 +551,10 @@ function drawBarChart(data, time) {
     grr = FLOOR_VAL / (Math.pow(rho, 4) * gdelta);
   }
 
-  // Full determinant (5D): det = g_tt * g_rr * g_thth * g_phph * g_delta
+  // Full determinant (metric): det = g_tt * g_rr * g_thth * g_phph * g_delta
   const det5d = gtt * grr * gthth * gphph * gdelta;
 
-  // The 5 dimensions + det
+  // The metric components + det
   const dims = [
     { name: 'g\u2099\u2099',   sub: 'time',     val: gtt,    formula: '-(1-1/\u03C1)' },
     { name: 'g\u1D63\u1D63',   sub: 'radial',   val: grr,    formula: floorActive ? 'FLOOR/(\u03C1\u2074g\u1D5F)' : '1/(1-1/\u03C1)' },
@@ -596,14 +596,14 @@ function drawBarChart(data, time) {
   ctx.font = '13px "JetBrains Mono", monospace';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
-  ctx.fillText('5D Black Hole Metric  \u2014  g\u03BC\u03BD = diag(g_tt, g_rr, g_\u03B8\u03B8, g_\u03C6\u03C6, g_\u03B4\u0302)', marginLeft + 4, 8);
+  ctx.fillText('Black Hole Metric  \u2014  g\u03BC\u03BD = diag(g_tt, g_rr, g_\u03B8\u03B8, g_\u03C6\u03C6, g_\u03B4\u0302)', marginLeft + 4, 8);
 
   // Determinant info on right
   ctx.textAlign = 'right';
   ctx.font = '11px "JetBrains Mono", monospace';
   const detStr = det5d.toExponential(3);
   ctx.fillStyle = floorActive ? 'rgba(0, 200, 255, 0.7)' : 'rgba(120, 130, 160, 0.5)';
-  ctx.fillText('det\u2085D = ' + detStr + (floorActive ? '  [FLOOR ACTIVE]' : ''), W - marginRight - 4, 8);
+  ctx.fillText('det = ' + detStr + (floorActive ? '  [FLOOR ACTIVE]' : ''), W - marginRight - 4, 8);
   ctx.fillStyle = 'rgba(100, 110, 140, 0.4)';
   ctx.fillText('det(spatial) = ' + detSpatial.toExponential(3) + '   floor = ' + FLOOR_VAL.toFixed(4), W - marginRight - 4, 24);
 

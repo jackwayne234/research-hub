@@ -26,7 +26,7 @@ research-hub/
 │   ├── status.html         # Tool/visualization status report
 │   └── working-index.html  # Working scratchpad
 ├── simulators/             # Interactive HTML visualizations
-│   ├── metric.html         # 5D Prime-Modified Metric (flagship)
+│   ├── metric.html         # Prime-Modified Metric (flagship)
 │   ├── blackhole-simulator.html
 │   ├── orbit-simulator.html
 │   ├── expedition.html     # Space expedition game
@@ -53,13 +53,13 @@ research-hub/
 ## Research Context
 Three interconnected threads:
 1. **Mathematics** — Prime numbers, zeta functions, causal set theory
-2. **Physics** — Benford's Law in gravitational systems, 5D prime-modified Schwarzschild metric
+2. **Physics** — Benford's Law in gravitational systems, prime-modified Schwarzschild metric
 3. **Engineering** — Optical computing, ternary logic, CubeSat lens design
 
 ## Key Files
 - `index.html` — Entry point. OS-style UI with sidebar navigation and floating windows.
 - `pages/publications.html` — Lists all 7 Zenodo papers with DOIs.
-- `simulators/metric.html` — The flagship 5D prime metric visualization.
+- `simulators/metric.html` — The flagship prime-modified metric visualization.
 - `analysis/gw150914_visualization.html` — Real LIGO data with zeta-predicted overlay.
 
 ## Published Papers (7 total)

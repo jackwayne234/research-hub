@@ -63,7 +63,7 @@ a:hover{color:#a855f7}
 
 <div class="card">
 <h2>🌑 benford-fun</h2>
-<a href="/benford-fun/main/results/html/blackhole_simulator_5D_prime.html">🚀 5D Prime Black Hole Simulator</a>
+<a href="/benford-fun/main/results/html/blackhole_simulator_5D_prime.html">🚀 Prime Black Hole Simulator</a>
 <a href="/benford-fun/main/results/html/blackhole_simulator.html">🕳️ Black Hole Simulator</a>
 <a href="/benford-fun/main/results/html/benford_blackhole_bars.html">📊 Benford Black Hole Bars</a>
 <a href="/benford-fun/main/results/html/dimension_stack_chart.html">📐 Dimension Stack Chart</a>

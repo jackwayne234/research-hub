@@ -5,10 +5,10 @@
 Compare two approaches:
 
   A) ζ embedded: g_μν = diag(-(1-r_s/r)·ζ, g_rr·ζ, g_θθ·ζ, g_φφ·ζ, Ṡ², 1/r)
-     Primes modify all 4 spacetime dimensions. 6D total.
+     Primes modify all 4 spacetime metric components.
 
   B) ζ as dimension: g_μν = diag(-(1-r_s/r), g_rr, g_θθ, g_φφ, Ṡ², ζ(s))
-     Primes live in their own dimension, replacing temperature. 6D total.
+     Primes live in their own metric component, replacing temperature.
      Standard GR spacetime untouched.
 
 Question: What are the physical differences?
