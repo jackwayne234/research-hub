@@ -67,7 +67,7 @@ def zeta_sum(s):
 # s(r) mapping
 # ═══════════════════════════════════════════════════════════
 def s_of_r(r):
-    """s = 1 + (r/r_s)³ — cubic mapping constrained by LIGO"""
+    """s = 1 + (r/r_s)³ — cubic mapping (empirically constrained)"""
     return 1.0 + (r / r_s)**3
 
 # ═══════════════════════════════════════════════════════════

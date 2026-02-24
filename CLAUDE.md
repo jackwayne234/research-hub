@@ -34,8 +34,6 @@ research-hub/
 │   └── (5 more visualization HTMLs)
 ├── analysis/               # Python analysis scripts + HTML visualizations
 │   ├── zeta_4d_pure.py     # 4D zeta function analysis
-│   ├── ligo_gw150914_analysis.py
-│   ├── gw150914_visualization.html  # LIGO zeta fingerprint
 │   └── (more analysis files)
 ├── tools/                  # Utility tools
 │   ├── editor.html         # Manuscript editor (self-contained, no CDN)
@@ -60,8 +58,6 @@ Three interconnected threads:
 - `index.html` — Entry point. OS-style UI with sidebar navigation and floating windows.
 - `pages/publications.html` — Lists all 7 Zenodo papers with DOIs.
 - `simulators/metric.html` — The flagship prime-modified metric visualization.
-- `analysis/gw150914_visualization.html` — Real LIGO data with zeta-predicted overlay.
-
 ## Published Papers (7 total)
 1. Modified Schwarzschild Metric via Benford's Law
 2. Bose-Einstein Condensates + Benford's Law

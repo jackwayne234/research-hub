@@ -2,7 +2,7 @@
 
 **[Launch Live Dashboard](https://jackwayne234.github.io/research-hub/)**
 
-An interactive research dashboard for independent physics, mathematics, and engineering research by Christopher Riner. 7 published papers, 7 interactive visualizations.
+An interactive research dashboard for independent physics, mathematics, and engineering research by Christopher Riner. 7 published papers, 6 interactive visualizations.
 
 No build step required — pure HTML/CSS/JS. Open `index.html` locally or visit the live site above.
 
@@ -13,7 +13,6 @@ No build step required — pure HTML/CSS/JS. Open `index.html` locally or visit 
 | Visualization | Description |
 |---|---|
 | [Prime-Modified Metric](https://jackwayne234.github.io/research-hub/simulators/metric.html) | Flagship — Schwarzschild metric parameterized by ζ(s) |
-| [GW150914 Zeta Fingerprint](https://jackwayne234.github.io/research-hub/analysis/gw150914_visualization.html) | Real LIGO data overlaid with zeta-predicted waveform |
 | [Wormhole 3D Interactive](https://jackwayne234.github.io/research-hub/simulators/wormhole_3d_interactive.html) | 3D wormhole geometry from orbiting black holes |
 | [Dimension Stack Chart](https://jackwayne234.github.io/research-hub/simulators/dimension_stack_chart.html) | Metric components stacked — contributions from far field to singularity |
 | [Black Hole Simulator](https://jackwayne234.github.io/research-hub/simulators/blackhole-simulator.html) | Fall through the horizon, watch metric components evolve |

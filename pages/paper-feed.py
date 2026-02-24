@@ -69,7 +69,7 @@ NEWS_FEEDS = [
 NEWS_KEYWORDS = [
     "black hole", "gravity", "spacetime", "quantum gravity", "dark energy",
     "dark matter", "optical comput", "photonic", "prime number", "riemann",
-    "benford", "entropy", "hawking", "gravitational wave", "LIGO",
+    "benford", "entropy", "hawking", "gravitational wave",
     "cosmolog", "general relativity", "neutron star", "wormhole",
     "ternary", "optical chip", "emergent", "holograph",
 ]
