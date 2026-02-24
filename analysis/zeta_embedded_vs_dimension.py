@@ -272,7 +272,7 @@ print("""
   APPROACH A (ζ embedded in spacetime):
     ✅ Primes modify spacetime directly — "if it's matter, treat it like matter"
     ✅ Temperature dimension preserved (Hawking connection intact)
-    ✅ Time doesn't fully stop at horizon (substrate keeps cycle alive)
+    ✅ Time doesn't fully stop at horizon (primes keep cycle alive)
     ✅ Consistent: same physics in all dimensions
     ⚠️  ζ⁴ amplification could be too aggressive deep inside
 
@@ -281,7 +281,7 @@ print("""
     ✅ Clean separation: GR does GR, primes do primes
     ✅ Easier to test — any deviation from GR is in the new dimension only
     ❌ Loses temperature dimension (Hawking connection broken)
-    ❌ Time still stops at horizon (no substrate resistance)
+    ❌ Time still stops at horizon (no prime resistance)
     ❌ Primes are "next to" spacetime but don't touch it — observationally harder to detect
 
   THE TRADE-OFF:

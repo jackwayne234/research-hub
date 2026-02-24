@@ -13,7 +13,7 @@ No build step required — pure HTML/CSS/JS. Open `index.html` locally or visit 
 | Visualization | Description |
 |---|---|
 | [5D Prime-Modified Metric](https://jackwayne234.github.io/research-hub/simulators/metric.html) | Flagship — prime-modified Schwarzschild metric in 5 dimensions |
-| [GW150914 Substrate Fingerprint](https://jackwayne234.github.io/research-hub/analysis/gw150914_visualization.html) | Real LIGO data overlaid with zeta-predicted waveform |
+| [GW150914 Zeta Fingerprint](https://jackwayne234.github.io/research-hub/analysis/gw150914_visualization.html) | Real LIGO data overlaid with zeta-predicted waveform |
 | [Wormhole 3D Interactive](https://jackwayne234.github.io/research-hub/simulators/wormhole_3d_interactive.html) | 3D wormhole geometry from orbiting black holes |
 | [Dimension Stack Chart](https://jackwayne234.github.io/research-hub/simulators/dimension_stack_chart.html) | All 6 dimensions stacked — contributions from far field to singularity |
 | [5D Black Hole Simulator](https://jackwayne234.github.io/research-hub/simulators/blackhole-simulator.html) | Fall through the horizon, watch dimensions evolve |
@@ -50,7 +50,7 @@ research-hub/
 ## Research Threads
 
 1. **Mathematics** — Prime numbers, zeta functions, causal set theory
-2. **Physics** — Benford's Law in gravitational systems, 5D prime-modified Schwarzschild metric, substrate theory
+2. **Physics** — Benford's Law in gravitational systems, 5D prime-modified Schwarzschild metric
 3. **Engineering** — Wavelength-division ternary optical computing, CubeSat lens design
 
 ## License

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Riner Research Outpost</title>
+<title>Riner Research Hub — Prime Gravity</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -126,6 +126,68 @@ border-radius:6px;padding:6px 0;display:none;min-width:220px;backdrop-filter:blu
 .radio-item.playing{color:var(--green)}
 .radio-item.playing::before{content:'▶ ';color:var(--green)}
 
+/* ── Welcome Panel ── */
+#welcome-panel{
+  position:fixed;z-index:300;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(580px,90vw);
+  background:rgba(10,10,26,.97);
+  border:1px solid var(--accent1);
+  border-radius:10px;
+  box-shadow:0 8px 48px rgba(99,102,241,.25),0 0 80px rgba(99,102,241,.08);
+  backdrop-filter:blur(14px);
+  display:none;flex-direction:column;
+  overflow:hidden;
+  animation:welcomeFadeIn .5s ease forwards;
+}
+@keyframes welcomeFadeIn{from{opacity:0;transform:translate(-50%,-50%) scale(.96)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+#welcome-panel .win-titlebar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;
+  background:rgba(17,17,40,.9);
+  border-bottom:1px solid var(--card-border);
+  cursor:grab;user-select:none;
+}
+#welcome-panel .win-title{font-size:11px;color:var(--accent1);letter-spacing:1px;text-transform:uppercase;font-weight:700}
+#welcome-panel .welcome-body{padding:24px 28px;overflow-y:auto;max-height:70vh}
+#welcome-panel .welcome-body h2{font-size:16px;color:var(--text);margin-bottom:8px;line-height:1.4}
+#welcome-panel .welcome-body .subtitle{font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.5}
+#welcome-panel .welcome-body .equation{
+  font-size:14px;color:var(--accent2);text-align:center;
+  padding:12px;margin:14px 0;
+  background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:6px;
+  font-weight:500;letter-spacing:.5px;
+}
+#welcome-panel .welcome-body ul{list-style:none;padding:0;margin:14px 0}
+#welcome-panel .welcome-body ul li{
+  font-size:12px;color:var(--text-dim);padding:5px 0;padding-left:18px;position:relative;line-height:1.5;
+}
+#welcome-panel .welcome-body ul li::before{content:'▸';position:absolute;left:0;color:var(--accent1)}
+#welcome-panel .welcome-body .welcome-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+#welcome-panel .welcome-body .welcome-btn{
+  padding:8px 18px;border-radius:6px;font-size:12px;font-family:inherit;
+  cursor:pointer;border:1px solid var(--accent1);transition:all .2s;
+  text-decoration:none;display:inline-flex;align-items:center;gap:6px;
+}
+#welcome-panel .welcome-body .welcome-btn.primary{
+  background:var(--accent1);color:#fff;border-color:var(--accent1);
+}
+#welcome-panel .welcome-body .welcome-btn.primary:hover{background:#4f46e5}
+#welcome-panel .welcome-body .welcome-btn.secondary{
+  background:transparent;color:var(--accent1);
+}
+#welcome-panel .welcome-body .welcome-btn.secondary:hover{background:rgba(99,102,241,.12)}
+#welcome-panel .welcome-body .doi{font-size:10px;color:var(--text-dim);margin-top:12px;opacity:.7}
+
+/* ── Paper Ticker ── */
+#paper-ticker{display:inline-block;overflow:hidden;max-width:320px;white-space:nowrap;vertical-align:middle}
+#paper-ticker .ticker-track{
+  display:inline-block;white-space:nowrap;
+  animation:tickerScroll 40s linear infinite;
+}
+@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+#paper-ticker .ticker-track span{color:var(--green);margin-right:6px}
+
 /* ── Responsive ── */
 @media(max-width:600px){
   #sidebar{width:48px}
@@ -145,11 +207,12 @@ border-radius:6px;padding:6px 0;display:none;min-width:220px;backdrop-filter:blu
 
 <!-- Status Bar -->
 <div id="status-bar">
-<div class="left">◆ RINER RESEARCH OUTPOST</div>
+<div class="left">◆ RINER RESEARCH HUB</div>
 <div class="right">
 <span><span class="pulse-dot"></span> SYSTEMS NOMINAL</span>
 <span id="day-count">DAY 0</span>
-<span>SCREENS 13</span>
+<span>PAPERS 7</span>
+<span id="paper-ticker"></span>
 <span id="utc-clock">00:00:00 UTC</span>
 </div>
 </div>
@@ -159,6 +222,32 @@ border-radius:6px;padding:6px 0;display:none;min-width:220px;backdrop-filter:blu
 
 <!-- Floating windows container -->
 <div id="windows"></div>
+
+<!-- Welcome Panel -->
+<div id="welcome-panel">
+<div class="win-titlebar">
+<span class="win-title"><span class="pulse-dot" style="margin-right:6px"></span> Paper 7 — Now Live</span>
+<div class="win-btns">
+<button class="win-btn close" onclick="document.getElementById('welcome-panel').style.display='none'" title="Close">&times;</button>
+</div>
+</div>
+<div class="welcome-body">
+<h2>Emergence of General Relativity from the Prime Number Structure of the Riemann Zeta Function</h2>
+<p class="subtitle">The Schwarzschild metric emerges naturally when spacetime geometry is parameterized by the Riemann zeta function &#950;(s).</p>
+<div class="equation">&#950;(s) &times; 1/&#950;(s) = 1 &nbsp;&rarr;&nbsp; g<sub>tt</sub> &middot; g<sub>rr</sub> = &minus;1</div>
+<ul>
+<li>GPS satellite timing accuracy reproduced to &lt;1% from prime-zeta coupling</li>
+<li>Bosonic string gravity recovered via &#950;-regularized partition functions</li>
+<li>Holographic principle emerges from prime-counting density at the boundary</li>
+<li>4 testable predictions: modified dispersion, prime-frequency GW signatures, lab BEC shifts, CMB correlations</li>
+</ul>
+<div class="welcome-actions">
+<a href="https://zenodo.org/records/14895621" target="_blank" class="welcome-btn primary">Read the Paper</a>
+<a href="simulators/metric.html" class="welcome-btn secondary" onclick="event.preventDefault();document.getElementById('welcome-panel').style.display='none';openWindow('simulators/metric.html','5D Prime Metric')">Explore the Metric</a>
+</div>
+<p class="doi">DOI: 10.5281/zenodo.14895621</p>
+</div>
+</div>
 
 <!-- Controls -->
 <div id="controls">
@@ -185,22 +274,24 @@ const SCENES=[
 ];
 
 const NAV=[
+{icon:'🌌',label:'GR from Primes',href:'https://zenodo.org/records/14895621'},
 {icon:'📐',label:'5D Prime Metric',href:'simulators/metric.html'},
-{icon:'📡',label:'Research Feed',href:'pages/research-feed.html'},
+{icon:'🕳️',label:'Black Hole Primes',href:'simulators/blackhole-simulator.html'},
+{icon:'📄',label:'Publications',href:'pages/publications.html'},
+{divider:true},
 {icon:'🌀',label:'Big Picture',href:'pages/big-picture.html'},
+{icon:'📡',label:'Research Feed',href:'pages/research-feed.html'},
+{icon:'🎨',label:'Visualizations',href:'pages/visualizations.html'},
+{icon:'🔭',label:'LIGO Analysis',href:'analysis/ligo.html'},
+{divider:true},
+{icon:'🔧',label:'Projects',href:'pages/projects.html'},
 {icon:'🧮',label:'Daily Practice',href:'pages/daily-practice.html'},
 {icon:'📊',label:'Math Journey',href:'pages/math-journey.html'},
-{divider:true},
-{icon:'🪐',label:'Expedition',href:'simulators/expedition.html'},
-{icon:'🔧',label:'Projects',href:'pages/projects.html'},
-{icon:'📄',label:'Publications',href:'pages/publications.html'},
-{icon:'🎨',label:'Visualizations',href:'pages/visualizations.html'},
-{icon:'🔮',label:'6th Dimension',href:'pages/substrate.html'},
-{icon:'🔭',label:'LIGO Analysis',href:'analysis/ligo.html'},
 {divider:true},
 {icon:'💡',label:'Speculative',href:'pages/speculative.html'},
 {icon:'🗺️',label:'Log & Roadmap',href:'pages/log-roadmap.html'},
 {icon:'📝',label:'Paper Editor',href:'tools/editor.html'},
+{icon:'🪐',label:'Expedition',href:'simulators/expedition.html'},
 ];
 
 let player,currentScene=0,isMuted=true;
@@ -446,6 +537,30 @@ if(!e.target.closest('#controls')){
   document.getElementById('radio-list').classList.remove('open');
 }
 });
+
+// ── WELCOME PANEL AUTO-OPEN ──
+document.addEventListener('DOMContentLoaded',()=>{
+  setTimeout(()=>{
+    document.getElementById('welcome-panel').style.display='flex';
+  },800);
+});
+
+// ── PAPER TICKER ──
+(function(){
+const papers=[
+  '#7 GR from Primes',
+  '#6 Causal Set Theory',
+  '#5 River Velocity GPS',
+  '#4 Optical AI Accelerator',
+  '#3 Ternary Logic',
+  '#2 BEC + Benford\'s Law',
+  '#1 Modified Schwarzschild'
+];
+const tickerEl=document.getElementById('paper-ticker');
+const sep=' \u00b7 ';
+const full=papers.join(sep)+sep;
+tickerEl.innerHTML='<span class="ticker-track"><span>\u25c6</span> '+full+'<span>\u25c6</span> '+full+'</span>';
+})();
 </script>
 </body>
 </html>

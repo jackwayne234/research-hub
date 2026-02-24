@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-LIGO GW150914 — Substrate Fingerprint Analysis
-================================================
+LIGO GW150914 — Prime Fingerprint Analysis
+============================================
 Download real LIGO data from GW150914 (first detection).
 Compare the observed waveform against GR template and our ζ prediction.
-Look for the substrate fingerprint in the residuals.
+Look for the prime fingerprint in the residuals.
 """
 
 import numpy as np
@@ -118,9 +118,9 @@ print(f"  H1 event samples: {len(h1_event)}")
 print()
 
 # ═══════════════════════════════════════════════════════════
-# COMPUTE SUBSTRATE PREDICTION
+# COMPUTE ZETA PREDICTION
 # ═══════════════════════════════════════════════════════════
-print("  Computing substrate modification prediction...")
+print("  Computing ζ modification prediction...")
 print()
 
 # For each sample in the event window, estimate the orbital separation
@@ -211,7 +211,7 @@ print(f"  ζ correction at peak:     {peak_zeta:.6f} ({(peak_zeta-1)*100:+.4f}%)
 print(f"  ζ-predicted peak:         {peak_strain * peak_zeta:+.4e}")
 print()
 
-# The substrate fingerprint: difference between what GR predicts
+# The prime fingerprint: difference between what GR predicts
 # and what ζ predicts, evaluated at merger
 merger_data = h1_values[merger_mask]
 merger_zeta = zeta_correction[merger_mask]
@@ -225,7 +225,7 @@ if len(merger_data) > 0:
     print(f"  MERGER PHASE:")
     print(f"    Peak merger strain:        {max_merger:.4e}")
     print(f"    Average ζ at merger:       {avg_merger_zeta:.6f}")
-    print(f"    Substrate fingerprint:     {fingerprint_size:.4e} (predicted excess)")
+    print(f"    Prime fingerprint:         {fingerprint_size:.4e} (predicted excess)")
     print(f"    Fingerprint as % of peak:  {(avg_merger_zeta-1)*100:.2f}%")
     print()
 
@@ -238,7 +238,7 @@ print("=" * 90)
 print()
 
 # dτ/dt ≈ 1 + h/2 for GR
-# dτ/dt ≈ 1 + h·√ζ/2 for substrate
+# dτ/dt ≈ 1 + h·√ζ/2 for ζ-modified
 td_gr = 1 + h1_values / 2
 td_zeta = 1 + h1_zeta_predicted / 2
 td_delta = td_zeta - td_gr
@@ -274,10 +274,10 @@ output = {
     'merger_fingerprint_pct': float((avg_merger_zeta - 1) * 100) if len(merger_data) > 0 else 0,
 }
 
-with open('gw150914_substrate_data.json', 'w') as f:
+with open('gw150914_data.json', 'w') as f:
     json.dump(output, f)
 
-print(f"  Saved to gw150914_substrate_data.json")
+print(f"  Saved to gw150914_data.json")
 print()
 
 print("=" * 90)
@@ -287,7 +287,7 @@ print("""
   We downloaded REAL gravitational wave data from the first-ever detection.
   We computed what the ζ-embedded metric predicts the waveform SHOULD look like.
   
-  The substrate fingerprint:
+  The prime fingerprint:
   - Is LARGEST in the last ~10ms before merger (where ζ is loudest)
   - Predicts HIGHER amplitude than standard GR during merger
   - Predicts a specific time dilation excess pattern at the detector

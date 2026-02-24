@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Research Calculator - Substrate Math</title>
+<title>Research Calculator</title>
 <style>
 body {
   font-family: 'Courier New', monospace;
@@ -162,25 +162,25 @@ pow(2, 8)"></textarea>
     </div>
     
     <div class="card">
-      <h3>🌌 Substrate Calculations</h3>
-      
+      <h3>🌌 Advanced Calculations</h3>
+
       <div class="input-group">
         <label>Calculation Type:</label>
-        <select id="substrateType" onchange="updateSubstrateInputs()">
+        <select id="advancedType" onchange="updateAdvancedInputs()">
           <option value="zeta">Zeta Function ζ(s)</option>
           <option value="schwarzschild">Schwarzschild Radius</option>
           <option value="time_dilation">Time Dilation Factor</option>
-          <option value="substrate_density">Substrate Density</option>
+          <option value="density">Zeta Density</option>
         </select>
       </div>
-      
-      <div id="substrateInputs">
+
+      <div id="advancedInputs">
         <!-- Dynamic inputs based on calculation type -->
       </div>
-      
-      <button class="btn" onclick="calculateSubstrate()">Calculate</button>
-      
-      <div id="substrateResult" class="result" style="display: none;"></div>
+
+      <button class="btn" onclick="calculateAdvanced()">Calculate</button>
+
+      <div id="advancedResult" class="result" style="display: none;"></div>
     </div>
   </div>
   
@@ -197,10 +197,10 @@ pow(2, 8)"></textarea>
       </div>
       
       <div>
-        <h4>Substrate Relations</h4>
+        <h4>Zeta Relations</h4>
         <p><strong>ζ mapping:</strong> ζ(1 + (r/rₛ)³)</p>
         <p><strong>Time factor:</strong> √(rₛ/r)</p>
-        <p><strong>Substrate excess:</strong> (ζ-1) × 100%</p>
+        <p><strong>ζ excess:</strong> (ζ-1) × 100%</p>
       </div>
       
       <div>
@@ -250,8 +250,8 @@ const MathExt = {
     return Math.sqrt(1 - rs/r);
   },
   
-  // Substrate density approximation
-  substrateDensity: function(r, rs) {
+  // Zeta density approximation
+  zetaDensity: function(r, rs) {
     if (r <= 0) return NaN;
     const s = 1 + Math.pow(r/rs, 3);
     return this.zeta(s);
@@ -323,9 +323,9 @@ function insertValue(value) {
   textarea.setSelectionRange(start + value.length, start + value.length);
 }
 
-function updateSubstrateInputs() {
-  const type = document.getElementById('substrateType').value;
-  const container = document.getElementById('substrateInputs');
+function updateAdvancedInputs() {
+  const type = document.getElementById('advancedType').value;
+  const container = document.getElementById('advancedInputs');
   
   let html = '';
   switch (type) {
@@ -357,7 +357,7 @@ function updateSubstrateInputs() {
         </div>
       `;
       break;
-    case 'substrate_density':
+    case 'density':
       html = `
         <div class="input-group">
           <label>Radius r:</label>
@@ -370,13 +370,13 @@ function updateSubstrateInputs() {
       `;
       break;
   }
-  
+
   container.innerHTML = html;
 }
 
-function calculateSubstrate() {
-  const type = document.getElementById('substrateType').value;
-  const resultDiv = document.getElementById('substrateResult');
+function calculateAdvanced() {
+  const type = document.getElementById('advancedType').value;
+  const resultDiv = document.getElementById('advancedResult');
   
   try {
     let result, description;
@@ -402,12 +402,12 @@ function calculateSubstrate() {
         description = `Time dilation factor = ${result.toFixed(6)}<br>Time runs ${percent.toFixed(3)}% slower`;
         break;
         
-      case 'substrate_density':
+      case 'density':
         const r2 = parseFloat(document.getElementById('r_value2').value);
         const rs2 = parseFloat(document.getElementById('rs_value2').value);
-        result = MathExt.substrateDensity(r2, rs2);
+        result = MathExt.zetaDensity(r2, rs2);
         const excess = (result - 1) * 100;
-        description = `Substrate density ζ = ${result.toFixed(6)}<br>Excess = ${excess.toFixed(3)}%`;
+        description = `Zeta density ζ = ${result.toFixed(6)}<br>Excess = ${excess.toFixed(3)}%`;
         break;
     }
     
@@ -424,7 +424,7 @@ function calculateSubstrate() {
 
 // Initialize
 window.onload = function() {
-  updateSubstrateInputs();
+  updateAdvancedInputs();
 };
 
 // Allow Enter key to calculate in basic calculator

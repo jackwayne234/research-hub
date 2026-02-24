@@ -203,7 +203,7 @@ for rr in close_radii:
 
 print()
 print("  Note: 4D/GR ratio = ζ(s). If ζ → 1, divergence is identical to GR.")
-print("  If ζ > 1 near horizon, prime substrate AMPLIFIES the divergence (not removes it).")
+print("  If ζ > 1 near horizon, the prime correction AMPLIFIES the divergence (not removes it).")
 print("  Divergence removal would require a different coupling (e.g., ζ in denominator).")
 print()
 

@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>GPS 24hr Analysis - Substrate Theory</title>
+<title>GPS 24hr Analysis - Prime-Modified Metric</title>
 <style>
 body {
   font-family: 'Courier New', monospace;
@@ -89,11 +89,11 @@ canvas {
 <body>
 
 <div class="container">
-  <h1>GPS 24hr Analysis — Substrate Theory</h1>
+  <h1>GPS 24hr Analysis — Prime-Modified Metric</h1>
   
   <div class="card">
     <h3>📡 GPS Time Dilation Analysis</h3>
-    <p>This analysis compares standard GR predictions vs. substrate-enhanced predictions for GPS satellite time dilation over a 24-hour period.</p>
+    <p>This analysis compares standard GR predictions vs. ζ-enhanced predictions for GPS satellite time dilation over a 24-hour period.</p>
     
     <div class="controls">
       <button class="btn" onclick="runAnalysis()">Run Analysis</button>
@@ -109,8 +109,8 @@ canvas {
         <div class="stat-label">GR Time Dilation (ns)</div>
       </div>
       <div class="stat">
-        <div class="stat-value" id="substrateDelta">--</div>
-        <div class="stat-label">Substrate Enhanced (ns)</div>
+        <div class="stat-value" id="zetaDelta">--</div>
+        <div class="stat-label">ζ-Enhanced (ns)</div>
       </div>
       <div class="stat">
         <div class="stat-value" id="difference">--</div>
@@ -130,7 +130,7 @@ canvas {
     <div class="card" id="mathDetails" style="display: none;">
       <h4>📐 Mathematical Framework</h4>
       <p><strong>Standard GR:</strong> Δt/t ≈ (GM/rc²) - (v²/2c²)</p>
-      <p><strong>Substrate Enhanced:</strong> Δt/t ≈ ζ(s) × [(GM/rc²) - (v²/2c²)]</p>
+      <p><strong>ζ-Enhanced:</strong> Δt/t ≈ ζ(s) × [(GM/rc²) - (v²/2c²)]</p>
       <p><strong>Where:</strong> ζ(s) = Σ(1/n^s) for s ≈ 1 + (r/r_s)³</p>
       <p>For GPS altitude (~20,200 km), ζ ≈ 1.0001 (very small correction)</p>
     </div>
@@ -167,20 +167,20 @@ function runAnalysis() {
   const gr_dilation = (gravitational_factor - velocity_factor) * 24 * 3600; // seconds
   const gr_dilation_ns = gr_dilation * 1e9; // nanoseconds
   
-  // Substrate enhancement (very small at GPS altitude)
+  // ζ enhancement (very small at GPS altitude)
   const zeta_factor = 1.0001; // ζ ≈ 1 at GPS altitude
-  const substrate_dilation_ns = gr_dilation_ns * zeta_factor;
-  
-  const difference = substrate_dilation_ns - gr_dilation_ns;
+  const zeta_dilation_ns = gr_dilation_ns * zeta_factor;
+
+  const difference = zeta_dilation_ns - gr_dilation_ns;
   
   // Update stats
   document.getElementById('grDelta').textContent = gr_dilation_ns.toFixed(1);
-  document.getElementById('substrateDelta').textContent = substrate_dilation_ns.toFixed(1);
+  document.getElementById('zetaDelta').textContent = zeta_dilation_ns.toFixed(1);
   document.getElementById('difference').textContent = difference.toFixed(3);
   document.getElementById('accuracy').textContent = '99.97%';
   
   // Draw chart
-  drawChart(ctx, gr_dilation_ns, substrate_dilation_ns);
+  drawChart(ctx, gr_dilation_ns, zeta_dilation_ns);
   
   // Show results
   const resultsDiv = document.getElementById('results');
@@ -189,23 +189,23 @@ function runAnalysis() {
   
   if (showingZeta) {
     resultText.innerHTML = `
-      <p><strong>Substrate theory shows excellent agreement with GPS data!</strong></p>
+      <p><strong>ζ-enhanced model shows excellent agreement with GPS data!</strong></p>
       <p>• Standard GR predicts ${gr_dilation_ns.toFixed(1)} ns time dilation over 24 hours</p>
-      <p>• Substrate-enhanced model predicts ${substrate_dilation_ns.toFixed(1)} ns</p>
+      <p>• ζ-enhanced model predicts ${zeta_dilation_ns.toFixed(1)} ns</p>
       <p>• Difference is only ${difference.toFixed(3)} ns - within measurement precision</p>
-      <p>• At GPS altitude, substrate effects are minimal (ζ ≈ 1.0001)</p>
+      <p>• At GPS altitude, ζ effects are minimal (ζ ≈ 1.0001)</p>
     `;
   } else {
     resultText.innerHTML = `
       <p><strong>Standard GR Analysis:</strong></p>
       <p>• Time dilation: ${gr_dilation_ns.toFixed(1)} ns over 24 hours</p>
       <p>• This matches observed GPS corrections very well</p>
-      <p>• No substrate enhancement applied</p>
+      <p>• No ζ enhancement applied</p>
     `;
   }
 }
 
-function drawChart(ctx, gr_value, substrate_value) {
+function drawChart(ctx, gr_value, zeta_value) {
   const width = canvas.width;
   const height = canvas.height;
   const padding = 60;
@@ -222,7 +222,7 @@ function drawChart(ctx, gr_value, substrate_value) {
   
   // Draw bars
   const barWidth = 120;
-  const maxValue = Math.max(gr_value, substrate_value);
+  const maxValue = Math.max(gr_value, zeta_value);
   const scale = (height - 2 * padding) / maxValue;
   
   // GR bar
@@ -230,11 +230,11 @@ function drawChart(ctx, gr_value, substrate_value) {
   ctx.fillStyle = '#6366f1';
   ctx.fillRect(width * 0.25 - barWidth/2, height - padding - grHeight, barWidth, grHeight);
   
-  // Substrate bar (if enabled)
+  // ζ-enhanced bar (if enabled)
   if (showingZeta) {
-    const substrateHeight = substrate_value * scale;
+    const zetaHeight = zeta_value * scale;
     ctx.fillStyle = '#22c55e';
-    ctx.fillRect(width * 0.75 - barWidth/2, height - padding - substrateHeight, barWidth, substrateHeight);
+    ctx.fillRect(width * 0.75 - barWidth/2, height - padding - zetaHeight, barWidth, zetaHeight);
   }
   
   // Labels
@@ -243,7 +243,7 @@ function drawChart(ctx, gr_value, substrate_value) {
   ctx.textAlign = 'center';
   ctx.fillText('Standard GR', width * 0.25, height - 20);
   if (showingZeta) {
-    ctx.fillText('Substrate Enhanced', width * 0.75, height - 20);
+    ctx.fillText('ζ-Enhanced', width * 0.75, height - 20);
   }
   
   // Values
@@ -251,7 +251,7 @@ function drawChart(ctx, gr_value, substrate_value) {
   ctx.font = '12px Courier New';
   ctx.fillText(gr_value.toFixed(1) + ' ns', width * 0.25, height - padding - grHeight - 10);
   if (showingZeta) {
-    ctx.fillText(substrate_value.toFixed(1) + ' ns', width * 0.75, height - padding - substrateHeight - 10);
+    ctx.fillText(zeta_value.toFixed(1) + ' ns', width * 0.75, height - padding - zetaHeight - 10);
   }
   
   // Title
