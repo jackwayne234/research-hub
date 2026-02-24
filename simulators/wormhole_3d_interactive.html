@@ -247,8 +247,8 @@
         <span class="value yellow" id="info-db">0.03401</span>
       </div>
       <div class="info-row">
-        <span class="label">Entropy rate</span>
-        <span class="value" id="info-erate" style="color:#00ccff">200.0</span>
+        <span class="label">Metric gradient</span>
+        <span class="value" id="info-mgrad" style="color:#00ccff">200.0</span>
       </div>
       <div class="info-row hidden" id="row-coupling">
         <span class="label">CS carries</span>
@@ -378,8 +378,8 @@ function metric4D(l) {
   return { gll, gtt, gpp, gd, db, floorActive: true };
 }
 
-// Entropy rate (numerical derivative for 4D)
-function entropyRate(l, mode) {
+// Metric gradient magnitude (numerical derivative along l)
+function metricGradient(l, mode) {
   const dl = 0.01;
   const lp = l + dl;
   const lm = l - dl;
@@ -547,7 +547,7 @@ function updateInfo(l) {
     }
   }
 
-  const erate = entropyRate(l, currentMode);
+  const mgrad = metricGradient(l, currentMode);
 
   // ── Banner: symmetric wormhole zones ──
   const banner = document.getElementById('horizon-banner');
@@ -581,7 +581,7 @@ function updateInfo(l) {
   document.getElementById('info-det').textContent = fmt(det);
   document.getElementById('info-floor').textContent = FLOOR_VAL.toFixed(4);
   document.getElementById('info-db').textContent = db.toFixed(5);
-  document.getElementById('info-erate').textContent = fmt(erate);
+  document.getElementById('info-mgrad').textContent = fmt(mgrad);
 
   // g_delta row (4D only)
   const gdRow = document.getElementById('row-gdelta');
@@ -684,9 +684,9 @@ function advanceFrame() {
   updatePlot(currentLIndex);
 
   const l = L_VALUES[currentLIndex];
-  const erate = entropyRate(l, currentMode);
-  // Slow down near throat (low entropy rate), speed up far away
-  const delay = Math.max(16, Math.min(200, 80 / Math.max(0.01, Math.sqrt(erate) * 0.05)));
+  const mgrad = metricGradient(l, currentMode);
+  // Slow down near throat (low metric gradient), speed up far away
+  const delay = Math.max(16, Math.min(200, 80 / Math.max(0.01, Math.sqrt(mgrad) * 0.05)));
   animTimer = setTimeout(advanceFrame, delay);
 }
 

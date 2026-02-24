@@ -82,11 +82,6 @@
     background: linear-gradient(90deg, #0a0a1a, #1a1005, #0a0a1a);
     color: #ffcc44; border-color: #ffcc44;
   }
-  #zone-banner.fifth-dominant {
-    background: linear-gradient(90deg, #0a0a1a, #1a0520, #0a0a1a);
-    color: #d2a8ff; border-color: #d2a8ff;
-    animation: horizonPulse 1.2s ease-in-out infinite;
-  }
   @keyframes horizonPulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
@@ -137,7 +132,7 @@
     line-height: 1; user-select: none;
   }
   #tensor-grid {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
   }
   .tensor-cell {
     width: 58px; height: 40px;
@@ -150,26 +145,23 @@
     border: 1px solid rgba(60, 64, 80, 0.3);
   }
   .tensor-cell.zero { color: #21262d; font-size: 0.55rem; }
+  .tensor-cell.c-gtt { color: #58a6ff; }
   .tensor-cell.c-grr { color: #7ee787; }
   .tensor-cell.c-gth { color: #ffa657; }
   .tensor-cell.c-gph { color: #d2a8ff; }
-  .tensor-cell.c-gSd { color: #ff7b72; }
-  .tensor-cell.c-gT  { color: #ffcc44; }
   .tensor-cell.flash { animation: cellFlash 0.4s ease-out; }
   @keyframes cellFlash {
     0% { box-shadow: 0 0 14px rgba(255,255,255,0.35); }
     100% { box-shadow: none; }
   }
   .tensor-labels {
-    display: grid; grid-template-columns: repeat(5, 1fr);
+    display: grid; grid-template-columns: repeat(4, 1fr);
     gap: 2px; text-align: center;
   }
   .tensor-label { font-size: 0.52rem; letter-spacing: 0.04em; }
   .tl-grr { color: rgba(126,231,135,0.6); }
   .tl-gth { color: rgba(255,166,87,0.6); }
   .tl-gph { color: rgba(210,168,255,0.6); }
-  .tl-gSd { color: rgba(255,123,114,0.6); }
-  .tl-gT  { color: rgba(255,204,68,0.6); }
   .matrix-row-labels {
     display: flex; flex-direction: column; gap: 2px; justify-content: center;
   }
@@ -197,7 +189,6 @@
   .readout-card.alert { border-color: rgba(255,123,114,0.5); }
   .readout-card.floor-glow { border-color: rgba(88,166,255,0.5); }
   .readout-card.prime-glow { border-color: rgba(255,204,68,0.5); }
-  .readout-card.temp-glow { border-color: rgba(210,168,255,0.5); }
   .readout-label {
     font-size: 0.58rem; color: #484d58;
     text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px;
@@ -312,7 +303,7 @@
 
 <div id="header">
   <h1>BLACK HOLE SIMULATOR &mdash; RINER PRIME-MODIFIED METRIC</h1>
-  <div class="subtitle">g<sub>&mu;&nu;</sub> = diag(g<sub>rr</sub>&middot;&zeta;, g<sub>&theta;&theta;</sub>&middot;&zeta;, g<sub>&phi;&phi;</sub>&middot;&zeta;, &#x1E60;&sup2;, 1/r) &mdash; Euler prime-modified &times; LIGO-constrained (&alpha;=3)</div>
+  <div class="subtitle">g<sub>&mu;&nu;</sub> = diag(g<sub>tt</sub>, g<sub>rr</sub>&middot;&zeta;, g<sub>&theta;&theta;</sub>&middot;&zeta;, g<sub>&phi;&phi;</sub>&middot;&zeta;) &mdash; Euler prime-modified &times; LIGO-constrained (&alpha;=3)</div>
 </div>
 
 <div id="zone-banner" class="safe">
@@ -342,22 +333,20 @@
   <div id="center-col">
     <div class="panel" id="matrix-panel">
       <div class="panel-title panel-title-center">Metric Tensor g<sub>&mu;&nu;</sub>
-        <span class="info-tip" data-tip="The prime-modified metric tensor. Spatial components are multiplied by ζ(1+(r/r_s)³). Includes entropy rate Ṡ (geometry change rate) and temperature T = 1/r, connecting to Hawking radiation at the horizon.">?</span>
+        <span class="info-tip" data-tip="The prime-modified metric tensor. Spatial components are multiplied by ζ(1+(r/r_s)³). Standard 4D Schwarzschild metric with prime amplification near the horizon.">?</span>
       </div>
       <div class="tensor-labels" style="margin-bottom:6px;padding-left:24px;">
+        <div class="tensor-label" style="color:rgba(88,166,255,0.6);">t</div>
         <div class="tensor-label tl-grr">r</div>
         <div class="tensor-label tl-gth">&theta;</div>
         <div class="tensor-label tl-gph">&phi;</div>
-        <div class="tensor-label tl-gSd">&#x1E60;</div>
-        <div class="tensor-label tl-gT">T</div>
       </div>
       <div class="matrix-wrapper">
         <div class="matrix-row-labels">
+          <div class="matrix-row-label" style="color:rgba(88,166,255,0.5);">t</div>
           <div class="matrix-row-label" style="color:rgba(126,231,135,0.5);">r</div>
           <div class="matrix-row-label" style="color:rgba(255,166,87,0.5);">&theta;</div>
           <div class="matrix-row-label" style="color:rgba(210,168,255,0.5);">&phi;</div>
-          <div class="matrix-row-label" style="color:rgba(255,123,114,0.5);">&#x1E60;</div>
-          <div class="matrix-row-label" style="color:rgba(255,204,68,0.5);">T</div>
         </div>
         <span class="matrix-bracket">[</span>
         <div id="tensor-grid"></div>
@@ -367,6 +356,11 @@
 
     <div class="panel" id="equations-panel">
       <div class="panel-title panel-title-center">Live Equations</div>
+      <div class="eq-row">
+        <span class="eq-name" style="color:#58a6ff;">g<sub>tt</sub></span>
+        <span class="eq-formula">= &minus;(1 &minus; r&#x209B;/r)</span>
+        <span class="eq-value" id="eq-gtt" style="color:#58a6ff;">&minus;0.950</span>
+      </div>
       <div class="eq-row">
         <span class="eq-name" style="color:#7ee787;">g<sub>rr</sub></span>
         <span class="eq-formula">= (1 + r&#x209B;/r) &middot; &zeta;</span>
@@ -386,16 +380,6 @@
         <span class="eq-name" style="color:#ffcc44;">&zeta; factor</span>
         <span class="eq-formula">= &zeta;(1 + (r/r&#x209B;)&sup3;)</span>
         <span class="eq-value" id="eq-zeta" style="color:#ffcc44;">1.000</span>
-      </div>
-      <div class="eq-row">
-        <span class="eq-name" style="color:#ff7b72;">&#x1E60;</span>
-        <span class="eq-formula">= &radic;(&Sigma;(dg/dr)&sup2;)</span>
-        <span class="eq-value" id="eq-Sdot" style="color:#ff7b72;">0.000</span>
-      </div>
-      <div class="eq-row">
-        <span class="eq-name" style="color:#ffcc44;">g<sub>55</sub></span>
-        <span class="eq-formula">= 1/r</span>
-        <span class="eq-value" id="eq-g55" style="color:#ffcc44;">0.050</span>
       </div>
       <div class="eq-row" style="border-top:1px solid #21262d;padding-top:8px;">
         <span class="eq-name" style="color:#58a6ff;">det<sub>spatial</sub></span>
@@ -420,20 +404,12 @@
       <div class="readout-sub">ζ(s) with s = 1 + (r/r_s)³</div>
     </div>
 
-    <div class="readout-card" id="card-temp">
-      <div class="readout-label">Temperature Dimension
-        <span class="info-tip" data-tip="g_55 = 1/r — the emergent temperature dimension. As r shrinks, this component grows, representing the increasing thermodynamic significance of the black hole's temperature.">?</span>
-      </div>
-      <div class="readout-value" id="val-temp" style="color:#ffcc44;">0.0500</div>
-      <div class="readout-sub">g₅₅ = 1/r</div>
-    </div>
-
     <div class="readout-card" id="card-hawking">
-      <div class="readout-label">Hawking Connection
-        <span class="info-tip" data-tip="g_55/(4π) gives an effective temperature. At the event horizon (r = r_s), this equals the Hawking temperature T_H = 1/(4π r_s), connecting the 5th dimension to quantum radiation.">?</span>
+      <div class="readout-label">Hawking Temperature
+        <span class="info-tip" data-tip="T_H = ℏc³/(8πGMk_B). In natural units with r_s = 2GM/c², this is T_H = 1/(4π r_s). A fundamental quantum-gravitational prediction for black hole radiation.">?</span>
       </div>
-      <div class="readout-value" id="val-hawking" style="color:#d2a8ff;">0.00398</div>
-      <div class="readout-sub">T_eff = g₅₅/(4π) — equals T_Hawking at horizon</div>
+      <div class="readout-value" id="val-hawking" style="color:#d2a8ff;">0.07958</div>
+      <div class="readout-sub">T_H = ℏc³/(8πGMk_B) = 1/(4π r_s)</div>
     </div>
 
     <div class="readout-card" id="card-det">
@@ -455,6 +431,11 @@
     <div class="panel" id="component-panel">
       <div class="panel-title">Metric Component Magnitudes</div>
       <div class="comp-row">
+        <span class="comp-name" style="color:#58a6ff;">g<sub>tt</sub></span>
+        <div class="comp-bar-track"><div class="comp-bar-fill" id="bar-gtt" style="background:linear-gradient(90deg,#58a6ff,#80c0ff);width:30%;"></div></div>
+        <span class="comp-val" id="bval-gtt">0.950</span>
+      </div>
+      <div class="comp-row">
         <span class="comp-name" style="color:#7ee787;">g<sub>rr</sub></span>
         <div class="comp-bar-track"><div class="comp-bar-fill" id="bar-grr" style="background:linear-gradient(90deg,#7ee787,#a0f0a8);width:30%;"></div></div>
         <span class="comp-val" id="bval-grr">1.050</span>
@@ -468,16 +449,6 @@
         <span class="comp-name" style="color:#d2a8ff;">g<sub>&phi;&phi;</sub></span>
         <div class="comp-bar-track"><div class="comp-bar-fill" id="bar-gph" style="background:linear-gradient(90deg,#d2a8ff,#e4c8ff);width:60%;"></div></div>
         <span class="comp-val" id="bval-gph">300.0</span>
-      </div>
-      <div class="comp-row">
-        <span class="comp-name" style="color:#ff7b72;">&#x1E60;</span>
-        <div class="comp-bar-track"><div class="comp-bar-fill" id="bar-Sdot" style="background:linear-gradient(90deg,#ff7b72,#ff9b92);width:5%;"></div></div>
-        <span class="comp-val" id="bval-Sdot">0.000</span>
-      </div>
-      <div class="comp-row">
-        <span class="comp-name" style="color:#ffcc44;">T</span>
-        <div class="comp-bar-track"><div class="comp-bar-fill" id="bar-gT" style="background:linear-gradient(90deg,#ffcc44,#ffe080);width:5%;"></div></div>
-        <span class="comp-val" id="bval-gT">0.050</span>
       </div>
     </div>
   </div>
@@ -538,39 +509,14 @@ function computeMetric(r) {
   var gthth = gthth_base * zetaVal;
   var gphph = gphph_base * zetaVal;
 
-  // Entropy rate Ṡ: numerical derivative
-  var dr = 0.001;
-  var rp = r + dr, rm = Math.max(r - dr, 0.01);
-  var actualDr = rp - rm;
-
-  var sp = 1 + Math.pow(rp / RS, 3);
-  var sm = 1 + Math.pow(rm / RS, 3);
-  var zp = zetaFunc(sp);
-  var zm = zetaFunc(sm);
-
-  var dgrr = ((1 + RS/rp) * zp - (1 + RS/rm) * zm) / actualDr;
-  var dgth = (rp*rp*zp - rm*rm*zm) / actualDr;
-  var dgph = (rp*rp*SIN2_THETA*zp - rm*rm*SIN2_THETA*zm) / actualDr;
-
-  var Sdot = Math.sqrt(dgrr*dgrr + dgth*dgth + dgph*dgph);
-
-  // Temperature dimension
-  var g55 = 1 / r;
-
   // Spatial determinant (prime-modified)
   var detRaw = grr * gthth * gphph;
   var floorActive = detRaw < DET_FLOOR;
   var det = floorActive ? DET_FLOOR : detRaw;
 
-  // Spatial volume for comparison
-  var spatialVol = Math.abs(det);
-
   // Zone classification
   var zone, zoneClass;
-  if (g55 > spatialVol && r < 2 * RS) {
-    zone = '5TH DIMENSION DOMINANT \u2014 CONSUMING SPACE';
-    zoneClass = 'fifth-dominant';
-  } else if (zetaVal > 2) {
+  if (zetaVal > 2) {
     zone = 'PRIMES AMPLIFYING GEOMETRY \u2014 \u03B6 = ' + zetaVal.toFixed(3);
     zoneClass = 'prime-amp';
   } else if (r > 3 * RS) {
@@ -593,14 +539,19 @@ function computeMetric(r) {
     zoneClass = 'danger';
   }
 
+  // g_tt: standard Schwarzschild time component
+  var gtt = -(1 - rRatio);
+
+  // Hawking temperature: T_H = ℏc³/(8πGMk_B)
+  // In natural units with r_s = 2GM/c², T_H = 1/(4π r_s)
+  var hawkingTemp = 1 / (4 * Math.PI * RS);
+
   return {
     r: r, rRatio: rRatio, beta: beta, clockRate: clockRate,
-    grr: grr, gthth: gthth, gphph: gphph,
+    gtt: gtt, grr: grr, gthth: gthth, gphph: gphph,
     grr_base: grr_base, gthth_base: gthth_base, gphph_base: gphph_base,
     zetaVal: zetaVal, sVal: sVal,
-    Sdot: Sdot, SdotSq: Sdot * Sdot,
-    g55: g55,
-    hawkingTemp: g55 / (4 * Math.PI),
+    hawkingTemp: hawkingTemp,
     detRaw: detRaw, det: det, floorActive: floorActive,
     zone: zone, zoneClass: zoneClass
   };
@@ -1077,10 +1028,10 @@ function drawDetChart(m) {
 // Tensor matrix
 var tensorGrid = document.getElementById('tensor-grid');
 var cells = [];
-var colorClasses = ['c-grr', 'c-gth', 'c-gph', 'c-gSd', 'c-gT'];
+var colorClasses = ['c-gtt', 'c-grr', 'c-gth', 'c-gph'];
 
-for (var row = 0; row < 5; row++) {
-  for (var col = 0; col < 5; col++) {
+for (var row = 0; row < 4; row++) {
+  for (var col = 0; col < 4; col++) {
     var cell = document.createElement('div');
     cell.className = 'tensor-cell';
     if (row === col) {
@@ -1094,13 +1045,13 @@ for (var row = 0; row < 5; row++) {
   }
 }
 
-var prevVals = [0, 0, 0, 0, 0];
+var prevVals = [0, 0, 0, 0];
 
 function updateMatrix(m) {
-  var vals = [m.grr, m.gthth, m.gphph, m.SdotSq, m.g55];
-  for (var r2 = 0; r2 < 5; r2++) {
-    for (var c2 = 0; c2 < 5; c2++) {
-      var idx = r2 * 5 + c2;
+  var vals = [m.gtt, m.grr, m.gthth, m.gphph];
+  for (var r2 = 0; r2 < 4; r2++) {
+    for (var c2 = 0; c2 < 4; c2++) {
+      var idx = r2 * 4 + c2;
       var cl = cells[idx];
       if (r2 === c2) {
         var v = vals[r2];
@@ -1145,12 +1096,11 @@ function updateAll(r) {
   updateMatrix(m);
 
   // Equations
+  document.getElementById('eq-gtt').textContent    = fmt(m.gtt, 4);
   document.getElementById('eq-grr').textContent    = fmt(m.grr, 3);
   document.getElementById('eq-gth').textContent    = fmt(m.gthth, 2);
   document.getElementById('eq-gph').textContent    = fmt(m.gphph, 2);
   document.getElementById('eq-zeta').textContent   = fmt(m.zetaVal, 4);
-  document.getElementById('eq-Sdot').textContent   = fmt(m.Sdot, 4);
-  document.getElementById('eq-g55').textContent    = fmt(m.g55, 4);
   document.getElementById('eq-det').textContent    = fmt(m.det, 2);
   document.getElementById('eq-det').style.color    = m.floorActive ? '#ffcc44' : '#58a6ff';
 
@@ -1175,12 +1125,7 @@ function updateAll(r) {
     primeCard.classList.remove('prime-glow');
   }
 
-  // Temperature
-  var tempEl = document.getElementById('val-temp');
-  tempEl.textContent = m.g55.toFixed(4);
-  tempEl.style.color = m.g55 > 1 ? '#ff7b72' : '#ffcc44';
-
-  // Hawking
+  // Hawking temperature (constant for given mass)
   var hawkEl = document.getElementById('val-hawking');
   hawkEl.textContent = m.hawkingTemp.toFixed(6);
   if (m.r <= 1.05 * RS && m.r >= 0.95 * RS) {
@@ -1202,11 +1147,10 @@ function updateAll(r) {
 
   // Component bars
   var bars = [
+    { id: 'gtt',  val: Math.abs(m.gtt), mx: 1.5 },
     { id: 'grr',  val: m.grr,    mx: 10 },
     { id: 'gth',  val: m.gthth,  mx: R_MAX * R_MAX * 2 },
-    { id: 'gph',  val: m.gphph,  mx: R_MAX * R_MAX * 2 },
-    { id: 'Sdot', val: m.Sdot,   mx: 100 },
-    { id: 'gT',   val: m.g55,    mx: 10 }
+    { id: 'gph',  val: m.gphph,  mx: R_MAX * R_MAX * 2 }
   ];
   for (var bi = 0; bi < bars.length; bi++) {
     var b = bars[bi];
