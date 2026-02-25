@@ -10,24 +10,51 @@
 :root{
 --bg:#0a0a1a;--card:#111128;--card-border:#1a1a3a;--text:#e0e0f0;--text-dim:#8888aa;
 --accent1:#6366f1;--accent2:#a855f7;--accent3:#ec4899;--green:#22c55e;--orange:#f59e0b;
+/* Chalkboard palette */
+--chalk:#d4cfc4;--chalk-dim:rgba(212,207,196,.35);--chalk-faint:rgba(212,207,196,.15);
+--board:#2b2f3a;--board-light:#343a46;--board-dark:#1e2128;
 }
-html,body{width:100%;height:100%;overflow:hidden;font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text)}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'JetBrains Mono',monospace;background:var(--board-dark);color:var(--text)}
+
+/* ── SVG noise filter (referenced by chalkboard) ── */
+#chalk-noise{position:absolute;width:0;height:0}
+
+/* ── Chalkboard Background (fallback behind video) ── */
+#chalkboard{
+  position:fixed;inset:0;z-index:0;
+  background-color: var(--board);
+}
 
 /* YouTube Background */
 #yt-bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:transparent}
 #yt-bg iframe{position:absolute;top:50%;left:50%;min-width:200vh;min-height:60vw;width:200vh;height:120vh;transform:translate(-50%,-50%);pointer-events:none}
 
+/* ── Chalk Formulas ── */
+#chalk-formulas{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+}
+.chalk-eq{
+  position:absolute;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--chalk);
+  white-space:nowrap;
+  user-select:none;
+  pointer-events:none;
+  text-shadow:0 0 4px rgba(212,207,196,.15);
+  line-height:1;
+}
+
 /* Overlays */
 #scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;
-background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px)}
+background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px)}
 #vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
-background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.55) 100%)}
+background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.5) 100%)}
 
 /* Status Bar */
 #status-bar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;
-padding:8px 20px;background:rgba(10,10,26,.82);backdrop-filter:blur(8px);border-bottom:1px solid var(--card-border);font-size:12px;letter-spacing:1px}
-#status-bar .left{display:flex;align-items:center;gap:8px;color:var(--accent1);font-weight:700;text-transform:uppercase}
-#status-bar .right{display:flex;align-items:center;gap:16px;color:var(--text-dim);font-size:11px}
+padding:8px 20px;background:rgba(30,33,40,.88);backdrop-filter:blur(8px);border-bottom:1px solid rgba(212,207,196,.12);font-size:12px;letter-spacing:1px}
+#status-bar .left{display:flex;align-items:center;gap:8px;color:var(--chalk);font-weight:700;text-transform:uppercase}
+#status-bar .right{display:flex;align-items:center;gap:16px;color:rgba(212,207,196,.5);font-size:11px}
 .pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite;display:inline-block}
 @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 4px var(--green)}50%{opacity:.4;box-shadow:0 0 8px var(--green)}}
 
@@ -35,13 +62,28 @@ padding:8px 20px;background:rgba(10,10,26,.82);backdrop-filter:blur(8px);border-
 #sidebar{
   position:fixed;left:0;top:36px;bottom:0;z-index:50;
   width:56px;
-  background:rgba(10,10,26,.4);
+  background:rgba(30,33,40,.65);
   backdrop-filter:blur(6px);
-  border-right:1px solid var(--card-border);
+  border-right:1px solid rgba(212,207,196,.08);
   display:flex;flex-direction:column;align-items:center;
   padding:12px 0;gap:4px;
   transition:width .3s ease;
   overflow:hidden;
+}
+/* Chalk-dust edge on the right border */
+#sidebar::after{
+  content:'';position:absolute;right:-1px;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,
+    transparent 0%,
+    rgba(212,207,196,.06) 10%,
+    rgba(212,207,196,.1) 25%,
+    rgba(212,207,196,.04) 40%,
+    rgba(212,207,196,.08) 55%,
+    rgba(212,207,196,.03) 70%,
+    rgba(212,207,196,.07) 85%,
+    transparent 100%
+  );
+  pointer-events:none;
 }
 #sidebar:hover{width:200px}
 #sidebar:hover .nav-label{opacity:1}
@@ -50,22 +92,24 @@ padding:8px 20px;background:rgba(10,10,26,.82);backdrop-filter:blur(8px);border-
   display:flex;align-items:center;gap:10px;
   width:calc(100% - 12px);padding:8px 12px;margin:0 6px;
   border-radius:8px;cursor:pointer;
-  text-decoration:none;color:var(--text-dim);
+  text-decoration:none;color:rgba(212,207,196,.5);
   transition:all .2s;white-space:nowrap;overflow:hidden;
   font-size:13px;
 }
 .nav-item:hover{
-  background:rgba(99,102,241,.15);color:var(--text);
+  background:rgba(212,207,196,.08);color:var(--chalk);
 }
 .nav-item .nav-icon{
   font-size:20px;flex-shrink:0;width:28px;text-align:center;
 }
 .nav-label{
   opacity:0;transition:opacity .2s;font-size:11px;font-weight:500;
+  color:rgba(212,207,196,.7);
 }
+.nav-item:hover .nav-label{color:var(--chalk)}
 
 .nav-divider{
-  width:30px;height:1px;background:var(--card-border);margin:6px 0;
+  width:30px;height:1px;background:rgba(212,207,196,.1);margin:6px 0;
 }
 
 /* ── Floating Windows ── */
@@ -112,17 +156,17 @@ padding:8px 20px;background:rgba(10,10,26,.82);backdrop-filter:blur(8px);border-
 
 /* ── Controls ── */
 #controls{position:fixed;bottom:14px;right:14px;z-index:100;display:flex;gap:8px;align-items:flex-end}
-.ctrl-btn{width:36px;height:36px;border-radius:6px;background:rgba(17,17,40,.85);border:1px solid var(--card-border);
-color:var(--text-dim);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+.ctrl-btn{width:36px;height:36px;border-radius:6px;background:rgba(30,33,40,.85);border:1px solid rgba(212,207,196,.12);
+color:rgba(212,207,196,.5);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
 backdrop-filter:blur(6px);transition:all .2s}
-.ctrl-btn:hover{border-color:var(--accent2);color:var(--text)}
+.ctrl-btn:hover{border-color:rgba(212,207,196,.3);color:var(--chalk)}
 
-#scene-list,#radio-list{position:absolute;bottom:44px;right:0;background:rgba(17,17,40,.92);border:1px solid var(--card-border);
+#scene-list,#radio-list{position:absolute;bottom:44px;right:0;background:rgba(30,33,40,.92);border:1px solid rgba(212,207,196,.12);
 border-radius:6px;padding:6px 0;display:none;min-width:220px;backdrop-filter:blur(10px)}
 #scene-list.open,#radio-list.open{display:block}
-.scene-item,.radio-item{padding:8px 14px;font-size:11px;cursor:pointer;color:var(--text-dim);transition:all .15s;white-space:nowrap}
-.scene-item:hover,.scene-item.active,.radio-item:hover,.radio-item.active{color:var(--text);background:rgba(99,102,241,.15)}
-.radio-item .radio-sub{font-size:9px;color:var(--text-dim);opacity:.6;margin-top:2px}
+.scene-item,.radio-item{padding:8px 14px;font-size:11px;cursor:pointer;color:rgba(212,207,196,.5);transition:all .15s;white-space:nowrap}
+.scene-item:hover,.scene-item.active,.radio-item:hover,.radio-item.active{color:var(--chalk);background:rgba(212,207,196,.08)}
+.radio-item .radio-sub{font-size:9px;color:rgba(212,207,196,.35);margin-top:2px}
 .radio-item.playing{color:var(--green)}
 .radio-item.playing::before{content:'▶ ';color:var(--green)}
 
@@ -195,12 +239,28 @@ border-radius:6px;padding:6px 0;display:none;min-width:220px;backdrop-filter:blu
   .nav-item .nav-icon{font-size:18px}
   #status-bar{font-size:10px;padding:6px 10px}
   #status-bar .right span:not(:last-child){display:none}
+  .chalk-eq{display:none}
 }
 </style>
 </head>
 <body>
 
-<!-- YouTube Background -->
+<!-- SVG filter for chalkboard grain texture -->
+<svg id="chalk-noise" xmlns="http://www.w3.org/2000/svg">
+  <filter id="chalkGrain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
+    <feColorMatrix type="saturate" values="0" in="noise" result="gray"/>
+    <feBlend in="SourceGraphic" in2="gray" mode="multiply"/>
+  </filter>
+</svg>
+
+<!-- Chalkboard Background -->
+<div id="chalkboard"></div>
+
+<!-- Chalk Physics Formulas -->
+<div id="chalk-formulas"></div>
+
+<!-- YouTube Background (hidden, JS still functional) -->
 <div id="yt-bg"><div id="yt-player"></div></div>
 <div id="scanlines"></div>
 <div id="vignette"></div>
@@ -251,6 +311,7 @@ border-radius:6px;padding:6px 0;display:none;min-width:220px;backdrop-filter:blu
 
 <!-- Controls -->
 <div id="controls">
+<button class="ctrl-btn" onclick="openWindow('tools/calculator.html','Calculator')" title="Scientific Calculator">🧮</button>
 <div style="position:relative">
 <button class="ctrl-btn" id="radio-btn" onclick="toggleRadioList()" title="Space Radio">📻</button>
 <div id="radio-list"></div>
@@ -264,7 +325,55 @@ border-radius:6px;padding:6px 0;display:none;min-width:220px;backdrop-filter:blu
 <audio id="radio-player" crossorigin="anonymous"></audio>
 
 <script>
+// ── CHALK FORMULAS ──
+// Physics equations scattered across the chalkboard background
+(function(){
+const formulas = [
+  // CJ's research
+  { eq:'ζ(s) × 1/ζ(s) = 1', x:8, y:12, size:18, angle:-2, opacity:.18 },
+  { eq:'g_tt · g_rr = −1', x:72, y:8, size:16, angle:1.5, opacity:.14 },
+  { eq:'s(r) = 1 + (r/r_s)³', x:35, y:85, size:14, angle:-1, opacity:.12 },
+  { eq:'π(x) ~ x / ln(x)', x:78, y:88, size:13, angle:2, opacity:.1 },
+  { eq:'Σ p⁻ˢ = ln ζ(s)', x:15, y:55, size:15, angle:-1.5, opacity:.13 },
+  // Classical GR & QFT
+  { eq:'R_μν − ½g_μν R = 8πGT_μν', x:55, y:18, size:15, angle:0.8, opacity:.12 },
+  { eq:'ds² = −c²dt² + dr² + r²dΩ²', x:20, y:30, size:14, angle:-0.5, opacity:.1 },
+  { eq:'∂_μ F^μν = J^ν', x:82, y:42, size:16, angle:1.2, opacity:.14 },
+  { eq:'S = ∫ L d⁴x', x:65, y:72, size:17, angle:-1.8, opacity:.15 },
+  { eq:'∇²ψ + k²ψ = 0', x:10, y:75, size:13, angle:0.5, opacity:.11 },
+  // Quantum mechanics
+  { eq:'iℏ ∂ψ/∂t = Ĥψ', x:45, y:60, size:16, angle:-1, opacity:.13 },
+  { eq:'⟨x|p⟩ = e^(ipx/ℏ)', x:88, y:25, size:12, angle:1, opacity:.09 },
+  { eq:'[x̂, p̂] = iℏ', x:30, y:45, size:14, angle:2.5, opacity:.11 },
+  // Thermodynamics & statistical
+  { eq:'S = k_B ln Ω', x:68, y:55, size:15, angle:-0.8, opacity:.12 },
+  { eq:'E = mc²', x:50, y:92, size:20, angle:0.3, opacity:.08 },
+  // More number theory / zeta
+  { eq:'ζ(s) = Σ n⁻ˢ', x:5, y:92, size:12, angle:1.2, opacity:.1 },
+  { eq:'∮ A·dl = Φ_B', x:90, y:70, size:13, angle:-2, opacity:.1 },
+  { eq:'det(g_μν) ≠ 0', x:42, y:38, size:12, angle:0.6, opacity:.09 },
+  { eq:'Γ^λ_μν = ½g^λσ(∂_μ g_νσ + ∂_ν g_μσ − ∂_σ g_μν)', x:15, y:68, size:11, angle:-0.3, opacity:.08 },
+  { eq:'α = 3', x:58, y:82, size:22, angle:-1.5, opacity:.1 },
+];
+
+const container = document.getElementById('chalk-formulas');
+formulas.forEach(f => {
+  const el = document.createElement('div');
+  el.className = 'chalk-eq';
+  el.textContent = f.eq;
+  el.style.cssText = `
+    left:${f.x}%;top:${f.y}%;
+    font-size:${f.size}px;
+    opacity:${f.opacity};
+    transform:rotate(${f.angle}deg);
+    font-weight:${f.size > 16 ? 400 : 300};
+  `;
+  container.appendChild(el);
+});
+})();
+
 const SCENES=[
+{id:'jTCf8eZyZFg',name:'Chalkboard Ambience'},
 {id:'Dvwaq1rwioQ',name:'Enceladus Outpost'},
 {id:'WjY0s0ALnRU',name:'Space Ambience I'},
 {id:'1fDP9T9Cagg',name:'Space Ambience II'},

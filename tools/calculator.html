@@ -1,441 +1,843 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Research Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Calculator">
+<meta name="theme-color" content="#1a1a2e">
+<link rel="manifest" href="calc-manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a1a2e'/><text x='50' y='62' font-size='50' text-anchor='middle'>🧮</text></svg>">
+<title>Scientific Calculator</title>
 <style>
-body {
-  font-family: 'Courier New', monospace;
-  background: #0a0a1a;
-  color: #e0e0f0;
-  margin: 0;
-  padding: 20px;
-}
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-h1 {
-  background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-align: center;
-  font-size: 1.8rem;
-  margin-bottom: 30px;
-}
-.calc-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-.card {
-  background: #111128;
-  border: 1px solid #1a1a3a;
-  border-radius: 12px;
-  padding: 20px;
-}
-.input-group {
-  margin: 10px 0;
-}
-.input-group label {
-  display: block;
-  color: #8888aa;
-  margin-bottom: 5px;
-  font-size: 0.9rem;
-}
-input, textarea, select {
-  width: 100%;
-  background: #0d0d24;
-  border: 1px solid #333;
-  color: #e0e0f0;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.9rem;
-}
-textarea {
-  height: 100px;
-  resize: vertical;
-}
-.btn {
-  background: #6366f1;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-family: inherit;
-  margin: 5px;
-  transition: all 0.2s;
-}
-.btn:hover {
-  background: #a855f7;
-}
-.btn-small {
-  padding: 5px 10px;
-  font-size: 0.8rem;
-}
-.result {
-  background: #0d0d24;
-  border: 1px solid #22c55e;
-  border-radius: 8px;
-  padding: 15px;
-  margin: 15px 0;
-  font-family: 'Courier New', monospace;
-}
-.error {
-  border-color: #ef4444;
-  color: #ef4444;
-}
-.constants {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 10px;
-  margin: 15px 0;
-}
-.constant {
-  background: #0d0d24;
-  border: 1px solid #333;
-  border-radius: 6px;
-  padding: 8px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.constant:hover {
-  border-color: #6366f1;
-}
-.constant .name {
-  font-size: 0.8rem;
-  color: #8888aa;
-}
-.constant .value {
-  font-size: 0.9rem;
-  font-weight: bold;
-}
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Courier New', Courier, monospace;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 8px;
+  }
+
+  .calculator {
+    width: 100%;
+    max-width: 380px;
+    background: #16162a;
+    border-radius: 16px;
+    padding: 12px;
+    border: 1px solid #2a2a4a;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  }
+
+  /* === LCD DISPLAY === */
+  .display {
+    background: #0a1a0a;
+    border: 2px solid #1a3a1a;
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    min-height: 140px;
+    max-height: 180px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Courier New', Courier, monospace;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .display::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 40, 0, 0.03) 2px,
+      rgba(0, 40, 0, 0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .history-area {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 2px;
+    scrollbar-width: none;
+  }
+
+  .history-area::-webkit-scrollbar {
+    display: none;
+  }
+
+  .history-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 11px;
+    line-height: 1.3;
+    position: relative;
+    z-index: 2;
+  }
+
+  .history-expr {
+    color: #3a7a3a;
+    word-break: break-all;
+    text-align: right;
+    width: 100%;
+  }
+
+  .history-result {
+    color: #5abf5a;
+    font-weight: bold;
+    text-align: right;
+    width: 100%;
+  }
+
+  .history-error {
+    color: #bf5a5a;
+    font-weight: bold;
+    text-align: right;
+    width: 100%;
+  }
+
+  .current-input {
+    border-top: 1px solid #1a3a1a;
+    padding-top: 4px;
+    margin-top: 4px;
+    min-height: 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .input-line {
+    color: #7adf7a;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: right;
+    word-break: break-all;
+    line-height: 1.3;
+    min-height: 18px;
+  }
+
+  .input-line .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: #7adf7a;
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .ans-indicator {
+    color: #3a6a3a;
+    font-size: 10px;
+    text-align: left;
+    margin-top: 2px;
+  }
+
+  /* === BUTTON GRID === */
+  .btn-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+  }
+
+  .btn {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    font-weight: 900;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 2px;
+    cursor: pointer;
+    transition: all 0.08s ease;
+    text-align: center;
+    line-height: 1.2;
+    user-select: none;
+    -webkit-user-select: none;
+    position: relative;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.5px;
+  }
+
+  .btn:active {
+    transform: scale(0.94);
+    filter: brightness(0.8);
+  }
+
+  /* Number keys - dark charcoal */
+  .btn-num {
+    background: #3a3a4a;
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+  .btn-num:hover {
+    background: #4a4a5a;
+  }
+
+  /* Operator keys - subtle blue/purple */
+  .btn-op {
+    background: #2a3a5a;
+    color: #c0d8ff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+  .btn-op:hover {
+    background: #3a4a6a;
+  }
+
+  /* Function keys - teal tinted */
+  .btn-func {
+    background: #1e3040;
+    color: #a0e0f0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    font-size: 13px;
+  }
+  .btn-func:hover {
+    background: #2a4050;
+  }
+
+  /* Top row - control keys */
+  .btn-ctrl {
+    background: #2a2a3a;
+    color: #d0d0e8;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    font-size: 13px;
+  }
+  .btn-ctrl:hover {
+    background: #3a3a4a;
+  }
+
+  /* 2nd key - yellow accent */
+  .btn-2nd {
+    background: #5a5a20;
+    color: #ffe870;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    font-size: 13px;
+  }
+  .btn-2nd:hover {
+    background: #6a6a30;
+  }
+
+  /* DEL key */
+  .btn-del {
+    background: #4a2a2a;
+    color: #ffa0a0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    font-size: 13px;
+  }
+  .btn-del:hover {
+    background: #5a3a3a;
+  }
+
+  /* CLEAR key */
+  .btn-clear {
+    background: #5a2020;
+    color: #ffb0b0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    font-size: 13px;
+  }
+  .btn-clear:hover {
+    background: #6a3030;
+  }
+
+  /* ENTER key - accent green */
+  .btn-enter {
+    background: #1a5a2a;
+    color: #80ff9a;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    font-size: 14px;
+    font-weight: 900;
+  }
+  .btn-enter:hover {
+    background: #2a6a3a;
+  }
+
+  /* Constants - subtle gold */
+  .btn-const {
+    background: #3a3020;
+    color: #f0d070;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    font-size: 14px;
+  }
+  .btn-const:hover {
+    background: #4a4030;
+  }
+
+  /* Superscript styling within buttons */
+  .btn sup {
+    font-size: 8px;
+    vertical-align: super;
+    line-height: 0;
+  }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>🧮 Research Calculator</h1>
-  
-  <div class="calc-grid">
-    <div class="card">
-      <h3>📐 Basic Calculator</h3>
-      
-      <div class="input-group">
-        <label>Expression:</label>
-        <textarea id="expression" placeholder="Enter mathematical expression...
-Examples:
-2 + 3 * 4
-sqrt(16) + log(10)
-sin(pi/4) + cos(pi/4)
-pow(2, 8)"></textarea>
-      </div>
-      
-      <button class="btn" onclick="calculate()">Calculate</button>
-      <button class="btn btn-small" onclick="clearCalc()">Clear</button>
-      
-      <div id="basicResult" class="result" style="display: none;"></div>
-      
-      <h4>Constants</h4>
-      <div class="constants">
-        <div class="constant" onclick="insertValue('3.141592653589793')">
-          <div class="name">π (pi)</div>
-          <div class="value">3.14159</div>
-        </div>
-        <div class="constant" onclick="insertValue('2.718281828459045')">
-          <div class="name">e</div>
-          <div class="value">2.71828</div>
-        </div>
-        <div class="constant" onclick="insertValue('299792458')">
-          <div class="name">c (m/s)</div>
-          <div class="value">2.998×10⁸</div>
-        </div>
-        <div class="constant" onclick="insertValue('6.67430e-11')">
-          <div class="name">G</div>
-          <div class="value">6.67×10⁻¹¹</div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="card">
-      <h3>🌌 Advanced Calculations</h3>
-
-      <div class="input-group">
-        <label>Calculation Type:</label>
-        <select id="advancedType" onchange="updateAdvancedInputs()">
-          <option value="zeta">Zeta Function ζ(s)</option>
-          <option value="schwarzschild">Schwarzschild Radius</option>
-          <option value="time_dilation">Time Dilation Factor</option>
-          <option value="density">Zeta Density</option>
-        </select>
-      </div>
-
-      <div id="advancedInputs">
-        <!-- Dynamic inputs based on calculation type -->
-      </div>
-
-      <button class="btn" onclick="calculateAdvanced()">Calculate</button>
-
-      <div id="advancedResult" class="result" style="display: none;"></div>
+<div class="calculator">
+  <!-- LCD Display -->
+  <div class="display">
+    <div class="history-area" id="historyArea"></div>
+    <div class="current-input">
+      <div class="input-line" id="inputLine"><span class="cursor"></span></div>
+      <div class="ans-indicator" id="ansIndicator"></div>
     </div>
   </div>
-  
-  <div class="card">
-    <h3>🔬 Research Formulas</h3>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-      <div>
-        <h4>Metric Components</h4>
-        <p><strong>g₀₀:</strong> -(1-rₛ/r)·ζ</p>
-        <p><strong>gᵢᵢ:</strong> spatial × ζ</p>
-        <p><strong>T:</strong> 1/r (temperature)</p>
-      </div>
-      
-      <div>
-        <h4>Zeta Relations</h4>
-        <p><strong>ζ mapping:</strong> ζ(1 + (r/rₛ)³)</p>
-        <p><strong>Time factor:</strong> √(rₛ/r)</p>
-        <p><strong>ζ excess:</strong> (ζ-1) × 100%</p>
-      </div>
-      
-      <div>
-        <h4>Physical Constants</h4>
-        <p><strong>rₛ☉:</strong> 2.95 km (solar)</p>
-        <p><strong>M☉:</strong> 1.989×10³⁰ kg</p>
-        <p><strong>Merger ζ:</strong> ~1.214 (21.4% excess)</p>
-      </div>
-    </div>
+
+  <!-- Button Grid -->
+  <div class="btn-grid">
+    <!-- Row 1: 2nd, MODE, DEL, CLEAR (4 buttons, last spans 2) -->
+    <button class="btn btn-2nd" onclick="press2nd()">2nd</button>
+    <button class="btn btn-ctrl" onclick="pressMode()">MODE</button>
+    <button class="btn btn-ctrl" id="btnAns" onclick="pressAns()">ANS</button>
+    <button class="btn btn-del" onclick="pressDel()">DEL</button>
+    <button class="btn btn-clear" onclick="pressClear()">CLEAR</button>
+
+    <!-- Row 2: x^-1, sin, cos, tan, ^ -->
+    <button class="btn btn-func" onclick="pressFunc('x_inv')">x<sup>-1</sup></button>
+    <button class="btn btn-func" onclick="pressFunc('sin')">sin</button>
+    <button class="btn btn-func" onclick="pressFunc('cos')">cos</button>
+    <button class="btn btn-func" onclick="pressFunc('tan')">tan</button>
+    <button class="btn btn-op" onclick="pressOp('^')">^</button>
+
+    <!-- Row 3: x^2, sqrt, (, ), / -->
+    <button class="btn btn-func" onclick="pressFunc('x_sq')">x<sup>2</sup></button>
+    <button class="btn btn-func" onclick="pressFunc('sqrt')">&radic;</button>
+    <button class="btn btn-op" onclick="pressChar('(')">(</button>
+    <button class="btn btn-op" onclick="pressChar(')')">)</button>
+    <button class="btn btn-op" onclick="pressOp('/')"><span style="font-size:14px">&divide;</span></button>
+
+    <!-- Row 4: log, 7, 8, 9, * -->
+    <button class="btn btn-func" onclick="pressFunc('log')">log</button>
+    <button class="btn btn-num" onclick="pressNum('7')">7</button>
+    <button class="btn btn-num" onclick="pressNum('8')">8</button>
+    <button class="btn btn-num" onclick="pressNum('9')">9</button>
+    <button class="btn btn-op" onclick="pressOp('*')"><span style="font-size:14px">&times;</span></button>
+
+    <!-- Row 5: ln, 4, 5, 6, - -->
+    <button class="btn btn-func" onclick="pressFunc('ln')">ln</button>
+    <button class="btn btn-num" onclick="pressNum('4')">4</button>
+    <button class="btn btn-num" onclick="pressNum('5')">5</button>
+    <button class="btn btn-num" onclick="pressNum('6')">6</button>
+    <button class="btn btn-op" onclick="pressOp('-')"><span style="font-size:16px">&minus;</span></button>
+
+    <!-- Row 6: pi, 1, 2, 3, + -->
+    <button class="btn btn-const" onclick="pressConst('pi')">&pi;</button>
+    <button class="btn btn-num" onclick="pressNum('1')">1</button>
+    <button class="btn btn-num" onclick="pressNum('2')">2</button>
+    <button class="btn btn-num" onclick="pressNum('3')">3</button>
+    <button class="btn btn-op" onclick="pressOp('+')"><span style="font-size:16px">+</span></button>
+
+    <!-- Row 7: e, 0, ., (-), ENTER -->
+    <button class="btn btn-const" onclick="pressConst('e')">e</button>
+    <button class="btn btn-num" onclick="pressNum('0')">0</button>
+    <button class="btn btn-num" onclick="pressNum('.')">.</button>
+    <button class="btn btn-func" onclick="pressNeg()">(&minus;)</button>
+    <button class="btn btn-enter" onclick="pressEnter()">ENTER</button>
   </div>
 </div>
 
 <script>
-// Enhanced Math functions
-const MathExt = {
-  // Approximate zeta function for s > 1
-  zeta: function(s) {
-    if (s <= 1) return NaN;
-    let sum = 0;
-    for (let n = 1; n <= 1000; n++) {
-      sum += 1 / Math.pow(n, s);
+(function() {
+  'use strict';
+
+  // --- State ---
+  let expression = '';       // raw internal expression (for eval)
+  let displayExpr = '';      // what the user sees on screen
+  let ans = 0;               // last answer
+  let history = [];          // array of { expr, result, isError }
+  let degreeMode = false;    // false = radians, true = degrees
+  let secondMode = false;    // 2nd function toggle
+
+  const MAX_HISTORY = 8;
+
+  // --- DOM refs ---
+  const inputLine = document.getElementById('inputLine');
+  const historyArea = document.getElementById('historyArea');
+  const ansIndicator = document.getElementById('ansIndicator');
+
+  // --- Display ---
+  function updateDisplay() {
+    const text = displayExpr || '';
+    inputLine.innerHTML = escapeHTML(text) + '<span class="cursor"></span>';
+    ansIndicator.textContent = ans !== 0 ? 'Ans=' + formatNumber(ans) : '';
+    renderHistory();
+  }
+
+  function renderHistory() {
+    let html = '';
+    const visible = history.slice(-MAX_HISTORY);
+    for (const entry of visible) {
+      html += '<div class="history-entry">';
+      html += '<div class="history-expr">' + escapeHTML(entry.expr) + '</div>';
+      if (entry.isError) {
+        html += '<div class="history-error">ERR: ' + escapeHTML(entry.result) + '</div>';
+      } else {
+        html += '<div class="history-result">' + escapeHTML(entry.result) + '</div>';
+      }
+      html += '</div>';
     }
-    return sum;
-  },
-  
-  // Factorial
-  factorial: function(n) {
-    if (n < 0) return NaN;
-    if (n === 0) return 1;
-    let result = 1;
-    for (let i = 1; i <= n; i++) {
-      result *= i;
+    historyArea.innerHTML = html;
+    historyArea.scrollTop = historyArea.scrollHeight;
+  }
+
+  function escapeHTML(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function formatNumber(n) {
+    if (typeof n !== 'number' || isNaN(n)) return 'Error';
+    if (!isFinite(n)) return n > 0 ? 'Infinity' : '-Infinity';
+    if (Math.abs(n) > 1e12 || (Math.abs(n) < 1e-6 && n !== 0)) {
+      return n.toExponential(8);
     }
-    return result;
-  },
-  
-  // Schwarzschild radius
-  schwarzschild: function(mass) {
-    const G = 6.67430e-11;
-    const c = 299792458;
-    return (2 * G * mass) / (c * c);
-  },
-  
-  // Time dilation factor
-  timeDilation: function(r, rs) {
-    if (r <= rs) return NaN;
-    return Math.sqrt(1 - rs/r);
-  },
-  
-  // Zeta density approximation
-  zetaDensity: function(r, rs) {
-    if (r <= 0) return NaN;
-    const s = 1 + Math.pow(r/rs, 3);
-    return this.zeta(s);
-  }
-};
-
-// Safe eval with math functions
-function safeEval(expression) {
-  // Replace common math notation
-  let expr = expression
-    .replace(/\bpi\b/g, 'Math.PI')
-    .replace(/\be\b/g, 'Math.E')
-    .replace(/\bsin\b/g, 'Math.sin')
-    .replace(/\bcos\b/g, 'Math.cos')
-    .replace(/\btan\b/g, 'Math.tan')
-    .replace(/\bsqrt\b/g, 'Math.sqrt')
-    .replace(/\blog\b/g, 'Math.log10')
-    .replace(/\bln\b/g, 'Math.log')
-    .replace(/\bpow\b/g, 'Math.pow')
-    .replace(/\babs\b/g, 'Math.abs')
-    .replace(/\bfloor\b/g, 'Math.floor')
-    .replace(/\bceil\b/g, 'Math.ceil')
-    .replace(/\bzeta\b/g, 'MathExt.zeta')
-    .replace(/\bfactorial\b/g, 'MathExt.factorial');
-  
-  try {
-    return eval(expr);
-  } catch (e) {
-    throw new Error('Invalid expression: ' + e.message);
-  }
-}
-
-function calculate() {
-  const expression = document.getElementById('expression').value;
-  const resultDiv = document.getElementById('basicResult');
-  
-  if (!expression.trim()) {
-    resultDiv.style.display = 'none';
-    return;
-  }
-  
-  try {
-    const result = safeEval(expression);
-    resultDiv.className = 'result';
-    resultDiv.innerHTML = `
-      <strong>Result:</strong> ${result}<br>
-      <small>Scientific: ${result.toExponential(6)}</small>
-    `;
-    resultDiv.style.display = 'block';
-  } catch (error) {
-    resultDiv.className = 'result error';
-    resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
-    resultDiv.style.display = 'block';
-  }
-}
-
-function clearCalc() {
-  document.getElementById('expression').value = '';
-  document.getElementById('basicResult').style.display = 'none';
-}
-
-function insertValue(value) {
-  const textarea = document.getElementById('expression');
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const text = textarea.value;
-  textarea.value = text.substring(0, start) + value + text.substring(end);
-  textarea.focus();
-  textarea.setSelectionRange(start + value.length, start + value.length);
-}
-
-function updateAdvancedInputs() {
-  const type = document.getElementById('advancedType').value;
-  const container = document.getElementById('advancedInputs');
-  
-  let html = '';
-  switch (type) {
-    case 'zeta':
-      html = `
-        <div class="input-group">
-          <label>s value:</label>
-          <input type="number" id="s_value" value="2" step="0.1" placeholder="s > 1">
-        </div>
-      `;
-      break;
-    case 'schwarzschild':
-      html = `
-        <div class="input-group">
-          <label>Mass (kg):</label>
-          <input type="number" id="mass_value" value="1.989e30" step="any" placeholder="Solar mass = 1.989e30">
-        </div>
-      `;
-      break;
-    case 'time_dilation':
-      html = `
-        <div class="input-group">
-          <label>Radius r (m):</label>
-          <input type="number" id="r_value" value="10000" step="any">
-        </div>
-        <div class="input-group">
-          <label>Schwarzschild radius rs (m):</label>
-          <input type="number" id="rs_value" value="2950" step="any">
-        </div>
-      `;
-      break;
-    case 'density':
-      html = `
-        <div class="input-group">
-          <label>Radius r:</label>
-          <input type="number" id="r_value2" value="2" step="0.1">
-        </div>
-        <div class="input-group">
-          <label>Schwarzschild radius rs:</label>
-          <input type="number" id="rs_value2" value="1" step="0.1">
-        </div>
-      `;
-      break;
+    // Remove trailing zeros from fixed notation
+    let s = n.toPrecision(10);
+    if (s.indexOf('.') !== -1) {
+      s = s.replace(/\.?0+$/, '');
+    }
+    return s;
   }
 
-  container.innerHTML = html;
-}
+  // --- Input helpers ---
+  function appendDisplay(text) {
+    displayExpr += text;
+  }
 
-function calculateAdvanced() {
-  const type = document.getElementById('advancedType').value;
-  const resultDiv = document.getElementById('advancedResult');
-  
-  try {
-    let result, description;
-    
-    switch (type) {
-      case 'zeta':
-        const s = parseFloat(document.getElementById('s_value').value);
-        result = MathExt.zeta(s);
-        description = `ζ(${s}) = ${result.toFixed(6)}`;
+  function appendExpr(text) {
+    expression += text;
+  }
+
+  // --- Button handlers ---
+
+  // Number keys
+  window.pressNum = function(n) {
+    secondMode = false;
+    appendDisplay(n);
+    appendExpr(n);
+    updateDisplay();
+  };
+
+  // Operator keys
+  window.pressOp = function(op) {
+    secondMode = false;
+    const displayMap = { '+': '+', '-': '-', '*': '\u00D7', '/': '\u00F7', '^': '^' };
+    appendDisplay(displayMap[op] || op);
+    appendExpr(op === '^' ? '**' : op);
+    updateDisplay();
+  };
+
+  // Character (parentheses)
+  window.pressChar = function(ch) {
+    secondMode = false;
+    appendDisplay(ch);
+    appendExpr(ch);
+    updateDisplay();
+  };
+
+  // Function keys
+  window.pressFunc = function(fn) {
+    secondMode = false;
+    switch(fn) {
+      case 'sin':
+        if (degreeMode) {
+          appendDisplay('sin(');
+          appendExpr('Math.sin((Math.PI/180)*');
+        } else {
+          appendDisplay('sin(');
+          appendExpr('Math.sin(');
+        }
         break;
-        
-      case 'schwarzschild':
-        const mass = parseFloat(document.getElementById('mass_value').value);
-        result = MathExt.schwarzschild(mass);
-        description = `Schwarzschild radius = ${result.toFixed(2)} m = ${(result/1000).toFixed(1)} km`;
+      case 'cos':
+        if (degreeMode) {
+          appendDisplay('cos(');
+          appendExpr('Math.cos((Math.PI/180)*');
+        } else {
+          appendDisplay('cos(');
+          appendExpr('Math.cos(');
+        }
         break;
-        
-      case 'time_dilation':
-        const r = parseFloat(document.getElementById('r_value').value);
-        const rs = parseFloat(document.getElementById('rs_value').value);
-        result = MathExt.timeDilation(r, rs);
-        const percent = (1 - result) * 100;
-        description = `Time dilation factor = ${result.toFixed(6)}<br>Time runs ${percent.toFixed(3)}% slower`;
+      case 'tan':
+        if (degreeMode) {
+          appendDisplay('tan(');
+          appendExpr('Math.tan((Math.PI/180)*');
+        } else {
+          appendDisplay('tan(');
+          appendExpr('Math.tan(');
+        }
         break;
-        
-      case 'density':
-        const r2 = parseFloat(document.getElementById('r_value2').value);
-        const rs2 = parseFloat(document.getElementById('rs_value2').value);
-        result = MathExt.zetaDensity(r2, rs2);
-        const excess = (result - 1) * 100;
-        description = `Zeta density ζ = ${result.toFixed(6)}<br>Excess = ${excess.toFixed(3)}%`;
+      case 'log':
+        appendDisplay('log(');
+        appendExpr('Math.log10(');
+        break;
+      case 'ln':
+        appendDisplay('ln(');
+        appendExpr('Math.log(');
+        break;
+      case 'sqrt':
+        appendDisplay('\u221A(');
+        appendExpr('Math.sqrt(');
+        break;
+      case 'x_sq':
+        appendDisplay('\u00B2');
+        appendExpr('**2');
+        break;
+      case 'x_inv':
+        appendDisplay('\u207B\u00B9');
+        appendExpr('**(-1)');
         break;
     }
-    
-    resultDiv.className = 'result';
-    resultDiv.innerHTML = `<strong>Result:</strong><br>${description}`;
-    resultDiv.style.display = 'block';
-    
-  } catch (error) {
-    resultDiv.className = 'result error';
-    resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
-    resultDiv.style.display = 'block';
+    updateDisplay();
+  };
+
+  // Constants
+  window.pressConst = function(c) {
+    secondMode = false;
+    if (c === 'pi') {
+      appendDisplay('\u03C0');
+      appendExpr('Math.PI');
+    } else if (c === 'e') {
+      appendDisplay('e');
+      appendExpr('Math.E');
+    }
+    updateDisplay();
+  };
+
+  // Negative sign
+  window.pressNeg = function() {
+    secondMode = false;
+    appendDisplay('(-)');
+    appendExpr('(-');
+    // We add a ( for grouping; user needs to close or we auto-close on eval
+    updateDisplay();
+  };
+
+  // ANS
+  window.pressAns = function() {
+    secondMode = false;
+    appendDisplay('Ans');
+    appendExpr('(' + ans + ')');
+    updateDisplay();
+  };
+
+  // DEL - remove last token
+  window.pressDel = function() {
+    if (displayExpr.length === 0) return;
+
+    // Figure out what to strip from display and expression
+    // We track both strings, so remove last "token" from each
+    // Display tokens can be multi-char: sin(, cos(, log(, ln(, sqrt(, pi, Ans, (-), etc.
+    const displayTokens = [
+      'sin(', 'cos(', 'tan(', 'log(', 'ln(', '\u221A(',
+      '\u03C0', 'Ans', '(-)', '\u00B2', '\u207B\u00B9',
+      '\u00D7', '\u00F7', '\u00B7'
+    ];
+
+    let dRemoved = false;
+    for (const tok of displayTokens) {
+      if (displayExpr.endsWith(tok)) {
+        displayExpr = displayExpr.slice(0, -tok.length);
+        dRemoved = true;
+        break;
+      }
+    }
+    if (!dRemoved) {
+      displayExpr = displayExpr.slice(0, -1);
+    }
+
+    // For the expression, remove corresponding tokens
+    const exprTokens = [
+      'Math.sin((Math.PI/180)*', 'Math.cos((Math.PI/180)*', 'Math.tan((Math.PI/180)*',
+      'Math.sin(', 'Math.cos(', 'Math.tan(',
+      'Math.log10(', 'Math.log(', 'Math.sqrt(',
+      'Math.PI', 'Math.E',
+      '**(-1)', '**2', '**',
+      '(-'
+    ];
+
+    // Also remove Ans which could be any number wrapped in parens
+    let eRemoved = false;
+
+    // Check for Ans pattern: (NUMBER)
+    const ansPattern = /\([^()]*\)$/;
+    if (displayExpr.length < expression.length) {
+      // If display was 'Ans', try to remove (number) from expression
+    }
+
+    for (const tok of exprTokens) {
+      if (expression.endsWith(tok)) {
+        expression = expression.slice(0, -tok.length);
+        eRemoved = true;
+        break;
+      }
+    }
+    if (!eRemoved) {
+      expression = expression.slice(0, -1);
+    }
+
+    updateDisplay();
+  };
+
+  // CLEAR
+  window.pressClear = function() {
+    expression = '';
+    displayExpr = '';
+    secondMode = false;
+    updateDisplay();
+  };
+
+  // MODE toggle (rad/deg)
+  window.pressMode = function() {
+    degreeMode = !degreeMode;
+    const modeText = degreeMode ? 'DEGREE' : 'RADIAN';
+    // Flash mode in the ans indicator briefly
+    ansIndicator.textContent = 'MODE: ' + modeText;
+    setTimeout(function() { updateDisplay(); }, 1200);
+  };
+
+  // 2nd
+  window.press2nd = function() {
+    secondMode = !secondMode;
+    // Visual feedback - could toggle button highlights
+    // For now, just a state toggle. In a full TI-84, this changes
+    // button meanings. We keep it simple: 2nd + sin = asin, etc.
+    // We will handle this in the function presses by checking secondMode.
+    // Actually, let's override the function buttons when 2nd is active.
+    if (secondMode) {
+      // Change button labels
+      document.querySelector('[onclick="pressFunc(\'sin\')"]').innerHTML = 'sin<sup>-1</sup>';
+      document.querySelector('[onclick="pressFunc(\'cos\')"]').innerHTML = 'cos<sup>-1</sup>';
+      document.querySelector('[onclick="pressFunc(\'tan\')"]').innerHTML = 'tan<sup>-1</sup>';
+      document.querySelector('[onclick="pressFunc(\'log\')"]').textContent = '10^x';
+      document.querySelector('[onclick="pressFunc(\'ln\')"]').textContent = 'e^x';
+      document.querySelector('[onclick="pressFunc(\'sqrt\')"]').innerHTML = '<sup>3</sup>&radic;';
+      // Rebind
+      document.querySelector('[onclick="pressFunc(\'sin\')"]').setAttribute('onclick', "pressFunc('asin')");
+      document.querySelector('[onclick="pressFunc(\'cos\')"]').setAttribute('onclick', "pressFunc('acos')");
+      document.querySelector('[onclick="pressFunc(\'tan\')"]').setAttribute('onclick', "pressFunc('atan')");
+      document.querySelector('[onclick="pressFunc(\'log\')"]').setAttribute('onclick', "pressFunc('10x')");
+      document.querySelector('[onclick="pressFunc(\'ln\')"]').setAttribute('onclick', "pressFunc('ex')");
+      document.querySelector('[onclick="pressFunc(\'sqrt\')"]').setAttribute('onclick', "pressFunc('cbrt')");
+    } else {
+      restoreButtons();
+    }
+  };
+
+  function restoreButtons() {
+    // Restore original labels and handlers
+    const btnMap = [
+      { sel: '[onclick*="asin"]', label: 'sin', fn: 'sin' },
+      { sel: '[onclick*="acos"]', label: 'cos', fn: 'cos' },
+      { sel: '[onclick*="atan"]', label: 'tan', fn: 'tan' },
+      { sel: '[onclick*="10x"]', label: 'log', fn: 'log' },
+      { sel: '[onclick*="pressFunc(\'ex\')"]', label: 'ln', fn: 'ln' },
+      { sel: '[onclick*="cbrt"]', label: '&radic;', fn: 'sqrt' },
+    ];
+    for (const b of btnMap) {
+      const el = document.querySelector(b.sel);
+      if (el) {
+        el.innerHTML = b.label;
+        el.setAttribute('onclick', "pressFunc('" + b.fn + "')");
+      }
+    }
   }
-}
 
-// Initialize
-window.onload = function() {
-  updateAdvancedInputs();
-};
+  // Extended pressFunc for 2nd functions
+  const origPressFunc = window.pressFunc;
+  window.pressFunc = function(fn) {
+    // After using a 2nd function, deactivate 2nd mode
+    let was2nd = secondMode;
 
-// Allow Enter key to calculate in basic calculator
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('expression').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    switch(fn) {
+      case 'asin':
+        appendDisplay('sin\u207B\u00B9(');
+        if (degreeMode) {
+          appendExpr('((180/Math.PI)*Math.asin(');
+        } else {
+          appendExpr('Math.asin(');
+        }
+        secondMode = false;
+        restoreButtons();
+        updateDisplay();
+        return;
+      case 'acos':
+        appendDisplay('cos\u207B\u00B9(');
+        if (degreeMode) {
+          appendExpr('((180/Math.PI)*Math.acos(');
+        } else {
+          appendExpr('Math.acos(');
+        }
+        secondMode = false;
+        restoreButtons();
+        updateDisplay();
+        return;
+      case 'atan':
+        appendDisplay('tan\u207B\u00B9(');
+        if (degreeMode) {
+          appendExpr('((180/Math.PI)*Math.atan(');
+        } else {
+          appendExpr('Math.atan(');
+        }
+        secondMode = false;
+        restoreButtons();
+        updateDisplay();
+        return;
+      case '10x':
+        appendDisplay('10^(');
+        appendExpr('(10**(');
+        secondMode = false;
+        restoreButtons();
+        updateDisplay();
+        return;
+      case 'ex':
+        appendDisplay('e^(');
+        appendExpr('(Math.E**(');
+        secondMode = false;
+        restoreButtons();
+        updateDisplay();
+        return;
+      case 'cbrt':
+        appendDisplay('\u00B3\u221A(');
+        appendExpr('Math.cbrt(');
+        secondMode = false;
+        restoreButtons();
+        updateDisplay();
+        return;
+    }
+
+    // Default: call original logic
+    origPressFunc(fn);
+  };
+
+  // ENTER - evaluate
+  window.pressEnter = function() {
+    if (expression.trim() === '') return;
+
+    secondMode = false;
+    restoreButtons();
+
+    let evalExpr = expression;
+
+    // Auto-close unclosed parentheses
+    let openCount = (evalExpr.match(/\(/g) || []).length;
+    let closeCount = (evalExpr.match(/\)/g) || []).length;
+    while (closeCount < openCount) {
+      evalExpr += ')';
+      closeCount++;
+    }
+
+    let result;
+    let isError = false;
+    try {
+      // Safety: only allow math-safe characters
+      const safeCheck = evalExpr.replace(/Math\.(sin|cos|tan|asin|acos|atan|log10|log|sqrt|cbrt|PI|E|pow|abs)/g, '');
+      if (/[a-df-zA-DF-Z_$]/.test(safeCheck)) {
+        throw new Error('Invalid characters');
+      }
+
+      result = eval(evalExpr);
+      if (typeof result !== 'number') throw new Error('Not a number');
+      ans = result;
+    } catch (e) {
+      result = 'Syntax Error';
+      isError = true;
+    }
+
+    const displayResult = isError ? result : formatNumber(result);
+
+    history.push({
+      expr: displayExpr || expression,
+      result: displayResult,
+      isError: isError
+    });
+
+    // Keep history manageable
+    if (history.length > 50) history = history.slice(-50);
+
+    // Reset input
+    expression = '';
+    displayExpr = '';
+    updateDisplay();
+  };
+
+  // --- Keyboard support ---
+  document.addEventListener('keydown', function(e) {
+    // Prevent default for keys we handle
+    const key = e.key;
+
+    if (key >= '0' && key <= '9') {
       e.preventDefault();
-      calculate();
+      pressNum(key);
+    } else if (key === '.') {
+      e.preventDefault();
+      pressNum('.');
+    } else if (key === '+') {
+      e.preventDefault();
+      pressOp('+');
+    } else if (key === '-') {
+      e.preventDefault();
+      pressOp('-');
+    } else if (key === '*') {
+      e.preventDefault();
+      pressOp('*');
+    } else if (key === '/') {
+      e.preventDefault();
+      pressOp('/');
+    } else if (key === '^') {
+      e.preventDefault();
+      pressOp('^');
+    } else if (key === '(') {
+      e.preventDefault();
+      pressChar('(');
+    } else if (key === ')') {
+      e.preventDefault();
+      pressChar(')');
+    } else if (key === 'Enter') {
+      e.preventDefault();
+      pressEnter();
+    } else if (key === 'Backspace') {
+      e.preventDefault();
+      pressDel();
+    } else if (key === 'Escape' || key === 'Delete') {
+      e.preventDefault();
+      pressClear();
     }
   });
-});
-</script>
 
+  // --- Init ---
+  updateDisplay();
+
+  // --- PWA Service Worker ---
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('calc-sw.js').catch(function(){});
+  }
+
+})();
+</script>
 </body>
 </html>
