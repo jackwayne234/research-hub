@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Graphing Calc">
+<meta name="theme-color" content="#1a1a2e">
+<title>Graphing Calculator</title>
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: 'Courier New', Courier, monospace;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    padding: 6px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* ===== FUNCTION INPUT AREA ===== */
+  .func-panel {
+    flex-shrink: 0;
+    background: #16162a;
+    border: 1px solid #2a2a4a;
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .func-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: calc(50% - 3px);
+    min-width: 160px;
+  }
+
+  @media (max-width: 420px) {
+    .func-row {
+      width: 100%;
+    }
+  }
+
+  .func-toggle {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #3a3a5a;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 0.15s;
+  }
+
+  .func-toggle:checked {
+    border-color: var(--fn-color);
+    background: var(--fn-color);
+    box-shadow: 0 0 6px var(--fn-color);
+  }
+
+  .func-toggle:not(:checked) {
+    background: transparent;
+  }
+
+  .func-toggle::after {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .func-toggle:checked::after {
+    background: #fff;
+  }
+
+  .func-label {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--fn-color);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .func-input {
+    flex: 1;
+    background: #0d0d1f;
+    border: 1px solid #2a2a4a;
+    border-radius: 5px;
+    padding: 5px 7px;
+    color: #e0e0e0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    outline: none;
+    min-width: 0;
+    transition: border-color 0.15s;
+  }
+
+  .func-input:focus {
+    border-color: var(--fn-color);
+    box-shadow: 0 0 4px rgba(74, 158, 255, 0.2);
+  }
+
+  .func-input::placeholder {
+    color: #3a3a5a;
+    font-style: italic;
+  }
+
+  /* ===== CANVAS AREA ===== */
+  .canvas-wrap {
+    flex: 1;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #2a2a4a;
+    margin-bottom: 6px;
+    min-height: 180px;
+    touch-action: none;
+  }
+
+  #graphCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #0a0f1a;
+    cursor: crosshair;
+  }
+
+  .trace-readout {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(10, 15, 26, 0.88);
+    border: 1px solid #2a3a5a;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-family: 'Courier New', Courier, monospace;
+    color: #e0e0e0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+    z-index: 10;
+  }
+
+  .trace-readout.visible {
+    opacity: 1;
+  }
+
+  .trace-fn-label {
+    font-weight: bold;
+  }
+
+  /* ===== CONTROLS ===== */
+  .ctrl-panel {
+    flex-shrink: 0;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    font-weight: 900;
+    border: none;
+    border-radius: 6px;
+    padding: 9px 14px;
+    cursor: pointer;
+    transition: all 0.08s ease;
+    text-align: center;
+    line-height: 1.2;
+    user-select: none;
+    -webkit-user-select: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .btn:active {
+    transform: scale(0.94);
+    filter: brightness(0.8);
+  }
+
+  /* Graph button - green accent (matches ENTER on sibling) */
+  .btn-graph {
+    background: #1a5a2a;
+    color: #80ff9a;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    flex: 1;
+    max-width: 100px;
+  }
+  .btn-graph:hover { background: #2a6a3a; }
+
+  /* Control buttons - match btn-ctrl from sibling */
+  .btn-ctrl {
+    background: #2a2a3a;
+    color: #d0d0e8;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+  .btn-ctrl:hover { background: #3a3a4a; }
+
+  /* Zoom buttons - match btn-op from sibling */
+  .btn-zoom {
+    background: #2a3a5a;
+    color: #c0d8ff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    font-size: 16px;
+    width: 42px;
+  }
+  .btn-zoom:hover { background: #3a4a6a; }
+
+  /* Trace toggle - yellow accent (matches 2nd from sibling) */
+  .btn-trace {
+    background: #3a3020;
+    color: #f0d070;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+  .btn-trace:hover { background: #4a4030; }
+  .btn-trace.active {
+    background: #5a5a20;
+    color: #ffe870;
+    box-shadow: 0 0 8px rgba(255, 232, 112, 0.3);
+  }
+
+  /* Clear button - red accent (matches btn-clear from sibling) */
+  .btn-danger {
+    background: #5a2020;
+    color: #ffb0b0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+  .btn-danger:hover { background: #6a3030; }
+
+  /* ===== WINDOW MODAL ===== */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open {
+    display: flex;
+  }
+
+  .modal {
+    background: #16162a;
+    border: 1px solid #2a2a4a;
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    max-width: 300px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+  }
+
+  .modal h3 {
+    text-align: center;
+    margin-bottom: 14px;
+    font-size: 15px;
+    color: #c0d8ff;
+    letter-spacing: 1px;
+  }
+
+  .modal-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .modal-row label {
+    font-size: 13px;
+    font-weight: bold;
+    width: 48px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .modal-row input {
+    flex: 1;
+    background: #0d0d1f;
+    border: 1px solid #2a2a4a;
+    border-radius: 5px;
+    padding: 6px 8px;
+    color: #e0e0e0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    outline: none;
+    min-width: 0;
+  }
+
+  .modal-row input:focus {
+    border-color: #4a9eff;
+  }
+
+  .modal-btns {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .modal-btns .btn {
+    flex: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- Function Input Panel -->
+<div class="func-panel" id="funcPanel">
+  <div class="func-row" style="--fn-color: #4a9eff;">
+    <input type="checkbox" class="func-toggle" id="toggle0" checked>
+    <span class="func-label">Y1=</span>
+    <input type="text" class="func-input" id="fn0" placeholder="x^2" autocomplete="off" autocapitalize="off" spellcheck="false">
+  </div>
+  <div class="func-row" style="--fn-color: #ff6b6b;">
+    <input type="checkbox" class="func-toggle" id="toggle1" checked>
+    <span class="func-label">Y2=</span>
+    <input type="text" class="func-input" id="fn1" placeholder="sin(x)" autocomplete="off" autocapitalize="off" spellcheck="false">
+  </div>
+  <div class="func-row" style="--fn-color: #51cf66;">
+    <input type="checkbox" class="func-toggle" id="toggle2" checked>
+    <span class="func-label">Y3=</span>
+    <input type="text" class="func-input" id="fn2" placeholder="" autocomplete="off" autocapitalize="off" spellcheck="false">
+  </div>
+  <div class="func-row" style="--fn-color: #ffd43b;">
+    <input type="checkbox" class="func-toggle" id="toggle3" checked>
+    <span class="func-label">Y4=</span>
+    <input type="text" class="func-input" id="fn3" placeholder="" autocomplete="off" autocapitalize="off" spellcheck="false">
+  </div>
+</div>
+
+<!-- Graph Canvas -->
+<div class="canvas-wrap" id="canvasWrap">
+  <canvas id="graphCanvas"></canvas>
+  <div class="trace-readout" id="traceReadout">
+    <span class="trace-fn-label" id="traceFnLabel"></span>
+    <span id="traceCoords"></span>
+  </div>
+</div>
+
+<!-- Controls -->
+<div class="ctrl-panel">
+  <button class="btn btn-graph" id="btnGraph">GRAPH</button>
+  <button class="btn btn-zoom" id="btnZoomIn" title="Zoom In">+</button>
+  <button class="btn btn-zoom" id="btnZoomOut" title="Zoom Out">&minus;</button>
+  <button class="btn btn-ctrl" id="btnWindow">WINDOW</button>
+  <button class="btn btn-trace" id="btnTrace">TRACE</button>
+  <button class="btn btn-ctrl" id="btnReset">RESET</button>
+  <button class="btn btn-danger" id="btnClear">CLEAR</button>
+</div>
+
+<!-- Window Settings Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>WINDOW SETTINGS</h3>
+    <div class="modal-row">
+      <label>Xmin:</label>
+      <input type="number" id="winXmin" step="any">
+    </div>
+    <div class="modal-row">
+      <label>Xmax:</label>
+      <input type="number" id="winXmax" step="any">
+    </div>
+    <div class="modal-row">
+      <label>Ymin:</label>
+      <input type="number" id="winYmin" step="any">
+    </div>
+    <div class="modal-row">
+      <label>Ymax:</label>
+      <input type="number" id="winYmax" step="any">
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-graph" id="btnWinApply">APPLY</button>
+      <button class="btn btn-ctrl" id="btnWinCancel">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ==================== CONFIG ====================
+  const COLORS = ['#4a9eff', '#ff6b6b', '#51cf66', '#ffd43b'];
+  const FN_COUNT = 4;
+  const GRID_COLOR = '#1a2a3a';
+  const AXIS_COLOR = '#4a5a6a';
+  const LABEL_COLOR = '#6a7a8a';
+  const BG_COLOR = '#0a0f1a';
+  const LINE_WIDTH = 2.5;
+  const SAMPLES_PER_PX = 2; // sample points per pixel of canvas width
+  const ZOOM_FACTOR = 1.4;
+
+  // ==================== STATE ====================
+  let xMin = -10, xMax = 10, yMin = -10, yMax = 10;
+  let traceMode = false;
+  let traceX = null;
+  let traceFnIdx = null;
+
+  // Pan state
+  let isPanning = false;
+  let panStartX = 0, panStartY = 0;
+  let panStartXmin = 0, panStartXmax = 0, panStartYmin = 0, panStartYmax = 0;
+
+  // Pinch state
+  let pinchStartDist = 0;
+  let pinchStartXmin = 0, pinchStartXmax = 0, pinchStartYmin = 0, pinchStartYmax = 0;
+  let pinchMidX = 0, pinchMidY = 0;
+  let isPinching = false;
+
+  // Compiled functions cache
+  let compiledFns = [null, null, null, null];
+
+  // ==================== DOM ====================
+  const canvas = document.getElementById('graphCanvas');
+  const ctx = canvas.getContext('2d');
+  const canvasWrap = document.getElementById('canvasWrap');
+  const traceReadout = document.getElementById('traceReadout');
+  const traceFnLabel = document.getElementById('traceFnLabel');
+  const traceCoords = document.getElementById('traceCoords');
+  const modalOverlay = document.getElementById('modalOverlay');
+
+  const fnInputs = [];
+  const fnToggles = [];
+  for (let i = 0; i < FN_COUNT; i++) {
+    fnInputs.push(document.getElementById('fn' + i));
+    fnToggles.push(document.getElementById('toggle' + i));
+  }
+
+  // ==================== EXPRESSION PARSER ====================
+  function parseExpression(expr) {
+    if (!expr || !expr.trim()) return null;
+
+    let s = expr.trim();
+
+    // Replace common notations
+    // Handle caret for exponentiation
+    s = s.replace(/\^/g, '**');
+
+    // Constants
+    s = s.replace(/\bpi\b/gi, '(Math.PI)');
+    s = s.replace(/\be\b/g, '(Math.E)');
+
+    // Functions - must come before implicit multiplication handling
+    s = s.replace(/\bsin\b/gi, 'Math.sin');
+    s = s.replace(/\bcos\b/gi, 'Math.cos');
+    s = s.replace(/\btan\b/gi, 'Math.tan');
+    s = s.replace(/\basin\b/gi, 'Math.asin');
+    s = s.replace(/\bacos\b/gi, 'Math.acos');
+    s = s.replace(/\batan\b/gi, 'Math.atan');
+    s = s.replace(/\bln\b/gi, 'Math.log');
+    s = s.replace(/\blog\b/gi, 'Math.log10');
+    s = s.replace(/\bsqrt\b/gi, 'Math.sqrt');
+    s = s.replace(/\babs\b/gi, 'Math.abs');
+
+    // Implicit multiplication:
+    // number followed by x: 2x -> 2*x
+    s = s.replace(/(\d)([x])/gi, '$1*$2');
+    // x followed by ( : x( -> x*(
+    s = s.replace(/([x])(\()/gi, '$1*$2');
+    // ) followed by x: )x -> )*x
+    s = s.replace(/(\))([x])/gi, '$1*$2');
+    // number followed by (: 2( -> 2*(
+    s = s.replace(/(\d)(\()/g, '$1*$2');
+    // ) followed by (: )( -> )*(
+    s = s.replace(/(\))(\()/g, '$1*$2');
+    // ) followed by number: )2 -> )*2
+    s = s.replace(/(\))(\d)/g, '$1*$2');
+    // number followed by Math: 2Math -> 2*Math
+    s = s.replace(/(\d)(Math)/g, '$1*$2');
+    // x followed by Math: xMath -> x*Math
+    s = s.replace(/([x])(Math)/gi, '$1*$2');
+    // ) followed by Math: )Math -> )*Math
+    s = s.replace(/(\))(Math)/g, '$1*$2');
+    // (Math.PI) or (Math.E) followed by x or (
+    s = s.replace(/(\(Math\.\w+\))([x(])/gi, '$1*$2');
+    // x followed by number (e.g. after substitution edge cases)
+    // number followed by Math.PI or Math.E  -- already handled above
+
+    // Build function
+    try {
+      // Security: only allow safe tokens
+      const safeCheck = s
+        .replace(/Math\.(sin|cos|tan|asin|acos|atan|log10|log|sqrt|abs|PI|E|pow)/g, '')
+        .replace(/[x\d\s\+\-\*\/\.\(\)]/g, '');
+      if (safeCheck.length > 0) {
+        return null; // contains disallowed characters
+      }
+
+      const fn = new Function('x', 'return (' + s + ');');
+      // Quick sanity check
+      fn(0);
+      fn(1);
+      return fn;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function compileFunctions() {
+    for (let i = 0; i < FN_COUNT; i++) {
+      compiledFns[i] = parseExpression(fnInputs[i].value);
+    }
+  }
+
+  // ==================== CANVAS SIZING ====================
+  let dpr = 1;
+  let canvasW = 0, canvasH = 0;
+
+  function resizeCanvas() {
+    dpr = window.devicePixelRatio || 1;
+    const rect = canvasWrap.getBoundingClientRect();
+    canvasW = rect.width;
+    canvasH = rect.height;
+    canvas.width = canvasW * dpr;
+    canvas.height = canvasH * dpr;
+    canvas.style.width = canvasW + 'px';
+    canvas.style.height = canvasH + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  // ==================== COORDINATE TRANSFORMS ====================
+  function xToCanvas(x) {
+    return (x - xMin) / (xMax - xMin) * canvasW;
+  }
+
+  function yToCanvas(y) {
+    return (1 - (y - yMin) / (yMax - yMin)) * canvasH;
+  }
+
+  function canvasToX(cx) {
+    return xMin + (cx / canvasW) * (xMax - xMin);
+  }
+
+  function canvasToY(cy) {
+    return yMax - (cy / canvasH) * (yMax - yMin);
+  }
+
+  // ==================== SMART TICK SPACING ====================
+  function niceStep(range, targetTicks) {
+    const rough = range / targetTicks;
+    const mag = Math.pow(10, Math.floor(Math.log10(rough)));
+    const norm = rough / mag;
+    let nice;
+    if (norm < 1.5) nice = 1;
+    else if (norm < 3.5) nice = 2;
+    else if (norm < 7.5) nice = 5;
+    else nice = 10;
+    return nice * mag;
+  }
+
+  // ==================== DRAWING ====================
+  function draw() {
+    resizeCanvas();
+
+    // Clear
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, canvasW, canvasH);
+
+    drawGrid();
+    drawAxes();
+    drawFunctions();
+    drawTrace();
+  }
+
+  function drawGrid() {
+    const xRange = xMax - xMin;
+    const yRange = yMax - yMin;
+    const xStep = niceStep(xRange, 10);
+    const yStep = niceStep(yRange, 8);
+
+    ctx.strokeStyle = GRID_COLOR;
+    ctx.lineWidth = 0.5;
+
+    // Vertical grid lines
+    let xStart = Math.ceil(xMin / xStep) * xStep;
+    for (let x = xStart; x <= xMax; x += xStep) {
+      const cx = xToCanvas(x);
+      ctx.beginPath();
+      ctx.moveTo(cx, 0);
+      ctx.lineTo(cx, canvasH);
+      ctx.stroke();
+    }
+
+    // Horizontal grid lines
+    let yStart = Math.ceil(yMin / yStep) * yStep;
+    for (let y = yStart; y <= yMax; y += yStep) {
+      const cy = yToCanvas(y);
+      ctx.beginPath();
+      ctx.moveTo(0, cy);
+      ctx.lineTo(canvasW, cy);
+      ctx.stroke();
+    }
+  }
+
+  function drawAxes() {
+    const xRange = xMax - xMin;
+    const yRange = yMax - yMin;
+    const xStep = niceStep(xRange, 10);
+    const yStep = niceStep(yRange, 8);
+
+    // Draw axis lines
+    ctx.strokeStyle = AXIS_COLOR;
+    ctx.lineWidth = 1;
+
+    // X-axis (y=0)
+    if (yMin <= 0 && yMax >= 0) {
+      const cy = yToCanvas(0);
+      ctx.beginPath();
+      ctx.moveTo(0, cy);
+      ctx.lineTo(canvasW, cy);
+      ctx.stroke();
+    }
+
+    // Y-axis (x=0)
+    if (xMin <= 0 && xMax >= 0) {
+      const cx = xToCanvas(0);
+      ctx.beginPath();
+      ctx.moveTo(cx, 0);
+      ctx.lineTo(cx, canvasH);
+      ctx.stroke();
+    }
+
+    // Tick marks and labels
+    ctx.fillStyle = LABEL_COLOR;
+    ctx.font = '10px Courier New';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+
+    // X-axis labels
+    let xStart = Math.ceil(xMin / xStep) * xStep;
+    for (let x = xStart; x <= xMax; x += xStep) {
+      if (Math.abs(x) < xStep * 0.01) continue; // skip 0
+      const cx = xToCanvas(x);
+      const axisY = (yMin <= 0 && yMax >= 0) ? yToCanvas(0) : canvasH;
+
+      // Tick mark
+      ctx.strokeStyle = AXIS_COLOR;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(cx, axisY - 3);
+      ctx.lineTo(cx, axisY + 3);
+      ctx.stroke();
+
+      // Label
+      const labelY = Math.min(axisY + 5, canvasH - 14);
+      ctx.fillText(formatTick(x), cx, labelY);
+    }
+
+    // Y-axis labels
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    let yStart = Math.ceil(yMin / yStep) * yStep;
+    for (let y = yStart; y <= yMax; y += yStep) {
+      if (Math.abs(y) < yStep * 0.01) continue; // skip 0
+      const cy = yToCanvas(y);
+      const axisX = (xMin <= 0 && xMax >= 0) ? xToCanvas(0) : 0;
+
+      // Tick mark
+      ctx.strokeStyle = AXIS_COLOR;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(axisX - 3, cy);
+      ctx.lineTo(axisX + 3, cy);
+      ctx.stroke();
+
+      // Label
+      const labelX = Math.max(axisX - 5, 30);
+      ctx.fillText(formatTick(y), labelX, cy);
+    }
+
+    // Origin label
+    if (xMin <= 0 && xMax >= 0 && yMin <= 0 && yMax >= 0) {
+      const cx = xToCanvas(0);
+      const cy = yToCanvas(0);
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'top';
+      ctx.fillText('0', cx - 5, cy + 5);
+    }
+  }
+
+  function formatTick(val) {
+    if (Math.abs(val) >= 10000 || (Math.abs(val) < 0.01 && val !== 0)) {
+      return val.toExponential(0);
+    }
+    // Remove trailing zeros
+    let s = parseFloat(val.toPrecision(6)).toString();
+    return s;
+  }
+
+  function drawFunctions() {
+    const numSamples = Math.max(canvasW * SAMPLES_PER_PX, 400);
+
+    for (let i = 0; i < FN_COUNT; i++) {
+      if (!fnToggles[i].checked) continue;
+      const fn = compiledFns[i];
+      if (!fn) continue;
+
+      ctx.strokeStyle = COLORS[i];
+      ctx.lineWidth = LINE_WIDTH;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+
+      let drawing = false;
+      let prevY = null;
+      let prevCY = null;
+
+      for (let s = 0; s <= numSamples; s++) {
+        const x = xMin + (s / numSamples) * (xMax - xMin);
+        let y;
+        try {
+          y = fn(x);
+        } catch (e) {
+          y = NaN;
+        }
+
+        if (!isFinite(y) || isNaN(y)) {
+          drawing = false;
+          prevY = null;
+          prevCY = null;
+          continue;
+        }
+
+        const cx = xToCanvas(x);
+        const cy = yToCanvas(y);
+
+        // Detect discontinuities (asymptotes) by checking for huge jumps
+        if (drawing && prevY !== null) {
+          const dy = Math.abs(y - prevY);
+          const yRange = yMax - yMin;
+          // If the jump is larger than the visible range, break the line
+          if (dy > yRange * 4) {
+            drawing = false;
+          }
+        }
+
+        // Clip: don't draw segments way outside canvas (but allow some overflow for smooth edges)
+        const margin = canvasH * 2;
+        if (cy < -margin || cy > canvasH + margin) {
+          drawing = false;
+          prevY = y;
+          prevCY = cy;
+          continue;
+        }
+
+        if (!drawing) {
+          ctx.moveTo(cx, cy);
+          drawing = true;
+        } else {
+          ctx.lineTo(cx, cy);
+        }
+
+        prevY = y;
+        prevCY = cy;
+      }
+
+      ctx.stroke();
+    }
+  }
+
+  function drawTrace() {
+    if (!traceMode || traceX === null || traceFnIdx === null) return;
+
+    const fn = compiledFns[traceFnIdx];
+    if (!fn) return;
+
+    let y;
+    try {
+      y = fn(traceX);
+    } catch (e) {
+      return;
+    }
+    if (!isFinite(y) || isNaN(y)) return;
+
+    const cx = xToCanvas(traceX);
+    const cy = yToCanvas(y);
+
+    // Crosshair
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.lineWidth = 0.5;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(cx, 0);
+    ctx.lineTo(cx, canvasH);
+    ctx.moveTo(0, cy);
+    ctx.lineTo(canvasW, cy);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Dot on the curve
+    ctx.fillStyle = COLORS[traceFnIdx];
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // White ring
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Update readout
+    const fnName = 'Y' + (traceFnIdx + 1);
+    traceFnLabel.style.color = COLORS[traceFnIdx];
+    traceFnLabel.textContent = fnName + ': ';
+    traceCoords.textContent = 'x=' + traceX.toPrecision(5) + '  y=' + y.toPrecision(5);
+    traceReadout.classList.add('visible');
+  }
+
+  // ==================== TRACE LOGIC ====================
+  function doTrace(canvasX, canvasY) {
+    if (!traceMode) return;
+
+    const x = canvasToX(canvasX);
+    let bestFnIdx = null;
+    let bestDist = Infinity;
+
+    for (let i = 0; i < FN_COUNT; i++) {
+      if (!fnToggles[i].checked) continue;
+      const fn = compiledFns[i];
+      if (!fn) continue;
+
+      let y;
+      try {
+        y = fn(x);
+      } catch (e) {
+        continue;
+      }
+      if (!isFinite(y) || isNaN(y)) continue;
+
+      const cy = yToCanvas(y);
+      const dist = Math.abs(cy - canvasY);
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestFnIdx = i;
+      }
+    }
+
+    if (bestFnIdx !== null && bestDist < 100) {
+      traceX = x;
+      traceFnIdx = bestFnIdx;
+    } else {
+      traceX = null;
+      traceFnIdx = null;
+      traceReadout.classList.remove('visible');
+    }
+
+    draw();
+  }
+
+  function clearTrace() {
+    traceX = null;
+    traceFnIdx = null;
+    traceReadout.classList.remove('visible');
+  }
+
+  // ==================== MOUSE EVENTS ====================
+  function getCanvasPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+
+  canvas.addEventListener('mousedown', function(e) {
+    if (traceMode) {
+      const pos = getCanvasPos(e);
+      doTrace(pos.x, pos.y);
+      return;
+    }
+
+    isPanning = true;
+    panStartX = e.clientX;
+    panStartY = e.clientY;
+    panStartXmin = xMin;
+    panStartXmax = xMax;
+    panStartYmin = yMin;
+    panStartYmax = yMax;
+    canvas.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', function(e) {
+    if (!isPanning) return;
+
+    const dx = e.clientX - panStartX;
+    const dy = e.clientY - panStartY;
+
+    const xRange = panStartXmax - panStartXmin;
+    const yRange = panStartYmax - panStartYmin;
+
+    const xShift = -(dx / canvasW) * xRange;
+    const yShift = (dy / canvasH) * yRange;
+
+    xMin = panStartXmin + xShift;
+    xMax = panStartXmax + xShift;
+    yMin = panStartYmin + yShift;
+    yMax = panStartYmax + yShift;
+
+    clearTrace();
+    draw();
+  });
+
+  window.addEventListener('mouseup', function() {
+    if (isPanning) {
+      isPanning = false;
+      canvas.style.cursor = traceMode ? 'crosshair' : 'crosshair';
+    }
+  });
+
+  // Mouse wheel zoom
+  canvas.addEventListener('wheel', function(e) {
+    e.preventDefault();
+
+    const pos = getCanvasPos(e);
+    const mx = canvasToX(pos.x);
+    const my = canvasToY(pos.y);
+
+    const factor = e.deltaY > 0 ? ZOOM_FACTOR : 1 / ZOOM_FACTOR;
+
+    xMin = mx + (xMin - mx) * factor;
+    xMax = mx + (xMax - mx) * factor;
+    yMin = my + (yMin - my) * factor;
+    yMax = my + (yMax - my) * factor;
+
+    clearTrace();
+    draw();
+  }, { passive: false });
+
+  // ==================== TOUCH EVENTS ====================
+  function getTouchCanvasPos(touch) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+  }
+
+  function getTouchDist(t1, t2) {
+    const dx = t1.clientX - t2.clientX;
+    const dy = t1.clientY - t2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  canvas.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+
+    if (e.touches.length === 1) {
+      if (traceMode) {
+        const pos = getTouchCanvasPos(e.touches[0]);
+        doTrace(pos.x, pos.y);
+        return;
+      }
+
+      isPanning = true;
+      isPinching = false;
+      panStartX = e.touches[0].clientX;
+      panStartY = e.touches[0].clientY;
+      panStartXmin = xMin;
+      panStartXmax = xMax;
+      panStartYmin = yMin;
+      panStartYmax = yMax;
+    } else if (e.touches.length === 2) {
+      isPanning = false;
+      isPinching = true;
+      pinchStartDist = getTouchDist(e.touches[0], e.touches[1]);
+      pinchStartXmin = xMin;
+      pinchStartXmax = xMax;
+      pinchStartYmin = yMin;
+      pinchStartYmax = yMax;
+
+      const pos0 = getTouchCanvasPos(e.touches[0]);
+      const pos1 = getTouchCanvasPos(e.touches[1]);
+      pinchMidX = canvasToX((pos0.x + pos1.x) / 2);
+      pinchMidY = canvasToY((pos0.y + pos1.y) / 2);
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+
+    if (isPanning && e.touches.length === 1) {
+      const dx = e.touches[0].clientX - panStartX;
+      const dy = e.touches[0].clientY - panStartY;
+
+      const xRange = panStartXmax - panStartXmin;
+      const yRange = panStartYmax - panStartYmin;
+
+      const xShift = -(dx / canvasW) * xRange;
+      const yShift = (dy / canvasH) * yRange;
+
+      xMin = panStartXmin + xShift;
+      xMax = panStartXmax + xShift;
+      yMin = panStartYmin + yShift;
+      yMax = panStartYmax + yShift;
+
+      clearTrace();
+      draw();
+    } else if (isPinching && e.touches.length === 2) {
+      const dist = getTouchDist(e.touches[0], e.touches[1]);
+      const scale = pinchStartDist / dist; // >1 means zoom out
+
+      const xRange = pinchStartXmax - pinchStartXmin;
+      const yRange = pinchStartYmax - pinchStartYmin;
+
+      const newXrange = xRange * scale;
+      const newYrange = yRange * scale;
+
+      xMin = pinchMidX - newXrange / 2;
+      xMax = pinchMidX + newXrange / 2;
+      yMin = pinchMidY - newYrange / 2;
+      yMax = pinchMidY + newYrange / 2;
+
+      clearTrace();
+      draw();
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', function(e) {
+    if (e.touches.length === 0) {
+      isPanning = false;
+      isPinching = false;
+    } else if (e.touches.length === 1) {
+      // Went from pinch to single finger: restart pan
+      isPinching = false;
+      isPanning = true;
+      panStartX = e.touches[0].clientX;
+      panStartY = e.touches[0].clientY;
+      panStartXmin = xMin;
+      panStartXmax = xMax;
+      panStartYmin = yMin;
+      panStartYmax = yMax;
+    }
+  });
+
+  // ==================== BUTTON HANDLERS ====================
+  document.getElementById('btnGraph').addEventListener('click', function() {
+    compileFunctions();
+    clearTrace();
+    draw();
+  });
+
+  document.getElementById('btnZoomIn').addEventListener('click', function() {
+    const cx = (xMin + xMax) / 2;
+    const cy = (yMin + yMax) / 2;
+    const xr = (xMax - xMin) / 2 / ZOOM_FACTOR;
+    const yr = (yMax - yMin) / 2 / ZOOM_FACTOR;
+    xMin = cx - xr;
+    xMax = cx + xr;
+    yMin = cy - yr;
+    yMax = cy + yr;
+    clearTrace();
+    draw();
+  });
+
+  document.getElementById('btnZoomOut').addEventListener('click', function() {
+    const cx = (xMin + xMax) / 2;
+    const cy = (yMin + yMax) / 2;
+    const xr = (xMax - xMin) / 2 * ZOOM_FACTOR;
+    const yr = (yMax - yMin) / 2 * ZOOM_FACTOR;
+    xMin = cx - xr;
+    xMax = cx + xr;
+    yMin = cy - yr;
+    yMax = cy + yr;
+    clearTrace();
+    draw();
+  });
+
+  document.getElementById('btnTrace').addEventListener('click', function() {
+    traceMode = !traceMode;
+    this.classList.toggle('active', traceMode);
+    if (!traceMode) {
+      clearTrace();
+      draw();
+    }
+  });
+
+  document.getElementById('btnClear').addEventListener('click', function() {
+    for (let i = 0; i < FN_COUNT; i++) {
+      fnInputs[i].value = '';
+      fnToggles[i].checked = true;
+      compiledFns[i] = null;
+    }
+    clearTrace();
+    draw();
+  });
+
+  document.getElementById('btnReset').addEventListener('click', function() {
+    xMin = -10; xMax = 10; yMin = -10; yMax = 10;
+    clearTrace();
+    compileFunctions();
+    draw();
+  });
+
+  // Window modal
+  document.getElementById('btnWindow').addEventListener('click', function() {
+    document.getElementById('winXmin').value = xMin;
+    document.getElementById('winXmax').value = xMax;
+    document.getElementById('winYmin').value = yMin;
+    document.getElementById('winYmax').value = yMax;
+    modalOverlay.classList.add('open');
+  });
+
+  document.getElementById('btnWinApply').addEventListener('click', function() {
+    const nxMin = parseFloat(document.getElementById('winXmin').value);
+    const nxMax = parseFloat(document.getElementById('winXmax').value);
+    const nyMin = parseFloat(document.getElementById('winYmin').value);
+    const nyMax = parseFloat(document.getElementById('winYmax').value);
+
+    if (isFinite(nxMin) && isFinite(nxMax) && nxMin < nxMax) {
+      xMin = nxMin;
+      xMax = nxMax;
+    }
+    if (isFinite(nyMin) && isFinite(nyMax) && nyMin < nyMax) {
+      yMin = nyMin;
+      yMax = nyMax;
+    }
+
+    modalOverlay.classList.remove('open');
+    clearTrace();
+    draw();
+  });
+
+  document.getElementById('btnWinCancel').addEventListener('click', function() {
+    modalOverlay.classList.remove('open');
+  });
+
+  modalOverlay.addEventListener('click', function(e) {
+    if (e.target === modalOverlay) {
+      modalOverlay.classList.remove('open');
+    }
+  });
+
+  // Enter key on function inputs triggers graph
+  for (let i = 0; i < FN_COUNT; i++) {
+    fnInputs[i].addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        compileFunctions();
+        clearTrace();
+        draw();
+      }
+    });
+
+    // Toggle checkbox triggers redraw
+    fnToggles[i].addEventListener('change', function() {
+      clearTrace();
+      draw();
+    });
+  }
+
+  // ==================== RESIZE ====================
+  let resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      draw();
+    }, 50);
+  });
+
+  // ==================== INIT ====================
+  compileFunctions();
+  // Use requestAnimationFrame to ensure layout is settled
+  requestAnimationFrame(function() {
+    draw();
+  });
+
+})();
+</script>
+</body>
+</html>
