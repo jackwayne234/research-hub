@@ -1,63 +1,30 @@
 # Research Hub — AI Navigation Guide
 
-## Owner
-Christopher Jack Wayne Riner (CJ). AI assistant: Barron (named after his favorite cat).
+**Owner:** Christopher Jack Wayne Riner (CJ). AI assistant: Barron.
 
-## What This Is
-A self-contained research dashboard and interactive visualization hub.
-Serves as the central portal for CJ's independent physics and mathematics research.
-No build step — open index.html in a browser or serve via GitHub Pages.
+No build step — pure HTML/CSS/JS. Serve locally on port 8080 or via GitHub Pages.
 
-## Directory Structure
-```
-research-hub/
-├── index.html              # Main dashboard (floating-window OS-style UI)
-├── shared.css              # Shared styles for all sub-pages
-├── pages/                  # Content pages (loaded as iframes from index.html)
-│   ├── big-picture.html    # Research overview
-│   ├── daily-practice.html # Math practice tracker
-│   ├── math-journey.html   # Notation learning progress
-│   ├── projects.html       # Active research projects
-│   ├── publications.html   # 7 published Zenodo papers
-│   ├── research-feed.html  # Automated paper feed
-│   ├── speculative.html    # Untested theoretical directions
-│   ├── visualizations.html # Gallery of 7 interactive visualizations
-│   ├── log-roadmap.html    # Session log and roadmap
-│   ├── status.html         # Tool/visualization status report
-│   └── working-index.html  # Working scratchpad
-├── simulators/             # Interactive HTML visualizations
-│   ├── metric.html         # Prime-Modified Metric (flagship)
-│   ├── blackhole-simulator.html
-│   ├── orbit-simulator.html
-│   ├── expedition.html     # Space expedition game
-│   ├── outpost.html
-│   └── (5 more visualization HTMLs)
-├── analysis/               # Python analysis scripts + HTML visualizations
-│   ├── zeta_4d_pure.py     # 4D zeta function analysis
-│   └── (more analysis files)
-├── tools/                  # Utility tools
-│   ├── editor.html         # Manuscript editor (self-contained, no CDN)
-│   ├── calculator.html     # Math calculator widget
-│   ├── git-viewer.py       # Local git repository viewer
-│   └── (more tool files)
-├── data/                   # JSON data files for visualizations
-├── drafts/                 # Active paper drafts (.docx)
-├── archive/                # Superseded files
-│   ├── tools/              # Old tool versions
-│   └── logs/               # AI conversation transcripts
-└── README.md               # Human-facing project overview
-```
+## Read What You Need
 
-## Research Context
-Three interconnected threads:
-1. **Mathematics** — Prime numbers, zeta functions, causal set theory
-2. **Physics** — Benford's Law in gravitational systems, prime-modified Schwarzschild metric
-3. **Engineering** — Optical computing, ternary logic, CubeSat lens design
+| Working on... | Start here |
+|---------------|-----------|
+| Dashboard / index.html | `index.html` — OS-style floating-window UI, chalkboard theme |
+| Page styling | `shared.css` — academic theme (Source Serif 4, Inter, paper-white) |
+| Content pages | `pages/` — loaded as iframes from index.html |
+| Simulators | `simulators/` — 10 interactive HTML visualizations (`metric.html` is flagship) |
+| Calculators / tools | `tools/` — TI-84 calculator (PWA), graphing calc, editor |
 
-## Key Files
-- `index.html` — Entry point. OS-style UI with sidebar navigation and floating windows.
-- `pages/publications.html` — Lists all 7 Zenodo papers with DOIs.
-- `simulators/metric.html` — The flagship prime-modified metric visualization.
+## Analysis Directory
+
+Each subdirectory has its own `README.md` with a TOC and cross-links.
+
+| Directory | Contents | Papers |
+|-----------|----------|--------|
+| [analysis/gr-emergence/](analysis/gr-emergence/) | GR from ζ(s) — 4 iterations (v1-v4) | Paper 7 |
+| [analysis/metric-structure/](analysis/metric-structure/) | Prime metric vs standard GR, embedding comparisons | Paper 7 |
+| [analysis/gps/](analysis/gps/) | GPS 38.6 μs/day validation (24-hour analysis) | Papers 5, 7 |
+| [analysis/kretschner/](analysis/kretschner/) | Kretschner scalar, 9 QG models, Benford epsilon, double-slit | Papers 1, 2, 7 |
+
 ## Published Papers (7 total)
 1. Modified Schwarzschild Metric via Benford's Law
 2. Bose-Einstein Condensates + Benford's Law
@@ -65,8 +32,8 @@ Three interconnected threads:
 4. Optical AI Accelerator
 5. River Velocity as Time Dilation: GPS Comparison
 6. Prime Numbers as Causal Set Theory
-7. Emergence of General Relativity from the Prime Number Structure of the Riemann Zeta Function
+7. Emergence of GR from Prime Number Structure (DOI: 10.5281/zenodo.18751909)
 
-## GitHub
+## Links
 - Repo: github.com/jackwayne234/research-hub
 - Live: https://jackwayne234.github.io/research-hub/
