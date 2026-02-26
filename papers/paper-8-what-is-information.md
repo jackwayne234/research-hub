@@ -729,5 +729,70 @@ The main results of this paper are:
 
 ---
 
+## Appendix A. Simulation Parameters and Code Availability
+
+All simulations referenced in this paper are implemented in Python 3 and available in the public repository:
+
+**Repository:** [github.com/jackwayne234/research-hub](https://github.com/jackwayne234/research-hub)
+
+### Table 1 — BEC Benford deviation (Section 8.1)
+
+**Script:** `analysis/kretschner/double_slit_test.py`
+
+| Parameter | Value |
+|-----------|-------|
+| Energy levels | 5,000 |
+| Temperature range | $T \in \{0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 50.0, 100.0\}$ |
+| Bosonic distribution | Bose-Einstein: $\bar{n}_i = 1/(e^{E_i/T} - 1)$ |
+| Fermionic distribution | Fermi-Dirac: $\bar{n}_i = 1/(e^{E_i/T} + 1)$ |
+| $\delta_B$ convention | Sum of absolute deviations ($9 \times$ the mean definition in Section 4.4) |
+
+### Table 2 — Coupling simulation (Section 8.1)
+
+**Script:** `analysis/kretschner/double_slit_test.py`
+
+| Parameter | Value |
+|-----------|-------|
+| Bosonic modes | 3,000 |
+| Fermionic modes | Up to 3,000 (scaled by coupling $\alpha$) |
+| Coupling range | $\alpha \in \{0.00, 0.05, 0.10, 0.20, 0.30, 0.50, 1.00\}$ |
+| Temperature | $T = 1.0$ (natural units) |
+| Distinguishability | $D = 2\alpha$ (linear model) |
+| Visibility | $\mathcal{V} = \sqrt{1 - D^2}$ (Englert relation) |
+
+### Tables 3 & 4 — Kretschmann scalar (Sections 8.2, 8.3)
+
+**Scripts:** `analysis/kretschner/kretschner_scalar.py` (single model), `analysis/kretschner/nine_models_kretschner.py` (nine QG models)
+
+| Parameter | Value |
+|-----------|-------|
+| Schwarzschild radius | $r_s = 1$ (normalized) |
+| Planck length | $r_P = 10^{-4} \, r_s$ (exaggerated for visibility; realistic: $\sim 10^{-38} \, r_s$) |
+| Radial mapping | $s(r) = 1 + (r/r_s)^3$ |
+| Zeta precision | 30 decimal places (mpmath library) |
+| $K$ computation | Central-difference numerical derivatives of $f(r)$ |
+| Radial points | $r/r_s \in \{10, 2, 1.1, 1.01, 1.001, 0.99, 0.5, 0.3, 0.1, 0.04, 0.01\}$ |
+
+### Dependencies
+
+- Python 3.8+
+- `mpmath` (arbitrary-precision arithmetic, required for zeta evaluation near $s = 1$)
+- No other external dependencies
+
+### Reproducing the results
+
+```
+git clone https://github.com/jackwayne234/research-hub.git
+cd research-hub/analysis/kretschner
+pip install mpmath
+python3 double_slit_test.py      # Tables 1, 2
+python3 kretschner_scalar.py     # Table 3
+python3 nine_models_kretschner.py  # Table 4
+```
+
+All scripts print results to stdout. No random seeds are used in the Kretschmann calculations (deterministic). The BEC simulation uses deterministic occupation number formulas; leading-digit extraction is exact.
+
+---
+
 *Correspondence: chrisriner45@gmail.com*
 *ORCID: 0009-0008-9448-9033*
