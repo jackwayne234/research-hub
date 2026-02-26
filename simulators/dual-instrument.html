@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dual Instrument — Black Hole Interior</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0d1117;
+  color: #c9d1d9;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+h1 { font-size: 1.3rem; color: #e6edf3; letter-spacing: 1px; margin-bottom: 2px; }
+.subtitle { font-size: 0.8rem; color: #8b949e; margin-bottom: 16px; }
+
+#chart-wrap {
+  position: relative;
+  width: 940px;
+  max-width: 96vw;
+}
+canvas {
+  width: 100%;
+  display: block;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  background: #161b22;
+}
+.legend {
+  display: flex;
+  gap: 20px;
+  margin: 6px 0 2px;
+  font-size: 0.78rem;
+  justify-content: center;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+
+.slider-row {
+  width: 940px; max-width: 96vw;
+  display: flex; align-items: center; gap: 10px;
+  margin: 8px 0;
+}
+.slider-row span { font-size: 0.7rem; color: #484f58; white-space: nowrap; }
+input[type="range"] {
+  flex: 1; height: 6px;
+  -webkit-appearance: none; appearance: none;
+  background: #30363d; border-radius: 3px; outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px;
+  border-radius: 50%; background: #58a6ff; cursor: pointer;
+}
+#play-btn {
+  background: #21262d; border: 1px solid #30363d; color: #58a6ff;
+  padding: 4px 12px; border-radius: 4px; cursor: pointer;
+  font-family: inherit; font-size: 0.8rem;
+}
+#play-btn:hover { background: #30363d; }
+
+.readout {
+  width: 940px; max-width: 96vw;
+  background: #161b22; border: 1px solid #30363d;
+  border-radius: 6px; padding: 14px 20px;
+}
+.readout-header {
+  display: flex; justify-content: space-between; flex-wrap: wrap;
+  margin-bottom: 14px; font-size: 0.85rem; gap: 8px;
+}
+.zone-tag {
+  padding: 2px 10px; border-radius: 4px;
+  font-weight: 700; font-size: 0.78rem;
+}
+
+.bar-row { display: flex; align-items: center; margin: 7px 0; gap: 6px; }
+.bar-label { width: 44px; font-size: 0.82rem; font-weight: 700; }
+.bar-val { width: 60px; text-align: right; font-size: 0.78rem; color: #8b949e; }
+.bar-track {
+  flex: 1; height: 26px; background: #21262d;
+  border-radius: 4px; overflow: hidden; position: relative;
+}
+.bar-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 0.12s ease;
+}
+.bar-max { width: 40px; font-size: 0.7rem; color: #484f58; text-align: right; }
+
+.bar-desc {
+  font-size: 0.72rem; color: #6e7681;
+  margin-left: 110px; margin-top: -4px; margin-bottom: 4px;
+}
+
+.zone-desc {
+  font-size: 0.8rem; color: #8b949e;
+  margin-top: 12px; line-height: 1.5;
+  border-top: 1px solid #21262d; padding-top: 10px;
+}
+
+.zone-V { background: rgba(139,92,246,0.25); color: #c4b5fd; }
+.zone-IV { background: rgba(239,68,68,0.25); color: #fca5a5; }
+.zone-III { background: rgba(59,130,246,0.25); color: #93c5fd; }
+.zone-II { background: rgba(34,197,94,0.25); color: #86efac; }
+.zone-I { background: rgba(156,163,175,0.2); color: #d1d5db; }
+</style>
+</head>
+<body>
+
+<h1>DUAL INSTRUMENT READOUT</h1>
+<p class="subtitle">Prime Matrix &amp; Benford Diagnostic &mdash; Black Hole Interior</p>
+
+<div id="chart-wrap">
+  <canvas id="chart" width="1880" height="620"></canvas>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="dot" style="background:#ff6b6b"></div> &epsilon;_B &nbsp;direct bridge</div>
+  <div class="legend-item"><div class="dot" style="background:#4ecdc4"></div> &delta;_B &nbsp;Benford diagnostic</div>
+  <div class="legend-item"><div class="dot" style="background:#ffe66d"></div> &pi;(s) &nbsp;prime matrix</div>
+</div>
+
+<div class="slider-row">
+  <span>10 r<sub>s</sub> (exterior)</span>
+  <input type="range" id="slider" min="0" max="399" value="200">
+  <span>0.01 r<sub>s</sub> (singularity)</span>
+  <button id="play-btn">&#9654; Sweep</button>
+</div>
+
+<div class="readout">
+  <div class="readout-header">
+    <span id="r-txt">r/r<sub>s</sub> = 0.500</span>
+    <span id="s-txt">s = 1.125</span>
+    <span id="grr-txt">g<sub>rr</sub> = 8.0</span>
+    <span id="zone-txt" class="zone-tag zone-III">MIXING LAYER</span>
+  </div>
+
+  <div class="bar-row">
+    <span class="bar-label" style="color:#4ecdc4">&delta;<sub>B</sub></span>
+    <span class="bar-val" id="db-v">0.45</span>
+    <div class="bar-track"><div class="bar-fill" id="db-bar" style="background:linear-gradient(90deg,#4ecdc4,#7eddd6)"></div></div>
+    <span class="bar-max">1.7</span>
+  </div>
+  <div class="bar-desc"><span style="color:#6e7681">quantumlike</span> &larr; &Sigma;|freq(d) &minus; log(1+1/d)| &rarr; <span style="color:#6e7681">masslike</span></div>
+
+  <div class="bar-row">
+    <span class="bar-label" style="color:#ff6b6b">&epsilon;<sub>B</sub></span>
+    <span class="bar-val" id="eb-v">0.083</span>
+    <div class="bar-track"><div class="bar-fill" id="eb-bar" style="background:linear-gradient(90deg,#ff6b6b,#ff8e8e)"></div></div>
+    <span class="bar-max">1.0</span>
+  </div>
+  <div class="bar-desc">|1 &minus; 2<sup>1&minus;s</sup>| &mdash; boson/fermion bridge (connects &delta;<sub>B</sub> to &pi;(s))</div>
+
+  <div class="bar-row">
+    <span class="bar-label" style="color:#ffe66d">&pi;(s)</span>
+    <span class="bar-val" id="pm-v">50/50</span>
+    <div class="bar-track"><div class="bar-fill" id="pm-bar" style="background:linear-gradient(90deg,#ffe66d,#fff3a3)"></div></div>
+    <span class="bar-max">50</span>
+  </div>
+  <div class="bar-desc">Active primes in Euler product &mdash; gravitational tensor</div>
+
+  <div class="zone-desc" id="zone-desc"></div>
+</div>
+
+<script>
+// ========== CONSTANTS ==========
+const PRIMES = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,
+  73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,
+  173,179,181,191,193,197,199,211,223,227,229];
+const N = 400;          // display points
+const DB_THRESH = 0.004; // delta_B threshold for prime activity
+const DB_MAX = 1.7;      // max delta_B for normalization
+
+// ========== PHYSICS ==========
+function sFromR(r) { return 1 + r * r * r; }
+function epsilonB(s) { return Math.abs(1 - Math.pow(2, 1 - s)); }
+function epsilonP(p, s) { return Math.abs(1 - Math.pow(p, 1 - s)); }
+
+function activePrimes(s) {
+  let n = 0;
+  for (const p of PRIMES) if (epsilonP(p, s) >= DB_THRESH) n++;
+  return n;
+}
+
+function zetaApprox(s) {
+  let z = 1;
+  for (const p of PRIMES) z /= (1 - Math.pow(p, -s));
+  return z;
+}
+
+// Smooth delta_B interpolation from computed zone-level values
+// Zone V (<0.10): 0.11, Zone IV (0.10-0.20): 0.15
+// Zone III (0.20-0.80): 0.45, Zone II (0.80-1.20): 1.68
+// Zone I (>1.20): 1.40
+function smoothStep(t) { t = Math.max(0, Math.min(1, t)); return t*t*(3-2*t); }
+function slerp(a, b, t) { return a + (b - a) * smoothStep(t); }
+
+function deltaBSmooth(r) {
+  if (r <= 0.02) return 0.11;
+  if (r <= 0.10) return slerp(0.11, 0.13, (r - 0.02) / 0.08);
+  if (r <= 0.20) return slerp(0.13, 0.25, (r - 0.10) / 0.10);
+  if (r <= 0.50) return slerp(0.25, 0.45, (r - 0.20) / 0.30);
+  if (r <= 0.80) return slerp(0.45, 1.20, (r - 0.50) / 0.30);
+  if (r <= 1.00) return slerp(1.20, 1.68, (r - 0.80) / 0.20);
+  if (r <= 1.20) return slerp(1.68, 1.55, (r - 1.00) / 0.20);
+  if (r <= 3.00) return slerp(1.55, 1.40, (r - 1.20) / 1.80);
+  return 1.40;
+}
+
+// ========== ZONE INFO ==========
+function zoneInfo(r) {
+  if (r < 0.10) return {
+    name: 'FROZEN CORE', cls: 'zone-V',
+    desc: 'All primes dissolved. \u03B6(s) diverges toward the pole at s=1. Boson-fermion distinction vanishes. The metric diverges but statistics become maximally natural (\u03B4_B minimum).'
+  };
+  if (r < 0.20) return {
+    name: 'CASCADE ZONE', cls: 'zone-IV',
+    desc: 'The prime matrix actively disassembles. p=2 crosses first at r=0.18 r_s, then p=3, p=5, p=7\u2026 each at its own radius. The cascade creates multi-scale statistical spread.'
+  };
+  if (r < 0.80) return {
+    name: 'MIXING LAYER', cls: 'zone-III',
+    desc: 'Strong curvature (g_rr = 8\u2013125). Bridge factors spread across scales. Statistical independence emerges. Transition from quantum coherence to classical statistics.'
+  };
+  if (r < 1.20) return {
+    name: 'HORIZON CRYSTAL', cls: 'zone-II',
+    desc: 'Bridge factors lock to rational fractions (\u03B5\u2082=1/2, \u03B5\u2083=2/3, \u03B5\u2085=4/5). Maximum crystalline order. The horizon is a point of rigidity, not chaos. \u03B4_B peaks here.'
+  };
+  return {
+    name: 'CLASSICAL EXTERIOR', cls: 'zone-I',
+    desc: 'Standard GR. Prime matrix fully intact. Classical spacetime. g_tt \u2248 \u2212(1\u2212r_s/r), g_rr \u2248 1/(1\u2212r_s/r).'
+  };
+}
+
+// ========== PRECOMPUTE ==========
+const data = [];
+for (let i = 0; i < N; i++) {
+  const t = i / (N - 1);
+  const logR = -2 + t * 3;  // log10(r/r_s) from -2 to 1
+  const r = Math.pow(10, logR);
+  const s = sFromR(r);
+  const eb = epsilonB(s);
+  const ap = activePrimes(s);
+  const db = deltaBSmooth(r);
+  const zeta = (s > 1.0001) ? zetaApprox(s) : 1 / (s - 1);
+  data.push({ r, s, eb, ap, db, zeta, logR });
+}
+
+// ========== CHART DRAWING ==========
+const canvas = document.getElementById('chart');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const PAD = { l: 70, r: 25, t: 25, b: 50 };
+const PW = W - PAD.l - PAD.r;
+const PH = H - PAD.t - PAD.b;
+
+function xOfIdx(i) { return PAD.l + (1 - i / (N-1)) * PW; }
+function yNorm(v) { return PAD.t + (1 - v) * PH; }
+
+const ZONE_BOUNDS = [
+  { logR: -2, end: Math.log10(0.10), color: 'rgba(139,92,246,0.08)', label: 'V' },
+  { logR: Math.log10(0.10), end: Math.log10(0.20), color: 'rgba(239,68,68,0.08)', label: 'IV' },
+  { logR: Math.log10(0.20), end: Math.log10(0.80), color: 'rgba(59,130,246,0.06)', label: 'III' },
+  { logR: Math.log10(0.80), end: Math.log10(1.20), color: 'rgba(34,197,94,0.08)', label: 'II' },
+  { logR: Math.log10(1.20), end: 1, color: 'rgba(156,163,175,0.04)', label: 'I' },
+];
+
+function logRToX(lr) { return PAD.l + (1 - (lr + 2) / 3) * PW; }
+
+function drawChart(selIdx) {
+  ctx.clearRect(0, 0, W, H);
+
+  // Zone backgrounds
+  for (const z of ZONE_BOUNDS) {
+    const x1 = logRToX(z.logR);
+    const x2 = logRToX(z.end);
+    ctx.fillStyle = z.color;
+    ctx.fillRect(x1, PAD.t, x2 - x1, PH);
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.font = '22px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(z.label, (x1 + x2) / 2, PAD.t + 22);
+  }
+
+  // Zone boundary lines
+  for (const z of ZONE_BOUNDS) {
+    const x = logRToX(z.logR);
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(x, PAD.t); ctx.lineTo(x, PAD.t + PH); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Horizon marker
+  const xH = logRToX(0);
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([8, 4]);
+  ctx.beginPath(); ctx.moveTo(xH, PAD.t); ctx.lineTo(xH, PAD.t + PH); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.lineWidth = 1;
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '20px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('horizon', xH, PAD.t + PH + 18);
+
+  // Buffer zone highlight
+  const xBuf1 = logRToX(Math.log10(0.19));
+  const xBuf2 = logRToX(Math.log10(0.24));
+  ctx.fillStyle = 'rgba(255,165,0,0.1)';
+  ctx.fillRect(xBuf1, PAD.t, xBuf2 - xBuf1, PH);
+
+  // Grid lines (horizontal)
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  for (let v = 0; v <= 1; v += 0.25) {
+    const y = yNorm(v);
+    ctx.beginPath(); ctx.moveTo(PAD.l, y); ctx.lineTo(PAD.l + PW, y); ctx.stroke();
+  }
+
+  // Y-axis labels
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '20px sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('1.0', PAD.l - 8, yNorm(1) + 6);
+  ctx.fillText('0.5', PAD.l - 8, yNorm(0.5) + 6);
+  ctx.fillText('0', PAD.l - 8, yNorm(0) + 6);
+
+  // X-axis labels
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#8b949e';
+  for (let lr = -2; lr <= 1; lr++) {
+    const x = logRToX(lr);
+    const rVal = Math.pow(10, lr);
+    ctx.fillText(rVal < 1 ? rVal.toFixed(2) : rVal.toFixed(0), x, PAD.t + PH + 38);
+  }
+  ctx.fillText('r / r_s', PAD.l + PW / 2, PAD.t + PH + 54);
+
+  // --- TRACES ---
+  // Prime matrix (filled area)
+  ctx.fillStyle = 'rgba(255,230,109,0.12)';
+  ctx.beginPath();
+  ctx.moveTo(xOfIdx(0), yNorm(0));
+  for (let i = 0; i < N; i++) ctx.lineTo(xOfIdx(i), yNorm(data[i].ap / 50));
+  ctx.lineTo(xOfIdx(N-1), yNorm(0));
+  ctx.closePath();
+  ctx.fill();
+
+  // Prime matrix line
+  ctx.strokeStyle = '#ffe66d';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  for (let i = 0; i < N; i++) {
+    const x = xOfIdx(i), y = yNorm(data[i].ap / 50);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // delta_B line
+  ctx.strokeStyle = '#4ecdc4';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (let i = 0; i < N; i++) {
+    const x = xOfIdx(i), y = yNorm(Math.min(data[i].db / DB_MAX, 1));
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // epsilon_B line
+  ctx.strokeStyle = '#ff6b6b';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (let i = 0; i < N; i++) {
+    const x = xOfIdx(i), y = yNorm(data[i].eb);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // --- CURSOR ---
+  const cx = xOfIdx(selIdx);
+  ctx.strokeStyle = '#58a6ff';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath(); ctx.moveTo(cx, PAD.t); ctx.lineTo(cx, PAD.t + PH); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Cursor dots
+  const d = data[selIdx];
+  const dots = [
+    { y: yNorm(d.eb), color: '#ff6b6b' },
+    { y: yNorm(Math.min(d.db / DB_MAX, 1)), color: '#4ecdc4' },
+    { y: yNorm(d.ap / 50), color: '#ffe66d' },
+  ];
+  for (const dot of dots) {
+    ctx.fillStyle = dot.color;
+    ctx.beginPath();
+    ctx.arc(cx, dot.y, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#0d1117';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+}
+
+// ========== BAR & READOUT UPDATE ==========
+const ebBar = document.getElementById('eb-bar');
+const dbBar = document.getElementById('db-bar');
+const pmBar = document.getElementById('pm-bar');
+const ebV = document.getElementById('eb-v');
+const dbV = document.getElementById('db-v');
+const pmV = document.getElementById('pm-v');
+const rTxt = document.getElementById('r-txt');
+const sTxt = document.getElementById('s-txt');
+const grrTxt = document.getElementById('grr-txt');
+const zoneTxt = document.getElementById('zone-txt');
+const zoneDescEl = document.getElementById('zone-desc');
+
+function updateReadout(idx) {
+  const d = data[idx];
+  const zi = zoneInfo(d.r);
+
+  rTxt.innerHTML = 'r/r<sub>s</sub> = ' + d.r.toFixed(d.r < 0.1 ? 4 : d.r < 1 ? 3 : 2);
+  sTxt.textContent = 's = ' + d.s.toFixed(d.s < 1.01 ? 6 : d.s < 2 ? 3 : 2);
+  const grr = d.zeta;
+  grrTxt.innerHTML = 'g<sub>rr</sub> = ' + (grr > 1e4 ? grr.toExponential(1) : grr.toFixed(grr < 10 ? 2 : 0));
+
+  zoneTxt.textContent = zi.name;
+  zoneTxt.className = 'zone-tag ' + zi.cls;
+  zoneDescEl.textContent = zi.desc;
+
+  ebBar.style.width = (d.eb * 100).toFixed(1) + '%';
+  ebV.textContent = d.eb < 0.001 ? d.eb.toExponential(1) : d.eb.toFixed(d.eb < 0.1 ? 4 : 3);
+
+  dbBar.style.width = (Math.min(d.db / DB_MAX, 1) * 100).toFixed(1) + '%';
+  dbV.textContent = d.db.toFixed(d.db < 0.1 ? 3 : 2);
+
+  pmBar.style.width = (d.ap / 50 * 100).toFixed(1) + '%';
+  pmV.textContent = d.ap + '/50';
+}
+
+// ========== SLIDER & ANIMATION ==========
+const slider = document.getElementById('slider');
+let animId = null;
+let animIdx = 0;
+
+slider.addEventListener('input', () => {
+  if (animId) { clearTimeout(animId); animId = null; playBtn.textContent = '\u25B6 Sweep'; }
+  const idx = N - 1 - (+slider.value);
+  drawChart(idx);
+  updateReadout(idx);
+});
+
+const playBtn = document.getElementById('play-btn');
+playBtn.addEventListener('click', () => {
+  if (animId) {
+    clearTimeout(animId);
+    animId = null;
+    playBtn.textContent = '\u25B6 Sweep';
+    return;
+  }
+  animIdx = 0;
+  playBtn.textContent = '\u23F8 Pause';
+  function step() {
+    if (animIdx >= N) {
+      animId = null;
+      playBtn.textContent = '\u25B6 Sweep';
+      return;
+    }
+    slider.value = animIdx;
+    const dataIdx = N - 1 - animIdx;
+    drawChart(dataIdx);
+    updateReadout(dataIdx);
+    animIdx++;
+    animId = setTimeout(step, 40);
+  }
+  animId = requestAnimationFrame(step);
+});
+
+// ========== INIT ==========
+const initIdx = N - 1 - 200;
+drawChart(initIdx);
+updateReadout(initIdx);
+</script>
+</body>
+</html>

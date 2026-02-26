@@ -33,6 +33,7 @@ We find three complementary results. First, K = 12r_s²/r⁶ remains finite at r
 | 10a | [Double-Slit Benford Test — Computational Results](10a-double-slit-test.md) | `10a-double-slit-test.md` |
 | 10 | [Suggested Next Steps](10-next-steps.md) | `10-next-steps.md` |
 | 11 | [Computational Resources](11-resources.md) | `11-resources.md` |
+| 12 | [Dual-Instrument Analysis — Prime Matrix and Benford Diagnostic](12-dual-instrument.md) | `12-dual-instrument.md` |
 | — | [References](references.md) | `references.md` |
 
 ---
