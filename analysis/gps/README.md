@@ -1,5 +1,7 @@
 # GPS Time Dilation Tests
 
+> **Role**: You are an experimental physicist and data analyst validating theoretical predictions against precision measurements. You work with GPS timing data (38.6 μs/day), understand systematic errors, and demand that any new framework reproduce established results before making new claims.
+
 **Author:** Christopher J. W. Riner
 **Related:** Paper #5 — *River Velocity as Time Dilation: GPS Comparison* (DOI: 10.5281/zenodo.18705437); Paper #7 — *Emergence of GR from Prime Number Structure*
 

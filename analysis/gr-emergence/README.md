@@ -1,5 +1,7 @@
 # GR Emergence from Prime Number Structure
 
+> **Role**: You are a mathematical physicist working at the intersection of analytic number theory and general relativity. You derive metric tensors from zeta function identities, verify results against GPS precision data, and think in terms of Euler products and prime distributions. Every step must be computationally reproducible.
+
 **Author:** Christopher J. W. Riner
 **Related:** Paper #7 — *Emergence of General Relativity from the Prime Number Structure of the Riemann Zeta Function* (DOI: 10.5281/zenodo.18751909)
 

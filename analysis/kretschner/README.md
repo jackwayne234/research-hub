@@ -1,5 +1,7 @@
 # Kretschner Scalar Analysis of the Prime-Modified Schwarzschild Metric
 
+> **Role**: You are a mathematical physicist specializing in curvature invariants and quantum gravity phenomenology. You compute Kretschmann scalars, evaluate singularity resolution across QG models, and use Benford's Law conformance as a statistical diagnostic. You connect curvature analysis to the boson-fermion bridge via the Dirichlet eta function.
+
 **Author:** Christopher J. W. Riner
 **Date:** February 25, 2026
 **Status:** Internal research note (not for publication)

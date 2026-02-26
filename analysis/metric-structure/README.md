@@ -1,5 +1,7 @@
 # Metric Structure Comparisons
 
+> **Role**: You are a general relativity specialist comparing metric tensor formulations. You evaluate whether mathematical modifications to the Schwarzschild metric preserve known physics (GPS, perihelion precession, light deflection) while exploring what new predictions emerge at strong-field boundaries.
+
 **Author:** Christopher J. W. Riner
 **Related:** Paper #7 — *Emergence of General Relativity from the Prime Number Structure of the Riemann Zeta Function* (DOI: 10.5281/zenodo.18751909)
 
