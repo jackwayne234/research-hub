@@ -36,11 +36,11 @@ The term "information" pervades modern physics, appearing in at least five disti
 
 1. **Quantum mechanics.** "Which-path information destroys interference." The double-slit experiment is described in terms of information acquired by a detector, yet the physical content of that information is never specified.
 
-2. **Black hole physics.** "The black hole information paradox." Hawking radiation appears thermal, implying that the quantum state of infalling matter is lost. Whether this constitutes genuine information loss has driven four decades of research — without agreement on what, precisely, would be lost.
+2. **Black hole physics.** "The black hole information paradox." Hawking radiation appears thermal, implying that the quantum state of infalling matter is lost. Whether this constitutes genuine information loss has driven five decades of research — without agreement on what, precisely, would be lost.
 
 3. **Thermodynamics.** "Erasing information costs energy." Landauer's principle connects information to thermodynamic work, and has been verified experimentally (Berut et al., 2012; Yan et al., 2018). But the principle assigns a *price* to information without identifying the *commodity*.
 
-4. **Holography.** "The boundary encodes all the information of the bulk." The holographic principle and the Bekenstein-Hawking entropy $S = A / 4l_P^2$ count information in units of area — but "information" in this formula means "degrees of freedom," which is circular.
+4. **Holography.** "The boundary encodes all the information of the bulk." The holographic principle and the Bekenstein-Hawking entropy $S = A/(4\ell_P^2)$ count information in units of area — but "information" in this formula means "degrees of freedom," which is circular.
 
 5. **Foundations.** "It from bit" (Wheeler, 1989). The proposal that physical reality derives from information. A program without a mechanism: if everything comes from bits, what do the bits come from?
 
@@ -268,21 +268,64 @@ These three properties are exactly what one expects of the integer structure gen
 
 ### 5.2 Derivation from Least Action
 
-The principle of least action states that physical systems follow the path extremizing the action:
+The principle of least action states that physical systems follow the path extremizing the action functional:
 
 $$\delta S = 0, \qquad S = \int L \, dt$$
 
-Nature chooses the most efficient path — no wasted motion, no unnecessary structure.
+We now show that Benford's Law is the unique distribution satisfying an analogous variational principle: **maximum entropy under the constraint of scale invariance.** The derivation proceeds in four steps.
 
-Benford's Law can be understood as the **least-action distribution** for leading digits under the constraint of scale invariance. Consider the problem: what probability distribution $P(d)$ over leading digits $d \in \{1, \ldots, 9\}$ maximizes entropy (i.e., is least biased) subject to the constraint that the distribution is scale-invariant?
+**Step 1. The significand space.** Every positive real number $x > 0$ can be written as $x = m \times 10^k$ where $m \in [1, 10)$ is the significand and $k \in \mathbb{Z}$. The leading digit is determined entirely by $m$. Define the variable:
 
-The scale-invariance constraint means $P(d)$ must be invariant under $x \to cx$ for all $c > 0$. The unique distribution satisfying this constraint is the logarithmic distribution:
+$$u \equiv \log_{10}(m) \in [0, 1)$$
 
-$$P(d) = \log_{10}\!\left(1 + \frac{1}{d}\right)$$
+This maps the significand to the unit interval. The leading digit $d$ corresponds to $u \in [\log_{10} d, \, \log_{10}(d+1))$.
 
-This is Benford's Law. It is the distribution that requires no additional information to specify — the distribution that a scale-free system adopts when left alone, with no artificial constraints imposed. In this precise sense, Benford's Law is the variational ground state of the leading-digit distribution: the configuration of least action through the integer structure.
+**Step 2. Scale invariance as translation invariance.** Under the rescaling $x \to cx$ (where $c > 0$), the significand transforms as:
 
-The parallel to dynamics is direct. The principle of least action governs how systems evolve in time. Benford's Law governs how naturally ordered systems distribute their values in the statistical domain. Both are statements about what happens when nature follows the most efficient path. In the prime framework, both trace to the same source: the integer structure built on the prime foundation.
+$$u \to u + \log_{10}(c) \pmod{1}$$
+
+That is, scale invariance in $x$-space becomes **translation invariance modulo 1** in $u$-space. The unique probability density on $[0, 1)$ invariant under all translations mod 1 is the uniform density:
+
+$$\rho(u) = 1, \qquad u \in [0, 1)$$
+
+This is a standard result: the Haar measure on the circle group $\mathbb{R}/\mathbb{Z}$ is the Lebesgue measure (Einsiedler & Ward, 2011).
+
+**Step 3. Maximum entropy confirms uniqueness.** Among all densities $\rho(u)$ on $[0, 1)$, the Shannon entropy
+
+$$H[\rho] = -\int_0^1 \rho(u) \ln \rho(u) \, du$$
+
+is maximized when $\rho$ is uniform. This follows from Jensen's inequality: for any normalized $\rho \geq 0$,
+
+$$H[\rho] = -\int_0^1 \rho \ln \rho \, du \leq \ln 1 = 0 \quad \text{(relative to uniform)}$$
+
+with equality if and only if $\rho = 1$ a.e. The scale-invariant distribution is thus simultaneously the maximum-entropy distribution — the configuration that imposes no additional structure beyond the symmetry constraint. This is the Jaynes principle (Jaynes, 1957): the least-biased distribution consistent with known constraints.
+
+**Step 4. Recovery of Benford's Law.** With $\rho(u) = 1$ uniform on $[0, 1)$, the probability that the leading digit equals $d$ is:
+
+$$P(d) = \int_{\log_{10} d}^{\log_{10}(d+1)} 1 \, du = \log_{10}(d+1) - \log_{10}(d) = \log_{10}\!\left(1 + \frac{1}{d}\right)$$
+
+This is Benford's Law. It is not postulated — it is **derived** as the unique distribution satisfying two equivalent conditions: (i) invariance under the symmetry group of the problem (scale transformations), and (ii) maximum entropy subject to that symmetry.
+
+**The Euler product as mechanism.** The derivation above identifies the *what* (Benford is the variational ground state) but not the *why* (why do physical systems converge to it?). The Euler product provides the mechanism. Every integer has a unique prime factorization:
+
+$$n = p_1^{a_1} \cdot p_2^{a_2} \cdots p_k^{a_k}$$
+
+Taking logarithms:
+
+$$\ln n = a_1 \ln p_1 + a_2 \ln p_2 + \cdots + a_k \ln p_k$$
+
+For large $n$, this is a sum of many independent contributions with incommensurate magnitudes (since $\ln p_i / \ln p_j$ is irrational for distinct primes). By equidistribution results on sums of incommensurate frequencies (Weyl, 1916), the fractional part $\{\log_{10} n\}$ becomes uniformly distributed on $[0, 1)$ as $n$ ranges over the integers. The multiplicative structure of integers — encoded in the Euler product $\prod_p (1 - p^{-s})^{-1} = \sum_n n^{-s}$ — generates the uniform significand distribution that the variational principle selects.
+
+**The parallel to physics.** The structure of this derivation mirrors the logic of the principle of least action:
+
+| | Dynamics | Benford |
+|---|---|---|
+| **Symmetry** | Lorentz invariance | Scale invariance |
+| **Variational principle** | $\delta S = 0$ | $\delta H = 0$ (max entropy) |
+| **Unique solution** | Equations of motion | $P(d) = \log_{10}(1 + 1/d)$ |
+| **Mechanism** | Lagrangian structure | Prime factorization (Euler product) |
+
+In both cases, a symmetry constraint plus a variational principle yields a unique solution, and an underlying structure (the Lagrangian; the primes) provides the mechanism that realizes it. Benford's Law is the variational ground state of leading-digit distributions: the configuration a scale-free system adopts when no additional constraints are imposed — when nature follows the path of least action through the integer structure.
 
 ### 5.3 Empirical Universality
 
@@ -371,7 +414,7 @@ This is why $\delta_B$ is diagnostic: it tests whether the macro-level order is 
 
 ## 8. Quantitative Evidence
 
-### 8.1 BEC Phase Transitions
+### 8.1 Bose-Einstein Condensate (BEC) Phase Transitions
 
 Paper #2 simulated 5,000 energy levels at various temperatures using Bose-Einstein and Fermi-Dirac occupation numbers. The Benford deviation $\delta_B$ was computed for each ensemble. Key results:
 
@@ -411,9 +454,11 @@ The Kretschmann scalar $K = R_{\mu\nu\rho\sigma} R^{\mu\nu\rho\sigma}$ was compu
 | 2.0 | 1.73 | 0.396 | 0.003 | Yes | Quantum |
 | 1.1 | 1.05 | 0.035 | 0.002 | Yes | Most quantum |
 | 1.001 | 1.001 | 0.0007 | 0.004 | **No** | Crossing point |
-| 0.5 | — | 0.414 | 0.005 | Yes | Quantum |
-| 0.1 | — | 0.866 | 0.017 | Yes | Most massive |
-| 0.01 | — | 0.986 | 0.015 | Yes | Recovering |
+| 0.5 | — $^*$ | 0.414 | 0.005 | Yes | Quantum |
+| 0.1 | — $^*$ | 0.866 | 0.017 | Yes | Most massive |
+| 0.01 | — $^*$ | 0.986 | 0.015 | Yes | Recovering |
+
+$^*$ For $r < r_s$, the mapping $s(r)$ requires analytic continuation below $s = 1$; $\varepsilon_B$ values at these radii are computed from the continued metric coefficients directly.
 
 The key finding: $\delta_B$ remains below the bridge threshold $\varepsilon_B$ at every radius except $r \approx 1.001 \, r_s$ — the near-horizon crossing point. This means the Benford diagnostic validates the metric at every radius, certifying that curvature probes (Kretschmann scalar, Ricci decomposition, Weyl tensor) are meaningful throughout the interior.
 
@@ -611,13 +656,13 @@ The main results of this paper are:
 
 ### Own Papers
 
-[1] Riner, C. J. W. (2025). *Modified Schwarzschild Metric via Benford's Law.* Zenodo. DOI: 10.5281/zenodo.18553466.
+[1] Riner, C. J. W. (2025). *Modified Schwarzschild Metric via Benford's Law.* Zenodo. DOI: 10.5281/zenodo.18553466. (Paper #1 in series.)
 
-[2] Riner, C. J. W. (2025). *Bose-Einstein Condensates + Benford's Law.* Zenodo. DOI: 10.5281/zenodo.18510250.
+[2] Riner, C. J. W. (2025). *Bose-Einstein Condensates + Benford's Law.* Zenodo. DOI: 10.5281/zenodo.18510250. (Paper #2 in series.)
 
-[3] Riner, C. J. W. (2025). *Prime Numbers as Causal Set Theory.* Zenodo. DOI: 10.5281/zenodo.18731508.
+[3] Riner, C. J. W. (2025). *Prime Numbers as Causal Set Theory.* Zenodo. DOI: 10.5281/zenodo.18731508. (Paper #6 in series.)
 
-[4] Riner, C. J. W. (2026). *Emergence of General Relativity from the Prime Number Structure of the Riemann Zeta Function.* Zenodo. DOI: 10.5281/zenodo.18751909.
+[4] Riner, C. J. W. (2026). *Emergence of General Relativity from the Prime Number Structure of the Riemann Zeta Function.* Zenodo. DOI: 10.5281/zenodo.18751909. (Paper #7 in series.)
 
 ### Information Theory Foundations
 
@@ -653,79 +698,85 @@ The main results of this paper are:
 
 [18] Cong, P., Li, M. & Ma, L. (2019). First digit law from Laplace transform. *Physics Letters A,* 383, 1836–1844.
 
+[19] Weyl, H. (1916). Über die Gleichverteilung von Zahlen mod. Eins. *Mathematische Annalen,* 77, 313–352.
+
+[20] Einsiedler, M. & Ward, T. (2011). *Ergodic Theory with a View Towards Number Theory.* Graduate Texts in Mathematics 259, Springer.
+
+[21] Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. *Physical Review,* 106(4), 620–630.
+
 ### Wave-Particle Duality and Quantum Measurement
 
-[19] Scully, M. O., Englert, B.-G. & Walther, H. (1991). Quantum Optical Tests of Complementarity. *Nature,* 351, 111–116.
+[22] Scully, M. O., Englert, B.-G. & Walther, H. (1991). Quantum Optical Tests of Complementarity. *Nature,* 351, 111–116.
 
-[20] Kim, Y.-H., Yu, R., Kulik, S. P., Shih, Y. & Scully, M. O. (2000). Delayed 'Choice' Quantum Eraser. *Physical Review Letters,* 84, 1–5.
+[23] Kim, Y.-H., Yu, R., Kulik, S. P., Shih, Y. & Scully, M. O. (2000). Delayed 'Choice' Quantum Eraser. *Physical Review Letters,* 84, 1–5.
 
-[21] Walborn, S. P., Terra Cunha, M. O., Padua, S. & Monken, C. H. (2002). Double-Slit Quantum Eraser. *Physical Review A,* 65, 033818.
+[24] Walborn, S. P., Terra Cunha, M. O., Padua, S. & Monken, C. H. (2002). Double-Slit Quantum Eraser. *Physical Review A,* 65, 033818.
 
-[22] Coles, P. J., Kaniewski, J. & Wehner, S. (2014). Equivalence of wave-particle duality to entropic uncertainty. *Nature Communications,* 5, 5814.
+[25] Coles, P. J., Kaniewski, J. & Wehner, S. (2014). Equivalence of wave-particle duality to entropic uncertainty. *Nature Communications,* 5, 5814.
 
-[23] Batelaan, H., Jones, E., Huang, W. C.-W. & Bach, R. (2020). Momentum exchange in the electron double-slit experiment. arXiv: 2012.02141.
+[26] Batelaan, H., Jones, E., Huang, W. C.-W. & Bach, R. (2020). Momentum exchange in the electron double-slit experiment. arXiv: 2012.02141.
 
 ### Triple-Slit Experiments
 
-[24] Sinha, U., Couteau, C., Jennewein, T., Laflamme, R. & Weihs, G. (2010). Ruling Out Multi-Order Interference in Quantum Mechanics. *Science,* 329(5990), 418–421.
+[27] Sinha, U., Couteau, C., Jennewein, T., Laflamme, R. & Weihs, G. (2010). Ruling Out Multi-Order Interference in Quantum Mechanics. *Science,* 329(5990), 418–421.
 
-[25] Söllner, I., Gschösser, B., Mai, P., Preber, B., Vörös, Z. & Weihs, G. (2012). Testing Born's rule in quantum mechanics for three mutually exclusive events. *Foundations of Physics,* 42, 742–751.
+[28] Söllner, I., Gschösser, B., Mai, P., Preber, B., Vörös, Z. & Weihs, G. (2012). Testing Born's rule in quantum mechanics for three mutually exclusive events. *Foundations of Physics,* 42, 742–751.
 
 ### Interaction-Free Measurements
 
-[26] Elitzur, A. C. & Vaidman, L. (1993). Quantum Mechanical Interaction-Free Measurements. *Foundations of Physics,* 23, 987–997.
+[29] Elitzur, A. C. & Vaidman, L. (1993). Quantum Mechanical Interaction-Free Measurements. *Foundations of Physics,* 23, 987–997.
 
-[27] Kwiat, P. G. et al. (1999). High-Efficiency Quantum Interrogation via Quantum Zeno Effect. *Physical Review Letters,* 83, 4725.
+[30] Kwiat, P. G. et al. (1999). High-Efficiency Quantum Interrogation via Quantum Zeno Effect. *Physical Review Letters,* 83, 4725.
 
-[28] Robens, C., Alt, W., Emary, C., Meschede, D. & Alberti, A. (2017). Atomic Bomb Testing: Elitzur-Vaidman Violates Leggett-Garg. *Applied Physics B,* 123, 12.
+[31] Robens, C., Alt, W., Emary, C., Meschede, D. & Alberti, A. (2017). Atomic Bomb Testing: Elitzur-Vaidman Violates Leggett-Garg. *Applied Physics B,* 123, 12.
 
 ### Quantum Measurement Thermodynamics
 
-[29] Elouard, C., Herrera-Marti, D., Clusel, M. & Auffeves, A. (2016). The role of quantum measurement in stochastic thermodynamics. *npj Quantum Information,* 3, 9.
+[32] Elouard, C., Herrera-Marti, D., Clusel, M. & Auffeves, A. (2016). The role of quantum measurement in stochastic thermodynamics. *npj Quantum Information,* 3, 9.
 
-[30] Jordan, A. N., Elouard, C. & Auffeves, A. (2019). Quantum measurement engines and their relevance for quantum interpretations. arXiv: 1911.06838.
+[33] Jordan, A. N., Elouard, C. & Auffeves, A. (2019). Quantum measurement engines and their relevance for quantum interpretations. arXiv: 1911.06838.
 
-[31] Kammerlander, P. & Anders, J. (2015). Coherence and measurement in quantum thermodynamics. *Scientific Reports,* 6, 22174.
+[34] Kammerlander, P. & Anders, J. (2015). Coherence and measurement in quantum thermodynamics. *Scientific Reports,* 6, 22174.
 
-[32] Latune, C. & Elouard, C. (2024). A thermodynamically consistent approach to the energy costs of quantum measurements. *Quantum,* 8, 1526.
+[35] Latune, C. & Elouard, C. (2024). A thermodynamically consistent approach to the energy costs of quantum measurements. *Quantum,* 8, 1526.
 
 ### Riemann Zeta Function in Physics
 
-[33] Berry, M. V. & Keating, J. P. (1999). The Riemann Zeros and Eigenvalue Asymptotics. *SIAM Review,* 41(2), 236–266.
+[36] Berry, M. V. & Keating, J. P. (1999). The Riemann Zeros and Eigenvalue Asymptotics. *SIAM Review,* 41(2), 236–266.
 
-[34] Sierra, G. & Townsend, P. K. (2008). Landau levels and Riemann zeros. *Physical Review Letters,* 101, 110201.
+[37] Sierra, G. & Townsend, P. K. (2008). Landau levels and Riemann zeros. *Physical Review Letters,* 101, 110201.
 
-[35] LeClair, A. & Mussardo, G. (2023). Riemann zeros as quantized energies of scattering with impurities. *JHEP,* 2023, 62.
+[38] LeClair, A. & Mussardo, G. (2023). Riemann zeros as quantized energies of scattering with impurities. *JHEP,* 2023, 62.
 
-[36] Hartnoll, S. A. & Yang, E. (2025). The conformal primon gas at the end of time. *JHEP,* 2025, 34.
+[39] Hartnoll, S. A. & Yang, E. (2025). The conformal primon gas at the end of time. *JHEP,* 2025, 34.
 
-[37] Godet, V. (2025). Mobius randomness in the Hartle-Hawking state. arXiv: 2505.03068.
+[40] Godet, V. (2025). Mobius randomness in the Hartle-Hawking state. arXiv: 2505.03068.
 
-[38] Tamburini, F. (2025). Majorana particle spectrum in Rindler spacetime encoded by zeta. arXiv: 2503.09644.
+[41] Tamburini, F. (2025). Majorana particle spectrum in Rindler spacetime encoded by zeta. arXiv: 2503.09644.
 
-[39] Yakaboylu, E. (2024). Hamiltonian for the Hilbert-Polya conjecture. *Journal of Physics A,* 57, 235203.
+[42] Yakaboylu, E. (2024). Hamiltonian for the Hilbert-Polya conjecture. *Journal of Physics A,* 57, 235203.
 
-[40] Kalauni, P. & Milton, K. A. (2023). Supersymmetric quantum mechanics and the Riemann hypothesis. arXiv: 2211.04382.
+[43] Kalauni, P. & Milton, K. A. (2023). Supersymmetric quantum mechanics and the Riemann hypothesis. arXiv: 2211.04382.
 
 ### Causal Set Theory and Quantum Gravity
 
-[41] Sorkin, R. D. (2003). Causal sets: Discrete gravity. In *Lectures on Quantum Gravity,* Springer, 305–327.
+[44] Sorkin, R. D. (2003). Causal sets: Discrete gravity. In *Lectures on Quantum Gravity,* Springer, 305–327.
 
-[42] Modesto, L. (2004). Disappearance of black hole singularity in quantum gravity. *Physical Review D,* 70, 124009.
+[45] Modesto, L. (2004). Disappearance of black hole singularity in quantum gravity. *Physical Review D,* 70, 124009.
 
-[43] Bonanno, A. & Reuter, M. (2000). Renormalization group improved black hole spacetimes. *Physical Review D,* 62, 043008.
+[46] Bonanno, A. & Reuter, M. (2000). Renormalization group improved black hole spacetimes. *Physical Review D,* 62, 043008.
 
-[44] Nicolini, P., Smailagic, A. & Spallucci, E. (2006). Noncommutative geometry inspired Schwarzschild black hole. *Physics Letters B,* 632, 547–551.
+[47] Nicolini, P., Smailagic, A. & Spallucci, E. (2006). Noncommutative geometry inspired Schwarzschild black hole. *Physics Letters B,* 632, 547–551.
 
 ### Black Hole Information
 
-[45] Bekenstein, J. D. (1973). Black holes and entropy. *Physical Review D,* 7(8), 2333–2346.
+[48] Bekenstein, J. D. (1973). Black holes and entropy. *Physical Review D,* 7(8), 2333–2346.
 
-[46] Hawking, S. W. (1975). Particle creation by black holes. *Communications in Mathematical Physics,* 43(3), 199–220.
+[49] Hawking, S. W. (1975). Particle creation by black holes. *Communications in Mathematical Physics,* 43(3), 199–220.
 
-[47] 't Hooft, G. (1993). Dimensional reduction in quantum gravity. arXiv: gr-qc/9310026.
+[50] 't Hooft, G. (1993). Dimensional reduction in quantum gravity. arXiv: gr-qc/9310026.
 
-[48] Susskind, L. (1995). The world as a hologram. *Journal of Mathematical Physics,* 36(11), 6377–6396.
+[51] Susskind, L. (1995). The world as a hologram. *Journal of Mathematical Physics,* 36(11), 6377–6396.
 
 ---
 
