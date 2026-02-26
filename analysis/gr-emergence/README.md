@@ -26,27 +26,11 @@ This directory contains the iterative development of the core result: general re
 |------|-------------|
 | [prime_to_gr_notes.md](prime_to_gr_notes.md) | Scratch notes — 3-phase test plan that seeded v1 |
 
----
+## Research Notes
 
-## Key Result
-
-The radial mapping s(r) = 1 + (r/r_s)³ with α = 3 reproduces standard Schwarzschild to machine precision at all radii, while the Euler product ∏(1−p⁻ˢ)⁻¹ diverges at s = 1 (the horizon) — a domain boundary, not a curvature singularity.
-
----
-
-## Session Notes
-
-### 2026-02-25 — v4 Derivation Complete
-
-**Takeaways:**
-- ζ(s) × 1/ζ(s) = 1 encodes flat spacetime as the multiplicative identity — curvature arises when the Euler product deviates from this
-- s(r) = 1 + (r/r_s)³ with α = 3 is empirically constrained, not a free parameter — reproduces standard Schwarzschild to machine precision
-- v4 adds the BEC bridge: bosonic gravity (ζ) vs fermionic matter (η) via η(s) = (1 - 2^(1-s))·ζ(s), linking Paper 7 to Paper 2
-- All 4 versions reproduce GPS 38.6 μs/day — the prime framework doesn't break known weak-field physics
-
-**Evolution:** v1 (proof of concept) → v2 (Chebyshev ψ(x), more rigorous) → v3 (inverse relationship: is s(r) natural?) → v4 (full derivation with boson-fermion bridge, paper-ready)
-
-**Open:** Is α = 3 derivable from first principles? How does the Euler product behave for Kerr (rotating) black holes?
+| Topic | File |
+|-------|------|
+| v1–v4 evolution and key results | [v4-derivation.md](v4-derivation.md) |
 
 ---
 

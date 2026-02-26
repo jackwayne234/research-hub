@@ -49,22 +49,4 @@ We find three complementary results. First, K = 12r_s²/r⁶ remains finite at r
 
 ---
 
-## Session Notes
-
-### 2026-02-25 — Initial Analysis
-
-**Takeaways:**
-- K = 12r_s²/r⁶ remains finite at the horizon — the "wall" is a domain boundary, not a curvature singularity (identical to standard Schwarzschild)
-- Benford conformance continuous through the horizon: δ_B ≈ 0.004 on both sides, no discontinuity
-- 9 QG models ranked: Asymptotic Safety and Causal Sets suppress K by ~9 orders of magnitude; Loop QG amplifies at intermediate scales
-- ε_B = |1 - 2^(1-s)| from Dirichlet eta (boson-fermion bridge, only p = 2) — connects Paper 2 to the metric framework
-- Mass-quantum spectrum: δ_B = 0 → purely bosonic/quantum; increasing δ_B → fermionic/massive
-- Double-slit prediction: measurement couples boson to fermion detector, raising δ_B continuously (no collapse). Computational test: δ_B +185% at peak coupling, 5/5 confirmed
-
-**Decisions:** Modular file structure (14 files) over monolith. Benford as gatekeeper + Kretschner as probe = dual diagnostic.
-
-**Open:** Lab-testable double-slit setup? ε_B in curved spacetime (beyond flat-space approximation)? Zenodo API keys not configured.
-
----
-
 [← Back to Analysis](../) · [GR Emergence](../gr-emergence/) · [Metric Structure](../metric-structure/) · [GPS Tests](../gps/)
