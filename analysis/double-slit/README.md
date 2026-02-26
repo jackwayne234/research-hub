@@ -15,7 +15,9 @@
 | 9 | [Original Prediction — Measurement Increases δ_B](09-original-prediction.md) | `09-original-prediction.md` | Complete |
 | 10a | [Computational Test — 5/5 Predictions Confirmed](10a-computational-test.md) | `10a-computational-test.md` | Complete |
 | 14 | [Energy Hypothesis — Wave as Ground State](14-energy-hypothesis.md) | `14-energy-hypothesis.md` | Active |
+| 15 | [What Is Information?](15-what-is-information.md) | `15-what-is-information.md` | Active |
 | — | [Literature Review — External Research](literature.md) | `literature.md` | Complete |
+| — | [References](references.md) | `references.md` | — |
 
 ---
 
