@@ -29,11 +29,12 @@ We find three complementary results. First, K = 12r_s²/r⁶ remains finite at r
 | 6 | [Benford Conformance Through the Domain Boundary](06-benford-conformance.md) | `06-benford-conformance.md` |
 | 7 | [Nine Quantum Gravity Models Through the Kretschner Probe](07-nine-models.md) | `07-nine-models.md` |
 | 8 | [The Benford Epsilon: Mass-Quantum Spectrum from the BEC Paper](08-benford-epsilon.md) | `08-benford-epsilon.md` |
-| 9 | [Prediction: Double-Slit Experiment and Wave Function Collapse](09-double-slit.md) | `09-double-slit.md` |
-| 10a | [Double-Slit Benford Test — Computational Results](10a-double-slit-test.md) | `10a-double-slit-test.md` |
+| 9 | [Double-Slit Experiment (moved)](../double-slit/) | `→ analysis/double-slit/` |
+| 10a | *(merged into double-slit directory)* | |
 | 10 | [Suggested Next Steps](10-next-steps.md) | `10-next-steps.md` |
 | 11 | [Computational Resources](11-resources.md) | `11-resources.md` |
 | 12 | [Dual-Instrument Analysis — Prime Matrix and Benford Diagnostic](12-dual-instrument.md) | `12-dual-instrument.md` |
+| 13 | [Two-Body Problem — Overlapping Prime Matrices](13-two-body.md) | `13-two-body.md` |
 | — | [References](references.md) | `references.md` |
 
 ---

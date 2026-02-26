@@ -23,7 +23,8 @@ Each subdirectory has its own `README.md` with a TOC and cross-links.
 | [analysis/gr-emergence/](analysis/gr-emergence/) | GR from ζ(s) — 4 iterations (v1-v4) | Paper 7 |
 | [analysis/metric-structure/](analysis/metric-structure/) | Prime metric vs standard GR, embedding comparisons | Paper 7 |
 | [analysis/gps/](analysis/gps/) | GPS 38.6 μs/day validation (24-hour analysis) | Papers 5, 7 |
-| [analysis/kretschner/](analysis/kretschner/) | Kretschner scalar, 9 QG models, Benford epsilon, double-slit | Papers 1, 2, 7 |
+| [analysis/kretschner/](analysis/kretschner/) | Kretschner scalar, 9 QG models, Benford epsilon, dual instrument | Papers 1, 2, 7 |
+| [analysis/double-slit/](analysis/double-slit/) | Double-slit experiment, wave-particle energy hypothesis | Papers 1, 2 |
 
 ## Published Papers (7 total)
 1. Modified Schwarzschild Metric via Benford's Law
