@@ -28,4 +28,20 @@ Both approaches (embedded and factored) reproduce standard Schwarzschild to high
 
 ---
 
+## Session Notes
+
+### 2026-02-25 — Embedding Comparison
+
+**Takeaways:**
+- Two valid approaches: ζ embedded into all 4 metric components vs ζ as a separate scalar factor — both reproduce weak-field physics (GPS match)
+- Divergence only at the horizon (s → 1), where the Euler product hits its convergence boundary
+- Pure 4D confirmed — no extra dimensions needed, ζ modifies existing metric rather than adding degrees of freedom
+- Both solar-mass and Sgr A* black holes tested — prime metric matches standard GR in the exterior region
+
+**Decisions:** Committed to embedded approach (ζ into g_tt and g_rr) for Paper 7. Kept zenodo_zeta_4d_pure.py as submission-ready duplicate.
+
+**Open:** Does the factored approach have advantages for Kerr? Should zenodo_zeta_4d_pure.py be retired as a duplicate?
+
+---
+
 [← Back to Analysis](../) · [GR Emergence](../gr-emergence/) · [Kretschner Analysis](../kretschner/) · [GPS Tests](../gps/)
