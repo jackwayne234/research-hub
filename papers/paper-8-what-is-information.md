@@ -384,7 +384,7 @@ Paper #2 simulated 5,000 energy levels at various temperatures using Bose-Einste
 | 2.0 | 0.0127 | 0.0509 | 4.02$\times$ |
 | 100.0 | 0.2343 | 1.5563 | 6.64$\times$ |
 
-*Note: $\delta_B$ values in this table use the sum of absolute deviations $\sum_{d=1}^{9} |f_{\text{obs}}(d) - f_{\text{Ben}}(d)|$ rather than the mean (divided by 9), matching the original simulation output. Values above 0.2 reflect the unnormalized convention; the qualitative ordering and ratios are unaffected.*
+*Note: $\delta_B$ values in this table use the sum of absolute deviations $\sum_{d=1}^{9} |f_{\text{obs}}(d) - f_{\text{Ben}}(d)|$ (i.e., $9 \times \delta_B$ as defined in Section 4.4), matching the original simulation output. Values above 0.2 reflect this unnormalized convention; the qualitative ordering and ratios are unaffected.*
 
 At all temperatures above $T = 0.1$, fermionic occupation numbers deviate from Benford more than bosonic ones. The ratio increases with temperature, reaching $6.64\times$ at $T = 100$. This is consistent with the proposal: bosonic (ordered, wavelike) systems conform to Benford; fermionic (massive, particlelike) systems deviate.
 
@@ -397,7 +397,7 @@ At all temperatures above $T = 0.1$, fermionic occupation numbers deviate from B
 | 0.30 | 0.040 | 0.60 | 0.80 |
 | 0.50 (full detector) | 0.052 | 1.00 | 0.00 |
 
-$\delta_B$ increases from 0.018 to 0.052 (189%) from no-detector to full-detector. The transition is continuous — no discontinuity at any coupling strength. All correlations are in the predicted direction: $r(\delta_B, D) = +0.36$, $r(\delta_B, \mathcal{V}) = -0.27$, $r(\delta_B, \alpha) = +0.25$. These correlations are modest in magnitude, reflecting the limitations of the simulation design (3,000 modes, single temperature, discrete occupation numbers producing statistical noise in leading-digit counts). The prediction is that correlations tighten substantially with larger ensembles ($N > 10^5$) and multi-temperature sweeps. An independent experimental test — computing $\delta_B$ from measured occupation numbers across a BEC phase transition — would provide a stronger and less model-dependent check.
+$\delta_B$ increases from 0.018 to 0.052 (189%) from no-detector to full-detector. The transition is continuous — no discontinuity at any coupling strength. All correlations are in the predicted direction: $r(\delta_B, D) = +0.36$, $r(\delta_B, \mathcal{V}) = -0.27$, $r(\delta_B, \alpha) = +0.25$. These correlations are modest in magnitude, reflecting the limitations of the simulation design (3,000 modes, single temperature, discrete occupation numbers producing statistical noise in leading-digit counts). We expect that correlations would tighten with larger ensembles ($N > 10^5$) and multi-temperature sweeps. An independent experimental test — computing $\delta_B$ from measured occupation numbers across a BEC phase transition — would provide a stronger and less model-dependent check.
 
 ### 8.2 Kretschmann Scalar — Radial $\delta_B$ Profile
 
@@ -665,61 +665,67 @@ The main results of this paper are:
 
 [23] Batelaan, H., Jones, E., Huang, W. C.-W. & Bach, R. (2020). Momentum exchange in the electron double-slit experiment. arXiv: 2012.02141.
 
+### Triple-Slit Experiments
+
+[24] Sinha, U., Couteau, C., Jennewein, T., Laflamme, R. & Weihs, G. (2010). Ruling Out Multi-Order Interference in Quantum Mechanics. *Science,* 329(5990), 418–421.
+
+[25] Söllner, I., Gschösser, B., Mai, P., Preber, B., Vörös, Z. & Weihs, G. (2012). Testing Born's rule in quantum mechanics for three mutually exclusive events. *Foundations of Physics,* 42, 742–751.
+
 ### Interaction-Free Measurements
 
-[24] Elitzur, A. C. & Vaidman, L. (1993). Quantum Mechanical Interaction-Free Measurements. *Foundations of Physics,* 23, 987–997.
+[26] Elitzur, A. C. & Vaidman, L. (1993). Quantum Mechanical Interaction-Free Measurements. *Foundations of Physics,* 23, 987–997.
 
-[25] Kwiat, P. G. et al. (1999). High-Efficiency Quantum Interrogation via Quantum Zeno Effect. *Physical Review Letters,* 83, 4725.
+[27] Kwiat, P. G. et al. (1999). High-Efficiency Quantum Interrogation via Quantum Zeno Effect. *Physical Review Letters,* 83, 4725.
 
-[26] Robens, C., Alt, W., Emary, C., Meschede, D. & Alberti, A. (2017). Atomic Bomb Testing: Elitzur-Vaidman Violates Leggett-Garg. *Applied Physics B,* 123, 12.
+[28] Robens, C., Alt, W., Emary, C., Meschede, D. & Alberti, A. (2017). Atomic Bomb Testing: Elitzur-Vaidman Violates Leggett-Garg. *Applied Physics B,* 123, 12.
 
 ### Quantum Measurement Thermodynamics
 
-[27] Elouard, C., Herrera-Marti, D., Clusel, M. & Auffeves, A. (2016). The role of quantum measurement in stochastic thermodynamics. *npj Quantum Information,* 3, 9.
+[29] Elouard, C., Herrera-Marti, D., Clusel, M. & Auffeves, A. (2016). The role of quantum measurement in stochastic thermodynamics. *npj Quantum Information,* 3, 9.
 
-[28] Jordan, A. N., Elouard, C. & Auffeves, A. (2019). Quantum measurement engines and their relevance for quantum interpretations. arXiv: 1911.06838.
+[30] Jordan, A. N., Elouard, C. & Auffeves, A. (2019). Quantum measurement engines and their relevance for quantum interpretations. arXiv: 1911.06838.
 
-[29] Kammerlander, P. & Anders, J. (2015). Coherence and measurement in quantum thermodynamics. *Scientific Reports,* 6, 22174.
+[31] Kammerlander, P. & Anders, J. (2015). Coherence and measurement in quantum thermodynamics. *Scientific Reports,* 6, 22174.
 
-[30] Latune, C. & Elouard, C. (2024). A thermodynamically consistent approach to the energy costs of quantum measurements. *Quantum,* 8, 1526.
+[32] Latune, C. & Elouard, C. (2024). A thermodynamically consistent approach to the energy costs of quantum measurements. *Quantum,* 8, 1526.
 
 ### Riemann Zeta Function in Physics
 
-[31] Berry, M. V. & Keating, J. P. (1999). The Riemann Zeros and Eigenvalue Asymptotics. *SIAM Review,* 41(2), 236–266.
+[33] Berry, M. V. & Keating, J. P. (1999). The Riemann Zeros and Eigenvalue Asymptotics. *SIAM Review,* 41(2), 236–266.
 
-[32] Sierra, G. & Townsend, P. K. (2008). Landau levels and Riemann zeros. *Physical Review Letters,* 101, 110201.
+[34] Sierra, G. & Townsend, P. K. (2008). Landau levels and Riemann zeros. *Physical Review Letters,* 101, 110201.
 
-[33] LeClair, A. & Mussardo, G. (2023). Riemann zeros as quantized energies of scattering with impurities. *JHEP,* 2023, 62.
+[35] LeClair, A. & Mussardo, G. (2023). Riemann zeros as quantized energies of scattering with impurities. *JHEP,* 2023, 62.
 
-[34] Hartnoll, S. A. & Yang, E. (2025). The conformal primon gas at the end of time. *JHEP,* 2025, 34.
+[36] Hartnoll, S. A. & Yang, E. (2025). The conformal primon gas at the end of time. *JHEP,* 2025, 34.
 
-[35] Godet, V. (2025). Mobius randomness in the Hartle-Hawking state. arXiv: 2505.03068.
+[37] Godet, V. (2025). Mobius randomness in the Hartle-Hawking state. arXiv: 2505.03068.
 
-[36] Tamburini, F. (2025). Majorana particle spectrum in Rindler spacetime encoded by zeta. arXiv: 2503.09644.
+[38] Tamburini, F. (2025). Majorana particle spectrum in Rindler spacetime encoded by zeta. arXiv: 2503.09644.
 
-[37] Yakaboylu, E. (2024). Hamiltonian for the Hilbert-Polya conjecture. *Journal of Physics A,* 57, 235203.
+[39] Yakaboylu, E. (2024). Hamiltonian for the Hilbert-Polya conjecture. *Journal of Physics A,* 57, 235203.
 
-[38] Kalauni, P. & Milton, K. A. (2023). Supersymmetric quantum mechanics and the Riemann hypothesis. arXiv: 2211.04382.
+[40] Kalauni, P. & Milton, K. A. (2023). Supersymmetric quantum mechanics and the Riemann hypothesis. arXiv: 2211.04382.
 
 ### Causal Set Theory and Quantum Gravity
 
-[39] Sorkin, R. D. (2003). Causal sets: Discrete gravity. In *Lectures on Quantum Gravity,* Springer, 305–327.
+[41] Sorkin, R. D. (2003). Causal sets: Discrete gravity. In *Lectures on Quantum Gravity,* Springer, 305–327.
 
-[40] Modesto, L. (2004). Disappearance of black hole singularity in quantum gravity. *Physical Review D,* 70, 124009.
+[42] Modesto, L. (2004). Disappearance of black hole singularity in quantum gravity. *Physical Review D,* 70, 124009.
 
-[41] Bonanno, A. & Reuter, M. (2000). Renormalization group improved black hole spacetimes. *Physical Review D,* 62, 043008.
+[43] Bonanno, A. & Reuter, M. (2000). Renormalization group improved black hole spacetimes. *Physical Review D,* 62, 043008.
 
-[42] Nicolini, P., Smailagic, A. & Spallucci, E. (2006). Noncommutative geometry inspired Schwarzschild black hole. *Physics Letters B,* 632, 547–551.
+[44] Nicolini, P., Smailagic, A. & Spallucci, E. (2006). Noncommutative geometry inspired Schwarzschild black hole. *Physics Letters B,* 632, 547–551.
 
 ### Black Hole Information
 
-[43] Bekenstein, J. D. (1973). Black holes and entropy. *Physical Review D,* 7(8), 2333–2346.
+[45] Bekenstein, J. D. (1973). Black holes and entropy. *Physical Review D,* 7(8), 2333–2346.
 
-[44] Hawking, S. W. (1975). Particle creation by black holes. *Communications in Mathematical Physics,* 43(3), 199–220.
+[46] Hawking, S. W. (1975). Particle creation by black holes. *Communications in Mathematical Physics,* 43(3), 199–220.
 
-[45] 't Hooft, G. (1993). Dimensional reduction in quantum gravity. arXiv: gr-qc/9310026.
+[47] 't Hooft, G. (1993). Dimensional reduction in quantum gravity. arXiv: gr-qc/9310026.
 
-[46] Susskind, L. (1995). The world as a hologram. *Journal of Mathematical Physics,* 36(11), 6377–6396.
+[48] Susskind, L. (1995). The world as a hologram. *Journal of Mathematical Physics,* 36(11), 6377–6396.
 
 ---
 
