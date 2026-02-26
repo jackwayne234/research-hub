@@ -26,7 +26,7 @@ Each subdirectory has its own `README.md` with a TOC and cross-links.
 | [analysis/kretschner/](analysis/kretschner/) | Kretschner scalar, 9 QG models, Benford epsilon, dual instrument | Papers 1, 2, 7 |
 | [analysis/double-slit/](analysis/double-slit/) | Double-slit experiment, wave-particle energy hypothesis | Papers 1, 2 |
 
-## Published Papers (7 total)
+## Published Papers (8 total)
 1. Modified Schwarzschild Metric via Benford's Law
 2. Bose-Einstein Condensates + Benford's Law
 3. Wavelength-Division Ternary Logic
@@ -34,6 +34,7 @@ Each subdirectory has its own `README.md` with a TOC and cross-links.
 5. River Velocity as Time Dilation: GPS Comparison
 6. Prime Numbers as Causal Set Theory
 7. Emergence of GR from Prime Number Structure (DOI: 10.5281/zenodo.18751909)
+8. Defining Information: Order from the Prime Number Structure (DOI: 10.5281/zenodo.18782869)
 
 ## Links
 - Repo: github.com/jackwayne234/research-hub

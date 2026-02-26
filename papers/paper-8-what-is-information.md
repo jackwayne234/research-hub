@@ -3,8 +3,9 @@
 **Christopher J. W. Riner**
 Independent Researcher
 ORCID: 0009-0008-9448-9033
+DOI: [10.5281/zenodo.18782869](https://doi.org/10.5281/zenodo.18782869)
 
-**Draft — February 2026**
+**February 2026**
 
 ---
 
