@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 8: Applications of First-Order ODEs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>08</span> Applications of First-Order ODEs</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 7 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: EXPONENTIAL GROWTH & DECAY -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Exponential Growth &amp; Decay</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The simplest first-order ODE models a quantity whose <strong>rate of change is proportional to itself</strong>. If N(t) represents population, radioactive atoms, or investment value, the governing equation is:
+    </p>
+    <div class="formula-box large">dN/dt = kN</div>
+    <p class="concept-text">
+      Separating variables: dN/N = k dt. Integrating both sides gives ln|N| = kt + C, so the <strong>general solution</strong> is:
+    </p>
+    <div class="formula-box green large">N(t) = N&#8320; e^(kt)</div>
+    <p class="concept-text">
+      When <strong>k &gt; 0</strong>, the quantity grows exponentially (population growth, compound interest). When <strong>k &lt; 0</strong>, it decays exponentially (radioactive decay, drug metabolism). The key derived quantities are:
+    </p>
+    <div class="formula-box pink">Half-life: t&#189; = ln(2) / |k|</div>
+    <div class="formula-box amber">Doubling time: t&#8322; = ln(2) / k &nbsp;&nbsp; (k &gt; 0)</div>
+
+    <div class="key-point">The half-life is independent of the initial amount N&#8320;. Whether you start with 1 gram or 1 ton, it always takes the same time to lose half.</div>
+
+    <div class="navy-context">
+      <strong>Navy Application:</strong> Reactor physics depends heavily on exponential decay. Each radioactive isotope in reactor coolant (e.g., N-16 with a 7.13s half-life) follows dN/dt = -lambda*N. Understanding decay constants is critical for radiation safety calculations and predicting coolant activity after shutdown.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Exponential Growth &amp; Decay</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust the rate constant k and initial value N&#8320; to see the curve. Negative k = decay, positive k = growth.</p>
+      <div class="slider-row">
+        <label>k (rate constant)</label>
+        <input type="range" id="expK" min="-2" max="2" step="0.05" value="-0.5" oninput="drawExpCurve()">
+        <span class="slider-val" id="expKVal">-0.50</span>
+      </div>
+      <div class="slider-row">
+        <label>N&#8320; (initial)</label>
+        <input type="range" id="expN0" min="10" max="200" step="5" value="100" oninput="drawExpCurve()">
+        <span class="slider-val" id="expN0Val">100</span>
+      </div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setExpPreset(-0.693,100,this)">C-14 Decay</button>
+        <button class="scenario-tab" onclick="setExpPreset(-0.0866,100,this)">N-16 (7.13s)</button>
+        <button class="scenario-tab" onclick="setExpPreset(0.3,50,this)">Bacteria Growth</button>
+        <button class="scenario-tab" onclick="setExpPreset(0.07,100,this)">Investment 7%</button>
+      </div>
+      <svg id="expSvg" width="100%" viewBox="0 0 500 280" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-height:320px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">N(0)</span><br><span class="value green" id="expR0">100</span></div>
+        <div class="readout-item"><span class="label">N(5)</span><br><span class="value indigo" id="expR5">--</span></div>
+        <div class="readout-item"><span class="label">Half-life / Doubling</span><br><span class="value amber" id="expHL">--</span></div>
+        <div class="readout-item"><span class="label">Type</span><br><span class="value pink" id="expType">Decay</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> A radioactive substance has a half-life of 5 years. What is the decay constant k? (Round to 2 decimal places, give as negative)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1-input" step="0.01" placeholder="k = ?">
+          <button class="btn btn-sm" onclick="checkNum('s1p1-input',-0.14,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-input-fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> If N(0) = 200 and k = -0.1 per hour, what is N(10)?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">20.0</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','correct')">73.6 (200 * e^(-1) = 73.6)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">100.0</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">36.8</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: NEWTON'S LAW OF COOLING -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Newton's Law of Cooling</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Newton's Law of Cooling states that the rate of temperature change of an object is proportional to the <strong>difference between its temperature and the ambient (surrounding) temperature</strong>:
+    </p>
+    <div class="formula-box large">dT/dt = -k(T - T_env)</div>
+    <p class="concept-text">
+      This is a first-order linear ODE. Let u = T - T_env, then du/dt = -ku, which is our exponential decay equation. The solution is:
+    </p>
+    <div class="formula-box green large">T(t) = T_env + (T&#8320; - T_env) e^(-kt)</div>
+    <p class="concept-text">
+      The temperature <strong>exponentially approaches</strong> T_env. The rate constant k determines how fast: larger k means faster cooling. Using an <strong>integrating factor</strong> approach: multiply dT/dt + kT = kT_env by e^(kt), recognize the left side as d/dt[T e^(kt)], integrate, and solve for T.
+    </p>
+
+    <div class="key-point">The cooling constant k depends on the thermal properties of the object and the medium (still air vs. forced convection). It must be determined experimentally or from heat transfer analysis.</div>
+
+    <div class="navy-context">
+      <strong>Navy Application:</strong> Reactor coolant temperature modeling after a reactor trip (SCRAM) follows this law. When the reactor shuts down, coolant temperature decays toward ambient. Operators must track this curve to manage natural circulation cooling and prevent thermal shock from too-rapid cooldown. Fire control systems also model barrel cooling between salvos.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Newton's Law of Cooling</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust the cooling constant k, initial temperature T&#8320;, and ambient temperature T_env.</p>
+      <div class="slider-row">
+        <label>k (cooling rate)</label>
+        <input type="range" id="coolK" min="0.05" max="2" step="0.05" value="0.3" oninput="drawCoolCurve()">
+        <span class="slider-val" id="coolKVal">0.30</span>
+      </div>
+      <div class="slider-row">
+        <label>T&#8320; (initial &deg;C)</label>
+        <input type="range" id="coolT0" min="0" max="200" step="5" value="100" oninput="drawCoolCurve()">
+        <span class="slider-val" id="coolT0Val">100</span>
+      </div>
+      <div class="slider-row">
+        <label>T_env (&deg;C)</label>
+        <input type="range" id="coolTenv" min="0" max="100" step="5" value="20" oninput="drawCoolCurve()">
+        <span class="slider-val" id="coolTenvVal">20</span>
+      </div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setCoolPreset(0.3,100,20,this)">Hot Coffee</button>
+        <button class="scenario-tab" onclick="setCoolPreset(0.1,300,25,this)">Reactor Coolant</button>
+        <button class="scenario-tab" onclick="setCoolPreset(0.5,5,25,this)">Cold Drink Warming</button>
+        <button class="scenario-tab" onclick="setCoolPreset(1.5,90,22,this)">Forced Convection</button>
+      </div>
+      <svg id="coolSvg" width="100%" viewBox="0 0 500 280" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-height:320px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">T(0)</span><br><span class="value pink" id="coolR0">100 &deg;C</span></div>
+        <div class="readout-item"><span class="label">T(5)</span><br><span class="value indigo" id="coolR5">--</span></div>
+        <div class="readout-item"><span class="label">T_env</span><br><span class="value green" id="coolRenv">20 &deg;C</span></div>
+        <div class="readout-item"><span class="label">Time to within 5&deg;</span><br><span class="value amber" id="coolR95">--</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s2p1">
+        <p><strong>1.</strong> A cup of coffee at 90&deg;C is placed in a room at 20&deg;C. After 10 minutes it is 60&deg;C. What is the cooling constant k? (Round to 2 decimal places)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1-input" step="0.01" placeholder="k = ?">
+          <button class="btn btn-sm" onclick="checkNum('s2p1-input',0.06,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-input-fb"></div>
+      </div>
+      <div class="problem" id="s2p2">
+        <p><strong>2.</strong> In the general solution T(t) = T_env + (T&#8320; - T_env)e^(-kt), what happens as t approaches infinity?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">T approaches 0</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','correct')">T approaches T_env (the ambient temperature)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">T approaches T&#8320;</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">T oscillates between T&#8320; and T_env</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: MIXING PROBLEMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Mixing Problems (Tank Problems)</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Mixing problems model a tank containing a well-stirred solution with fluid flowing in and out. Let <strong>x(t)</strong> be the amount of solute (e.g., salt in kg) at time t. The fundamental balance equation is:
+    </p>
+    <div class="formula-box large">dx/dt = (rate in) - (rate out)</div>
+    <p class="concept-text">
+      <strong>Rate in</strong> = (inflow concentration) * (inflow rate). <strong>Rate out</strong> = (concentration in tank) * (outflow rate). If the tank has volume V(t), the concentration in the tank is x(t)/V(t). For equal flow rates (constant volume V):
+    </p>
+    <div class="formula-box green">dx/dt = c_in * r - (x/V) * r &nbsp; = &nbsp; r*c_in - (r/V)*x</div>
+    <p class="concept-text">
+      This is a <strong>first-order linear ODE</strong>: dx/dt + (r/V)x = r*c_in. The integrating factor is e^(rt/V). The solution approaches a steady state where the tank concentration equals the inflow concentration.
+    </p>
+    <div class="formula-box pink">x(t) = c_in * V + (x&#8320; - c_in * V) e^(-rt/V)</div>
+
+    <div class="key-point">When inflow rate does not equal outflow rate, V(t) changes with time: V(t) = V&#8320; + (r_in - r_out)*t. The ODE becomes dx/dt + [r_out / V(t)] * x = c_in * r_in, still first-order linear but with a variable coefficient.</div>
+
+    <div class="navy-context">
+      <strong>Navy Application:</strong> Mixing models apply to any tank system aboard ship -- ballast tank salinity changes when flushing with fresh water, chemical dosing of water treatment systems, or contamination dilution in piping systems. The mathematical structure is identical to the salt-tank problem.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Tank Mixing Problem</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">A tank of volume V contains solution. Fluid flows in at concentration c_in and rate r, and flows out at the same rate (constant volume).</p>
+      <div class="slider-row">
+        <label>Flow rate r (L/min)</label>
+        <input type="range" id="tankR" min="1" max="20" step="1" value="5" oninput="drawTankCurve()">
+        <span class="slider-val" id="tankRVal">5</span>
+      </div>
+      <div class="slider-row">
+        <label>Volume V (L)</label>
+        <input type="range" id="tankV" min="50" max="500" step="10" value="200" oninput="drawTankCurve()">
+        <span class="slider-val" id="tankVVal">200</span>
+      </div>
+      <div class="slider-row">
+        <label>c_in (g/L)</label>
+        <input type="range" id="tankCin" min="0" max="5" step="0.1" value="2" oninput="drawTankCurve()">
+        <span class="slider-val" id="tankCinVal">2.0</span>
+      </div>
+      <div class="slider-row">
+        <label>x&#8320; (initial g)</label>
+        <input type="range" id="tankX0" min="0" max="1000" step="10" value="0" oninput="drawTankCurve()">
+        <span class="slider-val" id="tankX0Val">0</span>
+      </div>
+      <svg id="tankSvg" width="100%" viewBox="0 0 500 300" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-height:340px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">x(0)</span><br><span class="value green" id="tankRx0">0 g</span></div>
+        <div class="readout-item"><span class="label">Steady state</span><br><span class="value indigo" id="tankSS">400 g</span></div>
+        <div class="readout-item"><span class="label">Time constant V/r</span><br><span class="value amber" id="tankTau">40 min</span></div>
+        <div class="readout-item"><span class="label">x at t = V/r</span><br><span class="value pink" id="tankR1tau">--</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s3p1">
+        <p><strong>1.</strong> A 100 L tank initially has pure water. Brine with concentration 3 g/L flows in at 4 L/min, and the well-mixed solution drains at 4 L/min. What is the steady-state amount of salt (in grams)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1-input" step="1" placeholder="x_ss = ?">
+          <button class="btn btn-sm" onclick="checkNum('s3p1-input',300,1)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-input-fb"></div>
+      </div>
+      <div class="problem" id="s3p2">
+        <p><strong>2.</strong> For the same tank, what is the time constant tau = V/r in minutes?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2-input" step="1" placeholder="tau = ?">
+          <button class="btn btn-sm" onclick="checkNum('s3p2-input',25,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-input-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: RC & RL CIRCUITS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> RC &amp; RL Circuits</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Applying <strong>Kirchhoff's voltage law</strong> (KVL) to a series RC circuit with a voltage source E gives:
+    </p>
+    <div class="formula-box large">R * dq/dt + q/C = E</div>
+    <p class="concept-text">
+      where q is the charge on the capacitor. Since i = dq/dt, we can also write R*i + q/C = E. This is a first-order linear ODE. The <strong>time constant</strong> is:
+    </p>
+    <div class="formula-box amber large">tau = RC</div>
+    <p class="concept-text">
+      <strong>Charging</strong> (initially uncharged, switch closed at t=0): The voltage across the capacitor V_C(t) rises exponentially toward E:
+    </p>
+    <div class="formula-box green">V_C(t) = E (1 - e^(-t/RC)) &nbsp;&nbsp; [charging]</div>
+    <p class="concept-text">
+      <strong>Discharging</strong> (initially charged to V&#8320;, disconnected from source):
+    </p>
+    <div class="formula-box pink">V_C(t) = V&#8320; e^(-t/RC) &nbsp;&nbsp; [discharging]</div>
+    <p class="concept-text">
+      For an <strong>RL circuit</strong>, L*di/dt + Ri = E, the time constant is tau = L/R, and the current approaches E/R exponentially.
+    </p>
+
+    <div class="key-point">After one time constant tau, a charging capacitor reaches ~63.2% of the source voltage (1 - 1/e). After 5 time constants, it is at ~99.3% -- effectively fully charged for engineering purposes.</div>
+
+    <div class="navy-context">
+      <strong>Navy Application:</strong> RC circuits are fundamental in fire control systems, radar timing circuits, and signal filtering. Understanding the time constant tau = RC is critical for designing circuits with correct response times. Capacitor charge/discharge curves determine how quickly a system can respond to changes -- essential in weapons targeting and electronic countermeasures.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: RC Circuit Charge &amp; Discharge</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust resistance R, capacitance C, and source voltage E. Toggle between charging and discharging modes.</p>
+      <div class="slider-row">
+        <label>R (k&Omega;)</label>
+        <input type="range" id="rcR" min="1" max="100" step="1" value="10" oninput="drawRCCurve()">
+        <span class="slider-val" id="rcRVal">10</span>
+      </div>
+      <div class="slider-row">
+        <label>C (&mu;F)</label>
+        <input type="range" id="rcC" min="1" max="1000" step="1" value="100" oninput="drawRCCurve()">
+        <span class="slider-val" id="rcCVal">100</span>
+      </div>
+      <div class="slider-row">
+        <label>E (volts)</label>
+        <input type="range" id="rcE" min="1" max="24" step="0.5" value="12" oninput="drawRCCurve()">
+        <span class="slider-val" id="rcEVal">12.0</span>
+      </div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setRCMode('charge',this)">Charging</button>
+        <button class="scenario-tab" onclick="setRCMode('discharge',this)">Discharging</button>
+      </div>
+      <svg id="rcSvg" width="100%" viewBox="0 0 500 280" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-height:320px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">tau = RC</span><br><span class="value amber" id="rcTau">1.00 s</span></div>
+        <div class="readout-item"><span class="label">V at 1*tau</span><br><span class="value green" id="rcV1">--</span></div>
+        <div class="readout-item"><span class="label">V at 3*tau</span><br><span class="value indigo" id="rcV3">--</span></div>
+        <div class="readout-item"><span class="label">V at 5*tau</span><br><span class="value pink" id="rcV5">--</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s4p1">
+        <p><strong>1.</strong> An RC circuit has R = 5 k&Omega; and C = 200 &mu;F. What is the time constant tau in seconds?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1-input" step="0.1" placeholder="tau = ?">
+          <button class="btn btn-sm" onclick="checkNum('s4p1-input',1.0,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-input-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> A capacitor charges from 0V to a 10V source through R = 10k&Omega;, C = 50&mu;F. What voltage does it reach after one time constant?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">5.00 V (50%)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','correct')">6.32 V (63.2% = 1 - 1/e)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">3.68 V (36.8%)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">9.93 V (99.3%)</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: TERMINAL VELOCITY & AIR RESISTANCE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Terminal Velocity &amp; Air Resistance</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A falling object of mass m experiences gravity (mg downward) and a linear drag force (bv upward, opposing motion). Newton's second law gives:
+    </p>
+    <div class="formula-box large">m dv/dt = mg - bv</div>
+    <p class="concept-text">
+      This is a first-order linear ODE. Rewriting: dv/dt + (b/m)v = g. The integrating factor is e^(bt/m). The solution, with v(0) = 0 (dropped from rest):
+    </p>
+    <div class="formula-box green large">v(t) = (mg/b)(1 - e^(-bt/m))</div>
+    <p class="concept-text">
+      As t approaches infinity, the exponential term vanishes and v approaches the <strong>terminal velocity</strong>:
+    </p>
+    <div class="formula-box amber">v_terminal = mg/b</div>
+    <p class="concept-text">
+      At terminal velocity, drag exactly balances gravity: the net force is zero, so acceleration is zero. The time constant for this system is <strong>tau = m/b</strong>. After one time constant, the object has reached ~63.2% of terminal velocity.
+    </p>
+
+    <div class="key-point">The linear drag model (F_drag = bv) is valid for low Reynolds numbers (small objects, slow speeds). For larger objects at higher speeds, quadratic drag (F = cv^2) is more realistic, but that ODE is nonlinear and harder to solve analytically.</div>
+
+    <div class="navy-context">
+      <strong>Navy Application:</strong> Ballistic drag calculations for naval gunfire use these models. Projectiles experience air resistance that determines range and trajectory. The linear drag ODE provides the foundational understanding, even though operational fire control computers use more complex models with altitude-dependent density and quadratic drag.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Falling Object with Air Resistance</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust mass m and drag coefficient b to see how the velocity curve approaches terminal velocity.</p>
+      <div class="slider-row">
+        <label>Mass m (kg)</label>
+        <input type="range" id="fallM" min="0.1" max="100" step="0.1" value="5" oninput="drawFallCurve()">
+        <span class="slider-val" id="fallMVal">5.0</span>
+      </div>
+      <div class="slider-row">
+        <label>Drag b (kg/s)</label>
+        <input type="range" id="fallB" min="0.1" max="20" step="0.1" value="2" oninput="drawFallCurve()">
+        <span class="slider-val" id="fallBVal">2.0</span>
+      </div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setFallPreset(5,2,this)">Baseball</button>
+        <button class="scenario-tab" onclick="setFallPreset(80,15,this)">Skydiver</button>
+        <button class="scenario-tab" onclick="setFallPreset(0.5,0.5,this)">Tennis Ball</button>
+        <button class="scenario-tab" onclick="setFallPreset(0.003,0.01,this)">Raindrop</button>
+      </div>
+      <svg id="fallSvg" width="100%" viewBox="0 0 500 280" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-height:320px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">v_terminal</span><br><span class="value amber" id="fallVt">24.5 m/s</span></div>
+        <div class="readout-item"><span class="label">tau = m/b</span><br><span class="value indigo" id="fallTau">2.50 s</span></div>
+        <div class="readout-item"><span class="label">v at tau</span><br><span class="value green" id="fallV1">--</span></div>
+        <div class="readout-item"><span class="label">v at 3*tau</span><br><span class="value pink" id="fallV3">--</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s5p1">
+        <p><strong>1.</strong> A 10 kg object has drag coefficient b = 4 kg/s. What is the terminal velocity in m/s? (Use g = 9.8 m/s^2)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1-input" step="0.1" placeholder="v_t = ?">
+          <button class="btn btn-sm" onclick="checkNum('s5p1-input',24.5,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1-input-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> What fraction of terminal velocity is reached after exactly one time constant tau = m/b?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">50%</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','correct')">63.2% (1 - 1/e = 0.632)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">86.5%</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">95.0%</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: CONNECTIONS & COMMON PATTERNS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Unifying Patterns Across Applications</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      All five applications in this lesson share a <strong>single mathematical structure</strong>. They are all first-order linear ODEs of the form:
+    </p>
+    <div class="formula-box large">dy/dt + ay = b</div>
+    <p class="concept-text">
+      With general solution:
+    </p>
+    <div class="formula-box green large">y(t) = b/a + (y&#8320; - b/a) e^(-at)</div>
+    <p class="concept-text">
+      The table below maps each application to this universal form:
+    </p>
+
+    <div style="overflow-x:auto;margin:16px 0">
+      <table style="width:100%;border-collapse:collapse;font-size:.72rem">
+        <thead>
+          <tr style="border-bottom:2px solid var(--indigo)">
+            <th style="padding:10px;text-align:left;color:var(--indigo)">Application</th>
+            <th style="padding:10px;text-align:left;color:var(--indigo)">y</th>
+            <th style="padding:10px;text-align:left;color:var(--indigo)">a</th>
+            <th style="padding:10px;text-align:left;color:var(--indigo)">b</th>
+            <th style="padding:10px;text-align:left;color:var(--indigo)">Steady state b/a</th>
+            <th style="padding:10px;text-align:left;color:var(--indigo)">tau = 1/a</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:8px 10px;color:var(--green)">Exp. Decay</td>
+            <td style="padding:8px 10px">N</td>
+            <td style="padding:8px 10px">|k|</td>
+            <td style="padding:8px 10px">0</td>
+            <td style="padding:8px 10px">0</td>
+            <td style="padding:8px 10px">1/|k|</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:8px 10px;color:var(--pink)">Cooling</td>
+            <td style="padding:8px 10px">T</td>
+            <td style="padding:8px 10px">k</td>
+            <td style="padding:8px 10px">k*T_env</td>
+            <td style="padding:8px 10px">T_env</td>
+            <td style="padding:8px 10px">1/k</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:8px 10px;color:var(--amber)">Mixing</td>
+            <td style="padding:8px 10px">x</td>
+            <td style="padding:8px 10px">r/V</td>
+            <td style="padding:8px 10px">r*c_in</td>
+            <td style="padding:8px 10px">c_in * V</td>
+            <td style="padding:8px 10px">V/r</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:8px 10px;color:var(--indigo)">RC Circuit</td>
+            <td style="padding:8px 10px">q</td>
+            <td style="padding:8px 10px">1/RC</td>
+            <td style="padding:8px 10px">E/R</td>
+            <td style="padding:8px 10px">CE</td>
+            <td style="padding:8px 10px">RC</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 10px;color:var(--green)">Terminal Vel.</td>
+            <td style="padding:8px 10px">v</td>
+            <td style="padding:8px 10px">b/m</td>
+            <td style="padding:8px 10px">g</td>
+            <td style="padding:8px 10px">mg/b</td>
+            <td style="padding:8px 10px">m/b</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="key-point">The number 63.2% (= 1 - 1/e) appears everywhere. After one time constant, every system in this table has completed 63.2% of the transition from its initial state to steady state. After 5 time constants, it is 99.3% complete.</div>
+
+    <div class="navy-context">
+      <strong>Navy Application:</strong> Recognizing this universal pattern allows an engineer or operator to quickly characterize any first-order system. Whether you are analyzing coolant temperature decay, capacitor charging in a fire control circuit, or projectile deceleration, the behavior is governed by the same exponential approach to equilibrium. Knowing the time constant tells you how fast the system responds.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s6p1">
+        <p><strong>1.</strong> A system follows dy/dt + 0.5y = 10. What is the steady-state value of y?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p1-input" step="1" placeholder="y_ss = ?">
+          <button class="btn btn-sm" onclick="checkNum('s6p1-input',20,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s6p1-input-fb"></div>
+      </div>
+      <div class="problem" id="s6p2">
+        <p><strong>2.</strong> For the same system, what is the time constant tau?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p2-input" step="0.1" placeholder="tau = ?">
+          <button class="btn btn-sm" onclick="checkNum('s6p2-input',2,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s6p2-input-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: FINAL QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">Q</span> Final Quiz -- 10 Questions</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Exponential Decay</div>
+      <p class="q-text">The half-life of a radioactive isotope is 8 hours. What fraction of the original sample remains after 24 hours?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">1/4</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">1/8 (three half-lives: (1/2)^3 = 1/8)</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">1/3</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">1/16</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Growth Constant</div>
+      <p class="q-text">A bacteria population doubles every 3 hours. What is the growth constant k (per hour)?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">0.333</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">0.231 (k = ln2/3 = 0.231)</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">0.693</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">2.000</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Newton's Law of Cooling</div>
+      <p class="q-text">A body cools from 80 deg C in a room at 20 deg C. Using T(t) = T_env + (T0 - T_env)e^(-kt), what is T0 - T_env?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">60 deg C</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">80 deg C</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">20 deg C</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">100 deg C</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Mixing Problem Setup</div>
+      <p class="q-text">A 500 L tank contains 100 g of salt. Pure water flows in at 10 L/min and the well-mixed solution drains at 10 L/min. What is the ODE for x(t)?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">dx/dt = 10 - x/500</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">dx/dt = -(10/500)x = -x/50 (no salt coming in, washing out)</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">dx/dt = 10 - 10x</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">dx/dt = -500x/10</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- RC Time Constant</div>
+      <p class="q-text">An RC circuit has R = 20 k-ohm and C = 50 micro-F. What is the time constant?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">1.0 s (20e3 * 50e-6 = 1.0)</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">0.001 s</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">1000 s</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">0.1 s</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Capacitor Charging</div>
+      <p class="q-text">A capacitor charges through a resistor from 0V to a 5V source. After 5 time constants, approximately what voltage has it reached?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">3.16 V</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">4.75 V</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">4.97 V (99.3% of 5V)</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">5.00 V exactly</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Terminal Velocity</div>
+      <p class="q-text">An object of mass 2 kg falls with linear drag b = 0.5 kg/s. What is the terminal velocity? (g = 9.8 m/s^2)</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">4.9 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">9.8 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">19.6 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">39.2 m/s (mg/b = 2*9.8/0.5)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Universal Form</div>
+      <p class="q-text">The general first-order linear ODE dy/dt + ay = b has steady-state solution y_ss = ?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">a/b</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">b/a (set dy/dt = 0, then ay = b)</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">a*b</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">b - a</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Integrating Factor</div>
+      <p class="q-text">For the ODE dy/dt + 3y = 12, what is the integrating factor?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">e^(3t)</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">e^(-3t)</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">e^(12t)</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">3t</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Applied Reasoning</div>
+      <p class="q-text">A system has a time constant of 4 seconds. How long does it take to reach 95% of its steady-state value?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">4 s</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">8 s</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">12 s (3*tau, since 1 - e^(-3) = 0.950)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">20 s</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again.';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: EXPONENTIAL GROWTH & DECAY ==================== */
+function setExpPreset(k, n0, btn) {
+  document.getElementById('expK').value = k;
+  document.getElementById('expN0').value = n0;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(t){t.classList.remove('active')});
+  btn.classList.add('active');
+  drawExpCurve();
+}
+
+function drawExpCurve() {
+  var k = parseFloat(document.getElementById('expK').value);
+  var n0 = parseFloat(document.getElementById('expN0').value);
+  document.getElementById('expKVal').textContent = k.toFixed(2);
+  document.getElementById('expN0Val').textContent = n0;
+
+  var svg = document.getElementById('expSvg');
+  var W = 500, H = 280, pad = 50, padR = 20, padT = 20, padB = 40;
+  var gW = W - pad - padR, gH = H - padT - padB;
+
+  // Determine time range and max value
+  var tMax = 10;
+  var yMax = n0;
+  // compute curve values
+  var pts = [];
+  var steps = 200;
+  for (var i = 0; i <= steps; i++) {
+    var t = (i / steps) * tMax;
+    var val = n0 * Math.exp(k * t);
+    pts.push({t: t, v: val});
+    if (val > yMax) yMax = val;
+  }
+  // cap yMax for display
+  if (yMax > n0 * 10) yMax = n0 * 10;
+  if (yMax < 10) yMax = 10;
+  yMax *= 1.1;
+
+  var h = '';
+  // grid
+  for (var i = 0; i <= 5; i++) {
+    var x = pad + (i / 5) * gW;
+    var y = padT + (i / 5) * gH;
+    h += '<line x1="'+x+'" y1="'+padT+'" x2="'+x+'" y2="'+(padT+gH)+'" stroke="#363b47" stroke-width="0.5"/>';
+    h += '<text x="'+x+'" y="'+(H-8)+'" fill="#9ca3af" font-size="10" text-anchor="middle">'+(tMax*i/5).toFixed(1)+'</text>';
+    h += '<line x1="'+pad+'" y1="'+y+'" x2="'+(pad+gW)+'" y2="'+y+'" stroke="#363b47" stroke-width="0.5"/>';
+    var yLabel = yMax * (1 - i/5);
+    h += '<text x="'+(pad-5)+'" y="'+(y+3)+'" fill="#9ca3af" font-size="9" text-anchor="end">'+yLabel.toFixed(0)+'</text>';
+  }
+  // axes labels
+  h += '<text x="'+(pad + gW/2)+'" y="'+(H-0)+'" fill="#9ca3af" font-size="10" text-anchor="middle">time t</text>';
+
+  // curve
+  var pathD = '';
+  for (var i = 0; i < pts.length; i++) {
+    var px = pad + (pts[i].t / tMax) * gW;
+    var py = padT + (1 - Math.min(pts[i].v, yMax) / yMax) * gH;
+    pathD += (i === 0 ? 'M' : 'L') + px.toFixed(1) + ',' + py.toFixed(1);
+  }
+  h += '<path d="'+pathD+'" fill="none" stroke="var(--green)" stroke-width="2.5"/>';
+
+  // half-life / doubling line
+  if (k < 0) {
+    var hl = Math.log(2) / Math.abs(k);
+    if (hl < tMax) {
+      var hlx = pad + (hl / tMax) * gW;
+      var hly = padT + (1 - (n0 * 0.5) / yMax) * gH;
+      h += '<line x1="'+hlx+'" y1="'+padT+'" x2="'+hlx+'" y2="'+(padT+gH)+'" stroke="var(--amber)" stroke-width="1" stroke-dasharray="4,3"/>';
+      h += '<circle cx="'+hlx+'" cy="'+hly+'" r="4" fill="var(--amber)"/>';
+      h += '<text x="'+(hlx+6)+'" y="'+(hly-6)+'" fill="var(--amber)" font-size="9">t_1/2 = '+hl.toFixed(2)+'</text>';
+    }
+  } else if (k > 0) {
+    var dt = Math.log(2) / k;
+    if (dt < tMax) {
+      var dtx = pad + (dt / tMax) * gW;
+      var dty = padT + (1 - (n0 * 2) / yMax) * gH;
+      h += '<line x1="'+dtx+'" y1="'+padT+'" x2="'+dtx+'" y2="'+(padT+gH)+'" stroke="var(--amber)" stroke-width="1" stroke-dasharray="4,3"/>';
+      if (n0*2 <= yMax) {
+        h += '<circle cx="'+dtx+'" cy="'+dty+'" r="4" fill="var(--amber)"/>';
+      }
+      h += '<text x="'+(dtx+6)+'" y="'+(padT+15)+'" fill="var(--amber)" font-size="9">t_double = '+dt.toFixed(2)+'</text>';
+    }
+  }
+
+  svg.innerHTML = h;
+
+  // readouts
+  var n5 = n0 * Math.exp(k * 5);
+  document.getElementById('expR0').textContent = n0.toFixed(0);
+  document.getElementById('expR5').textContent = n5.toFixed(1);
+  if (k < 0) {
+    var hl = Math.log(2) / Math.abs(k);
+    document.getElementById('expHL').textContent = 't_1/2 = ' + hl.toFixed(2);
+    document.getElementById('expType').textContent = 'Decay';
+  } else if (k > 0) {
+    var dt = Math.log(2) / k;
+    document.getElementById('expHL').textContent = 't_double = ' + dt.toFixed(2);
+    document.getElementById('expType').textContent = 'Growth';
+  } else {
+    document.getElementById('expHL').textContent = 'N/A (k=0)';
+    document.getElementById('expType').textContent = 'Constant';
+  }
+}
+
+/* ==================== SECTION 2: NEWTON'S LAW OF COOLING ==================== */
+function setCoolPreset(k, t0, tenv, btn) {
+  document.getElementById('coolK').value = k;
+  document.getElementById('coolT0').value = t0;
+  document.getElementById('coolTenv').value = tenv;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(t){t.classList.remove('active')});
+  btn.classList.add('active');
+  drawCoolCurve();
+}
+
+function drawCoolCurve() {
+  var k = parseFloat(document.getElementById('coolK').value);
+  var t0 = parseFloat(document.getElementById('coolT0').value);
+  var tenv = parseFloat(document.getElementById('coolTenv').value);
+  document.getElementById('coolKVal').textContent = k.toFixed(2);
+  document.getElementById('coolT0Val').textContent = t0;
+  document.getElementById('coolTenvVal').textContent = tenv;
+
+  var svg = document.getElementById('coolSvg');
+  var W = 500, H = 280, pad = 50, padR = 20, padT = 20, padB = 40;
+  var gW = W - pad - padR, gH = H - padT - padB;
+
+  var tMax = 10;
+  var yMin = Math.min(t0, tenv) - 5;
+  var yMax = Math.max(t0, tenv) + 10;
+  if (yMin < -10) yMin = -10;
+
+  var h = '';
+  for (var i = 0; i <= 5; i++) {
+    var x = pad + (i / 5) * gW;
+    var y = padT + (i / 5) * gH;
+    h += '<line x1="'+x+'" y1="'+padT+'" x2="'+x+'" y2="'+(padT+gH)+'" stroke="#363b47" stroke-width="0.5"/>';
+    h += '<text x="'+x+'" y="'+(H-8)+'" fill="#9ca3af" font-size="10" text-anchor="middle">'+(tMax*i/5).toFixed(1)+'</text>';
+    h += '<line x1="'+pad+'" y1="'+y+'" x2="'+(pad+gW)+'" y2="'+y+'" stroke="#363b47" stroke-width="0.5"/>';
+    var yLabel = yMax - (yMax - yMin) * (i/5);
+    h += '<text x="'+(pad-5)+'" y="'+(y+3)+'" fill="#9ca3af" font-size="9" text-anchor="end">'+yLabel.toFixed(0)+'</text>';
+  }
+  h += '<text x="'+(pad + gW/2)+'" y="'+(H-0)+'" fill="#9ca3af" font-size="10" text-anchor="middle">time t</text>';
+
+  // ambient line
+  var envY = padT + (1 - (tenv - yMin) / (yMax - yMin)) * gH;
+  h += '<line x1="'+pad+'" y1="'+envY+'" x2="'+(pad+gW)+'" y2="'+envY+'" stroke="var(--amber)" stroke-width="1" stroke-dasharray="5,3"/>';
+  h += '<text x="'+(pad+gW-2)+'" y="'+(envY-5)+'" fill="var(--amber)" font-size="9" text-anchor="end">T_env = '+tenv+'</text>';
+
+  // curve
+  var pathD = '';
+  var steps = 200;
+  for (var i = 0; i <= steps; i++) {
+    var tt = (i / steps) * tMax;
+    var T = tenv + (t0 - tenv) * Math.exp(-k * tt);
+    var px = pad + (tt / tMax) * gW;
+    var py = padT + (1 - (T - yMin) / (yMax - yMin)) * gH;
+    pathD += (i === 0 ? 'M' : 'L') + px.toFixed(1) + ',' + py.toFixed(1);
+  }
+  h += '<path d="'+pathD+'" fill="none" stroke="var(--pink)" stroke-width="2.5"/>';
+
+  svg.innerHTML = h;
+
+  var t5 = tenv + (t0 - tenv) * Math.exp(-k * 5);
+  document.getElementById('coolR0').textContent = t0 + ' \u00B0C';
+  document.getElementById('coolR5').textContent = t5.toFixed(1) + ' \u00B0C';
+  document.getElementById('coolRenv').textContent = tenv + ' \u00B0C';
+  // time to within 5 deg of ambient
+  var diff = Math.abs(t0 - tenv);
+  if (diff > 5) {
+    var t95 = -Math.log(5 / diff) / k;
+    document.getElementById('coolR95').textContent = t95.toFixed(2) + ' units';
+  } else {
+    document.getElementById('coolR95').textContent = 'Already within 5\u00B0';
+  }
+}
+
+/* ==================== SECTION 3: TANK MIXING ==================== */
+function drawTankCurve() {
+  var r = parseFloat(document.getElementById('tankR').value);
+  var V = parseFloat(document.getElementById('tankV').value);
+  var cin = parseFloat(document.getElementById('tankCin').value);
+  var x0 = parseFloat(document.getElementById('tankX0').value);
+  document.getElementById('tankRVal').textContent = r;
+  document.getElementById('tankVVal').textContent = V;
+  document.getElementById('tankCinVal').textContent = cin.toFixed(1);
+  document.getElementById('tankX0Val').textContent = x0;
+
+  var svg = document.getElementById('tankSvg');
+  var W = 500, H = 300, pad = 55, padR = 20, padT = 30, padB = 40;
+  var gW = W - pad - padR, gH = H - padT - padB;
+
+  var tau = V / r;
+  var xss = cin * V;
+  var tMax = Math.max(tau * 5, 20);
+
+  var yMin = 0;
+  var yMax = Math.max(xss, x0) * 1.2;
+  if (yMax < 10) yMax = 10;
+
+  var h = '';
+  // grid
+  for (var i = 0; i <= 5; i++) {
+    var x = pad + (i / 5) * gW;
+    var y = padT + (i / 5) * gH;
+    h += '<line x1="'+x+'" y1="'+padT+'" x2="'+x+'" y2="'+(padT+gH)+'" stroke="#363b47" stroke-width="0.5"/>';
+    h += '<text x="'+x+'" y="'+(H-5)+'" fill="#9ca3af" font-size="10" text-anchor="middle">'+(tMax*i/5).toFixed(0)+'</text>';
+    h += '<line x1="'+pad+'" y1="'+y+'" x2="'+(pad+gW)+'" y2="'+y+'" stroke="#363b47" stroke-width="0.5"/>';
+    var yLabel = yMax * (1 - i/5);
+    h += '<text x="'+(pad-5)+'" y="'+(y+3)+'" fill="#9ca3af" font-size="9" text-anchor="end">'+yLabel.toFixed(0)+'</text>';
+  }
+  h += '<text x="'+(pad + gW/2)+'" y="'+(H-0)+'" fill="#9ca3af" font-size="10" text-anchor="middle">time (min)</text>';
+
+  // steady state line
+  if (xss > 0) {
+    var ssY = padT + (1 - xss / yMax) * gH;
+    h += '<line x1="'+pad+'" y1="'+ssY+'" x2="'+(pad+gW)+'" y2="'+ssY+'" stroke="var(--indigo)" stroke-width="1" stroke-dasharray="5,3"/>';
+    h += '<text x="'+(pad+gW-2)+'" y="'+(ssY-5)+'" fill="var(--indigo)" font-size="9" text-anchor="end">x_ss = '+xss.toFixed(0)+' g</text>';
+  }
+
+  // tau marker
+  if (tau < tMax) {
+    var tauX = pad + (tau / tMax) * gW;
+    h += '<line x1="'+tauX+'" y1="'+padT+'" x2="'+tauX+'" y2="'+(padT+gH)+'" stroke="var(--amber)" stroke-width="1" stroke-dasharray="4,3"/>';
+    h += '<text x="'+(tauX+4)+'" y="'+(padT+12)+'" fill="var(--amber)" font-size="9">tau='+tau.toFixed(0)+'</text>';
+  }
+
+  // curve: x(t) = xss + (x0 - xss) * e^(-t/tau)
+  var pathD = '';
+  var steps = 200;
+  for (var i = 0; i <= steps; i++) {
+    var tt = (i / steps) * tMax;
+    var xt = xss + (x0 - xss) * Math.exp(-tt / tau);
+    var px = pad + (tt / tMax) * gW;
+    var py = padT + (1 - Math.max(0, Math.min(xt, yMax)) / yMax) * gH;
+    pathD += (i === 0 ? 'M' : 'L') + px.toFixed(1) + ',' + py.toFixed(1);
+  }
+  h += '<path d="'+pathD+'" fill="none" stroke="var(--green)" stroke-width="2.5"/>';
+
+  // draw a small tank diagram in top-left
+  var tx = pad + 8, ty = padT + 5, tw = 60, th = 40;
+  // tank body
+  h += '<rect x="'+tx+'" y="'+ty+'" width="'+tw+'" height="'+th+'" fill="none" stroke="var(--text-dim)" stroke-width="1" rx="3"/>';
+  // fill level (proportional to concentration at t=0)
+  var fillH = th * Math.min(1, (x0 / V) / (cin > 0 ? cin : 1));
+  if (fillH > 0) {
+    h += '<rect x="'+(tx+1)+'" y="'+(ty+th-fillH)+'" width="'+(tw-2)+'" height="'+fillH+'" fill="rgba(99,102,241,0.2)" rx="2"/>';
+  }
+  // inflow arrow
+  h += '<line x1="'+(tx+tw/2)+'" y1="'+(ty-12)+'" x2="'+(tx+tw/2)+'" y2="'+ty+'" stroke="var(--green)" stroke-width="1.5"/>';
+  h += '<text x="'+(tx+tw/2)+'" y="'+(ty-14)+'" fill="var(--green)" font-size="7" text-anchor="middle">r='+r+' L/min</text>';
+  // outflow arrow
+  h += '<line x1="'+(tx+tw)+'" y1="'+(ty+th-8)+'" x2="'+(tx+tw+15)+'" y2="'+(ty+th-8)+'" stroke="var(--pink)" stroke-width="1.5"/>';
+  h += '<text x="'+(tx+tw+17)+'" y="'+(ty+th-5)+'" fill="var(--pink)" font-size="7">out</text>';
+  h += '<text x="'+(tx+tw/2)+'" y="'+(ty+th+10)+'" fill="var(--text-dim)" font-size="7" text-anchor="middle">V='+V+'L</text>';
+
+  svg.innerHTML = h;
+
+  // readouts
+  document.getElementById('tankRx0').textContent = x0 + ' g';
+  document.getElementById('tankSS').textContent = xss.toFixed(0) + ' g';
+  document.getElementById('tankTau').textContent = tau.toFixed(1) + ' min';
+  var x1tau = xss + (x0 - xss) * Math.exp(-1);
+  document.getElementById('tankR1tau').textContent = x1tau.toFixed(1) + ' g';
+}
+
+/* ==================== SECTION 4: RC CIRCUIT ==================== */
+var rcMode = 'charge';
+
+function setRCMode(mode, btn) {
+  rcMode = mode;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(t){t.classList.remove('active')});
+  btn.classList.add('active');
+  drawRCCurve();
+}
+
+function drawRCCurve() {
+  var R = parseFloat(document.getElementById('rcR').value); // kohm
+  var C = parseFloat(document.getElementById('rcC').value); // uF
+  var E = parseFloat(document.getElementById('rcE').value); // V
+  document.getElementById('rcRVal').textContent = R;
+  document.getElementById('rcCVal').textContent = C;
+  document.getElementById('rcEVal').textContent = E.toFixed(1);
+
+  var tau = (R * 1e3) * (C * 1e-6); // seconds
+  document.getElementById('rcTau').textContent = tau.toFixed(3) + ' s';
+
+  var svg = document.getElementById('rcSvg');
+  var W = 500, H = 280, pad = 50, padR = 20, padT = 20, padB = 40;
+  var gW = W - pad - padR, gH = H - padT - padB;
+
+  var tMax = tau * 6;
+  var yMax = E * 1.15;
+
+  var h = '';
+  for (var i = 0; i <= 5; i++) {
+    var x = pad + (i / 5) * gW;
+    var y = padT + (i / 5) * gH;
+    h += '<line x1="'+x+'" y1="'+padT+'" x2="'+x+'" y2="'+(padT+gH)+'" stroke="#363b47" stroke-width="0.5"/>';
+    var tLabel = (tMax * i / 5);
+    var tText = tLabel < 0.01 ? tLabel.toExponential(1) : tLabel.toFixed(2);
+    h += '<text x="'+x+'" y="'+(H-8)+'" fill="#9ca3af" font-size="9" text-anchor="middle">'+tText+'s</text>';
+    h += '<line x1="'+pad+'" y1="'+y+'" x2="'+(pad+gW)+'" y2="'+y+'" stroke="#363b47" stroke-width="0.5"/>';
+    var yLabel = yMax * (1 - i/5);
+    h += '<text x="'+(pad-5)+'" y="'+(y+3)+'" fill="#9ca3af" font-size="9" text-anchor="end">'+yLabel.toFixed(1)+'V</text>';
+  }
+  h += '<text x="'+(pad + gW/2)+'" y="'+(H-0)+'" fill="#9ca3af" font-size="10" text-anchor="middle">time (s)</text>';
+
+  // E reference line
+  var eY = padT + (1 - E / yMax) * gH;
+  h += '<line x1="'+pad+'" y1="'+eY+'" x2="'+(pad+gW)+'" y2="'+eY+'" stroke="var(--amber)" stroke-width="1" stroke-dasharray="5,3"/>';
+  h += '<text x="'+(pad+gW-2)+'" y="'+(eY-5)+'" fill="var(--amber)" font-size="9" text-anchor="end">E = '+E+'V</text>';
+
+  // tau markers
+  for (var n = 1; n <= 5; n++) {
+    var tauX = pad + (n * tau / tMax) * gW;
+    if (tauX < pad + gW) {
+      h += '<line x1="'+tauX+'" y1="'+(padT+gH-3)+'" x2="'+tauX+'" y2="'+(padT+gH+3)+'" stroke="var(--indigo)" stroke-width="1.5"/>';
+      h += '<text x="'+tauX+'" y="'+(padT+gH+14)+'" fill="var(--indigo)" font-size="7" text-anchor="middle">'+n+'tau</text>';
+    }
+  }
+
+  // curve
+  var pathD = '';
+  var steps = 200;
+  for (var i = 0; i <= steps; i++) {
+    var tt = (i / steps) * tMax;
+    var Vc;
+    if (rcMode === 'charge') {
+      Vc = E * (1 - Math.exp(-tt / tau));
+    } else {
+      Vc = E * Math.exp(-tt / tau);
+    }
+    var px = pad + (tt / tMax) * gW;
+    var py = padT + (1 - Vc / yMax) * gH;
+    pathD += (i === 0 ? 'M' : 'L') + px.toFixed(1) + ',' + py.toFixed(1);
+  }
+  h += '<path d="'+pathD+'" fill="none" stroke="var(--green)" stroke-width="2.5"/>';
+
+  // circuit schematic in corner
+  var cx = pad + gW - 90, cy = padT + 8;
+  h += '<rect x="'+cx+'" y="'+cy+'" width="85" height="50" fill="rgba(26,29,36,0.8)" stroke="var(--border)" stroke-width="0.5" rx="4"/>';
+  // battery
+  h += '<line x1="'+(cx+8)+'" y1="'+(cy+15)+'" x2="'+(cx+8)+'" y2="'+(cy+35)+'" stroke="var(--text-dim)" stroke-width="1"/>';
+  h += '<line x1="'+(cx+4)+'" y1="'+(cy+20)+'" x2="'+(cx+12)+'" y2="'+(cy+20)+'" stroke="var(--amber)" stroke-width="1.5"/>';
+  h += '<line x1="'+(cx+6)+'" y1="'+(cy+25)+'" x2="'+(cx+10)+'" y2="'+(cy+25)+'" stroke="var(--amber)" stroke-width="1"/>';
+  // wire top
+  h += '<line x1="'+(cx+8)+'" y1="'+(cy+15)+'" x2="'+(cx+40)+'" y2="'+(cy+15)+'" stroke="var(--text-dim)" stroke-width="0.7"/>';
+  // resistor zigzag
+  h += '<polyline points="'+(cx+25)+','+(cy+15)+' '+(cx+27)+','+(cy+11)+' '+(cx+30)+','+(cy+19)+' '+(cx+33)+','+(cy+11)+' '+(cx+36)+','+(cy+19)+' '+(cx+38)+','+(cy+15)+'" fill="none" stroke="var(--pink)" stroke-width="1"/>';
+  h += '<text x="'+(cx+31)+'" y="'+(cy+9)+'" fill="var(--pink)" font-size="6" text-anchor="middle">R</text>';
+  // wire to cap
+  h += '<line x1="'+(cx+40)+'" y1="'+(cy+15)+'" x2="'+(cx+55)+'" y2="'+(cy+15)+'" stroke="var(--text-dim)" stroke-width="0.7"/>';
+  // capacitor
+  h += '<line x1="'+(cx+55)+'" y1="'+(cy+10)+'" x2="'+(cx+55)+'" y2="'+(cy+20)+'" stroke="var(--green)" stroke-width="1.5"/>';
+  h += '<line x1="'+(cx+59)+'" y1="'+(cy+10)+'" x2="'+(cx+59)+'" y2="'+(cy+20)+'" stroke="var(--green)" stroke-width="1.5"/>';
+  h += '<text x="'+(cx+57)+'" y="'+(cy+9)+'" fill="var(--green)" font-size="6" text-anchor="middle">C</text>';
+  // wire bottom
+  h += '<line x1="'+(cx+59)+'" y1="'+(cy+35)+'" x2="'+(cx+59)+'" y2="'+(cy+20)+'" stroke="var(--text-dim)" stroke-width="0.7"/>';
+  h += '<line x1="'+(cx+8)+'" y1="'+(cy+35)+'" x2="'+(cx+59)+'" y2="'+(cy+35)+'" stroke="var(--text-dim)" stroke-width="0.7"/>';
+  h += '<text x="'+(cx+42)+'" y="'+(cy+45)+'" fill="var(--text-dim)" font-size="7" text-anchor="middle">'+(rcMode==='charge'?'CHARGING':'DISCHARGING')+'</text>';
+
+  svg.innerHTML = h;
+
+  // readouts
+  var v1, v3, v5;
+  if (rcMode === 'charge') {
+    v1 = E * (1 - Math.exp(-1));
+    v3 = E * (1 - Math.exp(-3));
+    v5 = E * (1 - Math.exp(-5));
+  } else {
+    v1 = E * Math.exp(-1);
+    v3 = E * Math.exp(-3);
+    v5 = E * Math.exp(-5);
+  }
+  document.getElementById('rcV1').textContent = v1.toFixed(2) + ' V';
+  document.getElementById('rcV3').textContent = v3.toFixed(2) + ' V';
+  document.getElementById('rcV5').textContent = v5.toFixed(2) + ' V';
+}
+
+/* ==================== SECTION 5: TERMINAL VELOCITY ==================== */
+function setFallPreset(m, b, btn) {
+  document.getElementById('fallM').value = m;
+  document.getElementById('fallB').value = b;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(t){t.classList.remove('active')});
+  btn.classList.add('active');
+  drawFallCurve();
+}
+
+function drawFallCurve() {
+  var m = parseFloat(document.getElementById('fallM').value);
+  var b = parseFloat(document.getElementById('fallB').value);
+  document.getElementById('fallMVal').textContent = m.toFixed(1);
+  document.getElementById('fallBVal').textContent = b.toFixed(1);
+
+  var g = 9.8;
+  var vt = m * g / b;
+  var tau = m / b;
+
+  var svg = document.getElementById('fallSvg');
+  var W = 500, H = 280, pad = 55, padR = 20, padT = 20, padB = 40;
+  var gW = W - pad - padR, gH = H - padT - padB;
+
+  var tMax = tau * 6;
+  if (tMax < 1) tMax = 1;
+  var yMax = vt * 1.15;
+
+  var h = '';
+  for (var i = 0; i <= 5; i++) {
+    var x = pad + (i / 5) * gW;
+    var y = padT + (i / 5) * gH;
+    h += '<line x1="'+x+'" y1="'+padT+'" x2="'+x+'" y2="'+(padT+gH)+'" stroke="#363b47" stroke-width="0.5"/>';
+    var tLabel = (tMax * i / 5);
+    h += '<text x="'+x+'" y="'+(H-8)+'" fill="#9ca3af" font-size="10" text-anchor="middle">'+tLabel.toFixed(1)+'s</text>';
+    h += '<line x1="'+pad+'" y1="'+y+'" x2="'+(pad+gW)+'" y2="'+y+'" stroke="#363b47" stroke-width="0.5"/>';
+    var yLabel = yMax * (1 - i/5);
+    h += '<text x="'+(pad-5)+'" y="'+(y+3)+'" fill="#9ca3af" font-size="9" text-anchor="end">'+yLabel.toFixed(1)+'</text>';
+  }
+  h += '<text x="'+(pad + gW/2)+'" y="'+(H-0)+'" fill="#9ca3af" font-size="10" text-anchor="middle">time (s)</text>';
+  h += '<text x="15" y="'+(padT + gH/2)+'" fill="#9ca3af" font-size="9" text-anchor="middle" transform="rotate(-90,15,'+(padT+gH/2)+')">v (m/s)</text>';
+
+  // terminal velocity line
+  var vtY = padT + (1 - vt / yMax) * gH;
+  h += '<line x1="'+pad+'" y1="'+vtY+'" x2="'+(pad+gW)+'" y2="'+vtY+'" stroke="var(--amber)" stroke-width="1" stroke-dasharray="5,3"/>';
+  h += '<text x="'+(pad+gW-2)+'" y="'+(vtY-5)+'" fill="var(--amber)" font-size="9" text-anchor="end">v_t = '+vt.toFixed(1)+' m/s</text>';
+
+  // no-drag reference line (v = gt, capped)
+  var pathRef = '';
+  var steps = 200;
+  for (var i = 0; i <= steps; i++) {
+    var tt = (i / steps) * tMax;
+    var vnd = g * tt;
+    if (vnd > yMax) vnd = yMax;
+    var px = pad + (tt / tMax) * gW;
+    var py = padT + (1 - vnd / yMax) * gH;
+    pathRef += (i === 0 ? 'M' : 'L') + px.toFixed(1) + ',' + py.toFixed(1);
+  }
+  h += '<path d="'+pathRef+'" fill="none" stroke="var(--text-dim)" stroke-width="1" stroke-dasharray="3,3"/>';
+  h += '<text x="'+(pad+40)+'" y="'+(padT+15)+'" fill="var(--text-dim)" font-size="8">v = gt (no drag)</text>';
+
+  // with-drag curve
+  var pathD = '';
+  for (var i = 0; i <= steps; i++) {
+    var tt = (i / steps) * tMax;
+    var v = vt * (1 - Math.exp(-tt / tau));
+    var px = pad + (tt / tMax) * gW;
+    var py = padT + (1 - v / yMax) * gH;
+    pathD += (i === 0 ? 'M' : 'L') + px.toFixed(1) + ',' + py.toFixed(1);
+  }
+  h += '<path d="'+pathD+'" fill="none" stroke="var(--green)" stroke-width="2.5"/>';
+
+  // tau marker
+  if (tau < tMax) {
+    var tauX = pad + (tau / tMax) * gW;
+    var vAtTau = vt * (1 - Math.exp(-1));
+    var tauY = padT + (1 - vAtTau / yMax) * gH;
+    h += '<circle cx="'+tauX+'" cy="'+tauY+'" r="4" fill="var(--indigo)"/>';
+    h += '<text x="'+(tauX+6)+'" y="'+(tauY-6)+'" fill="var(--indigo)" font-size="9">tau = '+tau.toFixed(2)+'s</text>';
+  }
+
+  // falling object icon
+  var objX = pad + gW - 30, objY = padT + 30;
+  h += '<circle cx="'+objX+'" cy="'+objY+'" r="8" fill="var(--pink-dim)" stroke="var(--pink)" stroke-width="1"/>';
+  h += '<text x="'+objX+'" y="'+(objY+3)+'" fill="var(--pink)" font-size="7" text-anchor="middle">m</text>';
+  // gravity arrow
+  h += '<line x1="'+objX+'" y1="'+(objY+10)+'" x2="'+objX+'" y2="'+(objY+25)+'" stroke="var(--green)" stroke-width="1.5"/>';
+  h += '<text x="'+(objX+8)+'" y="'+(objY+22)+'" fill="var(--green)" font-size="7">mg</text>';
+  // drag arrow
+  h += '<line x1="'+objX+'" y1="'+(objY-10)+'" x2="'+objX+'" y2="'+(objY-22)+'" stroke="var(--pink)" stroke-width="1.5"/>';
+  h += '<text x="'+(objX+8)+'" y="'+(objY-16)+'" fill="var(--pink)" font-size="7">bv</text>';
+
+  svg.innerHTML = h;
+
+  // readouts
+  document.getElementById('fallVt').textContent = vt.toFixed(1) + ' m/s';
+  document.getElementById('fallTau').textContent = tau.toFixed(2) + ' s';
+  var v1tau = vt * (1 - Math.exp(-1));
+  var v3tau = vt * (1 - Math.exp(-3));
+  document.getElementById('fallV1').textContent = v1tau.toFixed(1) + ' m/s (63.2%)';
+  document.getElementById('fallV3').textContent = v3tau.toFixed(1) + ' m/s (95.0%)';
+}
+
+/* ==================== INIT ==================== */
+markComplete(1);
+drawExpCurve();
+drawCoolCurve();
+drawTankCurve();
+drawRCCurve();
+drawFallCurve();
+</script>
+</body>
+</html>

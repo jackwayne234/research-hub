@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 3: The Periodic Table &amp; Trends</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  background: #1e2128;
+  color: #c9cdd5;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.65;
+  min-height: 100vh;
+  padding: 0 0 4rem;
+}
+
+/* ── Palette ──────────────────────────────────────── */
+:root {
+  --bg: #1e2128;
+  --surface: #262a33;
+  --surface2: #2e323d;
+  --border: #383d49;
+  --text: #c9cdd5;
+  --text-dim: #8b90a0;
+  --primary: #6366f1;
+  --primary-dim: rgba(99,102,241,.15);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,.15);
+  --pink: #ec4899;
+  --pink-dim: rgba(236,72,153,.15);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,.15);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,.15);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,.15);
+  --cyan: #06b6d4;
+  --cyan-dim: rgba(6,182,212,.15);
+}
+
+/* ── Header ───────────────────────────────────────── */
+.page-header {
+  text-align: center;
+  padding: 2.5rem 1rem 1rem;
+}
+.page-header h1 {
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.page-header .subtitle {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-top: .3rem;
+}
+
+/* ── Progress Bar ─────────────────────────────────── */
+.progress-wrap {
+  max-width: 740px;
+  margin: 1.2rem auto .5rem;
+  padding: 0 1rem;
+}
+.progress-bar-outer {
+  background: var(--surface);
+  border-radius: 8px;
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-bar-inner {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), #818cf8);
+  border-radius: 8px;
+  transition: width .5s ease;
+}
+.progress-label {
+  font-size: .7rem;
+  color: var(--text-dim);
+  text-align: right;
+  margin-top: .3rem;
+}
+
+/* ── Container ────────────────────────────────────── */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ── Collapsible Card ─────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: border-color .3s;
+}
+.card.completed { border-color: var(--green); }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background .2s;
+}
+.card-header:hover { background: var(--surface2); }
+.card-header .num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--primary-dim);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: .8rem;
+  flex-shrink: 0;
+}
+.card.completed .card-header .num {
+  background: var(--green-dim);
+  color: var(--green);
+}
+.card-header .title {
+  flex: 1;
+  font-weight: 600;
+  font-size: .9rem;
+  color: #eee;
+}
+.card-header .chevron {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  transition: transform .3s;
+}
+.card.open .card-header .chevron { transform: rotate(180deg); }
+.card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .5s ease, padding .3s ease;
+}
+.card.open .card-body {
+  max-height: 80000px;
+  padding: 0 1.2rem 1.5rem;
+}
+
+/* ── Section Internals ────────────────────────────── */
+.section-desc {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+h3.sub-heading {
+  font-size: .85rem;
+  color: var(--primary);
+  margin: 1.5rem 0 .8rem;
+  font-weight: 600;
+}
+h3.sub-heading:first-of-type { margin-top: .5rem; }
+
+/* ── Interactive Box ──────────────────────────────── */
+.interactive-box {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid var(--border);
+}
+.interactive-box h4 {
+  font-size: .82rem;
+  color: var(--primary);
+  margin-bottom: .8rem;
+}
+
+/* ── Buttons ──────────────────────────────────────── */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: .8rem;
+}
+.btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  padding: .45rem .9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn:hover { border-color: var(--primary); color: #fff; }
+.btn.active {
+  background: var(--primary-dim);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.btn.correct {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+.btn.incorrect {
+  background: var(--pink-dim);
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+/* ── Feedback ─────────────────────────────────────── */
+.feedback {
+  font-size: .75rem;
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  margin-top: .6rem;
+  display: none;
+}
+.feedback.show { display: block; }
+.feedback.correct-fb { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+.feedback.incorrect-fb { background: var(--pink-dim); color: var(--pink); border: 1px solid var(--pink); }
+
+/* ── Explanation Block ────────────────────────────── */
+.explanation {
+  font-size: .78rem;
+  color: var(--text);
+  background: var(--surface2);
+  border-left: 3px solid var(--primary);
+  padding: .8rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 1.2rem;
+  line-height: 1.7;
+}
+
+/* ── Practice Block ───────────────────────────────── */
+.practice-block {
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+}
+.practice-block .q-text {
+  font-size: .78rem;
+  color: #ddd;
+  margin-bottom: .6rem;
+}
+.practice-block .q-num {
+  color: var(--amber);
+  font-weight: 600;
+}
+
+/* ── Mini Periodic Table ─────────────────────────── */
+.ptable-grid {
+  display: grid;
+  grid-template-columns: repeat(18, 1fr);
+  gap: 2px;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+.pt-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all .2s;
+  border: 1px solid transparent;
+  min-width: 28px;
+  font-size: .48rem;
+  position: relative;
+}
+.pt-cell:hover {
+  transform: scale(1.3);
+  z-index: 10;
+  border-color: #fff;
+  box-shadow: 0 0 12px rgba(255,255,255,.3);
+}
+.pt-cell.highlighted {
+  border-color: #fff;
+  box-shadow: 0 0 8px rgba(255,255,255,.4);
+  transform: scale(1.15);
+  z-index: 5;
+}
+.pt-cell.dimmed { opacity: .25; }
+.pt-cell .pt-num { font-size: .4rem; color: rgba(255,255,255,.7); line-height: 1; }
+.pt-cell .pt-sym { font-weight: 700; font-size: .6rem; color: #fff; line-height: 1.2; }
+.pt-cell.empty { background: transparent !important; pointer-events: none; }
+
+/* Category colors */
+.pt-cell.alkali { background: rgba(239,68,68,.5); }
+.pt-cell.alkaline { background: rgba(249,115,22,.5); }
+.pt-cell.transition { background: rgba(245,158,11,.45); }
+.pt-cell.post-transition { background: rgba(156,163,175,.4); }
+.pt-cell.metalloid { background: rgba(6,182,212,.45); }
+.pt-cell.nonmetal { background: rgba(34,197,94,.5); }
+.pt-cell.halogen { background: rgba(34,197,94,.7); }
+.pt-cell.noble { background: rgba(99,102,241,.55); }
+.pt-cell.lanthanide { background: rgba(236,72,153,.4); }
+.pt-cell.hydrogen { background: rgba(34,197,94,.5); }
+
+/* Element tooltip */
+.pt-tooltip {
+  position: fixed;
+  background: var(--surface);
+  border: 1px solid var(--primary);
+  border-radius: 10px;
+  padding: .8rem 1rem;
+  font-size: .7rem;
+  color: var(--text);
+  z-index: 100;
+  pointer-events: none;
+  display: none;
+  min-width: 180px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+}
+.pt-tooltip.visible { display: block; }
+.pt-tooltip .tt-name { font-size: .9rem; font-weight: 700; color: #fff; margin-bottom: .3rem; }
+.pt-tooltip .tt-row { margin: .15rem 0; }
+.pt-tooltip .tt-label { color: var(--text-dim); }
+.pt-tooltip .tt-val { color: var(--primary); font-weight: 600; }
+
+/* Legend */
+.pt-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-bottom: 1rem;
+}
+.pt-legend-item {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .6rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: .2rem .4rem;
+  border-radius: 4px;
+  transition: background .2s;
+}
+.pt-legend-item:hover { background: var(--surface2); }
+.pt-legend-item.active { background: var(--surface2); color: #fff; }
+.pt-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+/* ── Radius Viz ───────────────────────────────────── */
+.radius-grid {
+  display: grid;
+  grid-template-columns: repeat(18, 1fr);
+  gap: 2px;
+  margin-bottom: 1rem;
+}
+.radius-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  background: var(--surface2);
+  min-width: 28px;
+  position: relative;
+  transition: all .2s;
+}
+.radius-cell.empty { background: transparent; pointer-events: none; }
+.radius-cell:hover { z-index: 10; }
+.radius-circle {
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: .7;
+  transition: all .3s;
+}
+.radius-cell:hover .radius-circle { opacity: 1; }
+.radius-cell .r-sym {
+  position: absolute;
+  font-size: .42rem;
+  font-weight: 600;
+  color: #fff;
+  pointer-events: none;
+}
+.radius-cell.selected { border: 2px solid var(--amber); }
+
+/* Comparison box */
+.radius-compare {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1.5rem;
+  min-height: 120px;
+}
+.radius-compare-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+}
+.radius-compare-circle {
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: .8;
+}
+.radius-compare-label {
+  font-size: .75rem;
+  color: #fff;
+  font-weight: 600;
+}
+.radius-compare-val {
+  font-size: .65rem;
+  color: var(--text-dim);
+}
+.radius-compare-vs {
+  font-size: 1.2rem;
+  color: var(--amber);
+  font-weight: 700;
+}
+
+/* ── Trend Arrows ─────────────────────────────────── */
+.trend-arrows {
+  position: relative;
+  display: flex;
+  gap: 1.5rem;
+  margin: 1rem 0;
+  padding: .8rem;
+  background: var(--surface2);
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+}
+.trend-arrow-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .3rem;
+}
+.trend-arrow-block .arrow-label { font-size: .65rem; color: var(--text-dim); }
+.trend-arrow-block .arrow-symbol { font-size: 1.5rem; }
+.trend-arrow-block .arrow-desc { font-size: .6rem; color: var(--amber); font-weight: 600; }
+
+/* ── Bar Chart ────────────────────────────────────── */
+.bar-chart-wrap {
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 200px;
+  padding: 0 .5rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 22px;
+  cursor: pointer;
+  position: relative;
+}
+.bar-fill {
+  width: 80%;
+  border-radius: 3px 3px 0 0;
+  transition: all .3s;
+  min-height: 2px;
+}
+.bar-col:hover .bar-fill { opacity: .8; filter: brightness(1.3); }
+.bar-label {
+  font-size: .45rem;
+  color: var(--text-dim);
+  margin-top: .2rem;
+  text-align: center;
+  line-height: 1.2;
+}
+.bar-value {
+  position: absolute;
+  top: -16px;
+  font-size: .45rem;
+  color: var(--amber);
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity .2s;
+  white-space: nowrap;
+}
+.bar-col:hover .bar-value { opacity: 1; }
+.bar-y-axis {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: .45rem;
+  color: var(--text-dim);
+  padding: .2rem 0;
+}
+
+/* ── Heat Map ─────────────────────────────────────── */
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(18, 1fr);
+  gap: 2px;
+  margin-bottom: 1rem;
+}
+.hm-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 28px;
+  transition: all .2s;
+  border: 1px solid transparent;
+  font-size: .45rem;
+}
+.hm-cell.empty { background: transparent !important; pointer-events: none; }
+.hm-cell:hover {
+  transform: scale(1.3);
+  z-index: 10;
+  border-color: #fff;
+}
+.hm-cell.selected { border: 2px solid var(--amber); transform: scale(1.15); z-index: 5; }
+.hm-cell .hm-sym { font-weight: 700; font-size: .55rem; color: #fff; }
+.hm-cell .hm-val { font-size: .38rem; color: rgba(255,255,255,.8); }
+
+/* EN scale bar */
+.en-scale {
+  display: flex;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: .3rem;
+}
+.en-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: .55rem;
+  color: var(--text-dim);
+  margin-bottom: .8rem;
+}
+
+/* Bond prediction box */
+.bond-predict {
+  text-align: center;
+  padding: 1rem;
+  min-height: 80px;
+}
+.bond-predict .bp-diff { font-size: 1.3rem; font-weight: 700; color: var(--amber); }
+.bond-predict .bp-type { font-size: .85rem; font-weight: 600; margin-top: .3rem; }
+.bond-predict .bp-detail { font-size: .7rem; color: var(--text-dim); margin-top: .2rem; }
+
+/* ── Valence Viz ──────────────────────────────────── */
+.valence-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  padding: 1.2rem;
+  min-height: 150px;
+}
+.valence-atom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .4rem;
+}
+.valence-atom .va-label {
+  font-size: .75rem;
+  font-weight: 600;
+  color: #fff;
+}
+.valence-atom .va-config {
+  font-size: .65rem;
+  color: var(--text-dim);
+}
+.valence-shell-svg { width: 120px; height: 120px; }
+.valence-arrow {
+  font-size: 1.5rem;
+  color: var(--amber);
+}
+
+/* Ion table */
+.ion-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .68rem;
+  margin-bottom: 1rem;
+}
+.ion-table th {
+  text-align: left;
+  padding: .5rem .5rem;
+  background: var(--bg);
+  color: var(--primary);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border);
+}
+.ion-table td {
+  padding: .4rem .5rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.ion-table tr:hover td { background: var(--surface2); }
+
+/* ── Quiz ─────────────────────────────────────────── */
+.quiz-score {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+.quiz-q {
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: .8rem;
+  border: 1px solid var(--border);
+}
+.quiz-q .qq-text {
+  font-size: .78rem;
+  color: #ddd;
+  margin-bottom: .6rem;
+}
+.quiz-q .qq-num {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 600px) {
+  .pt-cell .pt-num { display: none; }
+  .pt-cell .pt-sym { font-size: .45rem; }
+  .ptable-grid, .radius-grid, .heatmap-grid { gap: 1px; }
+  .pt-cell, .radius-cell, .hm-cell { min-width: 16px; font-size: .4rem; }
+  .radius-compare { gap: 1rem; }
+  .valence-display { gap: 1rem; }
+  .bar-chart { height: 150px; }
+}
+@media (max-width: 400px) {
+  .pt-legend-item { font-size: .5rem; }
+  .hm-cell .hm-val { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Tooltip for periodic table hover -->
+<div class="pt-tooltip" id="ptTooltip">
+  <div class="tt-name" id="ttName"></div>
+  <div class="tt-row"><span class="tt-label">Symbol: </span><span class="tt-val" id="ttSymbol"></span></div>
+  <div class="tt-row"><span class="tt-label">Atomic #: </span><span class="tt-val" id="ttNumber"></span></div>
+  <div class="tt-row"><span class="tt-label">Mass: </span><span class="tt-val" id="ttMass"></span></div>
+  <div class="tt-row"><span class="tt-label">Config: </span><span class="tt-val" id="ttConfig"></span></div>
+  <div class="tt-row"><span class="tt-label">Category: </span><span class="tt-val" id="ttCategory"></span></div>
+</div>
+
+<header class="page-header">
+  <h1>Week 3: The Periodic Table &amp; Trends</h1>
+  <div class="subtitle">Periodic law, element families, and predictable property patterns</div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<main class="container">
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 1: Organization of the Periodic Table
+     ═══════════════════════════════════════════════════════ -->
+<div class="card open" data-section="1">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">1</div>
+    <div class="title">Organization of the Periodic Table</div>
+    <div class="chevron">&#9660;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Mendeleev organized elements by increasing atomic mass; the modern table orders by atomic number. Elements in the same <strong style="color:var(--primary)">group (column)</strong> share similar chemical properties because they have the same number of valence electrons. Elements in the same <strong style="color:var(--amber)">period (row)</strong> have the same number of electron shells.
+    </p>
+
+    <h3 class="sub-heading">Interactive Periodic Table (Elements 1-36)</h3>
+    <p class="section-desc">Hover over any element to see its details. Click a category in the legend to highlight all members of that family.</p>
+
+    <div class="pt-legend" id="ptLegend">
+      <div class="pt-legend-item" data-cat="alkali" onclick="filterCategory('alkali')">
+        <div class="pt-legend-swatch" style="background:rgba(239,68,68,.7)"></div>Alkali Metals
+      </div>
+      <div class="pt-legend-item" data-cat="alkaline" onclick="filterCategory('alkaline')">
+        <div class="pt-legend-swatch" style="background:rgba(249,115,22,.7)"></div>Alkaline Earth
+      </div>
+      <div class="pt-legend-item" data-cat="transition" onclick="filterCategory('transition')">
+        <div class="pt-legend-swatch" style="background:rgba(245,158,11,.6)"></div>Transition Metals
+      </div>
+      <div class="pt-legend-item" data-cat="post-transition" onclick="filterCategory('post-transition')">
+        <div class="pt-legend-swatch" style="background:rgba(156,163,175,.6)"></div>Post-Transition
+      </div>
+      <div class="pt-legend-item" data-cat="metalloid" onclick="filterCategory('metalloid')">
+        <div class="pt-legend-swatch" style="background:rgba(6,182,212,.6)"></div>Metalloids
+      </div>
+      <div class="pt-legend-item" data-cat="nonmetal" onclick="filterCategory('nonmetal')">
+        <div class="pt-legend-swatch" style="background:rgba(34,197,94,.6)"></div>Other Nonmetals
+      </div>
+      <div class="pt-legend-item" data-cat="halogen" onclick="filterCategory('halogen')">
+        <div class="pt-legend-swatch" style="background:rgba(34,197,94,.85)"></div>Halogens
+      </div>
+      <div class="pt-legend-item" data-cat="noble" onclick="filterCategory('noble')">
+        <div class="pt-legend-swatch" style="background:rgba(99,102,241,.7)"></div>Noble Gases
+      </div>
+    </div>
+
+    <div class="interactive-box" style="overflow-x:auto;">
+      <div class="ptable-grid" id="ptableGrid"></div>
+    </div>
+
+    <h3 class="sub-heading">Practice</h3>
+    <div id="s1Practice"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 2: Atomic Radius Trend
+     ═══════════════════════════════════════════════════════ -->
+<div class="card" data-section="2">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">2</div>
+    <div class="title">Atomic Radius Trend</div>
+    <div class="chevron">&#9660;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Atomic radius measures the size of an atom. It follows two clear trends across the periodic table, driven by the balance between added electron shells and increased nuclear charge.
+    </p>
+
+    <div class="explanation">
+      <strong style="color:#fff;">Down a group:</strong> Radius <span style="color:var(--green);">increases</span>. Each period adds a new electron shell, making the atom larger.<br>
+      <strong style="color:#fff;">Across a period (left to right):</strong> Radius <span style="color:var(--pink);">decreases</span>. More protons pull the same shell inward more tightly.
+    </div>
+
+    <div class="trend-arrows">
+      <div class="trend-arrow-block">
+        <span class="arrow-label">Across period &rarr;</span>
+        <span class="arrow-symbol" style="color:var(--pink);">&#10230;</span>
+        <span class="arrow-desc">Radius decreases</span>
+      </div>
+      <div class="trend-arrow-block">
+        <span class="arrow-label">Down group &darr;</span>
+        <span class="arrow-symbol" style="color:var(--green);">&#10515;</span>
+        <span class="arrow-desc">Radius increases</span>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Size-Scaled Periodic Table</h3>
+    <p class="section-desc">Each circle is proportional to the element's atomic radius. Click any two elements to compare them side by side.</p>
+
+    <div class="interactive-box" style="overflow-x:auto;">
+      <div class="radius-grid" id="radiusGrid"></div>
+    </div>
+
+    <div class="interactive-box">
+      <h4>Compare Two Elements</h4>
+      <div class="radius-compare" id="radiusCompare">
+        <span style="font-size:.75rem;color:var(--text-dim);">Click two elements above to compare</span>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Practice</h3>
+    <div id="s2Practice"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 3: Ionization Energy Trend
+     ═══════════════════════════════════════════════════════ -->
+<div class="card" data-section="3">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">3</div>
+    <div class="title">Ionization Energy Trend</div>
+    <div class="chevron">&#9660;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      <strong style="color:var(--amber)">Ionization energy (IE)</strong> is the energy required to remove the outermost electron from a gaseous atom. It tells us how tightly the nucleus holds onto its valence electrons.
+    </p>
+
+    <div class="explanation">
+      <strong style="color:#fff;">Across a period (left to right):</strong> IE generally <span style="color:var(--green);">increases</span>. More protons attract the outer electrons more strongly.<br>
+      <strong style="color:#fff;">Down a group:</strong> IE <span style="color:var(--pink);">decreases</span>. The outer electron is farther away and shielded by more inner shells.<br>
+      <strong style="color:#fff;">Minor dips:</strong> Group 13 (new subshell, easier to remove) and Group 16 (paired electron repulsion in p4 configuration).
+    </div>
+
+    <h3 class="sub-heading">First Ionization Energy: Periods 2 &amp; 3</h3>
+    <p class="section-desc">Hover over any bar to see the exact value in kJ/mol.</p>
+
+    <div class="interactive-box">
+      <div class="bar-chart-wrap">
+        <div class="bar-chart" id="ieChart"></div>
+      </div>
+      <div style="display:flex;gap:1rem;justify-content:center;margin-top:.5rem;">
+        <span style="font-size:.6rem;color:var(--primary);">&#9632; Period 2</span>
+        <span style="font-size:.6rem;color:var(--amber);">&#9632; Period 3</span>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Practice</h3>
+    <div id="s3Practice"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 4: Electronegativity Trend
+     ═══════════════════════════════════════════════════════ -->
+<div class="card" data-section="4">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">4</div>
+    <div class="title">Electronegativity Trend</div>
+    <div class="chevron">&#9660;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      <strong style="color:var(--amber)">Electronegativity (EN)</strong> measures an atom's ability to attract shared electrons in a chemical bond (Pauling scale). Fluorine is the most electronegative element at 4.0. Noble gases are typically not assigned EN values.
+    </p>
+
+    <div class="explanation">
+      <strong style="color:#fff;">Across a period:</strong> EN <span style="color:var(--green);">increases</span> (stronger nuclear pull on bonding electrons).<br>
+      <strong style="color:#fff;">Down a group:</strong> EN <span style="color:var(--pink);">decreases</span> (valence electrons farther from nucleus).
+    </div>
+
+    <h3 class="sub-heading">Electronegativity Heat Map</h3>
+    <p class="section-desc">Colors range from low (dark) to high (bright). Click two elements to predict their bond type.</p>
+
+    <div class="interactive-box" style="overflow-x:auto;">
+      <div class="en-scale" id="enScale"></div>
+      <div class="en-scale-labels">
+        <span>0.7 (Low)</span>
+        <span>Electronegativity (Pauling)</span>
+        <span>4.0 (High)</span>
+      </div>
+      <div class="heatmap-grid" id="enGrid"></div>
+    </div>
+
+    <div class="interactive-box">
+      <h4>Bond Type Predictor</h4>
+      <p style="font-size:.7rem;color:var(--text-dim);margin-bottom:.6rem;">Click two elements in the heat map above to see their EN difference and predicted bond type.</p>
+      <div class="bond-predict" id="bondPredict">
+        <span style="font-size:.75rem;color:var(--text-dim);">Select two elements above</span>
+      </div>
+      <div style="font-size:.65rem;color:var(--text-dim);margin-top:.5rem;text-align:center;">
+        Ionic: &Delta;EN &gt; 1.7 &nbsp;|&nbsp; Polar Covalent: 0.4-1.7 &nbsp;|&nbsp; Nonpolar Covalent: &lt; 0.4
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Practice</h3>
+    <div id="s4Practice"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 5: Valence Electrons & Ion Formation
+     ═══════════════════════════════════════════════════════ -->
+<div class="card" data-section="5">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">5</div>
+    <div class="title">Valence Electrons &amp; Ion Formation</div>
+    <div class="chevron">&#9660;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Main-group elements gain or lose electrons to achieve a <strong style="color:var(--green)">noble gas configuration</strong> (full outer shell). Metals <em>lose</em> electrons to form cations (+), while nonmetals <em>gain</em> electrons to form anions (-).
+    </p>
+
+    <div class="explanation">
+      <strong style="color:#fff;">Octet Rule:</strong> Atoms tend to gain, lose, or share electrons to have 8 electrons in their outermost shell (2 for hydrogen/helium).<br>
+      <strong style="color:#fff;">Groups 1-2:</strong> Lose 1-2 electrons &rarr; cations matching previous noble gas.<br>
+      <strong style="color:#fff;">Groups 15-17:</strong> Gain 3-1 electrons &rarr; anions matching next noble gas.
+    </div>
+
+    <h3 class="sub-heading">Interactive: Element &rarr; Ion</h3>
+    <p class="section-desc">Select an element below to see its valence electrons, the ion it forms, and the resulting electron configuration.</p>
+
+    <div class="interactive-box">
+      <div class="btn-row" id="valenceButtons"></div>
+      <div class="valence-display" id="valenceDisplay">
+        <span style="font-size:.75rem;color:var(--text-dim);">Choose an element above</span>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Common Ions Table</h3>
+    <div style="overflow-x:auto;">
+      <table class="ion-table" id="ionTable">
+        <thead>
+          <tr><th>Element</th><th>Group</th><th>Valence e-</th><th>Ion Formed</th><th>Ion Config</th><th>Isoelectronic With</th></tr>
+        </thead>
+        <tbody id="ionTableBody"></tbody>
+      </table>
+    </div>
+
+    <h3 class="sub-heading">Practice</h3>
+    <div id="s5Practice"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 6: Quick Quiz
+     ═══════════════════════════════════════════════════════ -->
+<div class="card" data-section="6">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">6</div>
+    <div class="title">Quick Quiz (10 Questions)</div>
+    <div class="chevron">&#9660;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Test your understanding of all periodic table trends covered in this lesson. Each correct answer earns 1 point.
+    </p>
+    <div class="quiz-score">Score: <span id="quizScore">0</span> / 10</div>
+    <div id="quizContainer"></div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// ELEMENT DATA (1-36)
+// ═══════════════════════════════════════════════════════════
+const elements = [
+  { z:1,  sym:"H",  name:"Hydrogen",   mass:1.008,   cat:"hydrogen",  group:1,  period:1, config:"1s1",                  radius:53,  ie:1312, en:2.20, valence:1 },
+  { z:2,  sym:"He", name:"Helium",     mass:4.003,   cat:"noble",     group:18, period:1, config:"1s2",                  radius:31,  ie:2372, en:null, valence:2 },
+  { z:3,  sym:"Li", name:"Lithium",    mass:6.941,   cat:"alkali",    group:1,  period:2, config:"[He] 2s1",             radius:167, ie:520,  en:0.98, valence:1 },
+  { z:4,  sym:"Be", name:"Beryllium",  mass:9.012,   cat:"alkaline",  group:2,  period:2, config:"[He] 2s2",             radius:112, ie:900,  en:1.57, valence:2 },
+  { z:5,  sym:"B",  name:"Boron",      mass:10.81,   cat:"metalloid", group:13, period:2, config:"[He] 2s2 2p1",         radius:87,  ie:801,  en:2.04, valence:3 },
+  { z:6,  sym:"C",  name:"Carbon",     mass:12.01,   cat:"nonmetal",  group:14, period:2, config:"[He] 2s2 2p2",         radius:77,  ie:1086, en:2.55, valence:4 },
+  { z:7,  sym:"N",  name:"Nitrogen",   mass:14.01,   cat:"nonmetal",  group:15, period:2, config:"[He] 2s2 2p3",         radius:75,  ie:1402, en:3.04, valence:5 },
+  { z:8,  sym:"O",  name:"Oxygen",     mass:16.00,   cat:"nonmetal",  group:16, period:2, config:"[He] 2s2 2p4",         radius:73,  ie:1314, en:3.44, valence:6 },
+  { z:9,  sym:"F",  name:"Fluorine",   mass:19.00,   cat:"halogen",   group:17, period:2, config:"[He] 2s2 2p5",         radius:71,  ie:1681, en:3.98, valence:7 },
+  { z:10, sym:"Ne", name:"Neon",       mass:20.18,   cat:"noble",     group:18, period:2, config:"[He] 2s2 2p6",         radius:38,  ie:2081, en:null, valence:8 },
+  { z:11, sym:"Na", name:"Sodium",     mass:22.99,   cat:"alkali",    group:1,  period:3, config:"[Ne] 3s1",             radius:190, ie:496,  en:0.93, valence:1 },
+  { z:12, sym:"Mg", name:"Magnesium",  mass:24.31,   cat:"alkaline",  group:2,  period:3, config:"[Ne] 3s2",             radius:145, ie:738,  en:1.31, valence:2 },
+  { z:13, sym:"Al", name:"Aluminum",   mass:26.98,   cat:"post-transition", group:13, period:3, config:"[Ne] 3s2 3p1",   radius:118, ie:578,  en:1.61, valence:3 },
+  { z:14, sym:"Si", name:"Silicon",    mass:28.09,   cat:"metalloid", group:14, period:3, config:"[Ne] 3s2 3p2",         radius:111, ie:786,  en:1.90, valence:4 },
+  { z:15, sym:"P",  name:"Phosphorus", mass:30.97,   cat:"nonmetal",  group:15, period:3, config:"[Ne] 3s2 3p3",         radius:106, ie:1012, en:2.19, valence:5 },
+  { z:16, sym:"S",  name:"Sulfur",     mass:32.07,   cat:"nonmetal",  group:16, period:3, config:"[Ne] 3s2 3p4",         radius:102, ie:1000, en:2.58, valence:6 },
+  { z:17, sym:"Cl", name:"Chlorine",   mass:35.45,   cat:"halogen",   group:17, period:3, config:"[Ne] 3s2 3p5",         radius:99,  ie:1251, en:3.16, valence:7 },
+  { z:18, sym:"Ar", name:"Argon",      mass:39.95,   cat:"noble",     group:18, period:3, config:"[Ne] 3s2 3p6",         radius:71,  ie:1521, en:null, valence:8 },
+  { z:19, sym:"K",  name:"Potassium",  mass:39.10,   cat:"alkali",    group:1,  period:4, config:"[Ar] 4s1",             radius:243, ie:419,  en:0.82, valence:1 },
+  { z:20, sym:"Ca", name:"Calcium",    mass:40.08,   cat:"alkaline",  group:2,  period:4, config:"[Ar] 4s2",             radius:194, ie:590,  en:1.00, valence:2 },
+  { z:21, sym:"Sc", name:"Scandium",   mass:44.96,   cat:"transition",group:3,  period:4, config:"[Ar] 3d1 4s2",         radius:184, ie:633,  en:1.36, valence:2 },
+  { z:22, sym:"Ti", name:"Titanium",   mass:47.87,   cat:"transition",group:4,  period:4, config:"[Ar] 3d2 4s2",         radius:176, ie:659,  en:1.54, valence:2 },
+  { z:23, sym:"V",  name:"Vanadium",   mass:50.94,   cat:"transition",group:5,  period:4, config:"[Ar] 3d3 4s2",         radius:171, ie:651,  en:1.63, valence:2 },
+  { z:24, sym:"Cr", name:"Chromium",   mass:52.00,   cat:"transition",group:6,  period:4, config:"[Ar] 3d5 4s1",         radius:166, ie:653,  en:1.66, valence:1 },
+  { z:25, sym:"Mn", name:"Manganese",  mass:54.94,   cat:"transition",group:7,  period:4, config:"[Ar] 3d5 4s2",         radius:161, ie:717,  en:1.55, valence:2 },
+  { z:26, sym:"Fe", name:"Iron",       mass:55.85,   cat:"transition",group:8,  period:4, config:"[Ar] 3d6 4s2",         radius:156, ie:762,  en:1.83, valence:2 },
+  { z:27, sym:"Co", name:"Cobalt",     mass:58.93,   cat:"transition",group:9,  period:4, config:"[Ar] 3d7 4s2",         radius:152, ie:760,  en:1.88, valence:2 },
+  { z:28, sym:"Ni", name:"Nickel",     mass:58.69,   cat:"transition",group:10, period:4, config:"[Ar] 3d8 4s2",         radius:149, ie:737,  en:1.91, valence:2 },
+  { z:29, sym:"Cu", name:"Copper",     mass:63.55,   cat:"transition",group:11, period:4, config:"[Ar] 3d10 4s1",        radius:145, ie:745,  en:1.90, valence:1 },
+  { z:30, sym:"Zn", name:"Zinc",       mass:65.38,   cat:"transition",group:12, period:4, config:"[Ar] 3d10 4s2",        radius:142, ie:906,  en:1.65, valence:2 },
+  { z:31, sym:"Ga", name:"Gallium",    mass:69.72,   cat:"post-transition",group:13, period:4, config:"[Ar] 3d10 4s2 4p1",radius:136, ie:579,  en:1.81, valence:3 },
+  { z:32, sym:"Ge", name:"Germanium",  mass:72.63,   cat:"metalloid", group:14, period:4, config:"[Ar] 3d10 4s2 4p2",    radius:125, ie:762,  en:2.01, valence:4 },
+  { z:33, sym:"As", name:"Arsenic",    mass:74.92,   cat:"metalloid", group:15, period:4, config:"[Ar] 3d10 4s2 4p3",    radius:114, ie:947,  en:2.18, valence:5 },
+  { z:34, sym:"Se", name:"Selenium",   mass:78.97,   cat:"nonmetal",  group:16, period:4, config:"[Ar] 3d10 4s2 4p4",    radius:103, ie:941,  en:2.55, valence:6 },
+  { z:35, sym:"Br", name:"Bromine",    mass:79.90,   cat:"halogen",   group:17, period:4, config:"[Ar] 3d10 4s2 4p5",    radius:94,  ie:1140, en:2.96, valence:7 },
+  { z:36, sym:"Kr", name:"Krypton",    mass:83.80,   cat:"noble",     group:18, period:4, config:"[Ar] 3d10 4s2 4p6",    radius:88,  ie:1351, en:3.00, valence:8 },
+];
+
+const elByZ = {};
+elements.forEach(e => elByZ[e.z] = e);
+
+// Grid layout: [period][group] = atomic number (0 = empty)
+const gridLayout = [
+  // period 1: H in col1, He in col18
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+  // period 2
+  [3,4,0,0,0,0,0,0,0,0,0,0,5,6,7,8,9,10],
+  // period 3
+  [11,12,0,0,0,0,0,0,0,0,0,0,13,14,15,16,17,18],
+  // period 4
+  [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36],
+];
+
+const categoryNames = {
+  alkali: "Alkali Metal", alkaline: "Alkaline Earth Metal",
+  transition: "Transition Metal", "post-transition": "Post-Transition Metal",
+  metalloid: "Metalloid", nonmetal: "Other Nonmetal",
+  halogen: "Halogen", noble: "Noble Gas", hydrogen: "Other Nonmetal"
+};
+
+// ═══════════════════════════════════════════════════════════
+// SECTION 1: Interactive Periodic Table
+// ═══════════════════════════════════════════════════════════
+function buildPeriodicTable() {
+  const grid = document.getElementById('ptableGrid');
+  grid.innerHTML = '';
+  for (let p = 0; p < gridLayout.length; p++) {
+    for (let g = 0; g < 18; g++) {
+      const z = gridLayout[p][g];
+      const cell = document.createElement('div');
+      if (z === 0) {
+        cell.className = 'pt-cell empty';
+      } else {
+        const el = elByZ[z];
+        cell.className = `pt-cell ${el.cat}`;
+        cell.dataset.z = z;
+        cell.dataset.cat = el.cat;
+        cell.innerHTML = `<span class="pt-num">${el.z}</span><span class="pt-sym">${el.sym}</span>`;
+        cell.addEventListener('mouseenter', showTooltip);
+        cell.addEventListener('mousemove', moveTooltip);
+        cell.addEventListener('mouseleave', hideTooltip);
+      }
+      grid.appendChild(cell);
+    }
+  }
+}
+
+const tooltip = document.getElementById('ptTooltip');
+function showTooltip(e) {
+  const el = elByZ[+e.currentTarget.dataset.z];
+  if (!el) return;
+  document.getElementById('ttName').textContent = el.name;
+  document.getElementById('ttSymbol').textContent = el.sym;
+  document.getElementById('ttNumber').textContent = el.z;
+  document.getElementById('ttMass').textContent = el.mass.toFixed(3) + ' u';
+  document.getElementById('ttConfig').textContent = el.config;
+  document.getElementById('ttCategory').textContent = categoryNames[el.cat] || el.cat;
+  tooltip.classList.add('visible');
+}
+function moveTooltip(e) {
+  let x = e.clientX + 15;
+  let y = e.clientY + 15;
+  if (x + 200 > window.innerWidth) x = e.clientX - 200;
+  if (y + 120 > window.innerHeight) y = e.clientY - 130;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top = y + 'px';
+}
+function hideTooltip() { tooltip.classList.remove('visible'); }
+
+let activeFilter = null;
+function filterCategory(cat) {
+  const cells = document.querySelectorAll('#ptableGrid .pt-cell:not(.empty)');
+  const legendItems = document.querySelectorAll('.pt-legend-item');
+
+  if (activeFilter === cat) {
+    activeFilter = null;
+    cells.forEach(c => { c.classList.remove('highlighted','dimmed'); });
+    legendItems.forEach(l => l.classList.remove('active'));
+    return;
+  }
+  activeFilter = cat;
+  cells.forEach(c => {
+    if (c.dataset.cat === cat || (cat === 'nonmetal' && c.dataset.cat === 'hydrogen')) {
+      c.classList.add('highlighted');
+      c.classList.remove('dimmed');
+    } else {
+      c.classList.remove('highlighted');
+      c.classList.add('dimmed');
+    }
+  });
+  legendItems.forEach(l => {
+    l.classList.toggle('active', l.dataset.cat === cat);
+  });
+}
+
+// Section 1 practice
+const s1Questions = [
+  { q:"Which group (column number) does Chlorine (Cl) belong to?", opts:["1","2","16","17"], answer:3, explain:"Chlorine is in Group 17 (the halogens)." },
+  { q:"What family does Calcium (Ca) belong to?", opts:["Alkali metals","Alkaline earth metals","Transition metals","Halogens"], answer:1, explain:"Calcium is in Group 2, the alkaline earth metals." },
+  { q:"Which element is a noble gas: Nitrogen, Neon, Sodium, or Fluorine?", opts:["Nitrogen","Neon","Sodium","Fluorine"], answer:1, explain:"Neon (Ne) is in Group 18, making it a noble gas with a full outer shell." },
+];
+
+// ═══════════════════════════════════════════════════════════
+// SECTION 2: Atomic Radius
+// ═══════════════════════════════════════════════════════════
+let radiusSelected = [];
+
+function buildRadiusGrid() {
+  const grid = document.getElementById('radiusGrid');
+  grid.innerHTML = '';
+  const maxR = 243; // K
+  for (let p = 0; p < gridLayout.length; p++) {
+    for (let g = 0; g < 18; g++) {
+      const z = gridLayout[p][g];
+      const cell = document.createElement('div');
+      if (z === 0) {
+        cell.className = 'radius-cell empty';
+      } else {
+        const el = elByZ[z];
+        cell.className = 'radius-cell';
+        cell.dataset.z = z;
+        const pct = (el.radius / maxR) * 90 + 10;
+        cell.innerHTML = `<div class="radius-circle" style="width:${pct}%;height:${pct}%;"></div><span class="r-sym">${el.sym}</span>`;
+        cell.addEventListener('click', () => selectRadiusElement(z, cell));
+        cell.title = `${el.name}: ${el.radius} pm`;
+      }
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function selectRadiusElement(z, cell) {
+  if (radiusSelected.length >= 2) {
+    document.querySelectorAll('.radius-cell.selected').forEach(c => c.classList.remove('selected'));
+    radiusSelected = [];
+  }
+  cell.classList.add('selected');
+  radiusSelected.push(z);
+  if (radiusSelected.length === 2) showRadiusComparison();
+}
+
+function showRadiusComparison() {
+  const el1 = elByZ[radiusSelected[0]];
+  const el2 = elByZ[radiusSelected[1]];
+  const maxR = Math.max(el1.radius, el2.radius);
+  const scale = 80 / maxR;
+  const s1 = Math.max(el1.radius * scale, 12);
+  const s2 = Math.max(el2.radius * scale, 12);
+  const box = document.getElementById('radiusCompare');
+  box.innerHTML = `
+    <div class="radius-compare-item">
+      <div class="radius-compare-circle" style="width:${s1}px;height:${s1}px;background:var(--primary);"></div>
+      <div class="radius-compare-label">${el1.sym}</div>
+      <div class="radius-compare-val">${el1.radius} pm</div>
+    </div>
+    <div class="radius-compare-vs">vs</div>
+    <div class="radius-compare-item">
+      <div class="radius-compare-circle" style="width:${s2}px;height:${s2}px;background:var(--pink);"></div>
+      <div class="radius-compare-label">${el2.sym}</div>
+      <div class="radius-compare-val">${el2.radius} pm</div>
+    </div>
+  `;
+  const bigger = el1.radius > el2.radius ? el1.sym : el2.sym;
+  const ratio = (Math.max(el1.radius, el2.radius) / Math.min(el1.radius, el2.radius)).toFixed(2);
+  box.innerHTML += `<div style="width:100%;text-align:center;margin-top:.5rem;font-size:.7rem;color:var(--amber);"><strong>${bigger}</strong> is ${ratio}x larger</div>`;
+}
+
+const s2Questions = [
+  { q:"Which is larger: Na or Cl?", opts:["Na","Cl"], answer:0, explain:"Na (190 pm) is larger than Cl (99 pm). Moving right across Period 3, radius decreases." },
+  { q:"Which is larger: Li or K?", opts:["Li","K"], answer:1, explain:"K (243 pm) is larger than Li (167 pm). Going down Group 1, radius increases." },
+  { q:"Which has the smallest radius in Period 3?", opts:["Na","Al","S","Cl"], answer:3, explain:"Cl (99 pm) is smallest. Radius decreases across a period (excluding noble gases)." },
+  { q:"Which is larger: O or Se?", opts:["O","Se"], answer:1, explain:"Se (103 pm) is larger than O (73 pm). Going down Group 16, more shells = larger atom." },
+];
+
+// ═══════════════════════════════════════════════════════════
+// SECTION 3: Ionization Energy
+// ═══════════════════════════════════════════════════════════
+function buildIEChart() {
+  const chart = document.getElementById('ieChart');
+  chart.innerHTML = '';
+  // Period 2 (Z=3-10) and Period 3 (Z=11-18)
+  const period2 = [3,4,5,6,7,8,9,10];
+  const period3 = [11,12,13,14,15,16,17,18];
+  const maxIE = 2372; // He
+  const displayMax = 2200;
+
+  for (let i = 0; i < 8; i++) {
+    const e2 = elByZ[period2[i]];
+    const e3 = elByZ[period3[i]];
+
+    // Period 2 bar
+    const col2 = document.createElement('div');
+    col2.className = 'bar-col';
+    const h2 = (e2.ie / displayMax) * 100;
+    col2.innerHTML = `<div class="bar-value">${e2.ie} kJ/mol</div><div class="bar-fill" style="height:${h2}%;background:var(--primary);"></div><div class="bar-label">${e2.sym}</div>`;
+    chart.appendChild(col2);
+
+    // Period 3 bar
+    const col3 = document.createElement('div');
+    col3.className = 'bar-col';
+    const h3 = (e3.ie / displayMax) * 100;
+    col3.innerHTML = `<div class="bar-value">${e3.ie} kJ/mol</div><div class="bar-fill" style="height:${h3}%;background:var(--amber);"></div><div class="bar-label">${e3.sym}</div>`;
+    chart.appendChild(col3);
+  }
+}
+
+const s3Questions = [
+  { q:"Which has higher ionization energy: Na or Cl?", opts:["Na","Cl"], answer:1, explain:"Cl (1251 kJ/mol) >> Na (496 kJ/mol). IE increases across a period." },
+  { q:"Which has higher IE: Li or Na?", opts:["Li","Na"], answer:0, explain:"Li (520 kJ/mol) > Na (496 kJ/mol). IE decreases going down a group." },
+  { q:"Why does Boron (B) have lower IE than Beryllium (Be)?", opts:["B is in a new 2p subshell (easier to remove)","B has more protons","B is larger","B has more electrons"], answer:0, explain:"Boron's outermost electron is in the 2p subshell, which is higher in energy and easier to remove than Be's 2s electron." },
+  { q:"Which element has the highest IE in Period 3?", opts:["Na","Mg","Cl","Ar"], answer:3, explain:"Argon (1521 kJ/mol) has the highest IE in Period 3 due to its stable full outer shell." },
+];
+
+// ═══════════════════════════════════════════════════════════
+// SECTION 4: Electronegativity
+// ═══════════════════════════════════════════════════════════
+let enSelected = [];
+
+function buildENGrid() {
+  const grid = document.getElementById('enGrid');
+  grid.innerHTML = '';
+
+  // Build color scale bar
+  const scale = document.getElementById('enScale');
+  scale.innerHTML = '';
+  for (let i = 0; i <= 40; i++) {
+    const s = document.createElement('div');
+    s.style.flex = '1';
+    s.style.background = enColor(i / 10);
+    scale.appendChild(s);
+  }
+
+  for (let p = 0; p < gridLayout.length; p++) {
+    for (let g = 0; g < 18; g++) {
+      const z = gridLayout[p][g];
+      const cell = document.createElement('div');
+      if (z === 0) {
+        cell.className = 'hm-cell empty';
+      } else {
+        const el = elByZ[z];
+        cell.className = 'hm-cell';
+        cell.dataset.z = z;
+        if (el.en !== null) {
+          cell.style.background = enColor(el.en);
+          cell.innerHTML = `<span class="hm-sym">${el.sym}</span><span class="hm-val">${el.en}</span>`;
+        } else {
+          cell.style.background = 'rgba(60,60,80,.4)';
+          cell.innerHTML = `<span class="hm-sym" style="opacity:.5">${el.sym}</span><span class="hm-val">-</span>`;
+        }
+        if (el.z === 9) cell.style.border = '2px solid var(--amber)';
+        cell.addEventListener('click', () => selectENElement(z, cell));
+        cell.title = `${el.name}: EN = ${el.en ?? 'N/A'}`;
+      }
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function enColor(val) {
+  if (val === null) return 'rgba(60,60,80,.4)';
+  const t = (val - 0.7) / (4.0 - 0.7);
+  // Gradient: dark indigo -> cyan -> green -> yellow -> red
+  if (t < 0.25) {
+    const u = t / 0.25;
+    return `rgb(${Math.round(30+u*0)},${Math.round(30+u*120)},${Math.round(80+u*130)})`;
+  } else if (t < 0.5) {
+    const u = (t - 0.25) / 0.25;
+    return `rgb(${Math.round(30+u*30)},${Math.round(150+u*50)},${Math.round(210-u*80)})`;
+  } else if (t < 0.75) {
+    const u = (t - 0.5) / 0.25;
+    return `rgb(${Math.round(60+u*180)},${Math.round(200-u*30)},${Math.round(130-u*80)})`;
+  } else {
+    const u = (t - 0.75) / 0.25;
+    return `rgb(${Math.round(240+u*15)},${Math.round(170-u*100)},${Math.round(50-u*20)})`;
+  }
+}
+
+function selectENElement(z, cell) {
+  const el = elByZ[z];
+  if (el.en === null) return;
+  if (enSelected.length >= 2) {
+    document.querySelectorAll('.hm-cell.selected').forEach(c => c.classList.remove('selected'));
+    enSelected = [];
+  }
+  cell.classList.add('selected');
+  enSelected.push(z);
+  if (enSelected.length === 2) showBondPrediction();
+}
+
+function showBondPrediction() {
+  const el1 = elByZ[enSelected[0]];
+  const el2 = elByZ[enSelected[1]];
+  const diff = Math.abs(el1.en - el2.en).toFixed(2);
+  let bondType, bondColor;
+  if (diff > 1.7) { bondType = 'Ionic Bond'; bondColor = 'var(--pink)'; }
+  else if (diff >= 0.4) { bondType = 'Polar Covalent Bond'; bondColor = 'var(--amber)'; }
+  else { bondType = 'Nonpolar Covalent Bond'; bondColor = 'var(--green)'; }
+
+  const box = document.getElementById('bondPredict');
+  box.innerHTML = `
+    <div style="font-size:.8rem;color:var(--text-dim);margin-bottom:.3rem;">${el1.name} (${el1.en}) & ${el2.name} (${el2.en})</div>
+    <div class="bp-diff">&Delta;EN = ${diff}</div>
+    <div class="bp-type" style="color:${bondColor}">${bondType}</div>
+    <div class="bp-detail">${diff > 1.7 ? 'Electrons transferred (large EN difference)' : diff >= 0.4 ? 'Electrons shared unequally' : 'Electrons shared equally'}</div>
+  `;
+}
+
+const s4Questions = [
+  { q:"Which is more electronegative: O or S?", opts:["O","S"], answer:0, explain:"O (3.44) > S (2.58). EN decreases going down a group." },
+  { q:"What is the most electronegative element?", opts:["Oxygen","Chlorine","Fluorine","Nitrogen"], answer:2, explain:"Fluorine has the highest electronegativity at 3.98 on the Pauling scale." },
+  { q:"Na (0.93) and Cl (3.16) bond. What type?", opts:["Nonpolar covalent","Polar covalent","Ionic"], answer:2, explain:"Delta EN = 2.23 > 1.7, so the bond is ionic." },
+  { q:"C (2.55) and O (3.44) bond. What type?", opts:["Nonpolar covalent","Polar covalent","Ionic"], answer:1, explain:"Delta EN = 0.89, which falls in the polar covalent range (0.4-1.7)." },
+];
+
+// ═══════════════════════════════════════════════════════════
+// SECTION 5: Valence Electrons & Ion Formation
+// ═══════════════════════════════════════════════════════════
+const ionData = [
+  { z:3,  sym:"Li", name:"Lithium",   group:"1",  valence:1, ion:"Li+",  lose:1, ionConfig:"1s2",           isoWith:"He" },
+  { z:11, sym:"Na", name:"Sodium",    group:"1",  valence:1, ion:"Na+",  lose:1, ionConfig:"[He] 2s2 2p6",  isoWith:"Ne" },
+  { z:19, sym:"K",  name:"Potassium", group:"1",  valence:1, ion:"K+",   lose:1, ionConfig:"[Ne] 3s2 3p6",  isoWith:"Ar" },
+  { z:4,  sym:"Be", name:"Beryllium", group:"2",  valence:2, ion:"Be2+", lose:2, ionConfig:"1s2",           isoWith:"He" },
+  { z:12, sym:"Mg", name:"Magnesium", group:"2",  valence:2, ion:"Mg2+", lose:2, ionConfig:"[He] 2s2 2p6",  isoWith:"Ne" },
+  { z:20, sym:"Ca", name:"Calcium",   group:"2",  valence:2, ion:"Ca2+", lose:2, ionConfig:"[Ne] 3s2 3p6",  isoWith:"Ar" },
+  { z:13, sym:"Al", name:"Aluminum",  group:"13", valence:3, ion:"Al3+", lose:3, ionConfig:"[He] 2s2 2p6",  isoWith:"Ne" },
+  { z:7,  sym:"N",  name:"Nitrogen",  group:"15", valence:5, ion:"N3-",  lose:-3,ionConfig:"[He] 2s2 2p6",  isoWith:"Ne" },
+  { z:8,  sym:"O",  name:"Oxygen",    group:"16", valence:6, ion:"O2-",  lose:-2,ionConfig:"[He] 2s2 2p6",  isoWith:"Ne" },
+  { z:16, sym:"S",  name:"Sulfur",    group:"16", valence:6, ion:"S2-",  lose:-2,ionConfig:"[Ne] 3s2 3p6",  isoWith:"Ar" },
+  { z:9,  sym:"F",  name:"Fluorine",  group:"17", valence:7, ion:"F-",   lose:-1,ionConfig:"[He] 2s2 2p6",  isoWith:"Ne" },
+  { z:17, sym:"Cl", name:"Chlorine",  group:"17", valence:7, ion:"Cl-",  lose:-1,ionConfig:"[Ne] 3s2 3p6",  isoWith:"Ar" },
+  { z:35, sym:"Br", name:"Bromine",   group:"17", valence:7, ion:"Br-",  lose:-1,ionConfig:"[Ar] 3d10 4s2 4p6", isoWith:"Kr" },
+];
+
+function buildValenceSection() {
+  // Buttons
+  const btnRow = document.getElementById('valenceButtons');
+  btnRow.innerHTML = '';
+  ionData.forEach(d => {
+    const b = document.createElement('button');
+    b.className = 'btn';
+    b.textContent = d.sym;
+    b.onclick = () => showValence(d, b);
+    btnRow.appendChild(b);
+  });
+
+  // Ion table
+  const tbody = document.getElementById('ionTableBody');
+  tbody.innerHTML = '';
+  ionData.forEach(d => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${d.name} (${d.sym})</td><td>${d.group}</td><td>${d.valence}</td><td style="color:${d.lose>0?'var(--pink)':'var(--green)'}; font-weight:600;">${d.ion}</td><td style="font-size:.6rem;">${d.ionConfig}</td><td>${d.isoWith}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function showValence(d, btn) {
+  document.querySelectorAll('#valenceButtons .btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const el = elByZ[d.z];
+  const isLoss = d.lose > 0;
+  const action = isLoss ? `Loses ${d.lose} electron${d.lose>1?'s':''}` : `Gains ${Math.abs(d.lose)} electron${Math.abs(d.lose)>1?'s':''}`;
+  const arrow = isLoss ? '&#10142;' : '&#10142;';
+
+  const display = document.getElementById('valenceDisplay');
+  display.innerHTML = `
+    <div class="valence-atom">
+      <div class="va-label">${el.name} (${el.sym})</div>
+      ${buildShellSVG(el.z, false)}
+      <div class="va-config">${el.config}</div>
+      <div style="font-size:.65rem;color:var(--amber);margin-top:.2rem;">Valence e-: ${d.valence}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div class="valence-arrow">${arrow}</div>
+      <div style="font-size:.65rem;color:${isLoss?'var(--pink)':'var(--green)'};">${action}</div>
+    </div>
+    <div class="valence-atom">
+      <div class="va-label" style="color:${isLoss?'var(--pink)':'var(--green)'};">${d.ion}</div>
+      ${buildShellSVG(el.z, d.lose)}
+      <div class="va-config">${d.ionConfig}</div>
+      <div style="font-size:.65rem;color:var(--text-dim);margin-top:.2rem;">Same as ${d.isoWith}</div>
+    </div>
+  `;
+}
+
+function buildShellSVG(z, ionChange) {
+  const el = elByZ[z];
+  // Parse config to get shell electron counts
+  let totalE = z;
+  if (ionChange !== false) {
+    totalE = z - ionChange; // for cation lose>0 => fewer e, for anion lose<0 => more e
+  }
+
+  // Determine shell distribution
+  const shells = getShellDistribution(totalE);
+  const maxShells = shells.length;
+  const size = 110;
+  const cx = size/2, cy = size/2;
+
+  let svg = `<svg class="valence-shell-svg" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">`;
+
+  // Draw shells
+  const rStep = (size/2 - 10) / (maxShells + 0.5);
+  for (let s = 0; s < maxShells; s++) {
+    const r = rStep * (s + 1);
+    const isOuter = s === maxShells - 1;
+    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${isOuter ? (ionChange === false ? 'var(--amber)' : 'var(--green)') : 'var(--border)'}" stroke-width="${isOuter?1.5:0.8}" stroke-dasharray="${isOuter?'':'3,3'}"/>`;
+    // Draw electrons on this shell
+    const n = shells[s];
+    for (let e = 0; e < n; e++) {
+      const angle = (2 * Math.PI * e / n) - Math.PI/2;
+      const ex = cx + r * Math.cos(angle);
+      const ey = cy + r * Math.sin(angle);
+      const eColor = (isOuter && ionChange === false) ? '#f59e0b' : '#6366f1';
+      svg += `<circle cx="${ex}" cy="${ey}" r="3" fill="${eColor}"/>`;
+    }
+  }
+
+  // Nucleus
+  svg += `<circle cx="${cx}" cy="${cy}" r="8" fill="var(--surface2)" stroke="var(--primary)" stroke-width="1"/>`;
+  svg += `<text x="${cx}" y="${cy+3}" text-anchor="middle" fill="#fff" font-size="7" font-family="JetBrains Mono">${ionChange === false ? el.sym : (elByZ[z].sym)}</text>`;
+  svg += `</svg>`;
+  return svg;
+}
+
+function getShellDistribution(totalE) {
+  // Simplified shell distribution for visualization
+  const maxPerShell = [2, 8, 18, 32];
+  const shells = [];
+  let remaining = totalE;
+  for (let i = 0; i < maxPerShell.length && remaining > 0; i++) {
+    const n = Math.min(remaining, maxPerShell[i]);
+    shells.push(n);
+    remaining -= n;
+  }
+  return shells;
+}
+
+const s5Questions = [
+  { q:"What ion does Magnesium (Mg) form?", opts:["Mg+","Mg2+","Mg-","Mg2-"], answer:1, explain:"Mg is in Group 2 and loses 2 electrons to form Mg2+, achieving the electron config of Ne." },
+  { q:"How many valence electrons does Sulfur have?", opts:["2","4","6","8"], answer:2, explain:"Sulfur is in Group 16 and has 6 valence electrons." },
+  { q:"Fluorine gains 1 electron. What noble gas config does F- match?", opts:["He","Ne","Ar","Kr"], answer:1, explain:"F- has 10 electrons, same as Neon (10 electrons): 1s2 2s2 2p6." },
+  { q:"Which forms a cation: Na or Cl?", opts:["Na","Cl"], answer:0, explain:"Na (metal, Group 1) loses an electron to form Na+. Cl (nonmetal) gains an electron to form Cl-." },
+];
+
+// ═══════════════════════════════════════════════════════════
+// SECTION 6: Quick Quiz
+// ═══════════════════════════════════════════════════════════
+const quizQuestions = [
+  { q:"What is the trend for atomic radius going across a period left to right?", opts:["Increases","Decreases","Stays the same","Alternates"], answer:1 },
+  { q:"Which element has a larger atomic radius: K or Ca?", opts:["K","Ca"], answer:0 },
+  { q:"Ionization energy generally ___ going down a group.", opts:["Increases","Decreases","Stays the same"], answer:1 },
+  { q:"Which has the highest electronegativity?", opts:["Na","C","N","F"], answer:3 },
+  { q:"What type of bond forms between Na (EN 0.93) and F (EN 3.98)?", opts:["Nonpolar covalent","Polar covalent","Ionic"], answer:2 },
+  { q:"How many valence electrons does an element in Group 1 have?", opts:["1","2","7","8"], answer:0 },
+  { q:"What ion does Aluminum form?", opts:["Al+","Al2+","Al3+","Al-"], answer:2 },
+  { q:"Which noble gas does Cl- have the same electron config as?", opts:["Ne","Ar","Kr","He"], answer:1 },
+  { q:"Why does B have lower IE than Be despite being further right?", opts:["B is bigger","B's outer electron is in a higher-energy 2p subshell","B has fewer protons","B is a metalloid"], answer:1 },
+  { q:"Across a period, electronegativity generally:", opts:["Decreases","Increases","Stays the same","Halves"], answer:1 },
+];
+
+let quizScore = 0;
+let quizAnswered = new Set();
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  quizQuestions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-q';
+    div.id = `quiz-q-${i}`;
+    let btns = q.opts.map((o, j) =>
+      `<button class="btn" onclick="answerQuiz(${i},${j})">${o}</button>`
+    ).join('');
+    div.innerHTML = `<div class="qq-text"><span class="qq-num">Q${i+1}.</span> ${q.q}</div><div class="btn-row">${btns}</div><div class="feedback" id="quiz-fb-${i}"></div>`;
+    container.appendChild(div);
+  });
+}
+
+function answerQuiz(qi, ai) {
+  if (quizAnswered.has(qi)) return;
+  quizAnswered.add(qi);
+  const q = quizQuestions[qi];
+  const btns = document.querySelectorAll(`#quiz-q-${qi} .btn`);
+  const fb = document.getElementById(`quiz-fb-${qi}`);
+  if (ai === q.answer) {
+    btns[ai].classList.add('correct');
+    quizScore++;
+    fb.className = 'feedback show correct-fb';
+    fb.textContent = 'Correct!';
+  } else {
+    btns[ai].classList.add('incorrect');
+    btns[q.answer].classList.add('correct');
+    fb.className = 'feedback show incorrect-fb';
+    fb.textContent = `Incorrect. The answer is: ${q.opts[q.answer]}`;
+  }
+  document.getElementById('quizScore').textContent = quizScore;
+  if (quizAnswered.size === quizQuestions.length) markSectionComplete(6);
+}
+
+// ═══════════════════════════════════════════════════════════
+// PRACTICE BUILDER & CARD SYSTEM
+// ═══════════════════════════════════════════════════════════
+const practiceData = {
+  1: s1Questions,
+  2: s2Questions,
+  3: s3Questions,
+  4: s4Questions,
+  5: s5Questions,
+};
+const practiceAnswered = {};
+
+function buildPractice(sectionNum, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  practiceAnswered[sectionNum] = new Set();
+  const questions = practiceData[sectionNum];
+  questions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'practice-block';
+    div.id = `s${sectionNum}-q${i}`;
+    let btns = q.opts.map((o, j) =>
+      `<button class="btn" onclick="answerPractice(${sectionNum},${i},${j})">${o}</button>`
+    ).join('');
+    div.innerHTML = `<div class="q-text"><span class="q-num">Q${i+1}.</span> ${q.q}</div><div class="btn-row">${btns}</div><div class="feedback" id="s${sectionNum}-fb-${i}"></div>`;
+    container.appendChild(div);
+  });
+}
+
+function answerPractice(section, qi, ai) {
+  if (practiceAnswered[section]?.has(qi)) return;
+  practiceAnswered[section].add(qi);
+  const q = practiceData[section][qi];
+  const btns = document.querySelectorAll(`#s${section}-q${qi} .btn`);
+  const fb = document.getElementById(`s${section}-fb-${qi}`);
+  if (ai === q.answer) {
+    btns[ai].classList.add('correct');
+    fb.className = 'feedback show correct-fb';
+    fb.textContent = 'Correct! ' + q.explain;
+  } else {
+    btns[ai].classList.add('incorrect');
+    btns[q.answer].classList.add('correct');
+    fb.className = 'feedback show incorrect-fb';
+    fb.textContent = q.explain;
+  }
+  // Check if all practice in this section answered
+  if (practiceAnswered[section].size === practiceData[section].length) {
+    markSectionComplete(section);
+  }
+}
+
+// Card toggling
+function toggleCard(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+// Progress tracking
+let completedSections = new Set();
+function markSectionComplete(num) {
+  completedSections.add(num);
+  const card = document.querySelector(`.card[data-section="${num}"]`);
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = 6;
+  const done = completedSections.size;
+  const pct = (done / total) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${done} / ${total} sections`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  buildPeriodicTable();
+  buildRadiusGrid();
+  buildIEChart();
+  buildENGrid();
+  buildValenceSection();
+  buildQuiz();
+
+  // Build practice sections
+  buildPractice(1, 's1Practice');
+  buildPractice(2, 's2Practice');
+  buildPractice(3, 's3Practice');
+  buildPractice(4, 's4Practice');
+  buildPractice(5, 's5Practice');
+});
+</script>
+</body>
+</html>

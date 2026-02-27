@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 2: Kinematics — 1D Motion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --bg-card: #262a33;
+    --bg-card-hover: #2c313c;
+    --bg-input: #1a1d24;
+    --border: #3a3f4b;
+    --text: #e2e4e9;
+    --text-dim: #9ca3af;
+    --text-bright: #ffffff;
+    --indigo: #6366f1;
+    --indigo-dim: rgba(99,102,241,0.15);
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.15);
+    --pink: #ec4899;
+    --pink-dim: rgba(236,72,153,0.15);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.15);
+    --radius: 10px;
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER & PROGRESS */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(30, 33, 40, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+  }
+
+  .top-bar h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .top-bar h1 span { color: var(--indigo); }
+
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--indigo), #818cf8);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  /* CONTENT */
+  .content { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: var(--transition);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--transition);
+  }
+
+  .section-header:hover { background: var(--bg-card-hover); }
+
+  .section-header h2 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--indigo-dim);
+    color: var(--indigo);
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .chevron {
+    width: 20px;
+    height: 20px;
+    color: var(--text-dim);
+    transition: transform var(--transition);
+    flex-shrink: 0;
+  }
+
+  .section-card.open .chevron { transform: rotate(180deg); }
+
+  .section-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .section-card.open .section-body { max-height: 30000px; }
+
+  .section-inner { padding: 0 22px 22px; }
+
+  /* TYPOGRAPHY */
+  .concept-text {
+    font-size: 0.82rem;
+    color: var(--text);
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+
+  .concept-text strong { color: var(--text-bright); }
+
+  .formula-box {
+    background: var(--indigo-dim);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 16px 0;
+    text-align: center;
+    font-size: 1rem;
+    color: var(--indigo);
+    font-weight: 600;
+  }
+
+  .formula-box.large {
+    font-size: 1.15rem;
+    padding: 20px 24px;
+  }
+
+  .formula-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .key-point {
+    background: var(--amber-dim);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 0.78rem;
+    color: var(--amber);
+  }
+
+  /* INTERACTIVE AREAS */
+  .interactive-area {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 16px 0;
+    position: relative;
+  }
+
+  .interactive-label {
+    font-size: 0.7rem;
+    color: var(--indigo);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .readout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .readout-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 0.75rem;
+  }
+
+  .readout-item .label { color: var(--text-dim); font-size: 0.65rem; }
+  .readout-item .value { color: var(--text-bright); font-weight: 600; }
+  .readout-item .value.positive { color: var(--green); }
+  .readout-item .value.negative { color: var(--pink); }
+
+  /* SVG */
+  svg text { font-family: 'JetBrains Mono', monospace; }
+
+  /* PRACTICE PROBLEMS */
+  .practice-block {
+    margin-top: 20px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  .practice-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--amber);
+    margin-bottom: 14px;
+  }
+
+  .problem {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+
+  .problem p {
+    font-size: 0.78rem;
+    margin-bottom: 10px;
+    line-height: 1.7;
+  }
+
+  .problem-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .problem input[type="text"],
+  .problem input[type="number"] {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--text-bright);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    width: 120px;
+    outline: none;
+    transition: border-color var(--transition);
+  }
+
+  .problem input:focus { border-color: var(--indigo); }
+
+  .problem .unit-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-card);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: var(--transition);
+    user-select: none;
+  }
+
+  .btn:hover { background: var(--bg-card-hover); border-color: var(--indigo); color: var(--text-bright); }
+
+  .btn-primary {
+    background: var(--indigo);
+    border-color: var(--indigo);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: #5558e6; }
+
+  .btn-sm { padding: 6px 12px; font-size: 0.68rem; }
+
+  .feedback {
+    font-size: 0.75rem;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: none;
+  }
+
+  .feedback.correct {
+    display: block;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(34,197,94,0.3);
+  }
+
+  .feedback.incorrect {
+    display: block;
+    background: var(--pink-dim);
+    color: var(--pink);
+    border: 1px solid rgba(236,72,153,0.3);
+  }
+
+  /* SLIDER */
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    outline: none;
+    margin: 10px 0;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--indigo);
+    cursor: pointer;
+    border: 2px solid var(--text-bright);
+  }
+
+  /* CONTROLS ROW */
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin: 12px 0;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .control-group label {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .control-group input[type="number"] {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: var(--text-bright);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    width: 100px;
+    outline: none;
+  }
+
+  .control-group input[type="number"]:focus { border-color: var(--indigo); }
+
+  select {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: var(--text-bright);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    outline: none;
+    cursor: pointer;
+  }
+
+  /* EQUATION HIGHLIGHT */
+  .eq-card {
+    background: var(--bg-input);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 10px 0;
+    text-align: center;
+    transition: var(--transition);
+  }
+
+  .eq-card.highlighted {
+    border-color: var(--green);
+    background: var(--green-dim);
+  }
+
+  .eq-card .eq-num {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .eq-card .eq-formula {
+    font-size: 1.05rem;
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+
+  .eq-card.highlighted .eq-formula { color: var(--green); }
+
+  /* WORKED EXAMPLE */
+  .worked-example {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 14px 0;
+  }
+
+  .worked-example h4 {
+    font-size: 0.78rem;
+    color: var(--amber);
+    margin-bottom: 10px;
+  }
+
+  .step {
+    padding: 8px 12px;
+    margin: 6px 0;
+    border-left: 2px solid var(--border);
+    font-size: 0.76rem;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: all 0.4s ease;
+  }
+
+  .step.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .step .step-label {
+    color: var(--indigo);
+    font-weight: 600;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* QUIZ */
+  .quiz-score {
+    background: var(--indigo-dim);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .quiz-score .score-text {
+    font-size: 0.85rem;
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+
+  .quiz-q {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  .quiz-q .q-num {
+    font-size: 0.65rem;
+    color: var(--indigo);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .quiz-q p {
+    font-size: 0.78rem;
+    margin-bottom: 10px;
+    line-height: 1.7;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .quiz-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.76rem;
+    transition: var(--transition);
+  }
+
+  .quiz-option:hover { border-color: var(--indigo); background: var(--bg-card-hover); }
+
+  .quiz-option.selected { border-color: var(--indigo); background: var(--indigo-dim); }
+  .quiz-option.correct-answer { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .quiz-option.wrong-answer { border-color: var(--pink); background: var(--pink-dim); color: var(--pink); }
+  .quiz-option.disabled { pointer-events: none; }
+
+  .quiz-option .letter {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .quiz-explanation {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+  }
+
+  .quiz-explanation.show { display: block; }
+
+  /* ANIMATION AREA */
+  .anim-area {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .content { padding: 14px; }
+    .section-inner { padding: 0 14px 14px; }
+    .section-header { padding: 14px 16px; }
+    .readout { gap: 8px; }
+    .controls-row { gap: 8px; }
+    .formula-box { font-size: 0.85rem; padding: 12px 14px; }
+    .formula-box.large { font-size: 0.95rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <h1><span>Week 2</span> / Kinematics — 1D Motion</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 27 problems completed</div>
+</div>
+
+<div class="content">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: Position & Displacement -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Position &amp; Displacement</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">
+        <strong>Position</strong> is where an object is located on a coordinate axis (measured in meters from an origin).
+        <strong>Displacement</strong> is the change in position: <strong>&Delta;x = x<sub>f</sub> &minus; x<sub>i</sub></strong>.
+        It has a sign (direction). <strong>Distance</strong> is the total path length traveled and is always positive.
+      </p>
+
+      <div class="key-point">
+        Displacement can be zero even when distance is not. If you walk 5 m right then 5 m back, distance = 10 m but displacement = 0.
+      </div>
+
+      <div class="interactive-area" id="displacementLab">
+        <div class="interactive-label">Interactive: Click the number line to set start and end positions</div>
+        <svg id="dispSvg" width="100%" height="160" viewBox="0 0 800 160"></svg>
+        <div class="readout" id="dispReadout">
+          <div class="readout-item"><div class="label">Start (x&#x1D62;)</div><div class="value" id="dispStart">--</div></div>
+          <div class="readout-item"><div class="label">End (x&#x1D53;)</div><div class="value" id="dispEnd">--</div></div>
+          <div class="readout-item"><div class="label">Displacement (&Delta;x)</div><div class="value" id="dispDisplacement">--</div></div>
+          <div class="readout-item"><div class="label">Distance</div><div class="value" id="dispDistance">--</div></div>
+        </div>
+        <div style="margin-top:10px;"><button class="btn btn-sm" onclick="resetDisplacement()">Reset</button></div>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+
+        <div class="problem" id="p1_1">
+          <p><strong>1.1</strong> A runner starts at x = 2 m and finishes at x = 8 m. What is the displacement?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p1_1_input" placeholder="answer"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p1_1', 6)">Check</button>
+          </div>
+          <div class="feedback" id="p1_1_fb"></div>
+        </div>
+
+        <div class="problem" id="p1_2">
+          <p><strong>1.2</strong> A car drives 10 m east, then 4 m west. What is the displacement? (East = positive)</p>
+          <div class="problem-input-row">
+            <input type="number" id="p1_2_input" placeholder="answer"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p1_2', 6)">Check</button>
+          </div>
+          <div class="feedback" id="p1_2_fb"></div>
+        </div>
+
+        <div class="problem" id="p1_3">
+          <p><strong>1.3</strong> A ball rolls from x = 5 m to x = &minus;3 m. What is the distance traveled?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p1_3_input" placeholder="answer"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p1_3', 8)">Check</button>
+          </div>
+          <div class="feedback" id="p1_3_fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: Velocity -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Velocity</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">
+        <strong>Average velocity</strong> is the displacement divided by time:
+      </p>
+
+      <div class="formula-box">v&#x0304; = &Delta;x / &Delta;t = (x<sub>f</sub> &minus; x<sub>i</sub>) / (t<sub>f</sub> &minus; t<sub>i</sub>)</div>
+
+      <p class="concept-text">
+        On a <strong>position-time graph</strong>, velocity is the <strong>slope</strong> of the line.
+        Steeper slope = faster. Flat line = stopped. Negative slope = moving backward (negative direction).
+        The secant line between two points gives average velocity over that interval.
+      </p>
+
+      <div class="key-point">
+        Speed is the magnitude of velocity (always positive). Velocity includes direction (can be negative).
+      </div>
+
+      <div class="interactive-area" id="velocityLab">
+        <div class="interactive-label">Interactive: Drag the 5 points up/down to shape the position-time graph</div>
+        <svg id="velSvg" width="100%" height="300" viewBox="0 0 800 300"></svg>
+        <div class="readout" id="velReadout">
+          <div class="readout-item"><div class="label">Avg Velocity (full)</div><div class="value" id="velAvg">--</div></div>
+          <div class="readout-item"><div class="label">Interpretation</div><div class="value" id="velInterp">--</div></div>
+        </div>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+
+        <div class="problem" id="p2_1">
+          <p><strong>2.1</strong> An object moves from x = 3 m to x = 15 m in 4 s. What is its average velocity?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p2_1_input" step="any" placeholder="answer"> <span class="unit-label">m/s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p2_1', 3)">Check</button>
+          </div>
+          <div class="feedback" id="p2_1_fb"></div>
+        </div>
+
+        <div class="problem" id="p2_2">
+          <p><strong>2.2</strong> A cyclist rides 100 m east in 20 s, then 60 m west in 10 s. What is the average velocity for the entire trip?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p2_2_input" step="any" placeholder="answer"> <span class="unit-label">m/s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p2_2', 1.33, 0.02)">Check</button>
+          </div>
+          <div class="feedback" id="p2_2_fb"></div>
+        </div>
+
+        <div class="problem" id="p2_3">
+          <p><strong>2.3</strong> On a position-time graph the slope between t = 2 s (x = 10 m) and t = 5 s (x = 4 m) is the average velocity. What is it?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p2_3_input" step="any" placeholder="answer"> <span class="unit-label">m/s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p2_3', -2)">Check</button>
+          </div>
+          <div class="feedback" id="p2_3_fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: Acceleration -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Acceleration</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">
+        <strong>Average acceleration</strong> is the rate of change of velocity:
+      </p>
+
+      <div class="formula-box">a&#x0304; = &Delta;v / &Delta;t = (v<sub>f</sub> &minus; v<sub>i</sub>) / (t<sub>f</sub> &minus; t<sub>i</sub>)</div>
+
+      <p class="concept-text">
+        On a <strong>velocity-time graph</strong>, acceleration is the <strong>slope</strong>.
+        The <strong>area under the curve</strong> equals displacement.
+        Positive slope = speeding up (in positive direction). Negative slope = slowing down (or speeding up in negative direction). Zero slope = constant velocity.
+      </p>
+
+      <div class="key-point">
+        "Negative acceleration" does not always mean "slowing down." If velocity is negative and acceleration is also negative, the object speeds up in the negative direction.
+      </div>
+
+      <div class="interactive-area" id="accelLab">
+        <div class="interactive-label">Interactive: Drag the endpoints to shape the velocity-time line. Shaded area = displacement.</div>
+        <svg id="accelSvg" width="100%" height="300" viewBox="0 0 800 300"></svg>
+        <div class="readout" id="accelReadout">
+          <div class="readout-item"><div class="label">Acceleration (slope)</div><div class="value" id="accelVal">--</div></div>
+          <div class="readout-item"><div class="label">Displacement (area)</div><div class="value" id="accelDisp">--</div></div>
+          <div class="readout-item"><div class="label">Behavior</div><div class="value" id="accelBehavior">--</div></div>
+        </div>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+
+        <div class="problem" id="p3_1">
+          <p><strong>3.1</strong> A car accelerates from 5 m/s to 25 m/s in 10 s. What is the average acceleration?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p3_1_input" step="any" placeholder="answer"> <span class="unit-label">m/s&sup2;</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p3_1', 2)">Check</button>
+          </div>
+          <div class="feedback" id="p3_1_fb"></div>
+        </div>
+
+        <div class="problem" id="p3_2">
+          <p><strong>3.2</strong> On a v-t graph, velocity goes from 20 m/s at t = 0 to 0 m/s at t = 4 s (linearly). What is the displacement? (Hint: area of triangle)</p>
+          <div class="problem-input-row">
+            <input type="number" id="p3_2_input" step="any" placeholder="answer"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p3_2', 40)">Check</button>
+          </div>
+          <div class="feedback" id="p3_2_fb"></div>
+        </div>
+
+        <div class="problem" id="p3_3">
+          <p><strong>3.3</strong> A bus moves at constant velocity 15 m/s for 8 s. What is (a) the acceleration, and (b) the displacement? Enter displacement below.</p>
+          <div class="problem-input-row">
+            <input type="number" id="p3_3_input" step="any" placeholder="displacement"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p3_3', 120)">Check</button>
+          </div>
+          <div class="feedback" id="p3_3_fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: Big Three Kinematic Equations -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> The Big Three Kinematic Equations</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">
+        These three equations relate five kinematic variables: <strong>x</strong> (displacement), <strong>v<sub>0</sub></strong> (initial velocity),
+        <strong>v</strong> (final velocity), <strong>a</strong> (acceleration), and <strong>t</strong> (time).
+        Each equation is missing one variable. Pick the equation that doesn't need the unknown you can't determine.
+      </p>
+
+      <div class="formula-row">
+        <div class="eq-card" id="eq1">
+          <div class="eq-num">Equation 1 — missing x</div>
+          <div class="eq-formula">v = v&#x2080; + at</div>
+        </div>
+        <div class="eq-card" id="eq2">
+          <div class="eq-num">Equation 2 — missing v</div>
+          <div class="eq-formula">x = x&#x2080; + v&#x2080;t + &frac12;at&sup2;</div>
+        </div>
+        <div class="eq-card" id="eq3">
+          <div class="eq-num">Equation 3 — missing t</div>
+          <div class="eq-formula">v&sup2; = v&#x2080;&sup2; + 2a(x &minus; x&#x2080;)</div>
+        </div>
+      </div>
+
+      <div class="key-point">
+        Strategy: List what you know and what you need. Find the equation whose "missing" variable is the one you neither know nor need.
+      </div>
+
+      <!-- Equation Selector Tool -->
+      <div class="interactive-area" id="eqSelector">
+        <div class="interactive-label">Equation Selector: Check the variables you KNOW, then see which equation to use</div>
+        <div style="display:flex;flex-wrap:wrap;gap:14px;margin:12px 0;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;">
+            <input type="checkbox" class="eq-var" data-var="x" onchange="updateEqSelector()"> &Delta;x (displacement)
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;">
+            <input type="checkbox" class="eq-var" data-var="v0" onchange="updateEqSelector()"> v&#x2080; (initial vel.)
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;">
+            <input type="checkbox" class="eq-var" data-var="v" onchange="updateEqSelector()"> v (final vel.)
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;">
+            <input type="checkbox" class="eq-var" data-var="a" onchange="updateEqSelector()"> a (acceleration)
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;">
+            <input type="checkbox" class="eq-var" data-var="t" onchange="updateEqSelector()"> t (time)
+          </label>
+        </div>
+        <div id="eqSelectorResult" style="font-size:0.78rem;color:var(--text-dim);margin-top:8px;">Check 3 or 4 variables you know to see which equation to use.</div>
+      </div>
+
+      <!-- Worked Example 1 -->
+      <div class="worked-example" id="we1">
+        <h4>Worked Example 1</h4>
+        <p style="font-size:0.78rem;margin-bottom:10px;">A car starts from rest and accelerates at 3 m/s&sup2; for 5 s. How far does it travel?</p>
+        <div class="step" data-step="1"><div class="step-label">Identify knowns</div>v&#x2080; = 0 m/s, a = 3 m/s&sup2;, t = 5 s. Find: &Delta;x.</div>
+        <div class="step" data-step="2"><div class="step-label">Choose equation</div>We don't know or need v. Use Eq 2: x = x&#x2080; + v&#x2080;t + &frac12;at&sup2;</div>
+        <div class="step" data-step="3"><div class="step-label">Substitute</div>&Delta;x = 0 + (0)(5) + &frac12;(3)(5)&sup2; = &frac12;(3)(25)</div>
+        <div class="step" data-step="4"><div class="step-label">Solve</div>&Delta;x = 37.5 m</div>
+        <button class="btn btn-sm" onclick="revealSteps('we1')" style="margin-top:8px;">Show Steps</button>
+      </div>
+
+      <!-- Worked Example 2 -->
+      <div class="worked-example" id="we2">
+        <h4>Worked Example 2</h4>
+        <p style="font-size:0.78rem;margin-bottom:10px;">A bicycle moving at 12 m/s brakes and stops over 18 m. What is the acceleration?</p>
+        <div class="step" data-step="1"><div class="step-label">Identify knowns</div>v&#x2080; = 12 m/s, v = 0 m/s, &Delta;x = 18 m. Find: a.</div>
+        <div class="step" data-step="2"><div class="step-label">Choose equation</div>We don't know or need t. Use Eq 3: v&sup2; = v&#x2080;&sup2; + 2a&Delta;x</div>
+        <div class="step" data-step="3"><div class="step-label">Substitute</div>0&sup2; = 12&sup2; + 2a(18) &rarr; 0 = 144 + 36a</div>
+        <div class="step" data-step="4"><div class="step-label">Solve</div>a = &minus;144/36 = &minus;4 m/s&sup2;</div>
+        <button class="btn btn-sm" onclick="revealSteps('we2')" style="margin-top:8px;">Show Steps</button>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+
+        <div class="problem" id="p4_1">
+          <p><strong>4.1</strong> A train accelerates from 10 m/s at 2 m/s&sup2; for 6 s. What is its final velocity?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p4_1_input" step="any" placeholder="answer"> <span class="unit-label">m/s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p4_1', 22)">Check</button>
+          </div>
+          <div class="feedback" id="p4_1_fb"></div>
+        </div>
+
+        <div class="problem" id="p4_2">
+          <p><strong>4.2</strong> A ball is thrown upward at 20 m/s. How high does it go? (Use a = &minus;9.8 m/s&sup2;, v = 0 at top)</p>
+          <div class="problem-input-row">
+            <input type="number" id="p4_2_input" step="any" placeholder="answer"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p4_2', 20.41, 0.05)">Check</button>
+          </div>
+          <div class="feedback" id="p4_2_fb"></div>
+        </div>
+
+        <div class="problem" id="p4_3">
+          <p><strong>4.3</strong> A rocket starts from rest and needs to reach 100 m/s. If it accelerates at 5 m/s&sup2;, how far does it travel during this acceleration?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p4_3_input" step="any" placeholder="answer"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p4_3', 1000)">Check</button>
+          </div>
+          <div class="feedback" id="p4_3_fb"></div>
+        </div>
+
+        <div class="problem" id="p4_4">
+          <p><strong>4.4</strong> A car going 30 m/s decelerates at &minus;6 m/s&sup2;. How long until it stops?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p4_4_input" step="any" placeholder="answer"> <span class="unit-label">s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p4_4', 5)">Check</button>
+          </div>
+          <div class="feedback" id="p4_4_fb"></div>
+        </div>
+
+        <div class="problem" id="p4_5">
+          <p><strong>4.5</strong> A motorcycle starting from rest travels 200 m while accelerating at 4 m/s&sup2;. What is its final speed?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p4_5_input" step="any" placeholder="answer"> <span class="unit-label">m/s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p4_5', 40)">Check</button>
+          </div>
+          <div class="feedback" id="p4_5_fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: Free Fall -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Free Fall</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">
+        <strong>Free fall</strong> is motion under gravity alone (no air resistance).
+        Near Earth's surface, all objects experience the same acceleration regardless of mass:
+      </p>
+
+      <div class="formula-box large">a = &minus;g = &minus;9.8 m/s&sup2; (taking upward as positive)</div>
+
+      <p class="concept-text">
+        The kinematic equations apply with a = &minus;9.8 m/s&sup2;. At the peak of upward motion, v = 0 (instantaneously).
+        An object thrown upward decelerates on the way up and accelerates on the way down, both at 9.8 m/s&sup2;.
+      </p>
+
+      <div class="key-point">
+        The time to reach the peak equals the time to fall back to the same height. Symmetry of free fall.
+      </div>
+
+      <div class="interactive-area" id="freefallLab">
+        <div class="interactive-label">Interactive: Set initial height and velocity, then watch the object fall</div>
+        <div class="controls-row">
+          <div class="control-group">
+            <label>Initial Height (m)</label>
+            <input type="number" id="ffHeight" value="50" min="1" max="200" step="1">
+          </div>
+          <div class="control-group">
+            <label>Initial Velocity (m/s)</label>
+            <input type="number" id="ffVelocity" value="0" min="-30" max="30" step="1">
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="startFreeFall()" id="ffStartBtn">Drop / Launch</button>
+          <button class="btn btn-sm" onclick="resetFreeFall()">Reset</button>
+        </div>
+        <svg id="ffSvg" width="100%" height="360" viewBox="0 0 800 360"></svg>
+        <div class="readout" id="ffReadout">
+          <div class="readout-item"><div class="label">Time</div><div class="value" id="ffTime">0.00 s</div></div>
+          <div class="readout-item"><div class="label">Height (y)</div><div class="value" id="ffY">-- m</div></div>
+          <div class="readout-item"><div class="label">Velocity (v)</div><div class="value" id="ffV">-- m/s</div></div>
+          <div class="readout-item"><div class="label">Status</div><div class="value" id="ffStatus">Ready</div></div>
+        </div>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+
+        <div class="problem" id="p5_1">
+          <p><strong>5.1</strong> A stone is dropped from a 45 m cliff. How long does it take to hit the ground? (g = 9.8 m/s&sup2;)</p>
+          <div class="problem-input-row">
+            <input type="number" id="p5_1_input" step="any" placeholder="answer"> <span class="unit-label">s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p5_1', 3.03, 0.02)">Check</button>
+          </div>
+          <div class="feedback" id="p5_1_fb"></div>
+        </div>
+
+        <div class="problem" id="p5_2">
+          <p><strong>5.2</strong> A ball is thrown straight up at 15 m/s. What maximum height does it reach?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p5_2_input" step="any" placeholder="answer"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p5_2', 11.48, 0.05)">Check</button>
+          </div>
+          <div class="feedback" id="p5_2_fb"></div>
+        </div>
+
+        <div class="problem" id="p5_3">
+          <p><strong>5.3</strong> A ball is thrown downward at 5 m/s from a 30 m building. What is its speed just before hitting the ground?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p5_3_input" step="any" placeholder="answer"> <span class="unit-label">m/s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p5_3', 25.08, 0.1)">Check</button>
+          </div>
+          <div class="feedback" id="p5_3_fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: Quick Quiz -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quick Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <div class="quiz-score">
+        <div class="score-text" id="quizScore">Score: 0 / 10</div>
+        <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+      </div>
+      <div id="quizContainer"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+// ============================================================
+// GLOBAL STATE
+// ============================================================
+const solved = new Set();
+const totalProblems = 27; // 3+3+3+5+3+10
+
+function updateProgress() {
+  const pct = Math.round((solved.size / totalProblems) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = solved.size + ' / ' + totalProblems + ' problems completed';
+}
+
+// ============================================================
+// SECTION TOGGLE
+// ============================================================
+function toggleSection(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+// ============================================================
+// GENERIC PROBLEM CHECKER
+// ============================================================
+function checkProblem(id, answer, tolerance) {
+  if (solved.has(id)) return;
+  tolerance = tolerance || (Math.abs(answer) * 0.02 + 0.01);
+  const input = document.getElementById(id + '_input');
+  const fb = document.getElementById(id + '_fb');
+  const val = parseFloat(input.value);
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Please enter a number.';
+    return;
+  }
+  if (Math.abs(val - answer) <= tolerance) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! The answer is ' + answer + '.';
+    solved.add(id);
+    updateProgress();
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Try again. (Hint: answer is near ' + answer.toFixed(2) + ')';
+  }
+}
+
+// ============================================================
+// WORKED EXAMPLE STEP REVEAL
+// ============================================================
+function revealSteps(containerId) {
+  const container = document.getElementById(containerId);
+  const steps = container.querySelectorAll('.step');
+  steps.forEach((s, i) => {
+    setTimeout(() => s.classList.add('visible'), (i + 1) * 400);
+  });
+}
+
+// ============================================================
+// SECTION 1: Displacement Interactive
+// ============================================================
+(function initDisplacement() {
+  const svg = document.getElementById('dispSvg');
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const ox = 60, oy = 80, w = 680, tickH = 12;
+  const minVal = -10, maxVal = 10;
+  const numTicks = maxVal - minVal;
+  const step = w / numTicks;
+
+  let startPos = null, endPos = null;
+
+  // Draw axis
+  const axis = document.createElementNS(ns, 'line');
+  Object.entries({x1:ox,y1:oy,x2:ox+w,y2:oy,stroke:'#9ca3af','stroke-width':2}).forEach(([k,v])=>axis.setAttribute(k,v));
+  svg.appendChild(axis);
+
+  // Ticks and labels
+  for (let i = minVal; i <= maxVal; i++) {
+    const x = ox + (i - minVal) * step;
+    const tick = document.createElementNS(ns, 'line');
+    Object.entries({x1:x,y1:oy-tickH/2,x2:x,y2:oy+tickH/2,stroke:'#9ca3af','stroke-width':1}).forEach(([k,v])=>tick.setAttribute(k,v));
+    svg.appendChild(tick);
+
+    const label = document.createElementNS(ns, 'text');
+    Object.entries({x:x,y:oy+28,'text-anchor':'middle','font-size':'11',fill:'#9ca3af'}).forEach(([k,v])=>label.setAttribute(k,v));
+    label.textContent = i;
+    svg.appendChild(label);
+  }
+
+  // Origin label
+  const originLabel = document.createElementNS(ns, 'text');
+  Object.entries({x:ox+w/2,y:oy+48,'text-anchor':'middle','font-size':'10',fill:'#6366f1'}).forEach(([k,v])=>originLabel.setAttribute(k,v));
+  originLabel.textContent = 'Position (m)';
+  svg.appendChild(originLabel);
+
+  // Direction arrows
+  const arrowR = document.createElementNS(ns, 'text');
+  Object.entries({x:ox+w+10,y:oy+5,'font-size':'11',fill:'#22c55e'}).forEach(([k,v])=>arrowR.setAttribute(k,v));
+  arrowR.textContent = '+';
+  svg.appendChild(arrowR);
+
+  const arrowL = document.createElementNS(ns, 'text');
+  Object.entries({x:ox-25,y:oy+5,'font-size':'11',fill:'#ec4899'}).forEach(([k,v])=>arrowL.setAttribute(k,v));
+  arrowL.textContent = '-';
+  svg.appendChild(arrowL);
+
+  // Car element
+  const carGroup = document.createElementNS(ns, 'g');
+  carGroup.setAttribute('id', 'dispCar');
+  carGroup.style.display = 'none';
+
+  // Car body
+  const carBody = document.createElementNS(ns, 'rect');
+  Object.entries({x:-20,y:-18,width:40,height:14,rx:4,fill:'#6366f1'}).forEach(([k,v])=>carBody.setAttribute(k,v));
+  carGroup.appendChild(carBody);
+
+  // Car top
+  const carTop = document.createElementNS(ns, 'rect');
+  Object.entries({x:-12,y:-28,width:24,height:12,rx:3,fill:'#818cf8'}).forEach(([k,v])=>carTop.setAttribute(k,v));
+  carGroup.appendChild(carTop);
+
+  // Wheels
+  [-12, 12].forEach(wx => {
+    const wheel = document.createElementNS(ns, 'circle');
+    Object.entries({cx:wx,cy:-2,r:4,fill:'#3a3f4b'}).forEach(([k,v])=>wheel.setAttribute(k,v));
+    carGroup.appendChild(wheel);
+  });
+
+  svg.appendChild(carGroup);
+
+  // Markers for start/end
+  const startMarker = document.createElementNS(ns, 'g');
+  startMarker.setAttribute('id', 'dispStartMarker');
+  startMarker.style.display = 'none';
+  const sm1 = document.createElementNS(ns, 'line');
+  Object.entries({x1:0,y1:-8,x2:0,y2:20,stroke:'#22c55e','stroke-width':2,'stroke-dasharray':'4,3'}).forEach(([k,v])=>sm1.setAttribute(k,v));
+  startMarker.appendChild(sm1);
+  const sm2 = document.createElementNS(ns, 'text');
+  Object.entries({x:0,y:-14,'text-anchor':'middle','font-size':'10',fill:'#22c55e'}).forEach(([k,v])=>sm2.setAttribute(k,v));
+  sm2.textContent = 'START';
+  startMarker.appendChild(sm2);
+  svg.appendChild(startMarker);
+
+  const endMarker = document.createElementNS(ns, 'g');
+  endMarker.setAttribute('id', 'dispEndMarker');
+  endMarker.style.display = 'none';
+  const em1 = document.createElementNS(ns, 'line');
+  Object.entries({x1:0,y1:-8,x2:0,y2:20,stroke:'#ec4899','stroke-width':2,'stroke-dasharray':'4,3'}).forEach(([k,v])=>em1.setAttribute(k,v));
+  endMarker.appendChild(em1);
+  const em2 = document.createElementNS(ns, 'text');
+  Object.entries({x:0,y:-14,'text-anchor':'middle','font-size':'10',fill:'#ec4899'}).forEach(([k,v])=>em2.setAttribute(k,v));
+  em2.textContent = 'END';
+  endMarker.appendChild(em2);
+  svg.appendChild(endMarker);
+
+  // Displacement arrow
+  const dispArrow = document.createElementNS(ns, 'line');
+  dispArrow.setAttribute('id', 'dispArrow');
+  Object.entries({x1:0,y1:oy+55,x2:0,y2:oy+55,stroke:'#f59e0b','stroke-width':3,'marker-end':'url(#arrowhead)'}).forEach(([k,v])=>dispArrow.setAttribute(k,v));
+  dispArrow.style.display = 'none';
+  svg.appendChild(dispArrow);
+
+  // Arrowhead marker
+  const defs = document.createElementNS(ns, 'defs');
+  const marker = document.createElementNS(ns, 'marker');
+  Object.entries({id:'arrowhead',markerWidth:8,markerHeight:6,refX:8,refY:3,orient:'auto'}).forEach(([k,v])=>marker.setAttribute(k,v));
+  const poly = document.createElementNS(ns, 'polygon');
+  poly.setAttribute('points', '0 0, 8 3, 0 6');
+  poly.setAttribute('fill', '#f59e0b');
+  marker.appendChild(poly);
+  defs.appendChild(marker);
+  svg.appendChild(defs);
+
+  function posToX(val) { return ox + (val - minVal) * step; }
+  function xToPos(x) { return Math.round((x - ox) / step + minVal); }
+
+  svg.addEventListener('click', function(e) {
+    const rect = svg.getBoundingClientRect();
+    const scaleX = 800 / rect.width;
+    const mx = (e.clientX - rect.left) * scaleX;
+    const pos = xToPos(mx);
+    const clamped = Math.max(minVal, Math.min(maxVal, pos));
+
+    if (startPos === null) {
+      startPos = clamped;
+      const sx = posToX(clamped);
+      startMarker.style.display = '';
+      startMarker.setAttribute('transform', 'translate(' + sx + ',' + oy + ')');
+      carGroup.style.display = '';
+      carGroup.setAttribute('transform', 'translate(' + sx + ',' + (oy - 2) + ')');
+      document.getElementById('dispStart').textContent = clamped + ' m';
+    } else if (endPos === null) {
+      endPos = clamped;
+      const ex = posToX(clamped);
+      endMarker.style.display = '';
+      endMarker.setAttribute('transform', 'translate(' + ex + ',' + oy + ')');
+
+      // Animate car
+      const sx = posToX(startPos);
+      carGroup.style.transition = 'transform 0.8s ease';
+      carGroup.setAttribute('transform', 'translate(' + ex + ',' + (oy - 2) + ')');
+
+      // Displacement arrow
+      dispArrow.style.display = '';
+      dispArrow.setAttribute('x1', sx);
+      dispArrow.setAttribute('x2', ex);
+
+      const disp = endPos - startPos;
+      const dist = Math.abs(disp);
+      document.getElementById('dispEnd').textContent = endPos + ' m';
+      const dEl = document.getElementById('dispDisplacement');
+      dEl.textContent = (disp >= 0 ? '+' : '') + disp + ' m';
+      dEl.className = 'value ' + (disp >= 0 ? 'positive' : 'negative');
+      document.getElementById('dispDistance').textContent = dist + ' m';
+    }
+  });
+
+  window.resetDisplacement = function() {
+    startPos = null; endPos = null;
+    startMarker.style.display = 'none';
+    endMarker.style.display = 'none';
+    carGroup.style.display = 'none';
+    carGroup.style.transition = 'none';
+    dispArrow.style.display = 'none';
+    ['dispStart','dispEnd','dispDisplacement','dispDistance'].forEach(id => {
+      const el = document.getElementById(id);
+      el.textContent = '--';
+      el.className = 'value';
+    });
+  };
+})();
+
+// ============================================================
+// SECTION 2: Velocity (Position-Time Graph)
+// ============================================================
+(function initVelocity() {
+  const svg = document.getElementById('velSvg');
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const margin = {top:30,right:30,bottom:40,left:60};
+  const gw = 800 - margin.left - margin.right;
+  const gh = 300 - margin.top - margin.bottom;
+
+  const maxT = 10, maxX = 20, minX = -5;
+  const rangeX = maxX - minX;
+
+  function tToSx(t) { return margin.left + (t / maxT) * gw; }
+  function xToSy(x) { return margin.top + ((maxX - x) / rangeX) * gh; }
+  function syToX(sy) { return maxX - ((sy - margin.top) / gh) * rangeX; }
+
+  // Grid
+  for (let t = 0; t <= maxT; t += 2) {
+    const x = tToSx(t);
+    const line = document.createElementNS(ns, 'line');
+    Object.entries({x1:x,y1:margin.top,x2:x,y2:margin.top+gh,stroke:'#2c313c','stroke-width':1}).forEach(([k,v])=>line.setAttribute(k,v));
+    svg.appendChild(line);
+    const label = document.createElementNS(ns, 'text');
+    Object.entries({x:x,y:margin.top+gh+20,'text-anchor':'middle','font-size':'10',fill:'#9ca3af'}).forEach(([k,v])=>label.setAttribute(k,v));
+    label.textContent = t;
+    svg.appendChild(label);
+  }
+
+  for (let x = minX; x <= maxX; x += 5) {
+    const y = xToSy(x);
+    const line = document.createElementNS(ns, 'line');
+    Object.entries({x1:margin.left,y1:y,x2:margin.left+gw,y2:y,stroke:'#2c313c','stroke-width':1}).forEach(([k,v])=>line.setAttribute(k,v));
+    svg.appendChild(line);
+    const label = document.createElementNS(ns, 'text');
+    Object.entries({x:margin.left-10,y:y+4,'text-anchor':'end','font-size':'10',fill:'#9ca3af'}).forEach(([k,v])=>label.setAttribute(k,v));
+    label.textContent = x;
+    svg.appendChild(label);
+  }
+
+  // Axis labels
+  const tLabel = document.createElementNS(ns, 'text');
+  Object.entries({x:margin.left+gw/2,y:margin.top+gh+36,'text-anchor':'middle','font-size':'11',fill:'#6366f1'}).forEach(([k,v])=>tLabel.setAttribute(k,v));
+  tLabel.textContent = 'Time (s)';
+  svg.appendChild(tLabel);
+
+  const xLabel = document.createElementNS(ns, 'text');
+  Object.entries({x:14,y:margin.top+gh/2,'text-anchor':'middle','font-size':'11',fill:'#6366f1',transform:'rotate(-90,14,'+(margin.top+gh/2)+')'}).forEach(([k,v])=>xLabel.setAttribute(k,v));
+  xLabel.textContent = 'Position (m)';
+  svg.appendChild(xLabel);
+
+  // Data points (5 draggable)
+  const pts = [
+    {t:0, x:0},
+    {t:2.5, x:8},
+    {t:5, x:12},
+    {t:7.5, x:8},
+    {t:10, x:15}
+  ];
+
+  // Path
+  const path = document.createElementNS(ns, 'polyline');
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', '#6366f1');
+  path.setAttribute('stroke-width', '2.5');
+  path.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(path);
+
+  // Secant line (avg velocity)
+  const secant = document.createElementNS(ns, 'line');
+  Object.entries({stroke:'#f59e0b','stroke-width':1.5,'stroke-dasharray':'6,4',opacity:0.7}).forEach(([k,v])=>secant.setAttribute(k,v));
+  svg.appendChild(secant);
+
+  // Draggable circles
+  const circles = [];
+  let dragIdx = -1;
+
+  function updatePath() {
+    const pointStr = pts.map(p => tToSx(p.t) + ',' + xToSy(p.x)).join(' ');
+    path.setAttribute('points', pointStr);
+
+    circles.forEach((c, i) => {
+      c.setAttribute('cx', tToSx(pts[i].t));
+      c.setAttribute('cy', xToSy(pts[i].x));
+    });
+
+    // Secant
+    secant.setAttribute('x1', tToSx(pts[0].t));
+    secant.setAttribute('y1', xToSy(pts[0].x));
+    secant.setAttribute('x2', tToSx(pts[4].t));
+    secant.setAttribute('y2', xToSy(pts[4].x));
+
+    // Average velocity
+    const avgV = (pts[4].x - pts[0].x) / (pts[4].t - pts[0].t);
+    document.getElementById('velAvg').textContent = avgV.toFixed(2) + ' m/s';
+
+    let interp = '';
+    if (Math.abs(avgV) < 0.1) interp = 'Nearly stationary overall';
+    else if (avgV > 0) interp = 'Net motion in + direction';
+    else interp = 'Net motion in - direction';
+    document.getElementById('velInterp').textContent = interp;
+  }
+
+  pts.forEach((p, i) => {
+    const c = document.createElementNS(ns, 'circle');
+    Object.entries({r:8,fill:'#6366f1',stroke:'#fff','stroke-width':2,cursor:'ns-resize'}).forEach(([k,v])=>c.setAttribute(k,v));
+    svg.appendChild(c);
+    circles.push(c);
+
+    c.addEventListener('mousedown', e => { e.preventDefault(); dragIdx = i; });
+    c.addEventListener('touchstart', e => { e.preventDefault(); dragIdx = i; }, {passive:false});
+  });
+
+  function onMove(clientY) {
+    if (dragIdx < 0) return;
+    const rect = svg.getBoundingClientRect();
+    const scaleY = 300 / rect.height;
+    const sy = (clientY - rect.top) * scaleY;
+    let val = syToX(sy);
+    val = Math.max(minX, Math.min(maxX, val));
+    pts[dragIdx].x = Math.round(val * 2) / 2;
+    updatePath();
+  }
+
+  svg.addEventListener('mousemove', e => onMove(e.clientY));
+  svg.addEventListener('touchmove', e => { e.preventDefault(); onMove(e.touches[0].clientY); }, {passive:false});
+  window.addEventListener('mouseup', () => dragIdx = -1);
+  window.addEventListener('touchend', () => dragIdx = -1);
+
+  updatePath();
+})();
+
+// ============================================================
+// SECTION 3: Acceleration (Velocity-Time Graph)
+// ============================================================
+(function initAcceleration() {
+  const svg = document.getElementById('accelSvg');
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const margin = {top:30,right:30,bottom:40,left:60};
+  const gw = 800 - margin.left - margin.right;
+  const gh = 300 - margin.top - margin.bottom;
+
+  const maxT = 10, maxV = 20, minV = -10;
+  const rangeV = maxV - minV;
+
+  function tToSx(t) { return margin.left + (t / maxT) * gw; }
+  function vToSy(v) { return margin.top + ((maxV - v) / rangeV) * gh; }
+  function syToV(sy) { return maxV - ((sy - margin.top) / gh) * rangeV; }
+
+  // Grid
+  for (let t = 0; t <= maxT; t += 2) {
+    const x = tToSx(t);
+    const line = document.createElementNS(ns, 'line');
+    Object.entries({x1:x,y1:margin.top,x2:x,y2:margin.top+gh,stroke:'#2c313c','stroke-width':1}).forEach(([k,v])=>line.setAttribute(k,v));
+    svg.appendChild(line);
+    const label = document.createElementNS(ns, 'text');
+    Object.entries({x:x,y:margin.top+gh+20,'text-anchor':'middle','font-size':'10',fill:'#9ca3af'}).forEach(([k,v])=>label.setAttribute(k,v));
+    label.textContent = t;
+    svg.appendChild(label);
+  }
+
+  for (let v = minV; v <= maxV; v += 5) {
+    const y = vToSy(v);
+    const line = document.createElementNS(ns, 'line');
+    Object.entries({x1:margin.left,y1:y,x2:margin.left+gw,y2:y,stroke:'#2c313c','stroke-width':1}).forEach(([k,v])=>line.setAttribute(k,v));
+    svg.appendChild(line);
+    const label = document.createElementNS(ns, 'text');
+    Object.entries({x:margin.left-10,y:y+4,'text-anchor':'end','font-size':'10',fill:'#9ca3af'}).forEach(([k,v])=>label.setAttribute(k,v));
+    label.textContent = v;
+    svg.appendChild(label);
+  }
+
+  // Zero line
+  const zeroLine = document.createElementNS(ns, 'line');
+  Object.entries({x1:margin.left,y1:vToSy(0),x2:margin.left+gw,y2:vToSy(0),stroke:'#9ca3af','stroke-width':1,'stroke-dasharray':'4,4'}).forEach(([k,v])=>zeroLine.setAttribute(k,v));
+  svg.appendChild(zeroLine);
+
+  // Axis labels
+  const tLabel = document.createElementNS(ns, 'text');
+  Object.entries({x:margin.left+gw/2,y:margin.top+gh+36,'text-anchor':'middle','font-size':'11',fill:'#6366f1'}).forEach(([k,v])=>tLabel.setAttribute(k,v));
+  tLabel.textContent = 'Time (s)';
+  svg.appendChild(tLabel);
+
+  const vLabel = document.createElementNS(ns, 'text');
+  Object.entries({x:14,y:margin.top+gh/2,'text-anchor':'middle','font-size':'11',fill:'#6366f1',transform:'rotate(-90,14,'+(margin.top+gh/2)+')'}).forEach(([k,v])=>vLabel.setAttribute(k,v));
+  vLabel.textContent = 'Velocity (m/s)';
+  svg.appendChild(vLabel);
+
+  // Two draggable endpoints
+  let v0 = 5, vf = 15;
+
+  // Shaded area (trapezoid/triangle)
+  const areaPath = document.createElementNS(ns, 'polygon');
+  areaPath.setAttribute('fill', 'rgba(99,102,241,0.15)');
+  areaPath.setAttribute('stroke', 'none');
+  svg.appendChild(areaPath);
+
+  // Line
+  const line = document.createElementNS(ns, 'line');
+  Object.entries({stroke:'#ec4899','stroke-width':2.5}).forEach(([k,v])=>line.setAttribute(k,v));
+  svg.appendChild(line);
+
+  // Circles
+  const c0 = document.createElementNS(ns, 'circle');
+  Object.entries({r:8,fill:'#ec4899',stroke:'#fff','stroke-width':2,cursor:'ns-resize'}).forEach(([k,v])=>c0.setAttribute(k,v));
+  svg.appendChild(c0);
+
+  const c1 = document.createElementNS(ns, 'circle');
+  Object.entries({r:8,fill:'#ec4899',stroke:'#fff','stroke-width':2,cursor:'ns-resize'}).forEach(([k,v])=>c1.setAttribute(k,v));
+  svg.appendChild(c1);
+
+  let dragPt = -1;
+
+  function update() {
+    const sx0 = tToSx(0), sx1 = tToSx(maxT);
+    const sy0 = vToSy(v0), sy1 = vToSy(vf);
+    const syZero = vToSy(0);
+
+    line.setAttribute('x1', sx0); line.setAttribute('y1', sy0);
+    line.setAttribute('x2', sx1); line.setAttribute('y2', sy1);
+    c0.setAttribute('cx', sx0); c0.setAttribute('cy', sy0);
+    c1.setAttribute('cx', sx1); c1.setAttribute('cy', sy1);
+
+    // Shaded area: trapezoid between line and v=0 axis
+    // Handle crossing zero
+    const pts = [];
+    if ((v0 >= 0 && vf >= 0) || (v0 <= 0 && vf <= 0)) {
+      // Simple trapezoid
+      pts.push(sx0+','+sy0, sx1+','+sy1, sx1+','+syZero, sx0+','+syZero);
+    } else {
+      // Crosses zero
+      const tCross = Math.abs(v0) / Math.abs(vf - v0) * maxT;
+      const sxCross = tToSx(tCross);
+      pts.push(sx0+','+sy0, sxCross+','+syZero, sx0+','+syZero);
+      // second part handled as overlay - simplified: just do the full trapezoid
+      // Actually let's just show the full trapezoid for visual clarity
+      pts.length = 0;
+      pts.push(sx0+','+sy0, sx1+','+sy1, sx1+','+syZero, sx0+','+syZero);
+    }
+    areaPath.setAttribute('points', pts.join(' '));
+
+    // Acceleration
+    const accel = (vf - v0) / maxT;
+    document.getElementById('accelVal').textContent = accel.toFixed(2) + ' m/s\u00B2';
+
+    // Displacement (area = average velocity * time = (v0+vf)/2 * T)
+    const disp = (v0 + vf) / 2 * maxT;
+    const dispEl = document.getElementById('accelDisp');
+    dispEl.textContent = disp.toFixed(1) + ' m';
+    dispEl.className = 'value ' + (disp >= 0 ? 'positive' : 'negative');
+
+    // Behavior
+    let beh = '';
+    if (Math.abs(accel) < 0.05) beh = 'Constant velocity';
+    else if (accel > 0 && v0 >= 0) beh = 'Speeding up (+)';
+    else if (accel < 0 && v0 > 0 && vf >= 0) beh = 'Slowing down';
+    else if (accel < 0 && vf < 0) beh = 'Speeding up (-)';
+    else if (accel > 0 && v0 < 0) beh = 'Slowing down (from -)';
+    else beh = 'Mixed motion';
+    document.getElementById('accelBehavior').textContent = beh;
+  }
+
+  c0.addEventListener('mousedown', e => { e.preventDefault(); dragPt = 0; });
+  c1.addEventListener('mousedown', e => { e.preventDefault(); dragPt = 1; });
+  c0.addEventListener('touchstart', e => { e.preventDefault(); dragPt = 0; }, {passive:false});
+  c1.addEventListener('touchstart', e => { e.preventDefault(); dragPt = 1; }, {passive:false});
+
+  function onMove(clientY) {
+    if (dragPt < 0) return;
+    const rect = svg.getBoundingClientRect();
+    const scaleY = 300 / rect.height;
+    const sy = (clientY - rect.top) * scaleY;
+    let val = syToV(sy);
+    val = Math.max(minV, Math.min(maxV, val));
+    val = Math.round(val * 2) / 2;
+    if (dragPt === 0) v0 = val; else vf = val;
+    update();
+  }
+
+  svg.addEventListener('mousemove', e => onMove(e.clientY));
+  svg.addEventListener('touchmove', e => { e.preventDefault(); onMove(e.touches[0].clientY); }, {passive:false});
+  window.addEventListener('mouseup', () => dragPt = -1);
+  window.addEventListener('touchend', () => dragPt = -1);
+
+  update();
+})();
+
+// ============================================================
+// SECTION 4: Equation Selector
+// ============================================================
+function updateEqSelector() {
+  const checks = document.querySelectorAll('.eq-var');
+  const known = new Set();
+  checks.forEach(c => { if (c.checked) known.add(c.dataset.var); });
+
+  // Reset highlights
+  ['eq1','eq2','eq3'].forEach(id => document.getElementById(id).classList.remove('highlighted'));
+
+  const result = document.getElementById('eqSelectorResult');
+
+  if (known.size < 3) {
+    result.textContent = 'Check at least 3 variables you know to identify the right equation.';
+    result.style.color = 'var(--text-dim)';
+    return;
+  }
+
+  // Determine which variable is missing (unknown/not needed)
+  const allVars = ['x','v0','v','a','t'];
+  const missing = allVars.filter(v => !known.has(v));
+
+  let eqId = null, eqName = '';
+
+  if (known.size === 3) {
+    // The unknown is one of the two missing; suggest based on what's available
+    // Each eq is missing: eq1->x, eq2->v, eq3->t
+    if (!known.has('x')) { eqId = 'eq1'; eqName = 'Eq 1: v = v\u2080 + at (no x needed)'; }
+    else if (!known.has('v')) { eqId = 'eq2'; eqName = 'Eq 2: x = x\u2080 + v\u2080t + \u00BDat\u00B2 (no v needed)'; }
+    else if (!known.has('t')) { eqId = 'eq3'; eqName = 'Eq 3: v\u00B2 = v\u2080\u00B2 + 2a\u0394x (no t needed)'; }
+    else {
+      result.textContent = 'You know 3 of {v\u2080, v, a, t, x}. The missing pair determines the eq. Multiple may work.';
+      result.style.color = 'var(--amber)';
+      return;
+    }
+  } else if (known.size >= 4) {
+    // All but one known => that one is the unknown to solve
+    const unk = missing[0];
+    if (unk === 'x') { eqId = 'eq2'; eqName = 'Eq 2 solves for x'; }
+    else if (unk === 'v') { eqId = 'eq1'; eqName = 'Eq 1 solves for v'; }
+    else if (unk === 'v0') { eqId = 'eq1'; eqName = 'Eq 1 solves for v\u2080'; }
+    else if (unk === 'a') { eqId = 'eq3'; eqName = 'Eq 3 or Eq 1 can solve for a'; }
+    else if (unk === 't') { eqId = 'eq1'; eqName = 'Eq 1 solves for t'; }
+  }
+
+  if (eqId) {
+    document.getElementById(eqId).classList.add('highlighted');
+    result.textContent = 'Use ' + eqName;
+    result.style.color = 'var(--green)';
+  }
+}
+
+// ============================================================
+// SECTION 5: Free Fall
+// ============================================================
+(function initFreeFall() {
+  const svg = document.getElementById('ffSvg');
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const g = 9.8;
+  let animId = null;
+  let running = false;
+  let markers = [];
+
+  function drawScene(h0, v0) {
+    svg.innerHTML = '';
+
+    const leftX = 120, rightX = 650;
+    const topY = 30, bottomY = 330;
+    const scaleH = h0 > 0 ? (bottomY - topY) / (h0 * 1.3) : 1;
+
+    // Ground
+    const ground = document.createElementNS(ns, 'line');
+    Object.entries({x1:50,y1:bottomY,x2:750,y2:bottomY,stroke:'#9ca3af','stroke-width':2}).forEach(([k,v])=>ground.setAttribute(k,v));
+    svg.appendChild(ground);
+
+    // Ground hatch
+    for (let x = 50; x < 750; x += 20) {
+      const h = document.createElementNS(ns, 'line');
+      Object.entries({x1:x,y1:bottomY,x2:x+10,y2:bottomY+8,stroke:'#3a3f4b','stroke-width':1}).forEach(([k,v])=>h.setAttribute(k,v));
+      svg.appendChild(h);
+    }
+
+    // Height scale
+    const numMarks = Math.min(10, Math.ceil(h0 / 5));
+    const markStep = h0 / numMarks;
+    for (let i = 0; i <= numMarks; i++) {
+      const hVal = i * markStep;
+      const y = bottomY - hVal * scaleH;
+      const tick = document.createElementNS(ns, 'line');
+      Object.entries({x1:leftX-15,y1:y,x2:leftX-5,y2:y,stroke:'#9ca3af','stroke-width':1}).forEach(([k,v])=>tick.setAttribute(k,v));
+      svg.appendChild(tick);
+      const label = document.createElementNS(ns, 'text');
+      Object.entries({x:leftX-20,y:y+4,'text-anchor':'end','font-size':'9',fill:'#9ca3af'}).forEach(([k,v])=>label.setAttribute(k,v));
+      label.textContent = hVal.toFixed(0) + 'm';
+      svg.appendChild(label);
+    }
+
+    // Building/column
+    const buildH = h0 * scaleH;
+    const build = document.createElementNS(ns, 'rect');
+    Object.entries({x:leftX,y:bottomY-buildH,width:40,height:buildH,fill:'#2c313c',stroke:'#3a3f4b','stroke-width':1,rx:2}).forEach(([k,v])=>build.setAttribute(k,v));
+    svg.appendChild(build);
+
+    // Object (ball)
+    const ball = document.createElementNS(ns, 'circle');
+    ball.setAttribute('id', 'ffBall');
+    Object.entries({cx:leftX+20,cy:bottomY-h0*scaleH,r:10,fill:'#6366f1',stroke:'#818cf8','stroke-width':2}).forEach(([k,v])=>ball.setAttribute(k,v));
+    svg.appendChild(ball);
+
+    // Velocity arrow
+    const vArrow = document.createElementNS(ns, 'line');
+    vArrow.setAttribute('id', 'ffVArrow');
+    Object.entries({x1:leftX+20,y1:bottomY-h0*scaleH,x2:leftX+20,y2:bottomY-h0*scaleH,stroke:'#ec4899','stroke-width':2.5,'marker-end':'url(#ffArrowhead)'}).forEach(([k,v])=>vArrow.setAttribute(k,v));
+    svg.appendChild(vArrow);
+
+    // Arrowhead
+    const defs = document.createElementNS(ns, 'defs');
+    const marker = document.createElementNS(ns, 'marker');
+    Object.entries({id:'ffArrowhead',markerWidth:8,markerHeight:6,refX:8,refY:3,orient:'auto'}).forEach(([k,v])=>marker.setAttribute(k,v));
+    const poly = document.createElementNS(ns, 'polygon');
+    poly.setAttribute('points', '0 0, 8 3, 0 6');
+    poly.setAttribute('fill', '#ec4899');
+    marker.appendChild(poly);
+    defs.appendChild(marker);
+    svg.appendChild(defs);
+
+    // Info panel area on right
+    const infoX = rightX - 60;
+
+    // Time markers group
+    const markerGroup = document.createElementNS(ns, 'g');
+    markerGroup.setAttribute('id', 'ffMarkers');
+    svg.appendChild(markerGroup);
+
+    return { leftX, bottomY, scaleH, ball, vArrow, markerGroup };
+  }
+
+  let scene = null;
+
+  function resetFreeFallInternal() {
+    if (animId) { cancelAnimationFrame(animId); animId = null; }
+    running = false;
+    const h0 = parseFloat(document.getElementById('ffHeight').value) || 50;
+    const v0 = parseFloat(document.getElementById('ffVelocity').value) || 0;
+    scene = drawScene(h0, v0);
+    document.getElementById('ffTime').textContent = '0.00 s';
+    document.getElementById('ffY').textContent = h0.toFixed(1) + ' m';
+    document.getElementById('ffV').textContent = v0.toFixed(1) + ' m/s';
+    document.getElementById('ffStatus').textContent = 'Ready';
+    document.getElementById('ffStartBtn').textContent = 'Drop / Launch';
+  }
+
+  window.resetFreeFall = resetFreeFallInternal;
+
+  window.startFreeFall = function() {
+    if (running) return;
+    const h0 = parseFloat(document.getElementById('ffHeight').value) || 50;
+    const v0i = parseFloat(document.getElementById('ffVelocity').value) || 0;
+    scene = drawScene(h0, v0i);
+    running = true;
+    document.getElementById('ffStartBtn').textContent = 'Running...';
+
+    let startTime = null;
+    let lastMarkerT = 0;
+
+    function animate(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = (timestamp - startTime) / 1000; // seconds (slow it down for visibility)
+      const simT = elapsed * 1.5; // speed factor
+
+      const y = h0 + v0i * simT - 0.5 * g * simT * simT;
+      const v = v0i - g * simT;
+
+      if (y <= 0) {
+        // Hit ground
+        const finalV = v0i < 0 ?
+          -Math.sqrt(v0i*v0i + 2*g*h0) :
+          (v0i > 0 ?
+            (function(){
+              const tPeak = v0i/g;
+              const hPeak = h0 + v0i*tPeak - 0.5*g*tPeak*tPeak;
+              return -Math.sqrt(2*g*hPeak);
+            })() :
+            -Math.sqrt(2*g*h0));
+
+        // Position ball at ground
+        scene.ball.setAttribute('cy', scene.bottomY - 0);
+        scene.vArrow.setAttribute('y1', scene.bottomY);
+        scene.vArrow.setAttribute('y2', scene.bottomY);
+
+        document.getElementById('ffY').textContent = '0.00 m';
+        document.getElementById('ffV').textContent = finalV.toFixed(1) + ' m/s';
+        document.getElementById('ffTime').textContent = simT.toFixed(2) + ' s';
+        document.getElementById('ffStatus').textContent = 'Hit ground!';
+        running = false;
+        document.getElementById('ffStartBtn').textContent = 'Drop / Launch';
+        return;
+      }
+
+      // Update ball position
+      const ballY = scene.bottomY - y * scene.scaleH;
+      scene.ball.setAttribute('cy', ballY);
+
+      // Velocity arrow (scaled)
+      const arrowLen = Math.min(60, Math.abs(v) * 2);
+      const arrowDir = v > 0 ? -1 : 1; // up = negative screen Y
+      scene.vArrow.setAttribute('y1', ballY);
+      scene.vArrow.setAttribute('y2', ballY + arrowDir * arrowLen);
+      scene.vArrow.setAttribute('x1', scene.leftX + 20);
+      scene.vArrow.setAttribute('x2', scene.leftX + 20);
+
+      // Time markers every 1 second
+      if (Math.floor(simT) > lastMarkerT) {
+        lastMarkerT = Math.floor(simT);
+        const ns2 = 'http://www.w3.org/2000/svg';
+        const dot = document.createElementNS(ns2, 'circle');
+        Object.entries({cx:scene.leftX+60+lastMarkerT*35,cy:ballY,r:4,fill:'#f59e0b',opacity:0.7}).forEach(([k,val])=>dot.setAttribute(k,val));
+        scene.markerGroup.appendChild(dot);
+
+        const lbl = document.createElementNS(ns2, 'text');
+        Object.entries({x:scene.leftX+60+lastMarkerT*35,y:ballY-10,'text-anchor':'middle','font-size':'8',fill:'#f59e0b'}).forEach(([k,val])=>lbl.setAttribute(k,val));
+        lbl.textContent = lastMarkerT + 's';
+        scene.markerGroup.appendChild(lbl);
+      }
+
+      document.getElementById('ffTime').textContent = simT.toFixed(2) + ' s';
+      document.getElementById('ffY').textContent = y.toFixed(1) + ' m';
+      const vEl = document.getElementById('ffV');
+      vEl.textContent = v.toFixed(1) + ' m/s';
+      vEl.className = 'value ' + (v >= 0 ? 'positive' : 'negative');
+      document.getElementById('ffStatus').textContent = v > 0.1 ? 'Rising' : (v < -0.1 ? 'Falling' : 'At peak');
+
+      animId = requestAnimationFrame(animate);
+    }
+
+    animId = requestAnimationFrame(animate);
+  };
+
+  resetFreeFallInternal();
+})();
+
+// ============================================================
+// SECTION 6: Quick Quiz
+// ============================================================
+(function initQuiz() {
+  const questions = [
+    {
+      q: 'A car moves from x = 4 m to x = -2 m. What is the displacement?',
+      options: ['+6 m', '-6 m', '+2 m', '-2 m'],
+      correct: 1,
+      explanation: 'Displacement = x_f - x_i = -2 - 4 = -6 m.'
+    },
+    {
+      q: 'An object travels 20 m north, then 20 m south. What is the distance traveled?',
+      options: ['0 m', '20 m', '40 m', '-40 m'],
+      correct: 2,
+      explanation: 'Distance is total path length: 20 + 20 = 40 m. Distance is always positive.'
+    },
+    {
+      q: 'On a position-time graph, a horizontal (flat) line means the object is:',
+      options: ['Accelerating', 'Moving at constant velocity', 'Stationary (v = 0)', 'Moving backward'],
+      correct: 2,
+      explanation: 'A flat line on a x-t graph means x is not changing, so v = 0.'
+    },
+    {
+      q: 'A bicycle goes from x = 0 to x = 30 m in 6 s. What is the average velocity?',
+      options: ['5 m/s', '6 m/s', '30 m/s', '180 m/s'],
+      correct: 0,
+      explanation: 'v = delta_x / delta_t = 30/6 = 5 m/s.'
+    },
+    {
+      q: 'On a velocity-time graph, the slope of the line represents:',
+      options: ['Displacement', 'Velocity', 'Acceleration', 'Position'],
+      correct: 2,
+      explanation: 'The slope of a v-t graph is dv/dt = acceleration.'
+    },
+    {
+      q: 'A car accelerates from rest at 4 m/s\u00B2 for 3 s. What is its final velocity?',
+      options: ['7 m/s', '12 m/s', '4 m/s', '0.75 m/s'],
+      correct: 1,
+      explanation: 'v = v0 + at = 0 + 4(3) = 12 m/s.'
+    },
+    {
+      q: 'Which kinematic equation does NOT contain displacement (x)?',
+      options: ['v = v\u2080 + at', 'x = x\u2080 + v\u2080t + \u00BDat\u00B2', 'v\u00B2 = v\u2080\u00B2 + 2a\u0394x', 'All contain x'],
+      correct: 0,
+      explanation: 'Equation 1 (v = v\u2080 + at) has no x term.'
+    },
+    {
+      q: 'An object in free fall near Earth has an acceleration of approximately:',
+      options: ['9.8 m/s', '9.8 m/s\u00B2 downward', '9.8 m/s\u00B2 upward', 'It depends on mass'],
+      correct: 1,
+      explanation: 'Free-fall acceleration is g = 9.8 m/s\u00B2 directed downward, independent of mass.'
+    },
+    {
+      q: 'A ball is thrown straight up. At the very top of its path, its velocity is:',
+      options: ['9.8 m/s', '-9.8 m/s', '0 m/s', 'Equal to its initial velocity'],
+      correct: 2,
+      explanation: 'At the peak, the ball momentarily stops (v = 0) before falling back down.'
+    },
+    {
+      q: 'A stone dropped from rest falls for 2 s. How far does it fall? (g = 9.8 m/s\u00B2)',
+      options: ['9.8 m', '19.6 m', '4.9 m', '39.2 m'],
+      correct: 1,
+      explanation: 'y = \u00BDgt\u00B2 = \u00BD(9.8)(4) = 19.6 m.'
+    }
+  ];
+
+  let quizScore = 0;
+  let answered = new Set();
+
+  const container = document.getElementById('quizContainer');
+
+  questions.forEach((q, qi) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-q';
+    div.setAttribute('id', 'quiz_q_' + qi);
+
+    let html = '<div class="q-num">Question ' + (qi+1) + ' / 10</div>';
+    html += '<p>' + q.q + '</p>';
+    html += '<div class="quiz-options">';
+    q.options.forEach((opt, oi) => {
+      html += '<div class="quiz-option" data-qi="' + qi + '" data-oi="' + oi + '" onclick="selectQuizOption(this,' + qi + ',' + oi + ')">';
+      html += '<span class="letter">' + 'ABCD'[oi] + '</span>';
+      html += '<span>' + opt + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '<div class="quiz-explanation" id="quiz_exp_' + qi + '">' + q.explanation + '</div>';
+
+    div.innerHTML = html;
+    container.appendChild(div);
+  });
+
+  window.selectQuizOption = function(el, qi, oi) {
+    if (answered.has(qi)) return;
+    answered.add(qi);
+
+    const qDiv = document.getElementById('quiz_q_' + qi);
+    const options = qDiv.querySelectorAll('.quiz-option');
+
+    options.forEach(o => o.classList.add('disabled'));
+
+    if (oi === questions[qi].correct) {
+      el.classList.add('correct-answer');
+      quizScore++;
+      solved.add('quiz_' + qi);
+    } else {
+      el.classList.add('wrong-answer');
+      options[questions[qi].correct].classList.add('correct-answer');
+    }
+
+    document.getElementById('quiz_exp_' + qi).classList.add('show');
+    document.getElementById('quizScore').textContent = 'Score: ' + quizScore + ' / 10';
+    updateProgress();
+  };
+
+  window.resetQuiz = function() {
+    quizScore = 0;
+    answered.clear();
+    for (let i = 0; i < 10; i++) solved.delete('quiz_' + i);
+    document.getElementById('quizScore').textContent = 'Score: 0 / 10';
+    updateProgress();
+
+    questions.forEach((q, qi) => {
+      const qDiv = document.getElementById('quiz_q_' + qi);
+      const options = qDiv.querySelectorAll('.quiz-option');
+      options.forEach(o => {
+        o.classList.remove('disabled', 'correct-answer', 'wrong-answer', 'selected');
+      });
+      document.getElementById('quiz_exp_' + qi).classList.remove('show');
+    });
+  };
+})();
+</script>
+</body>
+</html>

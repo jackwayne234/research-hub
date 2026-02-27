@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 24: Geometric Optics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:130px;flex-shrink:0}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0;flex:1}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.material-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.material-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;transition:var(--transition);text-align:center}
+.material-card:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.material-card.active{border-color:var(--indigo);background:var(--indigo-dim)}
+.material-card .mat-name{font-size:.72rem;font-weight:600;color:var(--text-bright);margin-bottom:4px}
+.material-card .mat-n{font-size:.85rem;font-weight:700;color:var(--indigo)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}
+@keyframes springPop{0%{transform:scale(1)}40%{transform:scale(1.15)}70%{transform:scale(0.95)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.pop{animation:springPop .4s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shake .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:90px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.two-col{grid-template-columns:1fr}.material-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>Lesson 24</span> — Geometric Optics</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: REFLECTION -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1" data-total-problems="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Reflection</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Geometric optics</strong> treats light as rays — straight lines that travel until they hit a surface. This model works when objects and apertures are much larger than the wavelength of light (~500 nm). When light strikes a smooth surface, it undergoes <strong>reflection</strong>.
+    </p>
+
+    <div class="formula-box large">&theta;<sub>i</sub> = &theta;<sub>r</sub> &nbsp;&nbsp; (Law of Reflection)</div>
+
+    <p class="concept-text">
+      Both angles are measured from the <strong>normal</strong> (perpendicular) to the surface at the point of incidence — not from the surface itself. This is the <strong>Law of Reflection</strong> and it holds for all wavelengths.
+    </p>
+
+    <div class="two-col">
+      <div class="formula-box green" style="font-size:.82rem;text-align:left;line-height:1.9">
+        <strong>Specular reflection:</strong><br>
+        Smooth surface (mirror)<br>
+        Parallel rays stay parallel<br>
+        Forms clear images
+      </div>
+      <div class="formula-box pink" style="font-size:.82rem;text-align:left;line-height:1.9">
+        <strong>Diffuse reflection:</strong><br>
+        Rough surface (paper, walls)<br>
+        Parallel rays scatter randomly<br>
+        No clear image formed
+      </div>
+    </div>
+
+    <p class="concept-text">
+      A <strong>plane mirror</strong> forms a <strong>virtual image</strong> — the image appears to be behind the mirror, where no light actually travels. Key properties:
+    </p>
+    <ul style="font-size:.82rem;margin:0 0 14px 20px;line-height:2">
+      <li>Image distance = Object distance (image is as far behind mirror as object is in front)</li>
+      <li>Image is <strong>upright</strong> and <strong>laterally inverted</strong> (left-right flipped)</li>
+      <li>Magnification <strong>m = +1</strong> (same size as object)</li>
+      <li>Image is virtual (cannot be projected on a screen)</li>
+    </ul>
+
+    <div class="key-point">Sign convention: object distance dₒ is always positive. Image distance dᵢ is positive for real images (in front of mirror / behind lens) and negative for virtual images (behind mirror / in front of lens).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Law of Reflection</div>
+      <div class="slider-row">
+        <label>Incident angle &theta;<sub>i</sub></label>
+        <input type="range" id="reflSlider" min="5" max="85" value="40" step="1" oninput="updateReflection()">
+        <span class="slider-val" id="reflVal">40°</span>
+      </div>
+      <svg id="reflSvg" width="100%" viewBox="0 0 500 260" style="display:block;margin-top:8px">
+        <defs>
+          <marker id="arrowWhite" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#e2e4e9"/></marker>
+          <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#22c55e"/></marker>
+          <marker id="arrowIndigo" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#6366f1"/></marker>
+          <marker id="arrowPink" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker>
+          <marker id="arrowAmber" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#f59e0b"/></marker>
+        </defs>
+        <!-- Mirror surface -->
+        <line x1="50" y1="180" x2="450" y2="180" stroke="#9ca3af" stroke-width="3"/>
+        <!-- Normal line -->
+        <line x1="250" y1="60" x2="250" y2="230" stroke="#363b47" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <text x="258" y="72" fill="#9ca3af" font-size="10">normal</text>
+        <!-- Incident ray -->
+        <line id="reflInc" x1="100" y1="60" x2="250" y2="180" stroke="#6366f1" stroke-width="2.5" marker-end="url(#arrowIndigo)"/>
+        <!-- Reflected ray -->
+        <line id="reflRef" x1="250" y1="180" x2="400" y2="60" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+        <!-- Angle arcs -->
+        <path id="reflArcI" d="" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+        <path id="reflArcR" d="" fill="none" stroke="#22c55e" stroke-width="1.5"/>
+        <!-- Labels -->
+        <text id="reflThetaI" x="215" y="148" fill="#6366f1" font-size="11" font-weight="600">40°</text>
+        <text id="reflThetaR" x="262" y="148" fill="#22c55e" font-size="11" font-weight="600">40°</text>
+        <text x="60" y="200" fill="#9ca3af" font-size="10">Mirror surface</text>
+        <text x="80" y="95" fill="#6366f1" font-size="11">Incident ray</text>
+        <text x="360" y="95" fill="#22c55e" font-size="11">Reflected ray</text>
+      </svg>
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s1p1">
+        <p>A light ray strikes a plane mirror at an angle of <strong>35° from the surface</strong>. What is the angle of reflection (measured from the normal)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1in" placeholder="degrees">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s1p1in',55,1,'s1p1fb','s1p1')">Check</button>
+        </div>
+        <div class="feedback" id="s1p1fb"></div>
+      </div>
+
+      <div class="problem" id="s1p2">
+        <p>An object stands <strong>30 cm</strong> in front of a plane mirror. Where is the image, and what is its magnification?</p>
+        <div class="problem-input-row">
+          <span style="font-size:.75rem;color:var(--text-dim)">dᵢ (cm, use negative for virtual):</span>
+          <input type="number" id="s1p2in" placeholder="cm">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s1p2in',-30,1,'s1p2fb','s1p2')">Check</button>
+        </div>
+        <div class="feedback" id="s1p2fb"></div>
+      </div>
+
+      <div class="problem" id="s1p3">
+        <p>Two plane mirrors are arranged at <strong>90°</strong> to each other. How many images of an object placed between them will appear?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s1p3fb','s1p3')">A) 1 image</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s1p3fb','s1p3')">B) 2 images</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','s1p3fb','s1p3')">C) 3 images</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s1p3fb','s1p3')">D) 4 images</button>
+        </div>
+        <div class="feedback" id="s1p3fb"></div>
+      </div>
+
+      <div class="problem" id="s1p4">
+        <p>A ray travels horizontally and strikes a mirror tilted at <strong>30°</strong> to the horizontal. What angle does the reflected ray make with the horizontal?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p4in" placeholder="degrees">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s1p4in',60,1,'s1p4fb','s1p4')">Check</button>
+        </div>
+        <div class="feedback" id="s1p4fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: REFRACTION & SNELL'S LAW -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2" data-total-problems="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Refraction &amp; Snell's Law</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When light crosses from one medium into another, its speed changes — and if it hits at an angle, the direction changes too. This bending is called <strong>refraction</strong>. The <strong>index of refraction</strong> n of a medium describes how much slower light travels compared to vacuum:
+    </p>
+
+    <div class="formula-box large">n = c / v</div>
+
+    <p class="concept-text">
+      where c = 3 × 10⁸ m/s (speed of light in vacuum) and v is the speed in the medium. Since v ≤ c always, n ≥ 1 always. Air has n ≈ 1.0003 (we use n = 1), water n ≈ 1.33, glass n ≈ 1.5, diamond n ≈ 2.42.
+    </p>
+
+    <div class="formula-box large">n<sub>1</sub> sin&theta;<sub>1</sub> = n<sub>2</sub> sin&theta;<sub>2</sub> &nbsp;&nbsp; (Snell's Law)</div>
+
+    <p class="concept-text">
+      Light bends <strong>toward</strong> the normal when entering a denser medium (higher n), and <strong>away</strong> from the normal when entering a less dense medium (lower n).
+    </p>
+
+    <div class="key-point">Total Internal Reflection (TIR): When light travels from a denser medium (n₁) to a less dense medium (n₂ &lt; n₁), there is a critical angle beyond which no refraction occurs — all light reflects back. Critical angle: sin&theta;<sub>c</sub> = n₂/n₁</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Snell's Law Refractor (Air → Medium)</div>
+      <div class="slider-row">
+        <label>Incident angle &theta;<sub>1</sub></label>
+        <input type="range" id="snellSlider" min="0" max="89" value="35" step="1" oninput="updateSnell()">
+        <span class="slider-val" id="snellVal">35°</span>
+      </div>
+      <div class="scenario-tabs" id="snellMediumTabs">
+        <button class="scenario-tab active" onclick="setSnellMedium(this,1.33,'Water (n=1.33)')">Water</button>
+        <button class="scenario-tab" onclick="setSnellMedium(this,1.5,'Glass (n=1.50)')">Glass</button>
+        <button class="scenario-tab" onclick="setSnellMedium(this,1.77,'Sapphire (n=1.77)')">Sapphire</button>
+        <button class="scenario-tab" onclick="setSnellMedium(this,2.42,'Diamond (n=2.42)')">Diamond</button>
+      </div>
+      <svg id="snellSvg" width="100%" viewBox="0 0 500 300" style="display:block;margin-top:4px">
+        <!-- Interface -->
+        <rect x="0" y="150" width="500" height="150" fill="rgba(99,102,241,.07)" rx="0"/>
+        <line x1="0" y1="150" x2="500" y2="150" stroke="#363b47" stroke-width="2"/>
+        <!-- Normal -->
+        <line x1="250" y1="20" x2="250" y2="280" stroke="#363b47" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <!-- Medium label -->
+        <text id="snellMedLabel" x="16" y="175" fill="#6366f1" font-size="10" font-weight="600">Water (n=1.33)</text>
+        <text x="16" y="135" fill="#9ca3af" font-size="10">Air (n=1.00)</text>
+        <!-- Rays drawn by JS -->
+        <line id="snellIncRay" x1="100" y1="20" x2="250" y2="150" stroke="#6366f1" stroke-width="2.5" marker-end="url(#arrowIndigo)"/>
+        <line id="snellRefRay" x1="250" y1="150" x2="360" y2="280" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+        <line id="snellTirMsg" x1="0" y1="0" x2="0" y2="0" stroke="none"/>
+        <!-- Angle arcs -->
+        <path id="snellArcI" d="" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+        <path id="snellArcT" d="" fill="none" stroke="#22c55e" stroke-width="1.5"/>
+        <!-- Labels -->
+        <text id="snellLabelI" x="220" y="115" fill="#6366f1" font-size="11" font-weight="600">35°</text>
+        <text id="snellLabelT" x="258" y="190" fill="#22c55e" font-size="11" font-weight="600">22.5°</text>
+        <text id="snellTirLabel" x="250" y="140" fill="#ec4899" font-size="11" font-weight="700" text-anchor="middle" display="none">TIR — no refraction!</text>
+      </svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">n1 (air)</span><br><span class="value indigo" id="snellN1">1.00</span></div>
+        <div class="readout-item"><span class="label">n2 (medium)</span><br><span class="value indigo" id="snellN2">1.33</span></div>
+        <div class="readout-item"><span class="label">&theta;1 (incident)</span><br><span class="value" id="snellT1">35.0°</span></div>
+        <div class="readout-item"><span class="label">&theta;2 (refracted)</span><br><span class="value green" id="snellT2">22.5°</span></div>
+        <div class="readout-item"><span class="label">Critical angle</span><br><span class="value amber" id="snellCrit">N/A (n1&lt;n2)</span></div>
+      </div>
+    </div>
+
+    <div class="interactive-area" style="margin-top:16px">
+      <div class="interactive-label">Index of Refraction — Material Explorer</div>
+      <div class="material-grid" id="matGrid">
+        <div class="material-card active" onclick="selectMaterial(this,1.0003,'Air')"><div class="mat-name">Air</div><div class="mat-n">n = 1.00</div></div>
+        <div class="material-card" onclick="selectMaterial(this,1.33,'Water')"><div class="mat-name">Water</div><div class="mat-n">n = 1.33</div></div>
+        <div class="material-card" onclick="selectMaterial(this,1.46,'Fused Silica')"><div class="mat-name">Fused Silica</div><div class="mat-n">n = 1.46</div></div>
+        <div class="material-card" onclick="selectMaterial(this,1.5,'Crown Glass')"><div class="mat-name">Crown Glass</div><div class="mat-n">n = 1.50</div></div>
+        <div class="material-card" onclick="selectMaterial(this,1.62,'Flint Glass')"><div class="mat-name">Flint Glass</div><div class="mat-n">n = 1.62</div></div>
+        <div class="material-card" onclick="selectMaterial(this,1.77,'Sapphire')"><div class="mat-name">Sapphire</div><div class="mat-n">n = 1.77</div></div>
+        <div class="material-card" onclick="selectMaterial(this,2.42,'Diamond')"><div class="mat-name">Diamond</div><div class="mat-n">n = 2.42</div></div>
+        <div class="material-card" onclick="selectMaterial(this,1.5,'Typical Glass')"><div class="mat-name">Optical Fiber</div><div class="mat-n">n ≈ 1.50</div></div>
+      </div>
+      <div class="readout" id="matReadout">
+        <div class="readout-item"><span class="label">Material</span><br><span class="value indigo" id="matName">Air</span></div>
+        <div class="readout-item"><span class="label">n value</span><br><span class="value" id="matNVal">1.0003</span></div>
+        <div class="readout-item"><span class="label">Speed of light</span><br><span class="value amber" id="matSpeed">~3.00 × 10⁸ m/s</span></div>
+        <div class="readout-item"><span class="label">Critical angle (from this material to air)</span><br><span class="value pink" id="matCrit">N/A (n ≤ air)</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s2p1">
+        <p>Light travels from air (n=1.00) into glass (n=1.50) at an incident angle of <strong>30°</strong>. What is the refracted angle (in degrees, 1 decimal place)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1in" placeholder="degrees" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s2p1in',19.5,0.5,'s2p1fb','s2p1')">Check</button>
+        </div>
+        <div class="feedback" id="s2p1fb"></div>
+      </div>
+
+      <div class="problem" id="s2p2">
+        <p>What is the critical angle for total internal reflection at a glass (n=1.50) to air (n=1.00) interface? Give your answer in degrees, rounded to 1 decimal place. (Hint: sin&theta;<sub>c</sub> = n₂/n₁)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2in" placeholder="degrees" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s2p2in',41.8,0.5,'s2p2fb','s2p2')">Check</button>
+        </div>
+        <div class="feedback" id="s2p2fb"></div>
+      </div>
+
+      <div class="problem" id="s2p3">
+        <p>Light passes from water (n=1.33) into diamond (n=2.42). If the refracted angle is <strong>20°</strong>, what was the incident angle (degrees, 1 decimal)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p3in" placeholder="degrees" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s2p3in',38.8,0.8,'s2p3fb','s2p3')">Check</button>
+        </div>
+        <div class="feedback" id="s2p3fb"></div>
+      </div>
+
+      <div class="problem" id="s2p4">
+        <p>Which phenomenon relies on total internal reflection?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s2p4fb','s2p4')">A) A rainbow forming in raindrops</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','s2p4fb','s2p4')">B) Light transmission in optical fibers</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s2p4fb','s2p4')">C) Diffraction through a narrow slit</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s2p4fb','s2p4')">D) The color of the sky</button>
+        </div>
+        <div class="feedback" id="s2p4fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: SPHERICAL MIRRORS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3" data-total-problems="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Spherical Mirrors</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>spherical mirror</strong> has a curved reflecting surface that is a portion of a sphere of radius R. The <strong>center of curvature</strong> C is the center of that sphere, and the <strong>focal point</strong> F is halfway between C and the mirror vertex. The <strong>focal length</strong> is:
+    </p>
+
+    <div class="formula-box">f = R / 2</div>
+
+    <div class="two-col">
+      <div class="formula-box green" style="font-size:.82rem;text-align:left;line-height:1.9">
+        <strong>Concave mirror</strong> (converging)<br>
+        Reflecting surface curves inward<br>
+        f is positive<br>
+        Can form real or virtual images<br>
+        Used in: telescopes, headlights, shaving mirrors
+      </div>
+      <div class="formula-box pink" style="font-size:.82rem;text-align:left;line-height:1.9">
+        <strong>Convex mirror</strong> (diverging)<br>
+        Reflecting surface curves outward<br>
+        f is negative<br>
+        Always forms virtual, upright, reduced images<br>
+        Used in: security mirrors, car side mirrors
+      </div>
+    </div>
+
+    <div class="formula-box large">1/f = 1/d<sub>o</sub> + 1/d<sub>i</sub> &nbsp;&nbsp; (Mirror Equation)</div>
+    <div class="formula-box amber">m = &minus;d<sub>i</sub> / d<sub>o</sub> &nbsp;&nbsp; (Magnification)</div>
+
+    <p class="concept-text">
+      Sign conventions: dₒ &gt; 0 always (real object). dᵢ &gt; 0 means real image (in front of mirror); dᵢ &lt; 0 means virtual image (behind mirror). m &gt; 0 means upright image; m &lt; 0 means inverted image. |m| &gt; 1 means enlarged; |m| &lt; 1 means reduced.
+    </p>
+
+    <div class="key-point">Ray diagram rules for concave mirrors: (1) Ray parallel to axis reflects through F. (2) Ray through F reflects parallel to axis. (3) Ray through C reflects back on itself.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Mirror Ray Diagram Builder</div>
+      <div class="scenario-tabs" id="mirrorTypeTabs">
+        <button class="scenario-tab active" onclick="setMirrorType('concave',this)">Concave Mirror</button>
+        <button class="scenario-tab" onclick="setMirrorType('convex',this)">Convex Mirror</button>
+      </div>
+      <div class="slider-row">
+        <label>Object distance dₒ</label>
+        <input type="range" id="mirrorDoSlider" min="10" max="120" value="60" step="5" oninput="updateMirrorDiagram()">
+        <span class="slider-val" id="mirrorDoVal">60 cm</span>
+      </div>
+      <div class="slider-row">
+        <label>Focal length |f|</label>
+        <input type="range" id="mirrorFSlider" min="10" max="50" value="25" step="5" oninput="updateMirrorDiagram()">
+        <span class="slider-val" id="mirrorFVal">25 cm</span>
+      </div>
+      <svg id="mirrorSvg" width="100%" viewBox="0 0 580 240" style="display:block;margin-top:8px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">dₒ</span><br><span class="value" id="mRdo">60 cm</span></div>
+        <div class="readout-item"><span class="label">f</span><br><span class="value indigo" id="mRf">+25 cm</span></div>
+        <div class="readout-item"><span class="label">dᵢ</span><br><span class="value amber" id="mRdi">— cm</span></div>
+        <div class="readout-item"><span class="label">m</span><br><span class="value pink" id="mRm">—</span></div>
+        <div class="readout-item"><span class="label">Image type</span><br><span class="value green" id="mRtype">—</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s3p1">
+        <p>A concave mirror has a focal length of <strong>20 cm</strong>. An object is placed <strong>60 cm</strong> in front of the mirror. What is the image distance dᵢ (in cm)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1in" placeholder="cm" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s3p1in',30,0.5,'s3p1fb','s3p1')">Check</button>
+        </div>
+        <div class="feedback" id="s3p1fb"></div>
+      </div>
+
+      <div class="problem" id="s3p2">
+        <p>For the concave mirror above (f=20 cm, dₒ=60 cm, dᵢ=30 cm), what is the magnification m?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2in" placeholder="m value" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s3p2in',-0.5,0.05,'s3p2fb','s3p2')">Check</button>
+        </div>
+        <div class="feedback" id="s3p2fb"></div>
+      </div>
+
+      <div class="problem" id="s3p3">
+        <p>A convex mirror has a focal length of <strong>-15 cm</strong>. An object is <strong>45 cm</strong> in front. What is dᵢ (in cm)? Round to 1 decimal.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p3in" placeholder="cm" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s3p3in',-11.25,0.5,'s3p3fb','s3p3')">Check</button>
+        </div>
+        <div class="feedback" id="s3p3fb"></div>
+      </div>
+
+      <div class="problem" id="s3p4">
+        <p>A spherical mirror forms a real, inverted image <strong>twice the size</strong> of the object when the object is 30 cm away. What is the focal length?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p4in" placeholder="cm" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s3p4in',20,0.5,'s3p4fb','s3p4')">Check</button>
+        </div>
+        <div class="feedback" id="s3p4fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: THIN LENSES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4" data-total-problems="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Thin Lenses</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>thin lens</strong> refracts light at two surfaces but is thin enough that we treat refraction as occurring at a single plane. The thin lens equation has the same mathematical form as the mirror equation:
+    </p>
+
+    <div class="formula-box large">1/f = 1/d<sub>o</sub> + 1/d<sub>i</sub> &nbsp;&nbsp; (Thin Lens Equation)</div>
+    <div class="formula-box amber">m = &minus;d<sub>i</sub> / d<sub>o</sub></div>
+
+    <div class="two-col">
+      <div class="formula-box green" style="font-size:.82rem;text-align:left;line-height:1.9">
+        <strong>Converging lens</strong> (convex)<br>
+        Thicker at center<br>
+        f is positive<br>
+        Can form real or virtual images<br>
+        Example: magnifying glass, camera lens
+      </div>
+      <div class="formula-box pink" style="font-size:.82rem;text-align:left;line-height:1.9">
+        <strong>Diverging lens</strong> (concave)<br>
+        Thinner at center<br>
+        f is negative<br>
+        Always forms virtual, upright, reduced images<br>
+        Example: corrective lenses for nearsightedness
+      </div>
+    </div>
+
+    <div class="key-point">Sign convention for lenses: dₒ &gt; 0 (real object, light enters from left). dᵢ &gt; 0 means real image (right side of lens); dᵢ &lt; 0 means virtual image (left/same side as object). Note: this is OPPOSITE to mirrors for which side is "real."</div>
+
+    <p class="concept-text">
+      <strong>Ray diagram rules for converging lenses:</strong> (1) Ray parallel to axis refracts through the far focal point F₂. (2) Ray through the center (optical axis) passes straight through. (3) Ray through the near focal point F₁ refracts parallel to the axis.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Thin Lens Ray Diagram</div>
+      <div class="scenario-tabs" id="lensTypeTabs">
+        <button class="scenario-tab active" onclick="setLensType('converging',this)">Converging Lens</button>
+        <button class="scenario-tab" onclick="setLensType('diverging',this)">Diverging Lens</button>
+      </div>
+      <div class="slider-row">
+        <label>Object distance dₒ</label>
+        <input type="range" id="lensDoSlider" min="10" max="120" value="60" step="5" oninput="updateLensDiagram()">
+        <span class="slider-val" id="lensDoVal">60 cm</span>
+      </div>
+      <div class="slider-row">
+        <label>Focal length |f|</label>
+        <input type="range" id="lensFSlider" min="10" max="50" value="25" step="5" oninput="updateLensDiagram()">
+        <span class="slider-val" id="lensFVal">25 cm</span>
+      </div>
+      <svg id="lensSvg" width="100%" viewBox="0 0 580 240" style="display:block;margin-top:8px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">dₒ</span><br><span class="value" id="lRdo">60 cm</span></div>
+        <div class="readout-item"><span class="label">f</span><br><span class="value indigo" id="lRf">+25 cm</span></div>
+        <div class="readout-item"><span class="label">dᵢ</span><br><span class="value amber" id="lRdi">— cm</span></div>
+        <div class="readout-item"><span class="label">m</span><br><span class="value pink" id="lRm">—</span></div>
+        <div class="readout-item"><span class="label">Image type</span><br><span class="value green" id="lRtype">—</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s4p1">
+        <p>A converging lens has f = <strong>10 cm</strong>. An object is placed <strong>30 cm</strong> away. Find dᵢ (cm).</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1in" placeholder="cm" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s4p1in',15,0.5,'s4p1fb','s4p1')">Check</button>
+        </div>
+        <div class="feedback" id="s4p1fb"></div>
+      </div>
+
+      <div class="problem" id="s4p2">
+        <p>A diverging lens produces a virtual image <strong>10 cm</strong> from the lens (dᵢ = -10 cm) when the object is <strong>30 cm</strong> away. What is the focal length (cm)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2in" placeholder="cm" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s4p2in',-15,0.5,'s4p2fb','s4p2')">Check</button>
+        </div>
+        <div class="feedback" id="s4p2fb"></div>
+      </div>
+
+      <div class="problem" id="s4p3">
+        <p>A converging lens (f = 20 cm) has an object 15 cm away (inside the focal point). What kind of image does it produce?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s4p3fb','s4p3')">A) Real, inverted, enlarged</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s4p3fb','s4p3')">B) Real, inverted, reduced</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','s4p3fb','s4p3')">C) Virtual, upright, enlarged</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s4p3fb','s4p3')">D) Virtual, upright, reduced</button>
+        </div>
+        <div class="feedback" id="s4p3fb"></div>
+      </div>
+
+      <div class="problem" id="s4p4">
+        <p>An object 4 cm tall is placed 40 cm from a converging lens with f = 25 cm. What is the image height (cm)? Use m = -dᵢ/dₒ and dᵢ from the lens equation. Round to 1 decimal.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p4in" placeholder="cm (neg = inverted)" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s4p4in',-10.67,0.5,'s4p4fb','s4p4')">Check</button>
+        </div>
+        <div class="feedback" id="s4p4fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: OPTICAL INSTRUMENTS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5" data-total-problems="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Optical Instruments</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>human eye</strong> is a variable-focus lens system. The cornea and crystalline lens focus light onto the retina. A healthy eye can accommodate (change focal length) to focus objects from the <strong>near point</strong> (~25 cm) to infinity (far point). Defects:
+    </p>
+
+    <div class="two-col">
+      <div class="formula-box pink" style="font-size:.78rem;text-align:left;line-height:1.9">
+        <strong>Myopia (nearsightedness)</strong><br>
+        Far point &lt; infinity<br>
+        Eyeball too long<br>
+        Images form in front of retina<br>
+        Corrected with diverging lens (f &lt; 0)
+      </div>
+      <div class="formula-box green" style="font-size:.78rem;text-align:left;line-height:1.9">
+        <strong>Hyperopia (farsightedness)</strong><br>
+        Near point &gt; 25 cm<br>
+        Eyeball too short<br>
+        Images form behind retina<br>
+        Corrected with converging lens (f &gt; 0)
+      </div>
+    </div>
+
+    <p class="concept-text">
+      <strong>Lens power</strong> is measured in diopters: P = 1/f (f in meters). A +2.0 D lens has f = 0.5 m and converges light.
+    </p>
+
+    <div class="formula-box">P = 1/f &nbsp;&nbsp; [diopters, D] &nbsp;&nbsp; f in meters</div>
+
+    <p class="concept-text">
+      A <strong>magnifying glass</strong> is a single converging lens held so the object is inside (or at) the focal point, producing an enlarged virtual image. The angular magnification when the image is at the near point (25 cm) is:
+    </p>
+
+    <div class="formula-box large">M = 25 cm / f &nbsp;&nbsp; (magnifying glass)</div>
+
+    <p class="concept-text">
+      A <strong>compound microscope</strong> uses two lenses: the <strong>objective</strong> (short focal length, close to specimen) creates a real enlarged image, which the <strong>eyepiece</strong> then magnifies further as a magnifying glass. Total magnification:
+    </p>
+
+    <div class="formula-box green">M<sub>total</sub> = M<sub>obj</sub> &times; M<sub>eye</sub> = (&minus;d<sub>i,obj</sub> / d<sub>o,obj</sub>) &times; (25 / f<sub>eye</sub>)</div>
+
+    <p class="concept-text">
+      A <strong>refracting telescope</strong> uses a large-aperture objective lens (long focal length) to collect light from distant objects, and an eyepiece to magnify the image. Angular magnification:
+    </p>
+
+    <div class="formula-box amber">M<sub>telescope</sub> = &minus;f<sub>obj</sub> / f<sub>eye</sub></div>
+
+    <div class="key-point">For a telescope, a larger objective focal length and shorter eyepiece focal length give greater magnification. The negative sign means the image is inverted (common for astronomical telescopes).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Corrective Lens Calculator</div>
+      <div class="scenario-tabs" id="eyeTypeTabs">
+        <button class="scenario-tab active" onclick="setEyeType('myopia',this)">Myopia (nearsighted)</button>
+        <button class="scenario-tab" onclick="setEyeType('hyperopia',this)">Hyperopia (farsighted)</button>
+      </div>
+      <div id="myopiaControls">
+        <div class="slider-row">
+          <label>Far point (cm)</label>
+          <input type="range" id="farPointSlider" min="20" max="200" value="80" step="5" oninput="updateEyeCalc()">
+          <span class="slider-val" id="farPointVal">80 cm</span>
+        </div>
+      </div>
+      <div id="hyperopiaControls" style="display:none">
+        <div class="slider-row">
+          <label>Near point (cm)</label>
+          <input type="range" id="nearPointSlider" min="30" max="150" value="75" step="5" oninput="updateEyeCalc()">
+          <span class="slider-val" id="nearPointVal">75 cm</span>
+        </div>
+      </div>
+      <div class="readout" id="eyeReadout">
+        <div class="readout-item"><span class="label">Condition</span><br><span class="value pink" id="eyeCondition">Myopia</span></div>
+        <div class="readout-item"><span class="label">Required f</span><br><span class="value indigo" id="eyeF">-80 cm</span></div>
+        <div class="readout-item"><span class="label">Lens power</span><br><span class="value amber" id="eyePower">-1.25 D</span></div>
+        <div class="readout-item"><span class="label">Lens type</span><br><span class="value green" id="eyeType2">Diverging</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s5p1">
+        <p>A magnifying glass has a focal length of <strong>5 cm</strong>. What is its angular magnification (near point = 25 cm)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1in" placeholder="×" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s5p1in',5,0.2,'s5p1fb','s5p1')">Check</button>
+        </div>
+        <div class="feedback" id="s5p1fb"></div>
+      </div>
+
+      <div class="problem" id="s5p2">
+        <p>A person's far point is <strong>50 cm</strong>. What power corrective lens (in diopters) do they need to see distant objects clearly?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p2in" placeholder="diopters" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s5p2in',-2.0,0.1,'s5p2fb','s5p2')">Check</button>
+        </div>
+        <div class="feedback" id="s5p2fb"></div>
+      </div>
+
+      <div class="problem" id="s5p3">
+        <p>A telescope has an objective with f = <strong>900 mm</strong> and an eyepiece with f = <strong>25 mm</strong>. What is the magnitude of the angular magnification?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p3in" placeholder="×" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s5p3in',36,0.5,'s5p3fb','s5p3')">Check</button>
+        </div>
+        <div class="feedback" id="s5p3fb"></div>
+      </div>
+
+      <div class="problem" id="s5p4">
+        <p>A compound microscope objective (f = 4 mm) creates an image 160 mm from the lens. The eyepiece has f = 25 mm. What is the total magnification magnitude? (Hint: use Mobj = di/f_obj approx, Meye = 25cm/f_eye)</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s5p4fb','s5p4')">A) 40×</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','s5p4fb','s5p4')">B) 160×</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s5p4fb','s5p4')">C) 400×</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s5p4fb','s5p4')">D) 640×</button>
+        </div>
+        <div class="feedback" id="s5p4fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6" data-total-problems="0">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Comprehensive Quiz — 10 Questions</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <span style="font-size:.72rem;color:var(--text-dim)">Answer all questions to complete this section</span>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 1 — Reflection</div>
+      <div class="q-text">A light ray strikes a mirror at an angle of 50° from the normal. What is the angle between the incident ray and the reflected ray?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,1,'wrong')">A) 50°</button>
+        <button class="choice-btn" onclick="quizAnswer(this,1,'correct')">B) 100°</button>
+        <button class="choice-btn" onclick="quizAnswer(this,1,'wrong')">C) 40°</button>
+        <button class="choice-btn" onclick="quizAnswer(this,1,'wrong')">D) 130°</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 2 — Plane Mirror</div>
+      <div class="q-text">An object stands 2 m in front of a plane mirror. Which statement about its image is correct?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,2,'wrong')">A) Real image, 2 m behind mirror</button>
+        <button class="choice-btn" onclick="quizAnswer(this,2,'correct')">B) Virtual image, 2 m behind mirror, same size</button>
+        <button class="choice-btn" onclick="quizAnswer(this,2,'wrong')">C) Virtual image, 2 m in front of mirror</button>
+        <button class="choice-btn" onclick="quizAnswer(this,2,'wrong')">D) Real image, 4 m behind mirror</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 3 — Snell's Law</div>
+      <div class="q-text">Light travels from glass (n = 1.50) into water (n = 1.33). Compared to the incident angle, the refracted angle will be:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,3,'wrong')">A) Smaller (bends toward normal)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,3,'correct')">B) Larger (bends away from normal)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,3,'wrong')">C) Equal (no bending occurs)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,3,'wrong')">D) Zero (total internal reflection always occurs)</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 4 — Critical Angle</div>
+      <div class="q-text">What is the critical angle for a diamond (n = 2.42) to air (n = 1.00) interface? (Use sin⁻¹(1/2.42))</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,4,'wrong')">A) 19.2°</button>
+        <button class="choice-btn" onclick="quizAnswer(this,4,'wrong')">B) 30.0°</button>
+        <button class="choice-btn" onclick="quizAnswer(this,4,'correct')">C) 24.4°</button>
+        <button class="choice-btn" onclick="quizAnswer(this,4,'wrong')">D) 42.0°</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 5 — Concave Mirror</div>
+      <div class="q-text">An object is placed at the focal point of a concave mirror. Where does the image form?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,5,'wrong')">A) At the center of curvature</button>
+        <button class="choice-btn" onclick="quizAnswer(this,5,'wrong')">B) At the mirror surface</button>
+        <button class="choice-btn" onclick="quizAnswer(this,5,'correct')">C) At infinity (rays emerge parallel)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,5,'wrong')">D) Halfway between F and C</button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 6 — Mirror Equation</div>
+      <div class="q-text">A concave mirror (f = 15 cm) has an object at dₒ = 45 cm. What is dᵢ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,6,'wrong')">A) 45 cm</button>
+        <button class="choice-btn" onclick="quizAnswer(this,6,'correct')">B) 22.5 cm</button>
+        <button class="choice-btn" onclick="quizAnswer(this,6,'wrong')">C) 30 cm</button>
+        <button class="choice-btn" onclick="quizAnswer(this,6,'wrong')">D) -22.5 cm</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 7 — Thin Lens</div>
+      <div class="q-text">A diverging lens always produces images that are:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,7,'wrong')">A) Real, inverted, and reduced</button>
+        <button class="choice-btn" onclick="quizAnswer(this,7,'correct')">B) Virtual, upright, and reduced</button>
+        <button class="choice-btn" onclick="quizAnswer(this,7,'wrong')">C) Real, upright, and enlarged</button>
+        <button class="choice-btn" onclick="quizAnswer(this,7,'wrong')">D) Virtual, inverted, and enlarged</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 8 — Magnification</div>
+      <div class="q-text">A lens produces an image with magnification m = -3. Which of the following is true?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,8,'wrong')">A) The image is virtual and upright</button>
+        <button class="choice-btn" onclick="quizAnswer(this,8,'wrong')">B) The image is the same size as the object</button>
+        <button class="choice-btn" onclick="quizAnswer(this,8,'correct')">C) The image is real, inverted, and 3× larger than the object</button>
+        <button class="choice-btn" onclick="quizAnswer(this,8,'wrong')">D) The image is virtual, inverted, and 3× larger</button>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 9 — Optical Instruments</div>
+      <div class="q-text">A person with myopia has a far point of 40 cm. What power corrective lens is needed?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,9,'wrong')">A) +2.5 D</button>
+        <button class="choice-btn" onclick="quizAnswer(this,9,'wrong')">B) +4.0 D</button>
+        <button class="choice-btn" onclick="quizAnswer(this,9,'correct')">C) -2.5 D</button>
+        <button class="choice-btn" onclick="quizAnswer(this,9,'wrong')">D) -4.0 D</button>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 10 — Index of Refraction</div>
+      <div class="q-text">Light travels at 2.0 × 10⁸ m/s in a medium. What is the index of refraction? (c = 3.0 × 10⁸ m/s)</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,10,'wrong')">A) 0.67</button>
+        <button class="choice-btn" onclick="quizAnswer(this,10,'correct')">B) 1.50</button>
+        <button class="choice-btn" onclick="quizAnswer(this,10,'wrong')">C) 2.00</button>
+        <button class="choice-btn" onclick="quizAnswer(this,10,'wrong')">D) 1.33</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ============================================================
+// GLOBAL STATE
+// ============================================================
+const TOTAL_SECTIONS = 6;
+let sectionCorrect = {}; // sectionId -> set of correct problem ids
+let sectionTotals = {};  // sectionId -> total problems count
+let quizAnswered = {};   // questionNum -> bool
+let quizScore = 0;
+
+// Initialize section tracking
+document.querySelectorAll('.section-card[data-section]').forEach(card => {
+  const s = card.dataset.section;
+  const tot = parseInt(card.dataset.totalProblems) || 0;
+  sectionTotals[s] = tot;
+  sectionCorrect[s] = new Set();
+});
+
+// ============================================================
+// TOGGLE SECTIONS
+// ============================================================
+function toggleSection(header) {
+  const card = header.closest('.section-card');
+  card.classList.toggle('open');
+}
+
+// ============================================================
+// PROGRESS
+// ============================================================
+function updateProgress() {
+  let completed = 0;
+  document.querySelectorAll('.section-card[data-section]').forEach(card => {
+    if (card.classList.contains('completed')) completed++;
+  });
+  const pct = (completed / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completed + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+function checkSectionComplete(sectionId) {
+  const card = document.querySelector(`.section-card[data-section="${sectionId}"]`);
+  if (!card) return;
+  const tot = sectionTotals[sectionId] || 0;
+  if (tot === 0) return; // quiz section handled separately
+  if (sectionCorrect[sectionId].size >= tot) {
+    card.classList.add('completed');
+    updateProgress();
+  }
+}
+
+// ============================================================
+// FEEDBACK HELPERS
+// ============================================================
+function checkNum(inputId, answer, tolerance, feedbackId, problemId) {
+  const input = document.getElementById(inputId);
+  const fb = document.getElementById(feedbackId);
+  const val = parseFloat(input.value);
+  const problem = document.getElementById(problemId);
+
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Please enter a number.';
+    return;
+  }
+
+  if (Math.abs(val - answer) <= tolerance) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! ' + getCorrectMsg(answer);
+    problem.classList.add('pop');
+    setTimeout(() => problem.classList.remove('pop'), 400);
+    // Track completion
+    const card = input.closest('.section-card');
+    if (card) {
+      const sId = card.dataset.section;
+      sectionCorrect[sId].add(problemId);
+      checkSectionComplete(sId);
+    }
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Try again. (Answer: ' + answer + ')';
+    problem.classList.add('shake');
+    setTimeout(() => problem.classList.remove('shake'), 400);
+  }
+}
+
+function checkMC(btn, result, feedbackId, problemId) {
+  const fb = document.getElementById(feedbackId);
+  const siblings = btn.parentElement.querySelectorAll('.mc-btn');
+
+  siblings.forEach(b => b.classList.add('disabled'));
+
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! Well done.';
+    const problem = document.getElementById(problemId);
+    if (problem) {
+      problem.classList.add('pop');
+      setTimeout(() => problem.classList.remove('pop'), 400);
+    }
+    const card = btn.closest('.section-card');
+    if (card) {
+      const sId = card.dataset.section;
+      sectionCorrect[sId].add(problemId);
+      checkSectionComplete(sId);
+    }
+  } else {
+    btn.classList.add('wrong');
+    // Reveal correct answer
+    siblings.forEach(b => {
+      if (!b.classList.contains('wrong')) b.classList.add('correct');
+    });
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Incorrect. The correct answer is highlighted.';
+    const problem = document.getElementById(problemId);
+    if (problem) {
+      problem.classList.add('shake');
+      setTimeout(() => problem.classList.remove('shake'), 400);
+    }
+  }
+}
+
+function getCorrectMsg(answer) {
+  return 'The answer is ' + answer + '.';
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+function quizAnswer(btn, qNum, result) {
+  if (quizAnswered[qNum]) return;
+  quizAnswered[qNum] = true;
+
+  const siblings = btn.closest('.choices').querySelectorAll('.choice-btn');
+  siblings.forEach(b => b.classList.add('disabled'));
+
+  if (result === 'correct') {
+    btn.classList.add('selected-correct');
+    quizScore++;
+    document.getElementById('quizScore').textContent = quizScore;
+  } else {
+    btn.classList.add('selected-wrong');
+    siblings.forEach(b => {
+      if (!b.classList.contains('selected-wrong')) b.classList.add('reveal-correct');
+    });
+  }
+
+  // Check if quiz is done
+  if (Object.keys(quizAnswered).length === 10) {
+    const quizCard = document.querySelector('.section-card[data-section="6"]');
+    if (quizCard) {
+      quizCard.classList.add('completed');
+      updateProgress();
+    }
+  }
+}
+
+// ============================================================
+// SECTION 1: REFLECTION INTERACTIVE
+// ============================================================
+function updateReflection() {
+  const angle = parseInt(document.getElementById('reflSlider').value);
+  document.getElementById('reflVal').textContent = angle + '°';
+
+  const cx = 250, cy = 180;
+  const rad = angle * Math.PI / 180;
+  const len = 130;
+
+  // Incident ray from top-left
+  const ix = cx - len * Math.sin(rad);
+  const iy = cy - len * Math.cos(rad);
+  document.getElementById('reflInc').setAttribute('x1', ix);
+  document.getElementById('reflInc').setAttribute('y1', iy);
+  document.getElementById('reflInc').setAttribute('x2', cx);
+  document.getElementById('reflInc').setAttribute('y2', cy);
+
+  // Reflected ray to top-right (symmetric)
+  const rx = cx + len * Math.sin(rad);
+  const ry = cy - len * Math.cos(rad);
+  document.getElementById('reflRef').setAttribute('x1', cx);
+  document.getElementById('reflRef').setAttribute('y1', cy);
+  document.getElementById('reflRef').setAttribute('x2', rx);
+  document.getElementById('reflRef').setAttribute('y2', ry);
+
+  // Angle arcs
+  const arcR = 40;
+  const incArcX = cx - arcR * Math.sin(rad / 2);
+  const incArcY = cy - arcR * Math.cos(rad / 2);
+  document.getElementById('reflArcI').setAttribute('d',
+    `M ${cx} ${cy - arcR} A ${arcR} ${arcR} 0 0 0 ${cx - arcR * Math.sin(rad)} ${cy - arcR * Math.cos(rad)}`);
+  document.getElementById('reflArcR').setAttribute('d',
+    `M ${cx} ${cy - arcR} A ${arcR} ${arcR} 0 0 1 ${cx + arcR * Math.sin(rad)} ${cy - arcR * Math.cos(rad)}`);
+
+  // Labels
+  const lx_i = cx - 55 * Math.sin(rad / 2) - 14;
+  const ly_i = cy - 55 * Math.cos(rad / 2);
+  document.getElementById('reflThetaI').setAttribute('x', lx_i);
+  document.getElementById('reflThetaI').setAttribute('y', ly_i);
+  document.getElementById('reflThetaI').textContent = angle + '°';
+
+  const lx_r = cx + 55 * Math.sin(rad / 2) - 4;
+  const ly_r = cy - 55 * Math.cos(rad / 2);
+  document.getElementById('reflThetaR').setAttribute('x', lx_r);
+  document.getElementById('reflThetaR').setAttribute('y', ly_r);
+  document.getElementById('reflThetaR').textContent = angle + '°';
+}
+updateReflection();
+
+// ============================================================
+// SECTION 2: SNELL'S LAW INTERACTIVE
+// ============================================================
+let snellN2 = 1.33;
+let snellMedName = 'Water (n=1.33)';
+
+function setSnellMedium(btn, n, name) {
+  document.querySelectorAll('#snellMediumTabs .scenario-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  snellN2 = n;
+  snellMedName = name;
+  updateSnell();
+}
+
+function updateSnell() {
+  const theta1 = parseInt(document.getElementById('snellSlider').value);
+  document.getElementById('snellVal').textContent = theta1 + '°';
+
+  const n1 = 1.0;
+  const n2 = snellN2;
+
+  document.getElementById('snellN1').textContent = n1.toFixed(2);
+  document.getElementById('snellN2').textContent = n2.toFixed(2);
+  document.getElementById('snellT1').textContent = theta1.toFixed(1) + '°';
+  document.getElementById('snellMedLabel').textContent = snellMedName;
+
+  // Critical angle (only applies when going from denser to less dense — here n1 < n2 so TIR not possible this direction)
+  document.getElementById('snellCrit').textContent = 'N/A (n1 < n2)';
+
+  // Snell's law: n1 sin(t1) = n2 sin(t2)
+  const sinT2 = (n1 * Math.sin(theta1 * Math.PI / 180)) / n2;
+  const cx = 250, interfaceY = 150;
+
+  const incLen = 130;
+  const t1Rad = theta1 * Math.PI / 180;
+  // Incident ray goes from top-left to center
+  const ix = cx - incLen * Math.sin(t1Rad);
+  const iy = interfaceY - incLen * Math.cos(t1Rad);
+
+  document.getElementById('snellIncRay').setAttribute('x1', ix);
+  document.getElementById('snellIncRay').setAttribute('y1', iy);
+  document.getElementById('snellIncRay').setAttribute('x2', cx);
+  document.getElementById('snellIncRay').setAttribute('y2', interfaceY);
+
+  // Arc for incident
+  const arcR = 35;
+  document.getElementById('snellArcI').setAttribute('d',
+    `M ${cx} ${interfaceY - arcR} A ${arcR} ${arcR} 0 0 0 ${cx - arcR * Math.sin(t1Rad)} ${interfaceY - arcR * Math.cos(t1Rad)}`);
+
+  const labelDist = 52;
+  const lxi = cx - labelDist * Math.sin(t1Rad / 2) - 16;
+  const lyi = interfaceY - labelDist * Math.cos(t1Rad / 2);
+  document.getElementById('snellLabelI').setAttribute('x', lxi);
+  document.getElementById('snellLabelI').setAttribute('y', lyi);
+  document.getElementById('snellLabelI').textContent = theta1 + '°';
+
+  if (sinT2 <= 1) {
+    const t2Rad = Math.asin(sinT2);
+    const t2Deg = t2Rad * 180 / Math.PI;
+    const refLen = 120;
+    const rx = cx + refLen * Math.sin(t2Rad);
+    const ry = interfaceY + refLen * Math.cos(t2Rad);
+
+    document.getElementById('snellRefRay').setAttribute('x1', cx);
+    document.getElementById('snellRefRay').setAttribute('y1', interfaceY);
+    document.getElementById('snellRefRay').setAttribute('x2', rx);
+    document.getElementById('snellRefRay').setAttribute('y2', ry);
+    document.getElementById('snellRefRay').setAttribute('stroke', '#22c55e');
+    document.getElementById('snellRefRay').setAttribute('marker-end', 'url(#arrowGreen)');
+
+    document.getElementById('snellArcT').setAttribute('d',
+      `M ${cx} ${interfaceY + arcR} A ${arcR} ${arcR} 0 0 1 ${cx + arcR * Math.sin(t2Rad)} ${interfaceY + arcR * Math.cos(t2Rad)}`);
+
+    const lxt = cx + labelDist * Math.sin(t2Rad / 2) + 2;
+    const lyt = interfaceY + labelDist * Math.cos(t2Rad / 2);
+    document.getElementById('snellLabelT').setAttribute('x', lxt);
+    document.getElementById('snellLabelT').setAttribute('y', lyt);
+    document.getElementById('snellLabelT').textContent = t2Deg.toFixed(1) + '°';
+    document.getElementById('snellLabelT').removeAttribute('display');
+
+    document.getElementById('snellTirLabel').setAttribute('display', 'none');
+    document.getElementById('snellT2').textContent = t2Deg.toFixed(1) + '°';
+    document.getElementById('snellT2').className = 'value green';
+  } else {
+    // TIR
+    document.getElementById('snellRefRay').setAttribute('x1', 0);
+    document.getElementById('snellRefRay').setAttribute('y1', 0);
+    document.getElementById('snellRefRay').setAttribute('x2', 0);
+    document.getElementById('snellRefRay').setAttribute('y2', 0);
+    document.getElementById('snellArcT').setAttribute('d', '');
+    document.getElementById('snellLabelT').setAttribute('display', 'none');
+    document.getElementById('snellTirLabel').removeAttribute('display');
+    document.getElementById('snellT2').textContent = 'TIR';
+    document.getElementById('snellT2').className = 'value pink';
+  }
+}
+updateSnell();
+
+// ============================================================
+// MATERIAL EXPLORER
+// ============================================================
+function selectMaterial(card, n, name) {
+  document.querySelectorAll('#matGrid .material-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+
+  document.getElementById('matName').textContent = name;
+  document.getElementById('matNVal').textContent = n.toFixed(4);
+
+  const speed = (3e8 / n);
+  const exp = Math.floor(Math.log10(speed));
+  const mantissa = speed / Math.pow(10, exp);
+  document.getElementById('matSpeed').textContent = mantissa.toFixed(2) + ' × 10' + superscript(exp) + ' m/s';
+
+  if (n > 1.0003) {
+    const critAngle = Math.asin(1.0003 / n) * 180 / Math.PI;
+    document.getElementById('matCrit').textContent = critAngle.toFixed(1) + '° (to air)';
+  } else {
+    document.getElementById('matCrit').textContent = 'N/A (n ≤ air)';
+  }
+}
+
+function superscript(n) {
+  const sups = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻'};
+  return String(n).split('').map(c => sups[c] || c).join('');
+}
+
+// ============================================================
+// MIRROR RAY DIAGRAM
+// ============================================================
+let mirrorType = 'concave';
+
+function setMirrorType(type, btn) {
+  mirrorType = type;
+  document.querySelectorAll('#mirrorTypeTabs .scenario-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  updateMirrorDiagram();
+}
+
+function updateMirrorDiagram() {
+  const doVal = parseInt(document.getElementById('mirrorDoSlider').value);
+  const fAbs = parseInt(document.getElementById('mirrorFSlider').value);
+  document.getElementById('mirrorDoVal').textContent = doVal + ' cm';
+  document.getElementById('mirrorFVal').textContent = fAbs + ' cm';
+
+  const f = mirrorType === 'concave' ? fAbs : -fAbs;
+  const fSign = mirrorType === 'concave' ? '+' : '-';
+
+  document.getElementById('mRdo').textContent = doVal + ' cm';
+  document.getElementById('mRf').textContent = fSign + fAbs + ' cm';
+
+  // Mirror equation: 1/di = 1/f - 1/do
+  const diInv = 1 / f - 1 / doVal;
+  const di = diInv === 0 ? Infinity : 1 / diInv;
+  const m = -di / doVal;
+
+  const svg = document.getElementById('mirrorSvg');
+  const W = 580, H = 240;
+
+  // Scale: mirror at x=440, axis at y=120
+  // 1 cm = 3px, max scale region
+  const scale = 2.5;
+  const mirrorX = 440;
+  const axisY = 120;
+
+  // Convert distances: object is to left of mirror
+  const objX = mirrorX - doVal * scale;
+
+  let imgX, imgY_top;
+  const isInfImage = !isFinite(di) || Math.abs(di) > 300;
+  if (!isInfImage) {
+    imgX = mirrorX - di * scale; // positive di -> real image -> left of mirror (in front)
+    imgY_top = axisY - Math.abs(m) * 40 * (m > 0 ? 1 : 1);
+  }
+
+  let svgContent = `
+    <defs>
+      <marker id="mArrowW" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5Z" fill="#e2e4e9"/></marker>
+      <marker id="mArrowG" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5Z" fill="#22c55e"/></marker>
+      <marker id="mArrowI" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5Z" fill="#6366f1"/></marker>
+      <marker id="mArrowA" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5Z" fill="#f59e0b"/></marker>
+      <marker id="mArrowP" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5Z" fill="#ec4899"/></marker>
+    </defs>
+    <!-- Optical axis -->
+    <line x1="20" y1="${axisY}" x2="${W-10}" y2="${axisY}" stroke="#363b47" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <!-- Mirror (curved line representation) -->`;
+
+  if (mirrorType === 'concave') {
+    svgContent += `<path d="M ${mirrorX} ${axisY-80} Q ${mirrorX+30} ${axisY} ${mirrorX} ${axisY+80}" fill="none" stroke="#9ca3af" stroke-width="3"/>`;
+  } else {
+    svgContent += `<path d="M ${mirrorX} ${axisY-80} Q ${mirrorX-30} ${axisY} ${mirrorX} ${axisY+80}" fill="none" stroke="#9ca3af" stroke-width="3"/>`;
+  }
+
+  // Focal and center points
+  const fX = mirrorX - f * scale;
+  const cX = mirrorX - 2 * f * scale;
+
+  svgContent += `
+    <circle cx="${fX}" cy="${axisY}" r="4" fill="var(--amber)"/>
+    <text x="${fX-4}" y="${axisY+18}" fill="var(--amber)" font-size="10" font-weight="600">F</text>`;
+
+  if (mirrorType === 'concave' && cX > 20 && cX < W) {
+    svgContent += `
+      <circle cx="${cX}" cy="${axisY}" r="4" fill="var(--pink)"/>
+      <text x="${cX-4}" y="${axisY+18}" fill="var(--pink)" font-size="10" font-weight="600">C</text>`;
+  }
+
+  // Object arrow
+  const objH = 40;
+  if (objX > 20 && objX < mirrorX) {
+    svgContent += `
+      <line x1="${objX}" y1="${axisY}" x2="${objX}" y2="${axisY - objH}" stroke="#6366f1" stroke-width="2.5" marker-end="url(#mArrowI)"/>
+      <text x="${objX-6}" y="${axisY+16}" fill="#6366f1" font-size="9">obj</text>`;
+  }
+
+  // Image arrow
+  let imgType = '—';
+  if (!isInfImage) {
+    const imgH = m * objH; // negative m -> inverted
+    const clampedImgX = Math.max(10, Math.min(W-10, imgX));
+    const clampedImgH = Math.max(-80, Math.min(80, imgH));
+
+    if (di > 0) {
+      // Real image (in front of mirror for mirrors)
+      imgType = di > 0 ? 'Real, ' + (m > 0 ? 'upright' : 'inverted') : '';
+      svgContent += `
+        <line x1="${clampedImgX}" y1="${axisY}" x2="${clampedImgX}" y2="${axisY + clampedImgH}" stroke="#22c55e" stroke-width="2.5" marker-end="url(#mArrowG)"/>
+        <text x="${clampedImgX+4}" y="${axisY+16}" fill="#22c55e" font-size="9">img</text>`;
+    } else {
+      // Virtual image (behind mirror)
+      imgType = 'Virtual, upright';
+      const vImgX = mirrorX + Math.abs(di) * scale;
+      const clampedVX = Math.min(W-10, vImgX);
+      svgContent += `
+        <line x1="${clampedVX}" y1="${axisY}" x2="${clampedVX}" y2="${axisY + clampedImgH}" stroke="#ec4899" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#mArrowP)"/>
+        <text x="${clampedVX+4}" y="${axisY+16}" fill="#ec4899" font-size="9">img (virtual)</text>`;
+    }
+    imgType = di > 0 ? 'Real, ' + (m < 0 ? 'inverted' : 'upright') : 'Virtual, upright';
+  } else {
+    imgType = 'At infinity';
+  }
+
+  // Labels
+  svgContent += `
+    <text x="12" y="20" fill="#9ca3af" font-size="10" font-weight="600">${mirrorType === 'concave' ? 'Concave' : 'Convex'} Mirror</text>
+    <text x="${mirrorX+5}" y="${axisY+16}" fill="#9ca3af" font-size="9">M</text>`;
+
+  svg.innerHTML = svgContent;
+
+  // Update readouts
+  document.getElementById('mRdi').textContent = isInfImage ? '∞' : di.toFixed(1) + ' cm';
+  document.getElementById('mRm').textContent = isInfImage ? '—' : m.toFixed(2);
+  document.getElementById('mRtype').textContent = imgType;
+}
+updateMirrorDiagram();
+
+// ============================================================
+// LENS RAY DIAGRAM
+// ============================================================
+let lensType = 'converging';
+
+function setLensType(type, btn) {
+  lensType = type;
+  document.querySelectorAll('#lensTypeTabs .scenario-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  updateLensDiagram();
+}
+
+function updateLensDiagram() {
+  const doVal = parseInt(document.getElementById('lensDoSlider').value);
+  const fAbs = parseInt(document.getElementById('lensFSlider').value);
+  document.getElementById('lensDoVal').textContent = doVal + ' cm';
+  document.getElementById('lensFVal').textContent = fAbs + ' cm';
+
+  const f = lensType === 'converging' ? fAbs : -fAbs;
+  const fSign = lensType === 'converging' ? '+' : '-';
+
+  document.getElementById('lRdo').textContent = doVal + ' cm';
+  document.getElementById('lRf').textContent = fSign + fAbs + ' cm';
+
+  const diInv = 1 / f - 1 / doVal;
+  const di = diInv === 0 ? Infinity : 1 / diInv;
+  const m = -di / doVal;
+
+  const svg = document.getElementById('lensSvg');
+  const W = 580, H = 240;
+  const scale = 2.5;
+  const lensX = 290; // lens in middle
+  const axisY = 120;
+
+  const objX = lensX - doVal * scale;
+
+  let svgContent = `
+    <defs>
+      <marker id="lArrowW" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5Z" fill="#e2e4e9"/></marker>
+      <marker id="lArrowG" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5Z" fill="#22c55e"/></marker>
+      <marker id="lArrowI" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5Z" fill="#6366f1"/></marker>
+      <marker id="lArrowP" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5Z" fill="#ec4899"/></marker>
+      <marker id="lArrowA" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5Z" fill="#f59e0b"/></marker>
+    </defs>
+    <!-- Axis -->
+    <line x1="10" y1="${axisY}" x2="${W-10}" y2="${axisY}" stroke="#363b47" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <!-- Lens -->`;
+
+  if (lensType === 'converging') {
+    svgContent += `
+      <line x1="${lensX}" y1="${axisY-85}" x2="${lensX}" y2="${axisY+85}" stroke="#9ca3af" stroke-width="2"/>
+      <path d="M ${lensX-2} ${axisY-85} Q ${lensX+18} ${axisY} ${lensX-2} ${axisY+85}" fill="none" stroke="#9ca3af" stroke-width="2"/>
+      <path d="M ${lensX+2} ${axisY-85} Q ${lensX-18} ${axisY} ${lensX+2} ${axisY+85}" fill="none" stroke="#9ca3af" stroke-width="2"/>`;
+  } else {
+    svgContent += `
+      <line x1="${lensX}" y1="${axisY-85}" x2="${lensX}" y2="${axisY+85}" stroke="#9ca3af" stroke-width="2"/>
+      <path d="M ${lensX-2} ${axisY-85} Q ${lensX-18} ${axisY} ${lensX-2} ${axisY+85}" fill="none" stroke="#9ca3af" stroke-width="2"/>
+      <path d="M ${lensX+2} ${axisY-85} Q ${lensX+18} ${axisY} ${lensX+2} ${axisY+85}" fill="none" stroke="#9ca3af" stroke-width="2"/>`;
+  }
+
+  // Focal points
+  const f1X = lensX - f * scale; // near focal point (object side for converging)
+  const f2X = lensX + f * scale; // far focal point (image side)
+
+  if (f2X > 10 && f2X < W) {
+    svgContent += `<circle cx="${f2X}" cy="${axisY}" r="4" fill="var(--amber)"/>
+      <text x="${f2X-5}" y="${axisY+18}" fill="var(--amber)" font-size="10">F₂</text>`;
+  }
+  if (f1X > 10 && f1X < W) {
+    svgContent += `<circle cx="${f1X}" cy="${axisY}" r="4" fill="var(--amber)"/>
+      <text x="${f1X-5}" y="${axisY+18}" fill="var(--amber)" font-size="10">F₁</text>`;
+  }
+
+  // Object
+  const objH = 40;
+  const clampObjX = Math.max(15, objX);
+  if (clampObjX < lensX - 5) {
+    svgContent += `
+      <line x1="${clampObjX}" y1="${axisY}" x2="${clampObjX}" y2="${axisY - objH}" stroke="#6366f1" stroke-width="2.5" marker-end="url(#lArrowI)"/>
+      <text x="${clampObjX-6}" y="${axisY+16}" fill="#6366f1" font-size="9">obj</text>`;
+  }
+
+  // Image
+  const isInfImage = !isFinite(di) || Math.abs(di) > 300;
+  let imgType = '—';
+
+  if (!isInfImage) {
+    const imgX = lensX + di * scale; // positive di -> right of lens (real)
+    const imgH = m * objH;
+    const clampImgX = Math.max(15, Math.min(W-15, imgX));
+    const clampImgH = Math.max(-80, Math.min(80, imgH));
+
+    if (di > 0) {
+      imgType = 'Real, ' + (m < 0 ? 'inverted' : 'upright');
+      svgContent += `
+        <line x1="${clampImgX}" y1="${axisY}" x2="${clampImgX}" y2="${axisY + clampImgH}" stroke="#22c55e" stroke-width="2.5" marker-end="url(#lArrowG)"/>
+        <text x="${clampImgX+4}" y="${axisY+16}" fill="#22c55e" font-size="9">img</text>`;
+    } else {
+      imgType = 'Virtual, upright';
+      const vImgX = lensX + di * scale; // di negative -> left of lens
+      const clampVX = Math.max(15, Math.min(W-15, vImgX));
+      svgContent += `
+        <line x1="${clampVX}" y1="${axisY}" x2="${clampVX}" y2="${axisY + clampImgH}" stroke="#ec4899" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#lArrowP)"/>
+        <text x="${clampVX+4}" y="${axisY+16}" fill="#ec4899" font-size="9">img (virtual)</text>`;
+    }
+    document.getElementById('lRdi').textContent = di.toFixed(1) + ' cm';
+    document.getElementById('lRm').textContent = m.toFixed(2);
+  } else {
+    imgType = 'At infinity';
+    document.getElementById('lRdi').textContent = '∞';
+    document.getElementById('lRm').textContent = '—';
+  }
+
+  svgContent += `<text x="12" y="20" fill="#9ca3af" font-size="10" font-weight="600">${lensType === 'converging' ? 'Converging' : 'Diverging'} Lens</text>`;
+
+  svg.innerHTML = svgContent;
+  document.getElementById('lRtype').textContent = imgType;
+}
+updateLensDiagram();
+
+// ============================================================
+// SECTION 5: EYE CALCULATOR
+// ============================================================
+let eyeCondition = 'myopia';
+
+function setEyeType(type, btn) {
+  eyeCondition = type;
+  document.querySelectorAll('#eyeTypeTabs .scenario-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('myopiaControls').style.display = type === 'myopia' ? '' : 'none';
+  document.getElementById('hyperopiaControls').style.display = type === 'hyperopia' ? '' : 'none';
+  updateEyeCalc();
+}
+
+function updateEyeCalc() {
+  if (eyeCondition === 'myopia') {
+    const farPt = parseInt(document.getElementById('farPointSlider').value);
+    document.getElementById('farPointVal').textContent = farPt + ' cm';
+    // Corrective lens must form image of distant object (do = inf) at far point
+    // 1/f = 1/di + 1/do = 1/(-farPt) + 0 => f = -farPt cm
+    const f_cm = -farPt;
+    const f_m = f_cm / 100;
+    const power = 1 / f_m;
+    document.getElementById('eyeCondition').textContent = 'Myopia';
+    document.getElementById('eyeCondition').className = 'value pink';
+    document.getElementById('eyeF').textContent = f_cm.toFixed(0) + ' cm';
+    document.getElementById('eyePower').textContent = power.toFixed(2) + ' D';
+    document.getElementById('eyeType2').textContent = 'Diverging';
+  } else {
+    const nearPt = parseInt(document.getElementById('nearPointSlider').value);
+    document.getElementById('nearPointVal').textContent = nearPt + ' cm';
+    // Corrective lens must form image of 25 cm object at near point
+    // 1/f = 1/do + 1/di = 1/25 + 1/(-nearPt)
+    const f_inv = 1/25 - 1/nearPt;
+    const f_cm = 1 / f_inv;
+    const f_m = f_cm / 100;
+    const power = 1 / f_m;
+    document.getElementById('eyeCondition').textContent = 'Hyperopia';
+    document.getElementById('eyeCondition').className = 'value green';
+    document.getElementById('eyeF').textContent = f_cm.toFixed(1) + ' cm';
+    document.getElementById('eyePower').textContent = power.toFixed(2) + ' D';
+    document.getElementById('eyeType2').textContent = 'Converging';
+  }
+}
+updateEyeCalc();
+
+// Init progress
+updateProgress();
+</script>
+</body>
+</html>

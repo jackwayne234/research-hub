@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 11 — Gas Laws</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1e2128;
+  --bg-card: #262a33;
+  --bg-input: #1a1d24;
+  --border: #363b47;
+  --text: #e2e4e9;
+  --indigo: #6366f1;
+  --indigo-dim: rgba(99,102,241,0.15);
+  --indigo-dim2: rgba(99,102,241,0.25);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.15);
+  --pink: #ec4899;
+  --pink-dim: rgba(236,72,153,0.15);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.15);
+  --text-muted: #8b8fa8;
+  --radius: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* TOP BAR */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.top-bar-label {
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--indigo);
+  flex-shrink: 0;
+}
+.top-bar-title {
+  font-size: 13px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: 99px;
+  overflow: hidden;
+  min-width: 80px;
+}
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--indigo), var(--green));
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+.progress-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* MAIN */
+.main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+/* SECTION CARDS */
+.section-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  transition: border-color 0.3s ease;
+  overflow: hidden;
+}
+.section-card.completed {
+  border-color: var(--green);
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  cursor: pointer;
+  user-select: none;
+  gap: 12px;
+}
+.section-header:hover { background: rgba(255,255,255,0.03); }
+.section-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--bg-input);
+  padding: 2px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  flex: 1;
+}
+.section-badge {
+  font-size: 11px;
+  color: var(--green);
+  opacity: 0;
+  transition: opacity 0.3s;
+  flex-shrink: 0;
+}
+.section-card.completed .section-badge { opacity: 1; }
+.chevron {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+}
+.section-card.open .chevron { transform: rotate(180deg); }
+.section-body {
+  display: none;
+  padding: 0 22px 24px;
+  border-top: 1px solid var(--border);
+}
+.section-card.open .section-body { display: block; }
+
+/* CONTENT */
+h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--indigo);
+  margin: 20px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+p { margin-bottom: 12px; color: var(--text); }
+
+/* FORMULA BOX */
+.formula-box {
+  background: var(--indigo-dim);
+  border: 1px solid var(--indigo);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  text-align: center;
+}
+.formula-box.green {
+  background: var(--green-dim);
+  border-color: var(--green);
+}
+.formula-box.pink {
+  background: var(--pink-dim);
+  border-color: var(--pink);
+}
+.formula-box.amber {
+  background: var(--amber-dim);
+  border-color: var(--amber);
+}
+.formula-box .formula {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text);
+}
+.formula-box .formula-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* KEY POINT */
+.key-point {
+  border-left: 3px solid var(--amber);
+  background: var(--amber-dim);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin: 14px 0;
+  font-size: 13px;
+}
+.key-point strong { color: var(--amber); }
+
+/* NAVY CONTEXT */
+.navy-context {
+  background: var(--indigo-dim);
+  border: 1px solid var(--indigo-dim2);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  font-size: 13px;
+}
+.navy-context .nc-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--indigo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+/* INTERACTIVE AREA */
+.interactive-area {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  margin: 18px 0;
+}
+.interactive-area h4 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 14px;
+}
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.slider-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  width: 110px;
+  flex-shrink: 0;
+}
+input[type="range"] {
+  flex: 1;
+  min-width: 120px;
+  accent-color: var(--indigo);
+  cursor: pointer;
+}
+.readout {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  min-width: 80px;
+  text-align: right;
+}
+.vis-bar-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  height: 80px;
+  margin-top: 14px;
+}
+.vis-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.vis-bar-col span { font-size: 11px; color: var(--text-muted); }
+.vis-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.25s ease, background 0.25s ease;
+  max-width: 80px;
+}
+.canvas-wrap { margin-top: 14px; }
+canvas { width: 100%; border-radius: 6px; display: block; }
+
+/* UNIT TABLE */
+.unit-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 13px;
+}
+.unit-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.unit-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.unit-table tr:last-child td { border-bottom: none; }
+.unit-table .highlight { color: var(--green); font-weight: 700; }
+
+/* CALC GRID */
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.calc-field label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.calc-field input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.calc-field input:focus { border-color: var(--indigo); }
+.calc-btn {
+  background: var(--indigo);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.calc-btn:hover { opacity: 0.85; }
+.calc-result {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--green);
+  min-height: 40px;
+}
+
+/* PRACTICE PROBLEMS */
+.problem {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin: 14px 0;
+}
+.problem-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.problem p { margin-bottom: 10px; }
+.answer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.answer-row input {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  width: 120px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.answer-row input:focus { border-color: var(--indigo); }
+.answer-row .unit-hint { font-size: 12px; color: var(--text-muted); }
+.check-btn {
+  background: var(--indigo);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.check-btn:hover { opacity: 0.85; }
+.feedback {
+  font-size: 12px;
+  margin-top: 8px;
+  min-height: 18px;
+  font-weight: 600;
+}
+.feedback.correct { color: var(--green); }
+.feedback.incorrect { color: var(--pink); }
+
+/* MC BUTTONS */
+.mc-options { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.mc-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 14px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+.mc-btn:hover:not(.disabled) { border-color: var(--indigo); background: var(--indigo-dim); }
+.mc-btn.disabled { cursor: default; pointer-events: none; }
+.mc-btn.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+.mc-btn.wrong { border-color: var(--pink); background: var(--pink-dim); color: var(--pink); }
+
+/* QUIZ */
+.quiz-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.quiz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.quiz-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+.quiz-score-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.score-badge {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  background: var(--green-dim);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.reset-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 14px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.reset-btn:hover { border-color: var(--indigo); color: var(--text); }
+.quiz-q {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.quiz-q-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--indigo);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.quiz-q p { margin-bottom: 10px; }
+.choices { display: flex; flex-direction: column; gap: 8px; }
+.choice-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 14px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+.choice-btn:hover:not(.disabled) { border-color: var(--indigo); background: var(--indigo-dim); }
+.choice-btn.disabled { cursor: default; pointer-events: none; }
+.choice-btn.selected-correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+.choice-btn.selected-wrong { border-color: var(--pink); background: var(--pink-dim); color: var(--pink); }
+.choice-btn.reveal-correct { border-color: var(--green); color: var(--green); }
+
+/* ANIMATIONS */
+@keyframes popCorrect {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+@keyframes shakeWrong {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.pop { animation: popCorrect 0.35s ease; }
+.shake { animation: shakeWrong 0.4s ease; }
+
+/* UTILS */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+.stat-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  text-align: center;
+}
+.stat-box .stat-val { font-size: 20px; font-weight: 700; color: var(--green); }
+.stat-box .stat-lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.dalton-vis {
+  display: flex;
+  gap: 6px;
+  height: 50px;
+  margin: 12px 0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.dalton-seg { transition: flex 0.3s ease; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+
+@media (max-width: 640px) {
+  .top-bar { padding: 10px 14px; gap: 12px; }
+  .top-bar-title { display: none; }
+  .main { padding: 20px 12px 60px; }
+  .section-header { padding: 14px 16px; }
+  .section-body { padding: 0 16px 18px; }
+  .two-col { grid-template-columns: 1fr; }
+  .calc-grid { grid-template-columns: 1fr; }
+  .formula-box .formula { font-size: 17px; }
+  .quiz-section { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <span class="top-bar-label">LESSON 11</span>
+  <span class="top-bar-title">Gas Laws</span>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <span class="progress-label" id="progressLabel">0 / 8 sections</span>
+</div>
+
+<div class="main">
+
+  <!-- SECTION 1: PRESSURE & GAS BEHAVIOR -->
+  <div class="section-card" data-section="1">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">01</span>
+      <span class="section-title">Pressure &amp; Gas Behavior</span>
+      <span class="section-badge">DONE</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <h3>What Is Gas Pressure?</h3>
+      <p>Gas pressure is the force exerted by gas molecules colliding with the walls of their container, per unit area. More collisions = more pressure. Fewer particles or a larger container = lower pressure.</p>
+
+      <div class="formula-box">
+        <div class="formula">P = F / A</div>
+        <div class="formula-label">Pressure = Force per unit Area</div>
+      </div>
+
+      <h3>Pressure Units</h3>
+      <table class="unit-table">
+        <tr><th>Unit</th><th>Full Name</th><th>Value at STP</th></tr>
+        <tr><td class="highlight">atm</td><td>atmosphere</td><td>1 atm (reference)</td></tr>
+        <tr><td class="highlight">kPa</td><td>kilopascal</td><td>101.325 kPa</td></tr>
+        <tr><td class="highlight">mmHg</td><td>millimeters of mercury</td><td>760 mmHg</td></tr>
+        <tr><td class="highlight">torr</td><td>torr (= mmHg)</td><td>760 torr</td></tr>
+        <tr><td class="highlight">psi</td><td>pounds per square inch</td><td>14.696 psi</td></tr>
+      </table>
+
+      <div class="key-point">
+        <strong>STP (Standard Temperature and Pressure):</strong> 0 degrees C (273.15 K) and 1 atm (101.325 kPa). At STP, 1 mole of ideal gas occupies 22.4 L.
+      </div>
+
+      <h3>Kinetic Molecular Theory</h3>
+      <p>Gas behavior is explained by five postulates:</p>
+      <ol style="padding-left:20px; margin-bottom:12px; color:var(--text);">
+        <li style="margin-bottom:6px;">Gas particles are in constant, random motion.</li>
+        <li style="margin-bottom:6px;">Particles themselves have negligible volume compared to the container.</li>
+        <li style="margin-bottom:6px;">No attractive or repulsive forces between particles (ideal assumption).</li>
+        <li style="margin-bottom:6px;">Collisions are perfectly elastic — no net energy loss.</li>
+        <li style="margin-bottom:6px;">Average kinetic energy of particles is proportional to absolute temperature (Kelvin).</li>
+      </ol>
+
+      <div class="navy-context">
+        <div class="nc-title">Navy Context — Submarine Pressure</div>
+        Every 10 meters of seawater depth adds approximately 1 atm of pressure. At 300 m (a typical operating depth for fast-attack submarines), external hull pressure is ~31 atm (roughly 456 psi). The pressure hull maintains internal pressure at ~1 atm — the gas laws govern every compressed-air system, from ballast tanks to torpedo tube equalization.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: BOYLE'S LAW -->
+  <div class="section-card" data-section="2">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">02</span>
+      <span class="section-title">Boyle's Law — Pressure &amp; Volume</span>
+      <span class="section-badge">DONE</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <h3>The Law</h3>
+      <p>At constant temperature and constant amount of gas, pressure and volume are <strong>inversely proportional</strong>. Double the pressure, half the volume.</p>
+
+      <div class="formula-box green">
+        <div class="formula">P&#x2081;V&#x2081; = P&#x2082;V&#x2082;</div>
+        <div class="formula-label">Boyle's Law — Temperature and moles held constant</div>
+      </div>
+
+      <div class="key-point">
+        <strong>Inverse relationship:</strong> As P goes up, V goes down. Their product is always constant: PV = k
+      </div>
+
+      <h3>How to Use It</h3>
+      <p>Known: P&#x2081;, V&#x2081;, and one of {P&#x2082;, V&#x2082;}. Solve for the unknown by rearranging:</p>
+      <div class="formula-box">
+        <div class="formula">V&#x2082; = (P&#x2081; &times; V&#x2081;) / P&#x2082;</div>
+        <div class="formula-label">Solving for the new volume</div>
+      </div>
+
+      <div class="navy-context">
+        <div class="nc-title">Navy Context — Ballast Tanks &amp; Compressed Air</div>
+        To dive, a submarine floods its ballast tanks with seawater, expelling the air. To surface, high-pressure air (up to 3000+ psi from HAPC banks) is blown into the tanks, compressing and expelling seawater. Boyle's Law governs exactly how much compressed-air volume is needed to displace the required water volume at depth pressure.
+      </div>
+
+      <div class="interactive-area">
+        <h4>Interactive — Boyle's Law Explorer</h4>
+        <div class="slider-row">
+          <span class="slider-label">Pressure P&#x2081; (atm)</span>
+          <input type="range" id="boyleP1" min="0.5" max="5" step="0.1" value="1" oninput="updateBoyle()">
+          <span class="readout" id="boyleP1Val">1.0 atm</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">Volume V&#x2081; (L)</span>
+          <input type="range" id="boyleV1" min="1" max="20" step="0.5" value="10" oninput="updateBoyle()">
+          <span class="readout" id="boyleV1Val">10.0 L</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">New P&#x2082; (atm)</span>
+          <input type="range" id="boyleP2" min="0.5" max="10" step="0.1" value="2" oninput="updateBoyle()">
+          <span class="readout" id="boyleP2Val">2.0 atm</span>
+        </div>
+        <div class="two-col" style="margin-top:14px;">
+          <div class="stat-box">
+            <div class="stat-val" id="boyleV2">5.0 L</div>
+            <div class="stat-lbl">New Volume V&#x2082;</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="boylePV">10.0</div>
+            <div class="stat-lbl">PV constant (P&#x2081;V&#x2081;)</div>
+          </div>
+        </div>
+        <div class="vis-bar-wrap" style="height:100px; align-items:flex-end; margin-top:18px;">
+          <div class="vis-bar-col">
+            <div class="vis-bar" id="boyleBar1" style="height:50px; background:var(--green);"></div>
+            <span>V&#x2081;</span>
+          </div>
+          <div class="vis-bar-col">
+            <div class="vis-bar" id="boyleBar2" style="height:25px; background:var(--indigo);"></div>
+            <span>V&#x2082;</span>
+          </div>
+        </div>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">Bar height represents volume (scaled). Notice V&#x2082; shrinks as P&#x2082; increases.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: CHARLES'S LAW -->
+  <div class="section-card" data-section="3">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">03</span>
+      <span class="section-title">Charles's Law — Volume &amp; Temperature</span>
+      <span class="section-badge">DONE</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <h3>The Law</h3>
+      <p>At constant pressure and constant moles of gas, volume and temperature are <strong>directly proportional</strong>. Double the temperature (in Kelvin), double the volume.</p>
+
+      <div class="formula-box pink">
+        <div class="formula">V&#x2081; / T&#x2081; = V&#x2082; / T&#x2082;</div>
+        <div class="formula-label">Charles's Law — Pressure and moles held constant</div>
+      </div>
+
+      <div class="key-point">
+        <strong>Always use Kelvin.</strong> T(K) = T(°C) + 273.15. Using Celsius will give wrong answers because 0°C does not mean zero molecular motion — absolute zero (0 K = -273.15°C) does.
+      </div>
+
+      <h3>Solving for V&#x2082;</h3>
+      <div class="formula-box">
+        <div class="formula">V&#x2082; = V&#x2081; &times; (T&#x2082; / T&#x2081;)</div>
+        <div class="formula-label">All temperatures in Kelvin</div>
+      </div>
+
+      <div class="navy-context">
+        <div class="nc-title">Navy Context — Sealed Compartment Heating</div>
+        In a submarine's engineering spaces, high-temperature equipment can heat the air in a partially sealed compartment. As temperature rises, air expands. This is why HVAC and ventilation systems must be sized for worst-case temperature conditions — Charles's Law dictates the volume change for a given temperature swing. In a rigid sealed space, pressure rises instead of volume (that transitions into Gay-Lussac's Law next section).
+      </div>
+
+      <div class="interactive-area">
+        <h4>Interactive — Charles's Law Explorer</h4>
+        <div class="slider-row">
+          <span class="slider-label">Volume V&#x2081; (L)</span>
+          <input type="range" id="charlesV1" min="1" max="20" step="0.5" value="10" oninput="updateCharles()">
+          <span class="readout" id="charlesV1Val">10.0 L</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">Temp T&#x2081; (°C)</span>
+          <input type="range" id="charlesT1" min="-50" max="200" step="1" value="25" oninput="updateCharles()">
+          <span class="readout" id="charlesT1Val">25°C / 298 K</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">New T&#x2082; (°C)</span>
+          <input type="range" id="charlesT2" min="-50" max="500" step="1" value="100" oninput="updateCharles()">
+          <span class="readout" id="charlesT2Val">100°C / 373 K</span>
+        </div>
+        <div class="two-col" style="margin-top:14px;">
+          <div class="stat-box">
+            <div class="stat-val" id="charlesV2">12.5 L</div>
+            <div class="stat-lbl">New Volume V&#x2082;</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="charlesRatio">33.56</div>
+            <div class="stat-lbl">V/T ratio (L/K)</div>
+          </div>
+        </div>
+        <div class="vis-bar-wrap" style="height:100px; align-items:flex-end; margin-top:18px;">
+          <div class="vis-bar-col">
+            <div class="vis-bar" id="charlesBar1" style="height:50px; background:var(--pink);"></div>
+            <span>V&#x2081;</span>
+          </div>
+          <div class="vis-bar-col">
+            <div class="vis-bar" id="charlesBar2" style="height:62px; background:var(--amber);"></div>
+            <span>V&#x2082;</span>
+          </div>
+        </div>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">Bar height represents volume. Notice V&#x2082; scales with temperature ratio.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: GAY-LUSSAC'S & COMBINED -->
+  <div class="section-card" data-section="4">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">04</span>
+      <span class="section-title">Gay-Lussac's &amp; Combined Gas Law</span>
+      <span class="section-badge">DONE</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <h3>Gay-Lussac's Law</h3>
+      <p>At constant volume and constant moles, pressure and temperature are <strong>directly proportional</strong>. Heat a sealed rigid container and pressure rises proportionally.</p>
+
+      <div class="formula-box amber">
+        <div class="formula">P&#x2081; / T&#x2081; = P&#x2082; / T&#x2082;</div>
+        <div class="formula-label">Gay-Lussac's Law — Volume and moles held constant</div>
+      </div>
+
+      <div class="navy-context">
+        <div class="nc-title">Navy Context — SCBA Cylinders &amp; Fire Fighting</div>
+        Self-Contained Breathing Apparatus (SCBA) cylinders aboard ship are stored in warm spaces. A cylinder at 2200 psi at 20°C (293 K) will see pressure climb if exposed to heat from a fire. At 150°C (423 K): P&#x2082; = 2200 × (423/293) ≈ 3176 psi. This is why SCBA cylinders have pressure relief devices — Gay-Lussac's Law can make a tank explosive if it overheats.
+      </div>
+
+      <div class="key-point">
+        <strong>Solving for P&#x2082;:</strong> P&#x2082; = P&#x2081; × (T&#x2082; / T&#x2081;) — always convert to Kelvin first.
+      </div>
+
+      <h3>Combined Gas Law</h3>
+      <p>When all three variables change simultaneously (but moles remain constant), use the Combined Gas Law — which unifies Boyle's, Charles's, and Gay-Lussac's laws into one equation.</p>
+
+      <div class="formula-box green">
+        <div class="formula">(P&#x2081;V&#x2081;) / T&#x2081; = (P&#x2082;V&#x2082;) / T&#x2082;</div>
+        <div class="formula-label">Combined Gas Law — moles held constant</div>
+      </div>
+
+      <p>To use: assign known values, set unknown to solve for. For example, to find V&#x2082;:</p>
+      <div class="formula-box">
+        <div class="formula">V&#x2082; = (P&#x2081; &times; V&#x2081; &times; T&#x2082;) / (T&#x2081; &times; P&#x2082;)</div>
+        <div class="formula-label">Solving Combined Gas Law for V&#x2082;</div>
+      </div>
+
+      <div class="key-point">
+        <strong>Memory trick:</strong> Each simple law is a special case of the combined law. Hold T constant and get Boyle's. Hold P constant and get Charles's. Hold V constant and get Gay-Lussac's.
+      </div>
+
+      <h3>Summary Table</h3>
+      <table class="unit-table">
+        <tr><th>Law</th><th>Held Constant</th><th>Relationship</th><th>Formula</th></tr>
+        <tr><td>Boyle's</td><td>T, n</td><td>P &amp; V inverse</td><td>P&#x2081;V&#x2081; = P&#x2082;V&#x2082;</td></tr>
+        <tr><td>Charles's</td><td>P, n</td><td>V &amp; T direct</td><td>V&#x2081;/T&#x2081; = V&#x2082;/T&#x2082;</td></tr>
+        <tr><td>Gay-Lussac's</td><td>V, n</td><td>P &amp; T direct</td><td>P&#x2081;/T&#x2081; = P&#x2082;/T&#x2082;</td></tr>
+        <tr><td>Combined</td><td>n only</td><td>All three vary</td><td>P&#x2081;V&#x2081;/T&#x2081; = P&#x2082;V&#x2082;/T&#x2082;</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 5: IDEAL GAS LAW -->
+  <div class="section-card" data-section="5">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">05</span>
+      <span class="section-title">Ideal Gas Law — PV = nRT</span>
+      <span class="section-badge">DONE</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <h3>The Master Equation</h3>
+      <p>The Ideal Gas Law relates all four gas variables simultaneously — including the number of moles. It works for a single state, not a before/after scenario.</p>
+
+      <div class="formula-box green">
+        <div class="formula">PV = nRT</div>
+        <div class="formula-label">The Ideal Gas Law</div>
+      </div>
+
+      <table class="unit-table">
+        <tr><th>Variable</th><th>Meaning</th><th>Units</th></tr>
+        <tr><td class="highlight">P</td><td>Pressure</td><td>atm (when R = 0.0821)</td></tr>
+        <tr><td class="highlight">V</td><td>Volume</td><td>liters (L)</td></tr>
+        <tr><td class="highlight">n</td><td>Amount of gas</td><td>moles (mol)</td></tr>
+        <tr><td class="highlight">R</td><td>Ideal gas constant</td><td>0.0821 L·atm/(mol·K)</td></tr>
+        <tr><td class="highlight">T</td><td>Temperature</td><td>Kelvin (K)</td></tr>
+      </table>
+
+      <div class="key-point">
+        <strong>R = 0.0821 L·atm/(mol·K)</strong> — memorize this. Alternatively, R = 8.314 J/(mol·K) when using SI units (Pa and m³).
+      </div>
+
+      <h3>Solving for Each Variable</h3>
+      <div class="two-col">
+        <div class="formula-box" style="margin:0;">
+          <div class="formula" style="font-size:16px;">P = nRT / V</div>
+        </div>
+        <div class="formula-box" style="margin:0;">
+          <div class="formula" style="font-size:16px;">V = nRT / P</div>
+        </div>
+        <div class="formula-box" style="margin:0;">
+          <div class="formula" style="font-size:16px;">n = PV / RT</div>
+        </div>
+        <div class="formula-box" style="margin:0;">
+          <div class="formula" style="font-size:16px;">T = PV / nR</div>
+        </div>
+      </div>
+
+      <div class="navy-context">
+        <div class="nc-title">Navy Context — Emergency Air Supply Sizing</div>
+        How many moles of O&#x2082; are in an emergency breathing device pressurized to 3000 psi (204 atm) in a 0.5 L cylinder at 25°C (298 K)?
+        n = PV/RT = (204 × 0.5) / (0.0821 × 298) = 102 / 24.47 ≈ 4.17 mol. At 32 g/mol, that is ~133 g of O&#x2082; — enough for meaningful duration during an emergency.
+      </div>
+
+      <div class="interactive-area">
+        <h4>Ideal Gas Law Calculator — Solve for any variable</h4>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">Enter three known values, leave the fourth blank (or enter 0), then click Calculate.</p>
+        <div class="calc-grid">
+          <div class="calc-field">
+            <label>P — Pressure (atm)</label>
+            <input type="number" id=" iglP" placeholder="e.g. 2.5" step="any">
+          </div>
+          <div class="calc-field">
+            <label>V — Volume (L)</label>
+            <input type="number" id=" iglV" placeholder="e.g. 10" step="any">
+          </div>
+          <div class="calc-field">
+            <label>n — Moles (mol)</label>
+            <input type="number" id="iglN" placeholder="e.g. 0.5" step="any">
+          </div>
+          <div class="calc-field">
+            <label>T — Temperature (K)</label>
+            <input type="number" id="iglT" placeholder="e.g. 298" step="any">
+          </div>
+        </div>
+        <button class="calc-btn" onclick="calcIGL()">Calculate</button>
+        <div class="calc-result" id="iglResult">Enter three values to solve for the fourth.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: DALTON'S LAW -->
+  <div class="section-card" data-section="6">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">06</span>
+      <span class="section-title">Dalton's Law of Partial Pressures</span>
+      <span class="section-badge">DONE</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <h3>The Law</h3>
+      <p>In a mixture of non-reacting gases, the total pressure is equal to the sum of the partial pressures of each individual gas component.</p>
+
+      <div class="formula-box pink">
+        <div class="formula">P<sub>total</sub> = P&#x2081; + P&#x2082; + P&#x2083; + ...</div>
+        <div class="formula-label">Dalton's Law of Partial Pressures</div>
+      </div>
+
+      <h3>Partial Pressure &amp; Mole Fraction</h3>
+      <p>The partial pressure of any gas in a mixture is proportional to its mole fraction (X&#x1D43A;):</p>
+
+      <div class="formula-box">
+        <div class="formula">P&#x1D43A; = X&#x1D43A; &times; P<sub>total</sub></div>
+        <div class="formula-label">where X&#x1D43A; = n&#x1D43A; / n<sub>total</sub></div>
+      </div>
+
+      <div class="key-point">
+        <strong>Mole fraction (X):</strong> Moles of that gas divided by total moles. Always between 0 and 1. The sum of all mole fractions = 1.
+      </div>
+
+      <h3>Dry Air Composition (approximate)</h3>
+      <table class="unit-table">
+        <tr><th>Gas</th><th>Mole Fraction</th><th>Partial Pressure at 1 atm</th></tr>
+        <tr><td>N&#x2082;</td><td>0.7808</td><td class="highlight">0.7808 atm (593 mmHg)</td></tr>
+        <tr><td>O&#x2082;</td><td>0.2095</td><td class="highlight">0.2095 atm (159 mmHg)</td></tr>
+        <tr><td>Ar</td><td>0.0093</td><td class="highlight">0.0093 atm (7 mmHg)</td></tr>
+        <tr><td>CO&#x2082;</td><td>0.0004</td><td class="highlight">0.0004 atm (0.3 mmHg)</td></tr>
+      </table>
+
+      <h3>Gas Collection Over Water</h3>
+      <p>When collecting a gas by water displacement, the collected gas is wet — it contains water vapor. To find the pressure of the dry gas:</p>
+      <div class="formula-box amber">
+        <div class="formula">P<sub>gas</sub> = P<sub>total</sub> - P<sub>H&#x2082;O</sub></div>
+        <div class="formula-label">P(H&#x2082;O) at 25°C ≈ 23.8 mmHg (vapor pressure of water)</div>
+      </div>
+
+      <div class="navy-context">
+        <div class="nc-title">Navy Context — Nitrogen Narcosis &amp; Breathing Gas Mixtures</div>
+        At depth, the partial pressure of nitrogen in compressed air becomes dangerously high. At 4 atm absolute (30 m depth), P(N&#x2082;) = 0.78 × 4 = 3.12 atm — enough to cause nitrogen narcosis. Navy divers and SEAL operators use NITROX (reduced N&#x2082;, elevated O&#x2082;) or HELIOX (helium + O&#x2082;) mixes precisely to control partial pressures. Too high a P(O&#x2082;) also causes oxygen toxicity — everything is Dalton's Law in practice.
+      </div>
+
+      <div class="interactive-area">
+        <h4>Interactive — Gas Mixture Partial Pressures</h4>
+        <div class="slider-row">
+          <span class="slider-label">N&#x2082; mole %</span>
+          <input type="range" id="daltonN2" min="0" max="100" step="1" value="78" oninput="updateDalton()">
+          <span class="readout" id="daltonN2Val">78%</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">O&#x2082; mole %</span>
+          <input type="range" id="daltonO2" min="0" max="100" step="1" value="21" oninput="updateDalton()">
+          <span class="readout" id="daltonO2Val">21%</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">Total Pressure (atm)</span>
+          <input type="range" id="daltonPtot" min="0.5" max="10" step="0.5" value="1" oninput="updateDalton()">
+          <span class="readout" id="daltonPtotVal">1.0 atm</span>
+        </div>
+        <div class="dalton-vis" id="daltonVis">
+          <div class="dalton-seg" id="daltonSegN2" style="flex:78; background:var(--indigo); color:#fff;">N&#x2082;</div>
+          <div class="dalton-seg" id="daltonSegO2" style="flex:21; background:var(--green); color:#fff;">O&#x2082;</div>
+          <div class="dalton-seg" id="daltonSegOther" style="flex:1; background:var(--text-muted); color:#1e2128;">other</div>
+        </div>
+        <div class="two-col" style="margin-top:10px;">
+          <div class="stat-box">
+            <div class="stat-val" id="daltonPN2">0.78 atm</div>
+            <div class="stat-lbl">P(N&#x2082;)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="daltonPO2">0.21 atm</div>
+            <div class="stat-lbl">P(O&#x2082;)</div>
+          </div>
+        </div>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:8px;" id="daltonWarn"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: PRACTICE PROBLEMS -->
+  <div class="section-card" data-section="7">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">07</span>
+      <span class="section-title">Practice Problems</span>
+      <span class="section-badge">DONE</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+
+      <!-- Problem 1 -->
+      <div class="problem">
+        <div class="problem-num">Problem 1 — Boyle's Law</div>
+        <p>A gas occupies <strong>8.0 L</strong> at <strong>1.5 atm</strong>. The pressure is increased to <strong>6.0 atm</strong> at constant temperature. What is the new volume in liters?</p>
+        <p style="font-size:12px; color:var(--text-muted);">P&#x2081;V&#x2081; = P&#x2082;V&#x2082; &rarr; V&#x2082; = (P&#x2081; &times; V&#x2081;) / P&#x2082;</p>
+        <div class="answer-row">
+          <input type="number" id="p1" placeholder="V&#x2082; = ?" step="any">
+          <span class="unit-hint">L</span>
+          <button class="check-btn" onclick="checkNum('p1', 2.0, 0.05)">Check</button>
+        </div>
+        <div class="feedback" id="p1-fb"></div>
+      </div>
+
+      <!-- Problem 2 -->
+      <div class="problem">
+        <div class="problem-num">Problem 2 — Charles's Law</div>
+        <p>A balloon has a volume of <strong>3.0 L</strong> at <strong>27°C</strong>. It is heated to <strong>127°C</strong> at constant pressure. What is the new volume? (Remember: use Kelvin)</p>
+        <p style="font-size:12px; color:var(--text-muted);">T&#x2081; = 300 K, T&#x2082; = 400 K. V&#x2082; = V&#x2081; &times; (T&#x2082;/T&#x2081;)</p>
+        <div class="answer-row">
+          <input type="number" id="p2" placeholder="V&#x2082; = ?" step="any">
+          <span class="unit-hint">L</span>
+          <button class="check-btn" onclick="checkNum('p2', 4.0, 0.05)">Check</button>
+        </div>
+        <div class="feedback" id="p2-fb"></div>
+      </div>
+
+      <!-- Problem 3 -->
+      <div class="problem">
+        <div class="problem-num">Problem 3 — Gay-Lussac's Law</div>
+        <p>A steel cylinder contains gas at <strong>850 kPa</strong> and <strong>17°C</strong>. The cylinder is heated to <strong>47°C</strong>. What is the new pressure in kPa?</p>
+        <p style="font-size:12px; color:var(--text-muted);">T&#x2081; = 290 K, T&#x2082; = 320 K. P&#x2082; = P&#x2081; &times; (T&#x2082;/T&#x2081;)</p>
+        <div class="answer-row">
+          <input type="number" id="p3" placeholder="P&#x2082; = ?" step="any">
+          <span class="unit-hint">kPa</span>
+          <button class="check-btn" onclick="checkNum('p3', 937.93, 1.0)">Check</button>
+        </div>
+        <div class="feedback" id="p3-fb"></div>
+      </div>
+
+      <!-- Problem 4 -->
+      <div class="problem">
+        <div class="problem-num">Problem 4 — Combined Gas Law</div>
+        <p>A gas has P&#x2081; = <strong>2.0 atm</strong>, V&#x2081; = <strong>6.0 L</strong>, T&#x2081; = <strong>300 K</strong>. Conditions change to P&#x2082; = <strong>3.0 atm</strong>, T&#x2082; = <strong>400 K</strong>. Find V&#x2082; in liters.</p>
+        <p style="font-size:12px; color:var(--text-muted);">V&#x2082; = (P&#x2081; &times; V&#x2081; &times; T&#x2082;) / (T&#x2081; &times; P&#x2082;)</p>
+        <div class="answer-row">
+          <input type="number" id="p4" placeholder="V&#x2082; = ?" step="any">
+          <span class="unit-hint">L</span>
+          <button class="check-btn" onclick="checkNum('p4', 5.333, 0.05)">Check</button>
+        </div>
+        <div class="feedback" id="p4-fb"></div>
+      </div>
+
+      <!-- Problem 5 -->
+      <div class="problem">
+        <div class="problem-num">Problem 5 — Ideal Gas Law</div>
+        <p>How many moles of gas are present in a container with a volume of <strong>5.0 L</strong>, pressure of <strong>2.5 atm</strong>, and temperature of <strong>350 K</strong>?</p>
+        <p style="font-size:12px; color:var(--text-muted);">n = PV / RT. R = 0.0821 L·atm/(mol·K)</p>
+        <div class="answer-row">
+          <input type="number" id="p5" placeholder="n = ?" step="any">
+          <span class="unit-hint">mol</span>
+          <button class="check-btn" onclick="checkNum('p5', 0.4348, 0.01)">Check</button>
+        </div>
+        <div class="feedback" id="p5-fb"></div>
+      </div>
+
+      <!-- Problem 6 -->
+      <div class="problem">
+        <div class="problem-num">Problem 6 — Dalton's Law</div>
+        <p>A mixture of gases has partial pressures: P(N&#x2082;) = <strong>580 mmHg</strong>, P(O&#x2082;) = <strong>140 mmHg</strong>, P(CO&#x2082;) = <strong>20 mmHg</strong>. What is P<sub>total</sub> in mmHg?</p>
+        <div class="answer-row">
+          <input type="number" id="p6" placeholder="P_total = ?" step="any">
+          <span class="unit-hint">mmHg</span>
+          <button class="check-btn" onclick="checkNum('p6', 740, 0.5)">Check</button>
+        </div>
+        <div class="feedback" id="p6-fb"></div>
+      </div>
+
+      <!-- MC Problem -->
+      <div class="problem">
+        <div class="problem-num">Concept Check — Multiple Choice</div>
+        <p>A scuba diver inhales air at <strong>4 atm</strong> absolute pressure at depth. If this air is brought to the surface (1 atm) inside the diver's lungs at constant temperature, lung volume would theoretically:</p>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this, 'mc1', 'incorrect')">A) Decrease to 1/4 original size</button>
+          <button class="mc-btn" onclick="checkMC(this, 'mc1', 'correct')">B) Expand to 4x the original size</button>
+          <button class="mc-btn" onclick="checkMC(this, 'mc1', 'incorrect')">C) Stay the same — pressure doesn't affect volume in lungs</button>
+          <button class="mc-btn" onclick="checkMC(this, 'mc1', 'incorrect')">D) Double in size at the surface</button>
+        </div>
+        <div class="feedback" id="mc1-fb"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 8: QUIZ -->
+  <div class="section-card" data-section="8">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">08</span>
+      <span class="section-title">Final Quiz — 10 Questions</span>
+      <span class="section-badge">DONE</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="quiz-section" style="margin-bottom:0; border:none; padding:0; background:transparent;">
+        <div class="quiz-header">
+          <span class="quiz-title">Gas Laws — Final Quiz</span>
+          <div class="quiz-score-wrap">
+            <span class="score-badge">Score: <span id="quizScore">0</span> / 10</span>
+            <button class="reset-btn" onclick="resetQuiz()">Reset</button>
+          </div>
+        </div>
+
+        <!-- Q1 -->
+        <div class="quiz-q">
+          <div class="quiz-q-num">Question 1</div>
+          <p>Which law states that, at constant temperature, pressure and volume are inversely proportional?</p>
+          <div class="choices">
+            <button class="choice-btn" onclick="quizAnswer(1, this, true)">A) Boyle's Law</button>
+            <button class="choice-btn" onclick="quizAnswer(1, this, false)">B) Charles's Law</button>
+            <button class="choice-btn" onclick="quizAnswer(1, this, false)">C) Gay-Lussac's Law</button>
+            <button class="choice-btn" onclick="quizAnswer(1, this, false)">D) Dalton's Law</button>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-q">
+          <div class="quiz-q-num">Question 2</div>
+          <p>Why must temperature be converted to Kelvin before using the gas laws?</p>
+          <div class="choices">
+            <button class="choice-btn" onclick="quizAnswer(2, this, false)">A) Kelvin is easier to calculate with</button>
+            <button class="choice-btn" onclick="quizAnswer(2, this, false)">B) Celsius only works below 0°C</button>
+            <button class="choice-btn" onclick="quizAnswer(2, this, true)">C) 0 K is true absolute zero — 0°C is not zero molecular motion</button>
+            <button class="choice-btn" onclick="quizAnswer(2, this, false)">D) The gas constant R was defined using Kelvin arbitrarily</button>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-q">
+          <div class="quiz-q-num">Question 3</div>
+          <p>A gas at 2 atm and 10 L is compressed to 5 L at constant temperature. What is the new pressure?</p>
+          <div class="choices">
+            <button class="choice-btn" onclick="quizAnswer(3, this, false)">A) 1 atm</button>
+            <button class="choice-btn" onclick="quizAnswer(3, this, true)">B) 4 atm</button>
+            <button class="choice-btn" onclick="quizAnswer(3, this, false)">C) 0.5 atm</button>
+            <button class="choice-btn" onclick="quizAnswer(3, this, false)">D) 20 atm</button>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-q">
+          <div class="quiz-q-num">Question 4</div>
+          <p>In the Ideal Gas Law (PV = nRT), what does the variable <strong>n</strong> represent?</p>
+          <div class="choices">
+            <button class="choice-btn" onclick="quizAnswer(4, this, false)">A) Newtons of force</button>
+            <button class="choice-btn" onclick="quizAnswer(4, this, false)">B) Pressure in kPa</button>
+            <button class="choice-btn" onclick="quizAnswer(4, this, true)">C) Number of moles of gas</button>
+            <button class="choice-btn" onclick="quizAnswer(4, this, false)">D) Normal temperature in Celsius</button>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-q">
+          <div class="quiz-q-num">Question 5</div>
+          <p>What is the value of the universal gas constant R in units of L·atm/(mol·K)?</p>
+          <div class="choices">
+            <button class="choice-btn" onclick="quizAnswer(5, this, false)">A) 8.314</button>
+            <button class="choice-btn" onclick="quizAnswer(5, this, true)">B) 0.0821</button>
+            <button class="choice-btn" onclick="quizAnswer(5, this, false)">C) 22.4</button>
+            <button class="choice-btn" onclick="quizAnswer(5, this, false)">D) 273.15</button>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-q">
+          <div class="quiz-q-num">Question 6</div>
+          <p>A submarine's ballast tank is flooded and then blown with high-pressure air at depth. Which gas law most directly governs how much air volume is needed at surface pressure to displace water at 10 atm depth?</p>
+          <div class="choices">
+            <button class="choice-btn" onclick="quizAnswer(6, this, true)">A) Boyle's Law (P and V at constant T)</button>
+            <button class="choice-btn" onclick="quizAnswer(6, this, false)">B) Charles's Law (V and T at constant P)</button>
+            <button class="choice-btn" onclick="quizAnswer(6, this, false)">C) Dalton's Law (partial pressures)</button>
+            <button class="choice-btn" onclick="quizAnswer(6, this, false)">D) Gay-Lussac's Law (P and T at constant V)</button>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="quiz-q">
+          <div class="quiz-q-num">Question 7</div>
+          <p>Gas is collected over water at 25°C. Total pressure is 760 mmHg. Vapor pressure of water at 25°C is 23.8 mmHg. What is the partial pressure of the dry collected gas?</p>
+          <div class="choices">
+            <button class="choice-btn" onclick="quizAnswer(7, this, false)">A) 760 mmHg</button>
+            <button class="choice-btn" onclick="quizAnswer(7, this, false)">B) 783.8 mmHg</button>
+            <button class="choice-btn" onclick="quizAnswer(7, this, true)">C) 736.2 mmHg</button>
+            <button class="choice-btn" onclick="quizAnswer(7, this, false)">D) 23.8 mmHg</button>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="quiz-q">
+          <div class="quiz-q-num">Question 8</div>
+          <p>A rigid sealed cylinder contains gas at 300 K and 150 kPa. It is heated to 600 K. What is the new pressure?</p>
+          <div class="choices">
+            <button class="choice-btn" onclick="quizAnswer(8, this, false)">A) 75 kPa</button>
+            <button class="choice-btn" onclick="quizAnswer(8, this, false)">B) 150 kPa</button>
+            <button class="choice-btn" onclick="quizAnswer(8, this, true)">C) 300 kPa</button>
+            <button class="choice-btn" onclick="quizAnswer(8, this, false)">D) 450 kPa</button>
+          </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="quiz-q">
+          <div class="quiz-q-num">Question 9</div>
+          <p>The mole fraction of O&#x2082; in a gas mixture is 0.32, and the total pressure is 5 atm. What is the partial pressure of O&#x2082;?</p>
+          <div class="choices">
+            <button class="choice-btn" onclick="quizAnswer(9, this, false)">A) 0.064 atm</button>
+            <button class="choice-btn" onclick="quizAnswer(9, this, false)">B) 5.32 atm</button>
+            <button class="choice-btn" onclick="quizAnswer(9, this, true)">C) 1.60 atm</button>
+            <button class="choice-btn" onclick="quizAnswer(9, this, false)">D) 15.625 atm</button>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="quiz-q">
+          <div class="quiz-q-num">Question 10</div>
+          <p>At STP (0°C, 1 atm), 1 mole of an ideal gas occupies what volume?</p>
+          <div class="choices">
+            <button class="choice-btn" onclick="quizAnswer(10, this, false)">A) 1.0 L</button>
+            <button class="choice-btn" onclick="quizAnswer(10, this, false)">B) 8.314 L</button>
+            <button class="choice-btn" onclick="quizAnswer(10, this, true)">C) 22.4 L</button>
+            <button class="choice-btn" onclick="quizAnswer(10, this, false)">D) 0.0821 L</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ─────────────────────────────────────────────
+// PROGRESS & SECTION MANAGEMENT
+// ─────────────────────────────────────────────
+var completedSections = new Set();
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) { markComplete(+card.getAttribute('data-section')); }
+  updateProgress();
+}
+
+// ─────────────────────────────────────────────
+// ANSWER CHECKING
+// ─────────────────────────────────────────────
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Enter a number.';
+    inp.parentElement.parentElement.classList.add('shake');
+    setTimeout(function(){ inp.parentElement.parentElement.classList.remove('shake'); }, 400);
+    return;
+  }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop');
+    setTimeout(function(){ inp.parentElement.parentElement.classList.remove('pop'); }, 350);
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(2) + ')';
+    inp.parentElement.parentElement.classList.add('shake');
+    setTimeout(function(){ inp.parentElement.parentElement.classList.remove('shake'); }, 400);
+  }
+}
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop');
+    setTimeout(function(){ btn.closest('.problem').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake');
+    setTimeout(function(){ btn.closest('.problem').classList.remove('shake'); }, 400);
+  }
+}
+
+// ─────────────────────────────────────────────
+// QUIZ
+// ─────────────────────────────────────────────
+var quizScoreVal = 0, quizAnswered = new Set();
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop');
+    setTimeout(function(){ btn.closest('.quiz-q').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf('true') !== -1)
+        b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake');
+    setTimeout(function(){ btn.closest('.quiz-q').classList.remove('shake'); }, 400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+function resetQuiz() {
+  quizScoreVal = 0;
+  quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) {
+    b.className = 'choice-btn';
+  });
+}
+
+// ─────────────────────────────────────────────
+// BOYLE'S LAW INTERACTIVE
+// ─────────────────────────────────────────────
+function updateBoyle() {
+  var p1 = parseFloat(document.getElementById('boyleP1').value);
+  var v1 = parseFloat(document.getElementById('boyleV1').value);
+  var p2 = parseFloat(document.getElementById('boyleP2').value);
+  var v2 = (p1 * v1) / p2;
+  document.getElementById('boyleP1Val').textContent = p1.toFixed(1) + ' atm';
+  document.getElementById('boyleV1Val').textContent = v1.toFixed(1) + ' L';
+  document.getElementById('boyleP2Val').textContent = p2.toFixed(1) + ' atm';
+  document.getElementById('boyleV2').textContent = v2.toFixed(2) + ' L';
+  document.getElementById('boylePV').textContent = (p1 * v1).toFixed(2);
+  // Bar visualization — max volume is 20 for scale
+  var maxV = 20;
+  var h1 = Math.min((v1 / maxV) * 90, 90);
+  var h2 = Math.min((v2 / maxV) * 90, 90);
+  document.getElementById('boyleBar1').style.height = h1 + 'px';
+  document.getElementById('boyleBar2').style.height = Math.max(h2, 3) + 'px';
+}
+updateBoyle();
+
+// ─────────────────────────────────────────────
+// CHARLES'S LAW INTERACTIVE
+// ─────────────────────────────────────────────
+function updateCharles() {
+  var v1 = parseFloat(document.getElementById('charlesV1').value);
+  var t1c = parseFloat(document.getElementById('charlesT1').value);
+  var t2c = parseFloat(document.getElementById('charlesT2').value);
+  var t1 = t1c + 273.15;
+  var t2 = t2c + 273.15;
+  var v2 = v1 * (t2 / t1);
+  document.getElementById('charlesV1Val').textContent = v1.toFixed(1) + ' L';
+  document.getElementById('charlesT1Val').textContent = t1c + '\u00b0C / ' + Math.round(t1) + ' K';
+  document.getElementById('charlesT2Val').textContent = t2c + '\u00b0C / ' + Math.round(t2) + ' K';
+  document.getElementById('charlesV2').textContent = v2.toFixed(2) + ' L';
+  document.getElementById('charlesRatio').textContent = (v1 / t1).toFixed(4);
+  var maxV = 50;
+  var h1 = Math.min((v1 / maxV) * 90, 90);
+  var h2 = Math.min((v2 / maxV) * 90, 90);
+  document.getElementById('charlesBar1').style.height = Math.max(h1, 3) + 'px';
+  document.getElementById('charlesBar2').style.height = Math.max(h2, 3) + 'px';
+}
+updateCharles();
+
+// ─────────────────────────────────────────────
+// IDEAL GAS LAW CALCULATOR
+// ─────────────────────────────────────────────
+function calcIGL() {
+  var R = 0.0821;
+  var pVal = parseFloat(document.getElementById(' iglP').value);
+  var vVal = parseFloat(document.getElementById(' iglV').value);
+  var nVal = parseFloat(document.getElementById(' iglN').value);
+  var tVal = parseFloat(document.getElementById(' iglT').value);
+  var result = document.getElementById('iglResult');
+
+  var pOk = !isNaN(pVal) && pVal > 0;
+  var vOk = !isNaN(vVal) && vVal > 0;
+  var nOk = !isNaN(nVal) && nVal > 0;
+  var tOk = !isNaN(tVal) && tVal > 0;
+  var known = [pOk, vOk, nOk, tOk].filter(Boolean).length;
+
+  if (known !== 3) {
+    result.textContent = 'Enter exactly 3 positive values (leave the unknown blank or 0).';
+    result.style.color = 'var(--pink)';
+    return;
+  }
+  result.style.color = 'var(--green)';
+  if (!pOk) {
+    var p = (nVal * R * tVal) / vVal;
+    result.textContent = 'P = nRT/V = (' + nVal + ' \u00d7 0.0821 \u00d7 ' + tVal + ') / ' + vVal + ' = ' + p.toFixed(4) + ' atm';
+  } else if (!vOk) {
+    var v = (nVal * R * tVal) / pVal;
+    result.textContent = 'V = nRT/P = (' + nVal + ' \u00d7 0.0821 \u00d7 ' + tVal + ') / ' + pVal + ' = ' + v.toFixed(4) + ' L';
+  } else if (!nOk) {
+    var n = (pVal * vVal) / (R * tVal);
+    result.textContent = 'n = PV/RT = (' + pVal + ' \u00d7 ' + vVal + ') / (0.0821 \u00d7 ' + tVal + ') = ' + n.toFixed(4) + ' mol';
+  } else {
+    var t = (pVal * vVal) / (nVal * R);
+    result.textContent = 'T = PV/nR = (' + pVal + ' \u00d7 ' + vVal + ') / (' + nVal + ' \u00d7 0.0821) = ' + t.toFixed(2) + ' K (' + (t - 273.15).toFixed(2) + '\u00b0C)';
+  }
+}
+
+// ─────────────────────────────────────────────
+// DALTON'S LAW INTERACTIVE
+// ─────────────────────────────────────────────
+function updateDalton() {
+  var n2pct = parseFloat(document.getElementById('daltonN2').value);
+  var o2pct = parseFloat(document.getElementById('daltonO2').value);
+  var ptot = parseFloat(document.getElementById('daltonPtot').value);
+
+  // Clamp so N2 + O2 <= 100
+  if (n2pct + o2pct > 100) {
+    o2pct = 100 - n2pct;
+    document.getElementById('daltonO2').value = o2pct;
+  }
+  var otherPct = Math.max(0, 100 - n2pct - o2pct);
+
+  document.getElementById('daltonN2Val').textContent = n2pct.toFixed(0) + '%';
+  document.getElementById('daltonO2Val').textContent = o2pct.toFixed(0) + '%';
+  document.getElementById('daltonPtotVal').textContent = ptot.toFixed(1) + ' atm';
+
+  var pN2 = (n2pct / 100) * ptot;
+  var pO2 = (o2pct / 100) * ptot;
+  document.getElementById('daltonPN2').textContent = pN2.toFixed(3) + ' atm';
+  document.getElementById('daltonPO2').textContent = pO2.toFixed(3) + ' atm';
+
+  document.getElementById('daltonSegN2').style.flex = n2pct || 0.01;
+  document.getElementById('daltonSegO2').style.flex = o2pct || 0.01;
+  document.getElementById('daltonSegOther').style.flex = otherPct || 0.01;
+
+  // Warnings
+  var warn = document.getElementById('daltonWarn');
+  var msgs = [];
+  if (pO2 > 1.6) msgs.push('WARNING: P(O2) > 1.6 atm — oxygen toxicity risk for divers.');
+  if (pN2 > 3.2) msgs.push('WARNING: P(N2) > 3.2 atm — nitrogen narcosis risk at depth.');
+  warn.textContent = msgs.join(' | ');
+  warn.style.color = msgs.length ? 'var(--pink)' : 'var(--text-muted)';
+}
+updateDalton();
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+updateProgress();
+</script>
+</body>
+</html>

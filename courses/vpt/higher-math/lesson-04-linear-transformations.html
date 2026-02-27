@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 4: Linear Transformations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.matrix-input{display:inline-grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
+.matrix-input input{width:60px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 6px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.82rem;outline:none;transition:border-color var(--transition)}
+.matrix-input input:focus{border-color:var(--indigo)}
+.matrix-bracket{display:inline-flex;align-items:center;gap:4px}
+.matrix-bracket::before,.matrix-bracket::after{content:'';display:block;width:4px;height:100%;border:2px solid var(--text-dim);min-height:60px}
+.matrix-bracket::before{border-right:none;border-radius:4px 0 0 4px}
+.matrix-bracket::after{border-left:none;border-radius:0 4px 4px 0}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.matrix-input input{width:48px;padding:6px 4px;font-size:.75rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>04</span> Linear Transformations</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 8 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: WHAT IS A LINEAR TRANSFORMATION? -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> What Is a Linear Transformation?</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>linear transformation</strong> is a function T : V &rarr; W between vector spaces that preserves the two core operations -- addition and scalar multiplication. If T satisfies these two properties for all vectors u, v and all scalars c, then T is linear. Every matrix defines a linear transformation, and every linear transformation (between finite-dimensional spaces) can be represented as a matrix.
+    </p>
+    <div class="formula-box large">T(u + v) = T(u) + T(v) &nbsp;&nbsp; (additivity)</div>
+    <div class="formula-box green">T(cv) = cT(v) &nbsp;&nbsp; (homogeneity)</div>
+    <div class="key-point">Equivalent single condition: T(au + bv) = aT(u) + bT(v) for all scalars a, b and vectors u, v. Also: T(0) = 0 always for linear maps.</div>
+
+    <p class="concept-text">
+      <strong>Common 2D examples:</strong> Rotation by angle theta, reflection across a line, scaling (stretching/compressing), and shearing. Each is a linear transformation and each has a corresponding 2x2 matrix. Enter a matrix below to see what it does to the unit square.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: 2D Grid Transformation</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Enter a 2x2 matrix A = [[a, b], [c, d]]. The grid and unit square transform in real time.</p>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+        <div>
+          <div style="font-size:.68rem;color:var(--text-dim);margin-bottom:4px">Matrix A:</div>
+          <div class="matrix-bracket">
+            <div class="matrix-input">
+              <input type="number" id="ma" value="1" step="0.1" oninput="drawGrid()">
+              <input type="number" id="mb" value="0" step="0.1" oninput="drawGrid()">
+              <input type="number" id="mc" value="0" step="0.1" oninput="drawGrid()">
+              <input type="number" id="md" value="1" step="0.1" oninput="drawGrid()">
+            </div>
+          </div>
+        </div>
+        <div class="scenario-tabs" style="margin:0">
+          <button class="scenario-tab" onclick="setPreset(0,1,-1,0,this)">Rot 90</button>
+          <button class="scenario-tab" onclick="setPreset(1,0,0,-1,this)">Reflect x</button>
+          <button class="scenario-tab" onclick="setPreset(2,0,0,2,this)">Scale 2x</button>
+          <button class="scenario-tab" onclick="setPreset(1,1,0,1,this)">Shear</button>
+          <button class="scenario-tab" onclick="setPreset(0.5,0,0,0,this)">Singular</button>
+        </div>
+      </div>
+      <svg id="gridSvg" width="100%" viewBox="-4 -4 8 8" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-height:380px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">det(A)</span><br><span class="value indigo" id="gridDet">1.00</span></div>
+        <div class="readout-item"><span class="label">Area scale</span><br><span class="value green" id="gridArea">1.00</span></div>
+        <div class="readout-item"><span class="label">Orientation</span><br><span class="value amber" id="gridOrient">preserved</span></div>
+        <div class="readout-item"><span class="label">Singular?</span><br><span class="value pink" id="gridSingular">No</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> Is T(x, y) = (2x + y, 3y) a linear transformation?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','correct')">Yes -- it satisfies T(au + bv) = aT(u) + bT(v)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">No -- the 2x term breaks linearity</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">Only if x and y are positive</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> Is T(x, y) = (x + 1, y) a linear transformation?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">Yes -- it is just a simple shift</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','correct')">No -- T(0,0) = (1,0) not equal to (0,0), so it fails the zero test</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">Only linear for certain inputs</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: MATRIX REPRESENTATION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Matrix Representation</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Every linear transformation T : R^n &rarr; R^m has a unique <strong>standard matrix</strong> A such that T(x) = Ax. To find A, apply T to each standard basis vector e1, e2, ..., en and use the results as columns. The j-th column of A is T(e_j).
+    </p>
+    <div class="formula-box large">A = [ T(e1) | T(e2) | ... | T(en) ]</div>
+    <div class="key-point">Example: If T(1,0) = (3, -1) and T(0,1) = (2, 5), then A = [[3, 2], [-1, 5]]. You only need to know what T does to the basis vectors.</div>
+
+    <p class="concept-text">
+      <strong>Composition of transformations</strong> corresponds to <strong>matrix multiplication</strong>. If S has matrix B and T has matrix A, then S(T(x)) = B(Ax) = (BA)x. Order matters -- BA is not the same as AB in general.
+    </p>
+    <div class="formula-box green">S composed with T &harr; BA &nbsp;&nbsp; (apply T first, then S)</div>
+    <div class="formula-box pink">Warning: T composed with S &harr; AB &ne; BA in general</div>
+
+    <p class="concept-text">
+      <strong>Key matrix types:</strong> Rotation by theta has matrix [[cos(theta), -sin(theta)], [sin(theta), cos(theta)]]. Reflection across the x-axis: [[1, 0], [0, -1]]. Projection onto the x-axis: [[1, 0], [0, 0]]. The identity matrix I gives the identity transformation T(v) = v.
+    </p>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> T : R^2 &rarr; R^2 reflects across the y-axis. What is T(1,0)?  Give the x-component.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1" step="1" placeholder="x = ?" onkeydown="if(event.key==='Enter')checkNum('s2p1',-1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s2p1',-1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> Using the result above, the standard matrix for y-axis reflection has first column (-1, 0) and second column (0, 1). What is the determinant?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" step="1" placeholder="det = ?" onkeydown="if(event.key==='Enter')checkNum('s2p2',-1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s2p2',-1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem" id="s2p3">
+        <p><strong>3.</strong> If you rotate by 90 degrees then reflect across the x-axis, is the result the same as reflecting first then rotating?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">Yes -- matrix multiplication is commutative</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','correct')">No -- matrix multiplication is not commutative, so order matters</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">Only for orthogonal matrices</button>
+        </div>
+        <div class="feedback" id="s2p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: KERNEL (NULL SPACE) -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Kernel (Null Space)</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>kernel</strong> (or <strong>null space</strong>) of a linear transformation T is the set of all vectors that T maps to zero: ker(T) = {v in V : T(v) = 0}. For a matrix A, this means solving the homogeneous system <strong>Ax = 0</strong>. The kernel is always a subspace of the domain.
+    </p>
+    <div class="formula-box large">ker(T) = { v : T(v) = 0 } = null(A)</div>
+    <div class="formula-box green">Find kernel: Row-reduce A, solve Ax = 0, express free variables</div>
+
+    <p class="concept-text">
+      <strong>Geometric meaning:</strong> The kernel tells you what gets "crushed" to the origin. If the kernel is just {0}, then T is <strong>injective</strong> (one-to-one) -- nothing gets collapsed. If the kernel contains nonzero vectors, then distinct inputs can produce the same output, meaning information is lost.
+    </p>
+    <div class="key-point">T is injective (one-to-one) if and only if ker(T) = {0}. A bigger kernel means more "collapsing" -- the transformation loses more information.</div>
+
+    <p class="concept-text">
+      <strong>The nullity</strong> of T is the dimension of the kernel: nullity(T) = dim(ker T). This counts how many "free directions" get squashed to zero.
+    </p>
+    <div class="formula-box amber">nullity(T) = dim(ker T) = number of free variables in Ax = 0</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Kernel Visualization</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Select a transformation to see its kernel highlighted in pink on the grid. Vectors in the kernel all map to the origin.</p>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setKernelPreset('proj',this)">Projection onto x-axis</button>
+        <button class="scenario-tab" onclick="setKernelPreset('collapse',this)">Collapse to line y=x</button>
+        <button class="scenario-tab" onclick="setKernelPreset('zero',this)">Zero map</button>
+        <button class="scenario-tab" onclick="setKernelPreset('identity',this)">Identity (trivial ker)</button>
+      </div>
+      <svg id="kerSvg" width="100%" viewBox="-4 -4 8 8" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-height:320px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Matrix A</span><br><span class="value indigo" id="kerMatrix">[[1,0],[0,0]]</span></div>
+        <div class="readout-item"><span class="label">Kernel</span><br><span class="value pink" id="kerDesc">y-axis (span of (0,1))</span></div>
+        <div class="readout-item"><span class="label">Nullity</span><br><span class="value amber" id="kerNullity">1</span></div>
+        <div class="readout-item"><span class="label">Injective?</span><br><span class="value green" id="kerInj">No</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A = [[1, 2], [2, 4]]. Find the nullity of A. (Hint: row reduce and count free variables.)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="1" placeholder="nullity = ?" onkeydown="if(event.key==='Enter')checkNum('s3p1',1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s3p1',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem" id="s3p2">
+        <p><strong>2.</strong> If A is a 3x3 matrix with rank 3, what is the kernel?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','correct')">Just the zero vector {0} -- full rank means trivial kernel</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">A line through the origin</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">A plane through the origin</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: IMAGE (RANGE / COLUMN SPACE) -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Image (Range / Column Space)</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>image</strong> (or <strong>range</strong>) of T is the set of all possible outputs: im(T) = {T(v) : v in V}. For a matrix A, this equals the <strong>column space</strong> of A -- the span of A's columns. The image tells you what the transformation can "reach" in the codomain.
+    </p>
+    <div class="formula-box large">im(T) = { T(v) : v in V } = Col(A) = span of columns of A</div>
+
+    <p class="concept-text">
+      <strong>The rank</strong> of T is the dimension of the image: rank(T) = dim(im T). To find it, row-reduce A and count the <strong>pivot columns</strong>. Each pivot column represents an independent direction the output can reach.
+    </p>
+    <div class="formula-box green">rank(T) = dim(im T) = number of pivot columns in RREF(A)</div>
+
+    <p class="concept-text">
+      T is <strong>surjective</strong> (onto) if im(T) = W, meaning every vector in the codomain is reachable. This happens when rank(A) = dim(W). If rank is less than dim(W), some outputs are impossible.
+    </p>
+    <div class="key-point">T is surjective if and only if rank(A) = number of rows of A. T is injective if and only if rank(A) = number of columns. T is bijective (invertible) if both conditions hold.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A = [[1, 0, 2], [0, 1, 3]]. What is the rank of A?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="1" placeholder="rank = ?" onkeydown="if(event.key==='Enter')checkNum('s4p1',2,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s4p1',2,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> For A = [[1, 2], [2, 4]], the columns are (1,2) and (2,4). What is the image?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','correct')">A line: span of (1, 2) -- the second column is just 2 times the first</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">All of R^2</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">Just the zero vector</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+      <div class="problem" id="s4p3">
+        <p><strong>3.</strong> Can a 3x2 matrix (mapping R^2 to R^3) be surjective?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','correct')">No -- rank is at most 2, but the codomain is R^3 (dim 3)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">Yes, if both columns are independent</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">Only if it has a right inverse</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: RANK-NULLITY THEOREM -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Rank-Nullity Theorem</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>Rank-Nullity Theorem</strong> is the fundamental dimension-counting formula for linear transformations. For any linear map T : V &rarr; W with V finite-dimensional, the dimensions of the kernel and image always add up to the dimension of the domain. This is sometimes called the "conservation of dimension" -- dimensions that are not crushed to zero must appear in the image.
+    </p>
+    <div class="formula-box large">rank(T) + nullity(T) = dim(V)</div>
+    <div class="formula-box green">dim(im T) + dim(ker T) = n &nbsp;&nbsp; (n = number of columns of A)</div>
+
+    <p class="concept-text">
+      <strong>Why "conservation of dimension"?</strong> Think of n dimensions going into the transformation. Some dimensions get crushed (nullity), and the rest survive in the output (rank). None are created or destroyed -- they either make it through or they do not. The total always accounts for every input dimension.
+    </p>
+    <div class="key-point">For an m x n matrix A: rank + nullity = n (number of columns, not rows). This is always true regardless of m.</div>
+
+    <p class="concept-text">
+      <strong>Worked Example 1:</strong> A is 3x5 with rank 3. Then nullity = 5 - 3 = 2. The kernel is a 2-dimensional subspace of R^5 (a plane). The image spans all of R^3, so T is surjective.
+    </p>
+    <div class="formula-box amber">rank(A) = 3, n = 5 &rArr; nullity = 5 - 3 = 2</div>
+
+    <p class="concept-text">
+      <strong>Worked Example 2:</strong> A is 4x4 with nullity 1. Then rank = 4 - 1 = 3. The image is 3-dimensional inside R^4 -- a hyperplane. T is not surjective (rank &lt; 4) and not injective (nullity &gt; 0).
+    </p>
+    <div class="formula-box pink">rank(A) = 3, nullity = 1 &rArr; not invertible (need both = 0 nullity and full rank)</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Rank-Nullity Balance</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust n (domain dimension) and rank to see the theorem in action. Nullity always equals n - rank.</p>
+      <div class="slider-row">
+        <label>Domain dim (n)</label>
+        <input type="range" id="rnN" min="1" max="8" value="4" step="1" oninput="updateRN()">
+        <span class="slider-val" id="rnNVal">4</span>
+      </div>
+      <div class="slider-row">
+        <label>Rank</label>
+        <input type="range" id="rnRank" min="0" max="8" value="2" step="1" oninput="updateRN()">
+        <span class="slider-val" id="rnRankVal">2</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin:16px 0;flex-wrap:wrap">
+        <div style="flex:1;min-width:100px;text-align:center">
+          <div style="background:var(--green-dim);border:1px solid rgba(34,197,94,.3);border-radius:var(--radius);padding:16px">
+            <div style="font-size:.65rem;color:var(--text-dim)">Rank (image dim)</div>
+            <div style="font-size:1.6rem;font-weight:700;color:var(--green)" id="rnRankDisp">2</div>
+          </div>
+        </div>
+        <div style="font-size:1.2rem;color:var(--text-dim);font-weight:600">+</div>
+        <div style="flex:1;min-width:100px;text-align:center">
+          <div style="background:var(--pink-dim);border:1px solid rgba(236,72,153,.3);border-radius:var(--radius);padding:16px">
+            <div style="font-size:.65rem;color:var(--text-dim)">Nullity (kernel dim)</div>
+            <div style="font-size:1.6rem;font-weight:700;color:var(--pink)" id="rnNullDisp">2</div>
+          </div>
+        </div>
+        <div style="font-size:1.2rem;color:var(--text-dim);font-weight:600">=</div>
+        <div style="flex:1;min-width:100px;text-align:center">
+          <div style="background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px">
+            <div style="font-size:.65rem;color:var(--text-dim)">Domain dim (n)</div>
+            <div style="font-size:1.6rem;font-weight:700;color:var(--indigo)" id="rnNDisp">4</div>
+          </div>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Injective?</span><br><span class="value green" id="rnInj">No (nullity > 0)</span></div>
+        <div class="readout-item"><span class="label">Surjective?</span><br><span class="value amber" id="rnSurj">Depends on m</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A is a 5x7 matrix with rank 4. What is the nullity?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1" step="1" placeholder="nullity = ?" onkeydown="if(event.key==='Enter')checkNum('s5p1',3,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s5p1',3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> T : R^6 &rarr; R^4 has a kernel of dimension 2. What is the dimension of the image?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p2" step="1" placeholder="rank = ?" onkeydown="if(event.key==='Enter')checkNum('s5p2',4,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s5p2',4,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem" id="s5p3">
+        <p><strong>3.</strong> Can a linear map T : R^3 &rarr; R^5 be surjective?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','correct')">No -- rank is at most 3 (= dim domain), but codomain has dim 5</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">Yes, if the matrix has rank 5</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">Only if the kernel is trivial</button>
+        </div>
+        <div class="feedback" id="s5p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: PHYSICS CONNECTION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Physics Connection</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Linear transformations are everywhere in physics. In <strong>quantum mechanics</strong>, observables (position, momentum, energy) are represented as <strong>linear operators</strong> acting on state vectors in Hilbert space. Measuring a quantity means applying the corresponding operator. Eigenvalues of the operator are the possible measurement outcomes.
+    </p>
+    <div class="formula-box large">H|psi> = E|psi> &nbsp;&nbsp; (Hamiltonian operator on state vector)</div>
+    <div class="key-point">The kernel of (H - EI) gives the eigenspace for energy E -- the set of all states with that energy. This is exactly the null space concept from this lesson applied to quantum physics.</div>
+
+    <p class="concept-text">
+      In <strong>special relativity</strong>, changing between reference frames is a linear transformation called a <strong>Lorentz transformation</strong>. The 4x4 Lorentz matrix transforms spacetime coordinates (t, x, y, z) from one inertial frame to another. It preserves the spacetime interval (analogous to how rotations preserve distance), and its determinant is +/-1.
+    </p>
+    <div class="formula-box green">x' = Lambda * x &nbsp;&nbsp; (Lorentz transformation as matrix multiplication)</div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> CJ -- coordinate transformations are central to navigation and weapons systems. Converting between ship-frame and Earth-frame coordinates is a rotation matrix. Radar tracking uses linear transformations to map polar (range, bearing) to Cartesian. Inertial navigation systems continuously apply rotation matrices as the ship moves and rotates. The rank-nullity theorem ensures these coordinate maps preserve all the information needed -- an invertible transformation (trivial kernel) means no data is lost in the conversion.</div>
+
+    <p class="concept-text">
+      <strong>Stress tensors</strong> in structural mechanics are linear maps that take a direction vector and return the stress vector on a surface with that normal. Understanding the kernel and image of the stress tensor tells engineers which directions bear load and which do not -- critical for structural analysis on ships and aircraft.
+    </p>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: PRACTICE PROBLEMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">7</span> Practice Problems</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="practice-block" style="border-top:none;padding-top:0;margin-top:0">
+      <div class="problem">
+        <p><strong>1.</strong> A = [[1, 3], [2, 6]]. Find the kernel. What vector (a, b) with a = 1 spans the kernel? Give b.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s7p1" step="0.1" placeholder="b = ?" onkeydown="if(event.key==='Enter')checkNum('s7p1',-0.333,0.04)">
+          <button class="btn btn-sm" onclick="checkNum('s7p1',-0.333,0.04)">Check</button>
+        </div>
+        <div class="feedback" id="s7p1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>2.</strong> A = [[1, 0, 2], [0, 1, -1], [1, 1, 1]]. The third row = row1 + row2, so rank = 2. What is the nullity? (A maps R^3 &rarr; R^3.)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s7p2" step="1" placeholder="nullity = ?" onkeydown="if(event.key==='Enter')checkNum('s7p2',1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s7p2',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s7p2-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>3.</strong> T : R^4 &rarr; R^3 has rank 3. Is T surjective? What is the nullity?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s7p3" step="1" placeholder="nullity = ?" onkeydown="if(event.key==='Enter')checkNum('s7p3',1,0.01)">
+          <span class="unit-label">(T is surjective since rank = dim codomain)</span>
+          <button class="btn btn-sm" onclick="checkNum('s7p3',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s7p3-fb"></div>
+      </div>
+
+      <div class="problem" id="s7p4">
+        <p><strong>4.</strong> A 2x2 matrix A has det(A) = 0. Which must be true?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s7p4','wrong')">The kernel is {0}</button>
+          <button class="mc-btn" onclick="checkMC(this,'s7p4','correct')">The kernel is nontrivial (contains nonzero vectors), so nullity >= 1</button>
+          <button class="mc-btn" onclick="checkMC(this,'s7p4','wrong')">The image is all of R^2</button>
+          <button class="mc-btn" onclick="checkMC(this,'s7p4','wrong')">The rank is 2</button>
+        </div>
+        <div class="feedback" id="s7p4-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>5.</strong> A = [[2, 4, -2], [1, 2, -1]]. Find the rank. (Hint: row reduce.)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s7p5" step="1" placeholder="rank = ?" onkeydown="if(event.key==='Enter')checkNum('s7p5',1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s7p5',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s7p5-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>6.</strong> For the matrix in problem 5 (2x3 with rank 1), verify rank-nullity: what is nullity?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s7p6" step="1" placeholder="nullity = ?" onkeydown="if(event.key==='Enter')checkNum('s7p6',2,0.01)">
+          <span class="unit-label">(n = 3 columns)</span>
+          <button class="btn btn-sm" onclick="checkNum('s7p6',2,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s7p6-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 8: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="8">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">8</span> Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Definition</div>
+      <p class="q-text">Which property must a linear transformation satisfy?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">T(au + bv) = aT(u) + bT(v) for all scalars a, b and vectors u, v</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">T(u * v) = T(u) * T(v)</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">T(u + v) = T(u) + T(v) + 1</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">T(0) can be any vector</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Standard Matrix</div>
+      <p class="q-text">To find the standard matrix of T : R^n -> R^m, you compute:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">T applied to every vector in R^n</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">T(e1), T(e2), ..., T(en) and use them as columns</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">The inverse of the identity matrix</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">The determinant of each basis vector</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Kernel</div>
+      <p class="q-text">The kernel of a linear transformation T is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">The set of all outputs of T</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">The set of all vectors v such that T(v) = 0</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">The column space of the matrix</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">The set of eigenvalues</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Injectivity</div>
+      <p class="q-text">T is injective (one-to-one) if and only if:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">The image spans the codomain</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">The matrix is square</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">ker(T) = {0}</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">The determinant is positive</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Rank-Nullity</div>
+      <p class="q-text">A 4x6 matrix has rank 3. What is the nullity?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">3</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">1</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">4</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">2</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Image</div>
+      <p class="q-text">The image of T : R^n -> R^m represented by matrix A equals:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">The row space of A</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">The column space of A</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">The null space of A</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">The left null space of A</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Composition</div>
+      <p class="q-text">If S has matrix B and T has matrix A, the composition "first T then S" corresponds to:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">A + B</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">AB</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">BA</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">A^(-1)B</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Determinant and Area</div>
+      <p class="q-text">A 2x2 matrix A has det(A) = -3. What happens to areas under the transformation?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Areas are multiplied by -3</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">Areas are scaled by factor 3 and orientation is reversed</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Areas are divided by 3</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">The transformation is not linear</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Singular Matrix</div>
+      <p class="q-text">A singular (non-invertible) 3x3 matrix must have:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Rank 3</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Trivial kernel</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">Nonzero nullity (kernel contains nonzero vectors)</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Determinant equal to 1</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Rank-Nullity Application</div>
+      <p class="q-text">T : R^5 -> R^3 is surjective (onto). What is the dimension of the kernel?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">0</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">3</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">2 (surjective means rank = 3, so nullity = 5 - 3 = 2)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">5</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(2) + ')';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: INTERACTIVE GRID ==================== */
+function setPreset(a, b, c, d, btn) {
+  document.getElementById('ma').value = a;
+  document.getElementById('mb').value = b;
+  document.getElementById('mc').value = c;
+  document.getElementById('md').value = d;
+  if (btn) {
+    btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(t){t.classList.remove('active')});
+    btn.classList.add('active');
+  }
+  drawGrid();
+}
+
+function drawGrid() {
+  var a = +document.getElementById('ma').value;
+  var b = +document.getElementById('mb').value;
+  var c = +document.getElementById('mc').value;
+  var d = +document.getElementById('md').value;
+  var det = a * d - b * c;
+  document.getElementById('gridDet').textContent = det.toFixed(2);
+  document.getElementById('gridArea').textContent = Math.abs(det).toFixed(2);
+  document.getElementById('gridOrient').textContent = det > 0 ? 'preserved' : det < 0 ? 'reversed' : 'collapsed';
+  document.getElementById('gridSingular').textContent = Math.abs(det) < 0.001 ? 'Yes' : 'No';
+
+  var svg = document.getElementById('gridSvg');
+  var h = '';
+  // background grid lines (original)
+  for (var i = -3; i <= 3; i++) {
+    h += '<line x1="'+i+'" y1="-3.5" x2="'+i+'" y2="3.5" stroke="#363b47" stroke-width="0.02"/>';
+    h += '<line x1="-3.5" y1="'+i+'" x2="3.5" y2="'+i+'" stroke="#363b47" stroke-width="0.02"/>';
+  }
+  // axes
+  h += '<line x1="-3.5" y1="0" x2="3.5" y2="0" stroke="#9ca3af" stroke-width="0.03"/>';
+  h += '<line x1="0" y1="-3.5" x2="0" y2="3.5" stroke="#9ca3af" stroke-width="0.03"/>';
+
+  // transformed grid lines
+  for (var i = -3; i <= 3; i++) {
+    // vertical lines: points (i, t) for t in [-3,3] -> (a*i + b*t, c*i + d*t)
+    var x0 = a*i + b*(-3), y0 = -(c*i + d*(-3));
+    var x1 = a*i + b*3, y1 = -(c*i + d*3);
+    h += '<line x1="'+x0+'" y1="'+y0+'" x2="'+x1+'" y2="'+y1+'" stroke="rgba(99,102,241,0.25)" stroke-width="0.03"/>';
+    // horizontal lines: points (t, i) -> (a*t + b*i, c*t + d*i)
+    x0 = a*(-3) + b*i; y0 = -(c*(-3) + d*i);
+    x1 = a*3 + b*i; y1 = -(c*3 + d*i);
+    h += '<line x1="'+x0+'" y1="'+y0+'" x2="'+x1+'" y2="'+y1+'" stroke="rgba(99,102,241,0.25)" stroke-width="0.03"/>';
+  }
+
+  // original unit square (faint)
+  h += '<polygon points="0,0 1,0 1,-1 0,-1" fill="rgba(245,158,11,0.1)" stroke="var(--amber)" stroke-width="0.04" stroke-dasharray="0.1,0.08"/>';
+
+  // transformed unit square
+  // corners: (0,0), (1,0), (1,1), (0,1) -> transformed
+  var p00 = [0, 0];
+  var p10 = [a, -c];
+  var p11 = [a + b, -(c + d)];
+  var p01 = [b, -d];
+  h += '<polygon points="'+p00[0]+','+p00[1]+' '+p10[0]+','+p10[1]+' '+p11[0]+','+p11[1]+' '+p01[0]+','+p01[1]+'" fill="rgba(99,102,241,0.2)" stroke="var(--indigo)" stroke-width="0.06"/>';
+
+  // basis vectors (transformed)
+  // e1 -> (a, c)
+  h += '<line x1="0" y1="0" x2="'+a+'" y2="'+(-c)+'" stroke="var(--green)" stroke-width="0.07" marker-end="url(#arrG)"/>';
+  // e2 -> (b, d)
+  h += '<line x1="0" y1="0" x2="'+b+'" y2="'+(-d)+'" stroke="var(--pink)" stroke-width="0.07" marker-end="url(#arrP)"/>';
+
+  // labels
+  h += '<text x="'+(a*0.5+0.15)+'" y="'+(-c*0.5-0.15)+'" fill="var(--green)" font-size="0.35">T(e1)</text>';
+  h += '<text x="'+(b*0.5+0.15)+'" y="'+(-d*0.5-0.15)+'" fill="var(--pink)" font-size="0.35">T(e2)</text>';
+
+  // arrow markers
+  h = '<defs><marker id="arrG" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--green)"/></marker><marker id="arrP" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--pink)"/></marker></defs>' + h;
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 3: KERNEL VISUALIZATION ==================== */
+var kernelPresets = {
+  proj: { a:1, b:0, c:0, d:0, mat:'[[1,0],[0,0]]', ker:'y-axis (span of (0,1))', nullity:1, inj:'No' },
+  collapse: { a:1, b:1, c:1, d:1, mat:'[[1,1],[1,1]]', ker:'span of (1,-1)', nullity:1, inj:'No' },
+  zero: { a:0, b:0, c:0, d:0, mat:'[[0,0],[0,0]]', ker:'all of R^2', nullity:2, inj:'No' },
+  identity: { a:1, b:0, c:0, d:1, mat:'[[1,0],[0,1]]', ker:'{0} (trivial)', nullity:0, inj:'Yes' }
+};
+
+function setKernelPreset(key, btn) {
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(t){t.classList.remove('active')});
+  btn.classList.add('active');
+  var p = kernelPresets[key];
+  document.getElementById('kerMatrix').textContent = p.mat;
+  document.getElementById('kerDesc').textContent = p.ker;
+  document.getElementById('kerNullity').textContent = p.nullity;
+  document.getElementById('kerInj').textContent = p.inj;
+  drawKernel(p);
+}
+
+function drawKernel(p) {
+  var svg = document.getElementById('kerSvg');
+  var h = '';
+  // grid
+  for (var i = -3; i <= 3; i++) {
+    h += '<line x1="'+i+'" y1="-3.5" x2="'+i+'" y2="3.5" stroke="#363b47" stroke-width="0.02"/>';
+    h += '<line x1="-3.5" y1="'+i+'" x2="3.5" y2="'+i+'" stroke="#363b47" stroke-width="0.02"/>';
+  }
+  h += '<line x1="-3.5" y1="0" x2="3.5" y2="0" stroke="#9ca3af" stroke-width="0.03"/>';
+  h += '<line x1="0" y1="-3.5" x2="0" y2="3.5" stroke="#9ca3af" stroke-width="0.03"/>';
+
+  // kernel highlight
+  if (p.nullity === 2) {
+    // entire plane
+    h += '<rect x="-3.5" y="-3.5" width="7" height="7" fill="rgba(236,72,153,0.12)"/>';
+    h += '<text x="0" y="-2.8" fill="var(--pink)" font-size="0.35" text-anchor="middle">kernel = all of R^2</text>';
+  } else if (p.nullity === 1) {
+    // a line through origin
+    if (p.b === 0 && p.d === 0 && p.a !== 0) {
+      // proj onto x: kernel is y-axis
+      h += '<line x1="0" y1="-3.5" x2="0" y2="3.5" stroke="var(--pink)" stroke-width="0.12" opacity="0.5"/>';
+      h += '<text x="0.3" y="-2.8" fill="var(--pink)" font-size="0.3">ker = y-axis</text>';
+    } else {
+      // collapse to y=x: kernel is (1,-1) direction
+      h += '<line x1="-3.5" y1="-3.5" x2="3.5" y2="3.5" stroke="var(--pink)" stroke-width="0.12" opacity="0.5"/>';
+      h += '<text x="1.5" y="-2.2" fill="var(--pink)" font-size="0.3" transform="rotate(45,1.5,-2.2)">ker = span(1,-1)</text>';
+    }
+  } else {
+    // trivial kernel
+    h += '<circle cx="0" cy="0" r="0.12" fill="var(--pink)" opacity="0.7"/>';
+    h += '<text x="0.3" y="-0.2" fill="var(--pink)" font-size="0.3">ker = {0}</text>';
+  }
+
+  // image arrows
+  var tx1 = p.a, ty1 = -p.c;
+  var tx2 = p.b, ty2 = -p.d;
+  if (Math.abs(tx1) + Math.abs(ty1) > 0.01) {
+    h += '<line x1="0" y1="0" x2="'+tx1+'" y2="'+ty1+'" stroke="var(--green)" stroke-width="0.06"/>';
+  }
+  if (Math.abs(tx2) + Math.abs(ty2) > 0.01) {
+    h += '<line x1="0" y1="0" x2="'+tx2+'" y2="'+ty2+'" stroke="var(--green)" stroke-width="0.06" stroke-dasharray="0.1,0.06"/>';
+  }
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 5: RANK-NULLITY INTERACTIVE ==================== */
+function updateRN() {
+  var n = +document.getElementById('rnN').value;
+  var rank = +document.getElementById('rnRank').value;
+  // clamp rank to valid range
+  if (rank > n) { rank = n; document.getElementById('rnRank').value = rank; }
+  document.getElementById('rnRank').max = n;
+  var nullity = n - rank;
+  document.getElementById('rnNVal').textContent = n;
+  document.getElementById('rnRankVal').textContent = rank;
+  document.getElementById('rnRankDisp').textContent = rank;
+  document.getElementById('rnNullDisp').textContent = nullity;
+  document.getElementById('rnNDisp').textContent = n;
+  document.getElementById('rnInj').textContent = nullity === 0 ? 'Yes (nullity = 0)' : 'No (nullity > 0)';
+  document.getElementById('rnSurj').textContent = 'Surjective if m <= ' + rank;
+}
+
+/* ==================== INIT ==================== */
+markComplete(1);
+drawGrid();
+drawKernel(kernelPresets.proj);
+updateRN();
+</script>
+</body>
+</html>

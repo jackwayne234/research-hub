@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 10: Solutions &amp; Concentration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.momentum-bar{display:flex;align-items:center;gap:8px;margin:6px 0}
+.momentum-bar .bar-label{font-size:.68rem;color:var(--text-dim);min-width:70px}
+.momentum-bar .bar-track{flex:1;height:22px;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;overflow:hidden;position:relative}
+.momentum-bar .bar-fill{height:100%;border-radius:3px;transition:width .3s ease}
+.momentum-bar .bar-val{font-size:.68rem;color:var(--text-bright);font-weight:600;min-width:80px;text-align:right}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.calc-grid .field{display:flex;flex-direction:column;gap:4px}
+.calc-grid .field label{font-size:.68rem;color:var(--text-dim)}
+.calc-grid .field input{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;outline:none;transition:border-color var(--transition);width:100%}
+.calc-grid .field input:focus{border-color:var(--indigo)}
+.calc-result{background:var(--green-dim);border:1px solid rgba(34,197,94,.3);border-radius:6px;padding:12px 16px;margin-top:12px;text-align:center;font-size:.9rem;font-weight:600;color:var(--green)}
+.rule-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.74rem}
+.rule-table th{background:var(--indigo-dim);color:var(--indigo);padding:10px 12px;text-align:left;border:1px solid var(--border);font-weight:600}
+.rule-table td{padding:8px 12px;border:1px solid var(--border);color:var(--text)}
+.rule-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.step-list{list-style:none;counter-reset:step;margin:12px 0}
+.step-list li{counter-increment:step;padding:8px 0 8px 36px;font-size:.78rem;position:relative;border-bottom:1px solid var(--border)}
+.step-list li:last-child{border-bottom:none}
+.step-list li::before{content:counter(step);position:absolute;left:0;top:8px;width:24px;height:24px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.calc-grid{grid-template-columns:1fr}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>10</span> Solutions &amp; Concentration</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 7 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: SOLUTIONS BASICS -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Solutions Basics</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>solution</strong> is a homogeneous mixture of two or more substances. The <strong>solute</strong> is the substance being dissolved (present in smaller amount). The <strong>solvent</strong> is the substance doing the dissolving (present in larger amount). When water is the solvent, we call it an <strong>aqueous solution</strong> (abbreviated "aq").
+    </p>
+
+    <div class="formula-box large">Solution = Solute + Solvent</div>
+
+    <p class="concept-text">
+      Solutions are classified by how much solute they contain relative to what the solvent can hold at a given temperature:<br><br>
+      <strong>Unsaturated</strong> -- can dissolve more solute. The solution has less solute than the maximum.<br>
+      <strong>Saturated</strong> -- contains the maximum amount of solute at that temperature. Adding more solute will not dissolve; it settles to the bottom.<br>
+      <strong>Supersaturated</strong> -- contains MORE solute than normally possible. Made by dissolving at high temperature then cooling slowly. Extremely unstable -- a seed crystal or disturbance triggers instant crystallization.
+    </p>
+
+    <div class="formula-box green">Unsaturated &rarr; Saturated &rarr; Supersaturated (increasing solute)</div>
+
+    <div class="key-point">"Like dissolves like" -- polar solvents (water) dissolve polar/ionic solutes (NaCl, sugar). Nonpolar solvents (hexane, oil) dissolve nonpolar solutes (grease, wax). This is why oil and water do not mix.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Solution Type Identifier</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:10px">A solvent can hold a maximum of <strong style="color:var(--text-bright)">36 g</strong> of solute at this temperature. Adjust the amount of solute added:</p>
+      <div class="slider-row">
+        <label>Solute added (g)</label>
+        <input type="range" id="s1Solute" min="0" max="60" value="20" step="1" oninput="updateS1()">
+        <span class="slider-val" id="s1SoluteVal">20 g</span>
+      </div>
+      <div style="margin-top:12px">
+        <svg id="s1Svg" width="100%" viewBox="0 0 500 220" style="display:block"></svg>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Dissolved</span><br><span class="value green" id="s1Dissolved">20 g</span></div>
+        <div class="readout-item"><span class="label">Undissolved</span><br><span class="value pink" id="s1Undissolved">0 g</span></div>
+        <div class="readout-item"><span class="label">Type</span><br><span class="value amber" id="s1Type">Unsaturated</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> Salt (NaCl) dissolves readily in water but not in oil. Why?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">NaCl is too heavy to dissolve in oil</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','correct')">NaCl is ionic (polar) and water is polar -- "like dissolves like"</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">Oil is too thick for dissolving</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> A solution is cooled slowly and no crystals form, even though it contains more solute than the solubility limit. This solution is:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">Unsaturated</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">Saturated</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','correct')">Supersaturated</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: MOLARITY -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Molarity</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Molarity (M)</strong> is the most common concentration unit in chemistry. It measures the number of moles of solute per liter of solution. If you dissolve 1 mole of NaCl in enough water to make exactly 1 liter of solution, you have a 1.00 M NaCl solution.
+    </p>
+
+    <div class="formula-box large">M = mol solute / L solution &nbsp;&nbsp;&nbsp; [mol/L]</div>
+
+    <p class="concept-text">
+      To convert from <strong>grams to molarity</strong>, first convert grams to moles using the molar mass, then divide by volume in liters:<br><br>
+      <strong>Step 1:</strong> moles = grams / molar mass<br>
+      <strong>Step 2:</strong> M = moles / volume (L)
+    </p>
+
+    <div class="formula-box green">M = (grams / molar mass) / volume in L</div>
+    <div class="formula-box pink">Rearranged: grams = M &times; V(L) &times; molar mass</div>
+
+    <div class="key-point">Molarity uses liters of SOLUTION, not liters of solvent. When preparing a solution, you add solute first, then add solvent up to the target volume.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Molarity Calculator</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:10px">Enter the mass of solute, its molar mass, and the volume of solution to calculate molarity.</p>
+      <div class="calc-grid">
+        <div class="field">
+          <label>Mass of solute (g)</label>
+          <input type="number" id="calcGrams" value="58.44" step="0.01" oninput="calcMolarity()">
+        </div>
+        <div class="field">
+          <label>Molar mass (g/mol)</label>
+          <input type="number" id="calcMM" value="58.44" step="0.01" oninput="calcMolarity()">
+        </div>
+        <div class="field">
+          <label>Volume of solution (L)</label>
+          <input type="number" id="calcVol" value="1.0" step="0.01" oninput="calcMolarity()">
+        </div>
+        <div class="field">
+          <label>Common solutes</label>
+          <select id="calcPreset" onchange="applyPreset()" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;outline:none;width:100%">
+            <option value="">-- Select --</option>
+            <option value="58.44">NaCl (58.44 g/mol)</option>
+            <option value="40.00">NaOH (40.00 g/mol)</option>
+            <option value="36.46">HCl (36.46 g/mol)</option>
+            <option value="98.08">H2SO4 (98.08 g/mol)</option>
+            <option value="342.30">Sucrose (342.30 g/mol)</option>
+            <option value="180.16">Glucose (180.16 g/mol)</option>
+          </select>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Moles of solute</span><br><span class="value indigo" id="calcMoles">1.000 mol</span></div>
+        <div class="readout-item"><span class="label">Molarity</span><br><span class="value green" id="calcM">1.000 M</span></div>
+      </div>
+      <div class="calc-result" id="calcResult">M = 1.000 mol/L</div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> You dissolve 11.7 g of NaCl (molar mass = 58.44 g/mol) in water to make 0.500 L of solution. What is the molarity?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1" step="0.01" placeholder="M = ?" onkeydown="if(event.key==='Enter')checkNum('s2p1',0.40,0.02)">
+          <span class="unit-label">M</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p1',0.40,0.02)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> How many grams of NaOH (molar mass = 40.00 g/mol) are needed to make 2.00 L of 0.500 M solution?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" step="0.1" placeholder="g = ?" onkeydown="if(event.key==='Enter')checkNum('s2p2',40.0,1.0)">
+          <span class="unit-label">g</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p2',40.0,1.0)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> A 0.250 M glucose solution contains 22.5 g of glucose (molar mass = 180.16 g/mol). What is the volume of solution in liters?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p3" step="0.01" placeholder="V = ?" onkeydown="if(event.key==='Enter')checkNum('s2p3',0.50,0.03)">
+          <span class="unit-label">L</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p3',0.50,0.03)">Check</button>
+        </div>
+        <div class="feedback" id="s2p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: DILUTION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Dilution</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Dilution</strong> is the process of reducing a solution's concentration by adding more solvent. The total moles of solute do not change -- you are just spreading them through more volume. This gives us the <strong>dilution equation</strong>:
+    </p>
+
+    <div class="formula-box large">M<sub>1</sub>V<sub>1</sub> = M<sub>2</sub>V<sub>2</sub></div>
+
+    <p class="concept-text">
+      Where M<sub>1</sub> and V<sub>1</sub> are the initial (stock) concentration and volume, and M<sub>2</sub> and V<sub>2</sub> are the final (diluted) concentration and volume. The volume units must match (both mL or both L).
+    </p>
+
+    <div class="formula-box green">moles before = moles after &nbsp;&rarr;&nbsp; M<sub>1</sub>V<sub>1</sub> = M<sub>2</sub>V<sub>2</sub></div>
+
+    <div class="key-point">When diluting concentrated acids: always add acid to water (AAW -- "Add Acid to Water"), never water to acid. Adding water to concentrated acid can cause violent boiling and spattering. Remember: "Do as you oughta -- add acid to water."</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Dilution Calculator</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:10px">Adjust stock concentration and volume, or target concentration, to see dilution results.</p>
+      <div class="slider-row">
+        <label>Stock M<sub>1</sub></label>
+        <input type="range" id="dilM1" min="0.5" max="18" value="6.0" step="0.1" oninput="updateDilution()">
+        <span class="slider-val" id="dilM1Val">6.0 M</span>
+      </div>
+      <div class="slider-row">
+        <label>Stock V<sub>1</sub> (mL)</label>
+        <input type="range" id="dilV1" min="1" max="500" value="100" step="1" oninput="updateDilution()">
+        <span class="slider-val" id="dilV1Val">100 mL</span>
+      </div>
+      <div class="slider-row">
+        <label>Target M<sub>2</sub></label>
+        <input type="range" id="dilM2" min="0.01" max="6" value="1.0" step="0.01" oninput="updateDilution()">
+        <span class="slider-val" id="dilM2Val">1.0 M</span>
+      </div>
+      <div style="margin-top:10px">
+        <div class="momentum-bar">
+          <span class="bar-label" style="color:var(--indigo)">Stock</span>
+          <div class="bar-track"><div class="bar-fill" id="dilBar1" style="background:var(--indigo);width:50%"></div></div>
+          <span class="bar-val" id="dilBarV1">100 mL</span>
+        </div>
+        <div class="momentum-bar">
+          <span class="bar-label" style="color:var(--green)">Final</span>
+          <div class="bar-track"><div class="bar-fill" id="dilBar2" style="background:var(--green);width:100%"></div></div>
+          <span class="bar-val" id="dilBarV2">600 mL</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Moles (constant)</span><br><span class="value amber" id="dilMoles">0.600 mol</span></div>
+        <div class="readout-item"><span class="label">Final V<sub>2</sub></span><br><span class="value green" id="dilV2">600 mL</span></div>
+        <div class="readout-item"><span class="label">Solvent to add</span><br><span class="value pink" id="dilAdd">500 mL</span></div>
+      </div>
+    </div>
+
+    <p class="concept-text" style="margin-top:16px">
+      <strong>Worked Example:</strong> You have 12.0 M HCl stock and need 500 mL of 2.0 M HCl. How much stock do you need?<br><br>
+      M<sub>1</sub>V<sub>1</sub> = M<sub>2</sub>V<sub>2</sub><br>
+      (12.0)(V<sub>1</sub>) = (2.0)(500 mL)<br>
+      V<sub>1</sub> = 1000 / 12.0 = <strong>83.3 mL</strong> of stock<br><br>
+      Procedure: Add about 300 mL of water to a flask, then slowly add 83.3 mL of 12 M HCl, then add water to the 500 mL mark.
+    </p>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> You dilute 25.0 mL of 6.00 M H<sub>2</sub>SO<sub>4</sub> to a final volume of 500 mL. What is the final molarity?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="0.01" placeholder="M2 = ?" onkeydown="if(event.key==='Enter')checkNum('s3p1',0.30,0.02)">
+          <span class="unit-label">M</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p1',0.30,0.02)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> You need 1.00 L of 0.100 M NaOH from a 5.00 M stock. What volume of stock do you need?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2" step="0.1" placeholder="V1 = ?" onkeydown="if(event.key==='Enter')checkNum('s3p2',20.0,1.0)">
+          <span class="unit-label">mL</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p2',20.0,1.0)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: SOLUTION PREPARATION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Solution Preparation</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Preparing a solution of known molarity is a fundamental lab skill. You use a <strong>volumetric flask</strong> -- a flat-bottomed flask with a long narrow neck and a calibration line etched at a precise volume. The narrow neck allows very accurate volume measurement.
+    </p>
+
+    <div class="formula-box amber">Steps to Prepare a Standard Solution from a Solid</div>
+
+    <ol class="step-list">
+      <li>Calculate the required mass of solute: grams = M &times; V(L) &times; molar mass</li>
+      <li>Weigh the calculated mass on an analytical balance</li>
+      <li>Transfer the solute to a clean volumetric flask using a funnel</li>
+      <li>Add distilled water to about half the target volume and swirl to dissolve</li>
+      <li>Once fully dissolved, add distilled water carefully up to the calibration mark</li>
+      <li>Stopper and invert several times to ensure thorough mixing</li>
+    </ol>
+
+    <div class="formula-box pink">Steps to Prepare a Dilute Solution from Stock (Liquid)</div>
+
+    <ol class="step-list">
+      <li>Calculate the needed stock volume using M<sub>1</sub>V<sub>1</sub> = M<sub>2</sub>V<sub>2</sub></li>
+      <li>Add about 1/3 of final volume of distilled water to the volumetric flask</li>
+      <li>Use a pipette to transfer the calculated stock volume into the flask</li>
+      <li>For acids: add acid TO water (never water to acid)</li>
+      <li>Add distilled water up to the calibration mark</li>
+      <li>Stopper and invert to mix</li>
+    </ol>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Water chemistry is critical aboard Navy ships. Engineering departments continuously monitor boiler feedwater, cooling water, and potable water. Concentrations of chlorine, phosphate, pH buffers, and dissolved oxygen must be maintained within tight specs. Too little chlorine in potable water -- bacterial growth. Too much -- corrosion of pipes. Hull Technicians and Machinist's Mates prepare test solutions daily, performing dilutions from stock chemicals. Precise molarity calculations prevent equipment damage costing millions of dollars.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Solution Prep Calculator</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:10px">Goal: Prepare a solution. Enter target molarity, volume, and solute molar mass to see how much to weigh.</p>
+      <div class="calc-grid">
+        <div class="field">
+          <label>Target molarity (M)</label>
+          <input type="number" id="prepM" value="0.50" step="0.01" oninput="calcPrep()">
+        </div>
+        <div class="field">
+          <label>Target volume (L)</label>
+          <input type="number" id="prepV" value="1.00" step="0.01" oninput="calcPrep()">
+        </div>
+        <div class="field">
+          <label>Molar mass (g/mol)</label>
+          <input type="number" id="prepMM" value="58.44" step="0.01" oninput="calcPrep()">
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Moles needed</span><br><span class="value indigo" id="prepMoles">0.500 mol</span></div>
+        <div class="readout-item"><span class="label">Mass to weigh</span><br><span class="value green" id="prepGrams">29.22 g</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> How many grams of KCl (molar mass = 74.55 g/mol) do you need to prepare 250 mL of 0.200 M solution?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="0.01" placeholder="g = ?" onkeydown="if(event.key==='Enter')checkNum('s4p1',3.73,0.10)">
+          <span class="unit-label">g</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p1',3.73,0.10)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> When diluting concentrated sulfuric acid, you should:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">Add water to the acid quickly to cool it</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','correct')">Add acid slowly to water while stirring</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">Mix equal volumes simultaneously</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: SOLUBILITY RULES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Solubility Rules</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Solubility rules</strong> predict whether ionic compounds dissolve in water or form a <strong>precipitate</strong> (an insoluble solid that crashes out of solution). Memorize these rules to predict double-replacement reaction products.
+    </p>
+
+    <div class="formula-box large">Soluble = dissolves in water &nbsp;&nbsp;|&nbsp;&nbsp; Insoluble = forms precipitate</div>
+
+    <table class="rule-table">
+      <tr><th>Rule</th><th>Soluble Ions</th><th>Exceptions</th></tr>
+      <tr><td>1</td><td>All <strong>Group 1</strong> (Li+, Na+, K+) and <strong>NH4+</strong> salts</td><td>None -- always soluble</td></tr>
+      <tr><td>2</td><td>All <strong>nitrates</strong> (NO3-)</td><td>None -- always soluble</td></tr>
+      <tr><td>3</td><td>All <strong>acetates</strong> (CH3COO-)</td><td>None -- always soluble</td></tr>
+      <tr><td>4</td><td>All <strong>chlorides</strong> (Cl-), <strong>bromides</strong> (Br-), <strong>iodides</strong> (I-)</td><td>EXCEPT with Ag+, Pb2+, Hg2 2+</td></tr>
+      <tr><td>5</td><td>All <strong>sulfates</strong> (SO4 2-)</td><td>EXCEPT with Ba2+, Pb2+, Ca2+, Sr2+</td></tr>
+      <tr><td>6</td><td colspan="2"><em>Insoluble:</em> Most <strong>hydroxides</strong> (OH-) except Group 1 and Ba(OH)2, Ca(OH)2 slightly</td></tr>
+      <tr><td>7</td><td colspan="2"><em>Insoluble:</em> Most <strong>carbonates</strong> (CO3 2-), <strong>phosphates</strong> (PO4 3-), <strong>sulfides</strong> (S2-) except Group 1 and NH4+</td></tr>
+    </table>
+
+    <div class="key-point">Quick mnemonic: "NAG SAG" -- Na+/NH4+ Always Go, Nitrates/Acetates always Go Soluble. For the rest, check exceptions.</div>
+
+    <p class="concept-text" style="margin-top:16px">
+      <strong>Predicting Precipitates:</strong> In a double-replacement (metathesis) reaction, swap the cations. Then check solubility rules for each product. If a product is insoluble, it is the precipitate.<br><br>
+      <strong>Example:</strong> NaCl(aq) + AgNO<sub>3</sub>(aq) &rarr; NaNO<sub>3</sub>(aq) + AgCl(s)<br>
+      AgCl is insoluble (Rule 4 exception: Cl- with Ag+), so it precipitates.
+    </p>
+
+    <div class="formula-box green">Full molecular: NaCl(aq) + AgNO<sub>3</sub>(aq) &rarr; NaNO<sub>3</sub>(aq) + AgCl(s)</div>
+    <div class="formula-box pink">Net ionic: Ag<sup>+</sup>(aq) + Cl<sup>-</sup>(aq) &rarr; AgCl(s)</div>
+
+    <p class="concept-text">
+      <strong>Net ionic equations</strong> show only the ions that participate in the reaction. Spectator ions (those unchanged on both sides) are removed. The net ionic equation reveals the actual chemistry happening.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Precipitate Predictor</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:10px">Select two aqueous solutions to mix. The tool predicts whether a precipitate forms.</p>
+      <div class="calc-grid">
+        <div class="field">
+          <label>Solution A</label>
+          <select id="solA" onchange="predictPrecip()" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;outline:none;width:100%">
+            <option value="NaCl">NaCl (aq)</option>
+            <option value="Na2SO4">Na2SO4 (aq)</option>
+            <option value="Na2CO3">Na2CO3 (aq)</option>
+            <option value="NaOH">NaOH (aq)</option>
+            <option value="KI">KI (aq)</option>
+            <option value="K2CrO4">K2CrO4 (aq)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Solution B</label>
+          <select id="solB" onchange="predictPrecip()" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;outline:none;width:100%">
+            <option value="AgNO3">AgNO3 (aq)</option>
+            <option value="Pb(NO3)2">Pb(NO3)2 (aq)</option>
+            <option value="BaCl2">BaCl2 (aq)</option>
+            <option value="CuSO4">CuSO4 (aq)</option>
+            <option value="FeCl3">FeCl3 (aq)</option>
+            <option value="CaCl2">CaCl2 (aq)</option>
+          </select>
+        </div>
+      </div>
+      <div id="precipResult" style="margin-top:12px;padding:14px 18px;border-radius:var(--radius);font-size:.82rem;line-height:1.8"></div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s5p1">
+        <p><strong>1.</strong> Which compound is INSOLUBLE in water?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">NaNO3</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">KCl</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','correct')">PbSO4</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">NH4Br</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> When Pb(NO<sub>3</sub>)<sub>2</sub>(aq) and KI(aq) are mixed, what is the precipitate?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">KNO3</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','correct')">PbI2 (yellow precipitate)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">No precipitate forms</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem" id="s5p3">
+        <p><strong>3.</strong> What is the net ionic equation for: BaCl<sub>2</sub>(aq) + Na<sub>2</sub>SO<sub>4</sub>(aq) &rarr; BaSO<sub>4</sub>(s) + 2NaCl(aq)?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','correct')">Ba2+(aq) + SO4 2-(aq) &rarr; BaSO4(s)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">Na+(aq) + Cl-(aq) &rarr; NaCl(aq)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">Ba2+(aq) + 2Cl-(aq) &rarr; BaCl2(s)</button>
+        </div>
+        <div class="feedback" id="s5p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: PRACTICE PROBLEMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Practice Problems</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="practice-block" style="border-top:none;padding-top:0"><div class="practice-title">Comprehensive Problem Set</div>
+
+      <div class="problem">
+        <p><strong>1.</strong> What is the molarity of a solution made by dissolving 4.00 g of NaOH (40.00 g/mol) in enough water to make 200 mL of solution?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p1" step="0.01" placeholder="M = ?" onkeydown="if(event.key==='Enter')checkNum('s6p1',0.50,0.02)">
+          <span class="unit-label">M</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p1',0.50,0.02)">Check</button>
+        </div>
+        <div class="feedback" id="s6p1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>2.</strong> You have 500 mL of 0.600 M HCl. How many moles of HCl does it contain?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p2" step="0.001" placeholder="mol = ?" onkeydown="if(event.key==='Enter')checkNum('s6p2',0.300,0.010)">
+          <span class="unit-label">mol</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p2',0.300,0.010)">Check</button>
+        </div>
+        <div class="feedback" id="s6p2-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>3.</strong> You dilute 50.0 mL of 12.0 M HCl to make 1.00 L of solution. What is the final molarity?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p3" step="0.01" placeholder="M = ?" onkeydown="if(event.key==='Enter')checkNum('s6p3',0.60,0.03)">
+          <span class="unit-label">M</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p3',0.60,0.03)">Check</button>
+        </div>
+        <div class="feedback" id="s6p3-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>4.</strong> How many mL of 6.00 M NaOH stock are needed to prepare 250 mL of 0.300 M NaOH?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p4" step="0.1" placeholder="V1 = ?" onkeydown="if(event.key==='Enter')checkNum('s6p4',12.5,0.5)">
+          <span class="unit-label">mL</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p4',12.5,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s6p4-fb"></div>
+      </div>
+
+      <div class="problem" id="s6p5">
+        <p><strong>5.</strong> Will a precipitate form when Na<sub>2</sub>SO<sub>4</sub>(aq) is mixed with BaCl<sub>2</sub>(aq)?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p5','correct')">Yes -- BaSO4 is insoluble (sulfate exception with Ba2+)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p5','wrong')">No -- all products are soluble</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p5','wrong')">Yes -- NaCl is insoluble</button>
+        </div>
+        <div class="feedback" id="s6p5-fb"></div>
+      </div>
+
+      <div class="problem" id="s6p6">
+        <p><strong>6.</strong> Identify the spectator ions in: AgNO<sub>3</sub>(aq) + NaCl(aq) &rarr; AgCl(s) + NaNO<sub>3</sub>(aq)</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p6','wrong')">Ag+ and Cl-</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p6','correct')">Na+ and NO3-</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p6','wrong')">All ions are participants</button>
+        </div>
+        <div class="feedback" id="s6p6-fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">7</span> Quick Quiz &mdash; Solutions &amp; Concentration</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Solutions basics</div>
+      <p class="q-text">In a saltwater solution, which is the solute and which is the solvent?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Water is the solute, salt is the solvent</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">Salt is the solute, water is the solvent</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Both are solutes</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">It depends on the concentration</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Molarity definition</div>
+      <p class="q-text">What is the molarity of a solution containing 2.0 moles of solute in 500 mL of solution?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">1.0 M</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">2.0 M</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">4.0 M</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">0.25 M</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Grams to molarity</div>
+      <p class="q-text">How many grams of NaCl (58.44 g/mol) are needed to make 500 mL of 1.00 M solution?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">58.44 g</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">29.22 g</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">116.88 g</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">14.61 g</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Dilution</div>
+      <p class="q-text">Using M1V1 = M2V2, what volume of 12.0 M HCl is needed to make 1.00 L of 3.00 M HCl?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">250 mL</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">500 mL</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">120 mL</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">36 mL</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Dilution safety</div>
+      <p class="q-text">When diluting concentrated sulfuric acid, you should:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">Pour water into the acid</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">Pour acid into water slowly</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">Mix both at the same time</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">It does not matter which order</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Solubility rules</div>
+      <p class="q-text">Which of these compounds is SOLUBLE in water?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">AgCl</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">BaSO4</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">Na2CO3</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">PbI2</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Precipitate prediction</div>
+      <p class="q-text">What precipitate forms when AgNO3(aq) is mixed with NaCl(aq)?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">NaNO3</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">AgCl</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">No precipitate forms</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">AgNa</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Net ionic equations</div>
+      <p class="q-text">In the reaction NaCl(aq) + AgNO3(aq) &rarr; AgCl(s) + NaNO3(aq), the spectator ions are:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Ag+ and Cl-</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">Na+ and NO3-</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Na+ and Cl-</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Ag+ and NO3-</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Supersaturation</div>
+      <p class="q-text">A supersaturated solution:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Has less solute than it can hold</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Has exactly the maximum amount of solute</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">Contains more dissolved solute than the equilibrium amount and is unstable</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Cannot exist in nature</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Solution preparation</div>
+      <p class="q-text">When preparing a standard solution, why is a volumetric flask used instead of a beaker?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">It heats the solution faster</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">It prevents evaporation</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">Its narrow neck and calibration mark allow precise volume measurement</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">It is cheaper and easier to clean</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(2) + ')';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: SOLUTION TYPE INTERACTIVE ==================== */
+function updateS1() {
+  var solute = +document.getElementById('s1Solute').value;
+  var maxSol = 36;
+  document.getElementById('s1SoluteVal').textContent = solute + ' g';
+  var dissolved = Math.min(solute, maxSol);
+  var undissolved = Math.max(0, solute - maxSol);
+  var type = solute < maxSol ? 'Unsaturated' : solute === maxSol ? 'Saturated' : 'Supersaturated*';
+
+  document.getElementById('s1Dissolved').textContent = dissolved + ' g';
+  document.getElementById('s1Undissolved').textContent = undissolved + ' g';
+  document.getElementById('s1Type').textContent = type;
+
+  // Draw beaker SVG
+  var svg = document.getElementById('s1Svg');
+  var h = '';
+  // Beaker
+  var bx = 150, by = 30, bw = 200, bh = 160;
+  h += '<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="6" fill="none" stroke="#9ca3af" stroke-width="2"/>';
+  // Water level
+  var waterH = 120;
+  var wy = by + bh - waterH;
+  // Color intensity based on concentration
+  var intensity = Math.min(dissolved / maxSol, 1);
+  var r = Math.round(99 + intensity * 50);
+  var g = Math.round(102 + intensity * 100);
+  var b2 = Math.round(241);
+  var alpha = 0.15 + intensity * 0.35;
+  h += '<rect x="'+(bx+2)+'" y="'+wy+'" width="'+(bw-4)+'" height="'+(waterH-2)+'" rx="4" fill="rgba('+r+','+g+','+b2+','+alpha+')"/>';
+
+  // Undissolved particles at bottom
+  if (undissolved > 0 && solute > maxSol) {
+    var numP = Math.min(Math.round(undissolved / 2), 15);
+    for (var i = 0; i < numP; i++) {
+      var px = bx + 30 + (i % 8) * 20 + Math.random() * 8;
+      var py = by + bh - 10 - Math.floor(i / 8) * 12;
+      h += '<circle cx="'+px+'" cy="'+py+'" r="4" fill="var(--amber)" opacity="0.8"/>';
+    }
+  }
+
+  // Labels
+  h += '<text x="'+(bx + bw/2)+'" y="'+(wy + waterH/2)+'" text-anchor="middle" fill="var(--text-bright)" font-size="12" font-weight="600">'+dissolved+' g dissolved</text>';
+  if (type === 'Unsaturated') {
+    h += '<text x="'+(bx+bw+20)+'" y="'+(by+bh/2)+'" fill="var(--green)" font-size="11" font-weight="600">UNSATURATED</text>';
+    h += '<text x="'+(bx+bw+20)+'" y="'+(by+bh/2+16)+'" fill="var(--text-dim)" font-size="9">Can dissolve more</text>';
+  } else if (type === 'Saturated') {
+    h += '<text x="'+(bx+bw+20)+'" y="'+(by+bh/2)+'" fill="var(--amber)" font-size="11" font-weight="600">SATURATED</text>';
+    h += '<text x="'+(bx+bw+20)+'" y="'+(by+bh/2+16)+'" fill="var(--text-dim)" font-size="9">Maximum reached</text>';
+  } else {
+    h += '<text x="'+(bx+bw+20)+'" y="'+(by+bh/2)+'" fill="var(--pink)" font-size="11" font-weight="600">SUPER&shy;SATURATED</text>';
+    h += '<text x="'+(bx+bw+20)+'" y="'+(by+bh/2+16)+'" fill="var(--text-dim)" font-size="9">Unstable! '+undissolved+'g excess</text>';
+  }
+  // Max line
+  h += '<line x1="'+(bx-10)+'" y1="'+(wy+20)+'" x2="'+(bx)+'" y2="'+(wy+20)+'" stroke="var(--amber)" stroke-width="1" stroke-dasharray="3,3"/>';
+  h += '<text x="'+(bx-15)+'" y="'+(wy+24)+'" text-anchor="end" fill="var(--amber)" font-size="8">max '+maxSol+'g</text>';
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 2: MOLARITY CALCULATOR ==================== */
+function calcMolarity() {
+  var grams = parseFloat(document.getElementById('calcGrams').value) || 0;
+  var mm = parseFloat(document.getElementById('calcMM').value) || 1;
+  var vol = parseFloat(document.getElementById('calcVol').value) || 1;
+  var moles = grams / mm;
+  var M = moles / vol;
+  document.getElementById('calcMoles').textContent = moles.toFixed(3) + ' mol';
+  document.getElementById('calcM').textContent = M.toFixed(3) + ' M';
+  document.getElementById('calcResult').textContent = 'M = ' + M.toFixed(3) + ' mol/L';
+}
+
+function applyPreset() {
+  var mm = document.getElementById('calcPreset').value;
+  if (mm) {
+    document.getElementById('calcMM').value = mm;
+    calcMolarity();
+  }
+}
+
+/* ==================== SECTION 3: DILUTION INTERACTIVE ==================== */
+function updateDilution() {
+  var M1 = parseFloat(document.getElementById('dilM1').value);
+  var V1 = parseFloat(document.getElementById('dilV1').value);
+  var M2 = parseFloat(document.getElementById('dilM2').value);
+
+  // Clamp M2 to not exceed M1
+  if (M2 > M1) {
+    M2 = M1;
+    document.getElementById('dilM2').value = M2;
+  }
+
+  document.getElementById('dilM1Val').textContent = M1.toFixed(1) + ' M';
+  document.getElementById('dilV1Val').textContent = V1.toFixed(0) + ' mL';
+  document.getElementById('dilM2Val').textContent = M2.toFixed(2) + ' M';
+
+  var V2 = (M1 * V1) / M2;
+  var moles = M1 * V1 / 1000;
+  var addVol = V2 - V1;
+
+  document.getElementById('dilMoles').textContent = moles.toFixed(3) + ' mol';
+  document.getElementById('dilV2').textContent = V2.toFixed(0) + ' mL';
+  document.getElementById('dilAdd').textContent = addVol.toFixed(0) + ' mL';
+  document.getElementById('dilBarV1').textContent = V1.toFixed(0) + ' mL';
+  document.getElementById('dilBarV2').textContent = V2.toFixed(0) + ' mL';
+
+  var maxV = Math.max(V2, 1);
+  document.getElementById('dilBar1').style.width = (V1 / maxV * 100).toFixed(1) + '%';
+  document.getElementById('dilBar2').style.width = '100%';
+}
+
+/* ==================== SECTION 4: PREP CALCULATOR ==================== */
+function calcPrep() {
+  var M = parseFloat(document.getElementById('prepM').value) || 0;
+  var V = parseFloat(document.getElementById('prepV').value) || 0;
+  var mm = parseFloat(document.getElementById('prepMM').value) || 1;
+  var moles = M * V;
+  var grams = moles * mm;
+  document.getElementById('prepMoles').textContent = moles.toFixed(3) + ' mol';
+  document.getElementById('prepGrams').textContent = grams.toFixed(2) + ' g';
+}
+
+/* ==================== SECTION 5: PRECIPITATE PREDICTOR ==================== */
+var precipData = {
+  'NaCl+AgNO3': {ppt:'AgCl(s)', color:'white', full:'NaCl(aq) + AgNO3(aq) -> AgCl(s) + NaNO3(aq)', net:'Ag+(aq) + Cl-(aq) -> AgCl(s)'},
+  'NaCl+Pb(NO3)2': {ppt:'PbCl2(s)', color:'white', full:'2NaCl(aq) + Pb(NO3)2(aq) -> PbCl2(s) + 2NaNO3(aq)', net:'Pb2+(aq) + 2Cl-(aq) -> PbCl2(s)'},
+  'NaCl+BaCl2': {ppt:'None', color:'', full:'No reaction -- all products soluble', net:'No reaction'},
+  'NaCl+CuSO4': {ppt:'None', color:'', full:'No reaction -- all products (NaSO4, CuCl2) are soluble', net:'No reaction'},
+  'NaCl+FeCl3': {ppt:'None', color:'', full:'No reaction -- no ion swap produces insoluble product', net:'No reaction'},
+  'NaCl+CaCl2': {ppt:'None', color:'', full:'No reaction -- all products soluble', net:'No reaction'},
+  'Na2SO4+AgNO3': {ppt:'Ag2SO4(s)', color:'white', full:'Na2SO4(aq) + 2AgNO3(aq) -> Ag2SO4(s) + 2NaNO3(aq)', net:'2Ag+(aq) + SO4 2-(aq) -> Ag2SO4(s)'},
+  'Na2SO4+Pb(NO3)2': {ppt:'PbSO4(s)', color:'white', full:'Na2SO4(aq) + Pb(NO3)2(aq) -> PbSO4(s) + 2NaNO3(aq)', net:'Pb2+(aq) + SO4 2-(aq) -> PbSO4(s)'},
+  'Na2SO4+BaCl2': {ppt:'BaSO4(s)', color:'white', full:'Na2SO4(aq) + BaCl2(aq) -> BaSO4(s) + 2NaCl(aq)', net:'Ba2+(aq) + SO4 2-(aq) -> BaSO4(s)'},
+  'Na2SO4+CuSO4': {ppt:'None', color:'', full:'No reaction -- no insoluble product formed', net:'No reaction'},
+  'Na2SO4+FeCl3': {ppt:'None', color:'', full:'No reaction -- Fe2(SO4)3 and NaCl are both soluble', net:'No reaction'},
+  'Na2SO4+CaCl2': {ppt:'CaSO4(s)', color:'white', full:'Na2SO4(aq) + CaCl2(aq) -> CaSO4(s) + 2NaCl(aq)', net:'Ca2+(aq) + SO4 2-(aq) -> CaSO4(s)'},
+  'Na2CO3+AgNO3': {ppt:'Ag2CO3(s)', color:'white', full:'Na2CO3(aq) + 2AgNO3(aq) -> Ag2CO3(s) + 2NaNO3(aq)', net:'2Ag+(aq) + CO3 2-(aq) -> Ag2CO3(s)'},
+  'Na2CO3+Pb(NO3)2': {ppt:'PbCO3(s)', color:'white', full:'Na2CO3(aq) + Pb(NO3)2(aq) -> PbCO3(s) + 2NaNO3(aq)', net:'Pb2+(aq) + CO3 2-(aq) -> PbCO3(s)'},
+  'Na2CO3+BaCl2': {ppt:'BaCO3(s)', color:'white', full:'Na2CO3(aq) + BaCl2(aq) -> BaCO3(s) + 2NaCl(aq)', net:'Ba2+(aq) + CO3 2-(aq) -> BaCO3(s)'},
+  'Na2CO3+CuSO4': {ppt:'CuCO3(s)', color:'green', full:'Na2CO3(aq) + CuSO4(aq) -> CuCO3(s) + Na2SO4(aq)', net:'Cu2+(aq) + CO3 2-(aq) -> CuCO3(s)'},
+  'Na2CO3+FeCl3': {ppt:'Fe2(CO3)3(s)', color:'brown', full:'3Na2CO3(aq) + 2FeCl3(aq) -> Fe2(CO3)3(s) + 6NaCl(aq)', net:'2Fe3+(aq) + 3CO3 2-(aq) -> Fe2(CO3)3(s)'},
+  'Na2CO3+CaCl2': {ppt:'CaCO3(s)', color:'white', full:'Na2CO3(aq) + CaCl2(aq) -> CaCO3(s) + 2NaCl(aq)', net:'Ca2+(aq) + CO3 2-(aq) -> CaCO3(s)'},
+  'NaOH+AgNO3': {ppt:'AgOH(s)', color:'brown', full:'NaOH(aq) + AgNO3(aq) -> AgOH(s) + NaNO3(aq)', net:'Ag+(aq) + OH-(aq) -> AgOH(s)'},
+  'NaOH+Pb(NO3)2': {ppt:'Pb(OH)2(s)', color:'white', full:'2NaOH(aq) + Pb(NO3)2(aq) -> Pb(OH)2(s) + 2NaNO3(aq)', net:'Pb2+(aq) + 2OH-(aq) -> Pb(OH)2(s)'},
+  'NaOH+BaCl2': {ppt:'None', color:'', full:'No reaction -- Ba(OH)2 is soluble', net:'No reaction'},
+  'NaOH+CuSO4': {ppt:'Cu(OH)2(s)', color:'blue', full:'2NaOH(aq) + CuSO4(aq) -> Cu(OH)2(s) + Na2SO4(aq)', net:'Cu2+(aq) + 2OH-(aq) -> Cu(OH)2(s)'},
+  'NaOH+FeCl3': {ppt:'Fe(OH)3(s)', color:'rust-brown', full:'3NaOH(aq) + FeCl3(aq) -> Fe(OH)3(s) + 3NaCl(aq)', net:'Fe3+(aq) + 3OH-(aq) -> Fe(OH)3(s)'},
+  'NaOH+CaCl2': {ppt:'Ca(OH)2(s)', color:'white (slightly soluble)', full:'2NaOH(aq) + CaCl2(aq) -> Ca(OH)2(s) + 2NaCl(aq)', net:'Ca2+(aq) + 2OH-(aq) -> Ca(OH)2(s)'},
+  'KI+AgNO3': {ppt:'AgI(s)', color:'yellow', full:'KI(aq) + AgNO3(aq) -> AgI(s) + KNO3(aq)', net:'Ag+(aq) + I-(aq) -> AgI(s)'},
+  'KI+Pb(NO3)2': {ppt:'PbI2(s)', color:'bright yellow', full:'2KI(aq) + Pb(NO3)2(aq) -> PbI2(s) + 2KNO3(aq)', net:'Pb2+(aq) + 2I-(aq) -> PbI2(s)'},
+  'KI+BaCl2': {ppt:'None', color:'', full:'No reaction -- BaI2 and KCl are both soluble', net:'No reaction'},
+  'KI+CuSO4': {ppt:'None', color:'', full:'No precipitate (CuI2 is unstable, forms CuI + I2 in practice)', net:'Complex redox -- beyond scope'},
+  'KI+FeCl3': {ppt:'None', color:'', full:'No simple precipitate -- redox occurs (Fe3+ oxidizes I-)', net:'Redox reaction'},
+  'KI+CaCl2': {ppt:'None', color:'', full:'No reaction -- CaI2 and KCl both soluble', net:'No reaction'},
+  'K2CrO4+AgNO3': {ppt:'Ag2CrO4(s)', color:'red-orange', full:'K2CrO4(aq) + 2AgNO3(aq) -> Ag2CrO4(s) + 2KNO3(aq)', net:'2Ag+(aq) + CrO4 2-(aq) -> Ag2CrO4(s)'},
+  'K2CrO4+Pb(NO3)2': {ppt:'PbCrO4(s)', color:'bright yellow', full:'K2CrO4(aq) + Pb(NO3)2(aq) -> PbCrO4(s) + 2KNO3(aq)', net:'Pb2+(aq) + CrO4 2-(aq) -> PbCrO4(s)'},
+  'K2CrO4+BaCl2': {ppt:'BaCrO4(s)', color:'yellow', full:'K2CrO4(aq) + BaCl2(aq) -> BaCrO4(s) + 2KCl(aq)', net:'Ba2+(aq) + CrO4 2-(aq) -> BaCrO4(s)'},
+  'K2CrO4+CuSO4': {ppt:'None', color:'', full:'No common precipitate (CuCrO4 slightly soluble)', net:'No significant reaction'},
+  'K2CrO4+FeCl3': {ppt:'None', color:'', full:'No common precipitate under standard conditions', net:'No reaction'},
+  'K2CrO4+CaCl2': {ppt:'CaCrO4', color:'yellow (slightly soluble)', full:'K2CrO4(aq) + CaCl2(aq) -> CaCrO4(s) + 2KCl(aq)', net:'Ca2+(aq) + CrO4 2-(aq) -> CaCrO4(s)'}
+};
+
+function predictPrecip() {
+  var a = document.getElementById('solA').value;
+  var b = document.getElementById('solB').value;
+  var key = a + '+' + b;
+  var div = document.getElementById('precipResult');
+  var data = precipData[key];
+  if (!data) {
+    div.style.background = 'var(--bg-card)';
+    div.style.borderColor = 'var(--border)';
+    div.innerHTML = '<span style="color:var(--text-dim)">Select both solutions to see result.</span>';
+    return;
+  }
+  if (data.ppt === 'None') {
+    div.style.background = 'var(--green-dim)';
+    div.style.border = '1px solid rgba(34,197,94,.3)';
+    div.innerHTML = '<strong style="color:var(--green)">No precipitate forms.</strong><br><span style="font-size:.74rem;color:var(--text-dim)">' + data.full + '</span>';
+  } else {
+    div.style.background = 'var(--pink-dim)';
+    div.style.border = '1px solid rgba(236,72,153,.3)';
+    div.innerHTML = '<strong style="color:var(--pink)">Precipitate: ' + data.ppt + '</strong> (' + data.color + ')<br>' +
+      '<span style="font-size:.74rem;color:var(--text-dim)">Full: ' + data.full + '</span><br>' +
+      '<span style="font-size:.74rem;color:var(--amber)">Net ionic: ' + data.net + '</span>';
+  }
+}
+
+/* ==================== INIT ==================== */
+updateS1();
+calcMolarity();
+updateDilution();
+calcPrep();
+predictPrecip();
+markComplete(1);
+</script>
+</body>
+</html>

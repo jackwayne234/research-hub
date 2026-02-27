@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 17 — Solubility Equilibria</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1e2128;
+    --bg-card: #262a33;
+    --bg-input: #1a1d24;
+    --border: #363b47;
+    --text: #e2e4e9;
+    --indigo: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --amber: #f59e0b;
+    --indigo-dim: rgba(99,102,241,0.12);
+    --green-dim: rgba(34,197,94,0.12);
+    --pink-dim: rgba(236,72,153,0.12);
+    --amber-dim: rgba(245,158,11,0.12);
+    --text-muted: #8b909e;
+    --radius: 10px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* TOP BAR */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .lesson-badge {
+    background: var(--indigo);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .lesson-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .progress-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .progress-bar {
+    height: 6px;
+    background: var(--bg-input);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--indigo), var(--green));
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+  }
+  .intro-block {
+    background: var(--indigo-dim);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 28px;
+  }
+  .intro-block h2 { color: var(--indigo); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+  .intro-block p { color: var(--text-muted); font-size: 13px; }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: border-color 0.3s ease;
+  }
+  .section-card.completed { border-color: var(--green); }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .section-header:hover { background: rgba(255,255,255,0.03); }
+  .section-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--indigo-dim);
+    border: 1px solid rgba(99,102,241,0.3);
+    color: var(--indigo);
+    font-weight: 700;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-card.completed .section-num {
+    background: var(--green-dim);
+    border-color: rgba(34,197,94,0.3);
+    color: var(--green);
+  }
+  .section-title { flex: 1; font-weight: 600; font-size: 14px; }
+  .chevron {
+    color: var(--text-muted);
+    font-size: 12px;
+    transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+  }
+  .section-card.open .chevron { transform: rotate(180deg); }
+  .section-body {
+    display: none;
+    padding: 4px 24px 24px;
+    border-top: 1px solid var(--border);
+  }
+  .section-card.open .section-body { display: block; }
+
+  /* CONTENT COMPONENTS */
+  h3 { color: var(--indigo); font-size: 13px; text-transform: uppercase; letter-spacing: .07em; margin: 20px 0 10px; }
+  h4 { color: var(--text); font-size: 13px; font-weight: 600; margin: 16px 0 8px; }
+  p { color: var(--text-muted); margin-bottom: 10px; font-size: 13px; }
+  ul, ol { color: var(--text-muted); font-size: 13px; margin: 8px 0 10px 20px; }
+  li { margin-bottom: 4px; }
+  strong { color: var(--text); }
+
+  .formula-box {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 13px;
+    overflow-x: auto;
+  }
+  .formula-box.indigo { border-left: 3px solid var(--indigo); }
+  .formula-box.green  { border-left: 3px solid var(--green); }
+  .formula-box.amber  { border-left: 3px solid var(--amber); }
+  .formula-box.pink   { border-left: 3px solid var(--pink); }
+  .formula-box .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .formula-box .eq {
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .formula-box .sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  .key-point {
+    background: var(--amber-dim);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .key-point::before { content: "KEY POINT  "; color: var(--amber); font-weight: 700; font-size: 11px; }
+
+  .navy-context {
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.25);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .navy-context::before { content: "NAVY CONTEXT  "; color: var(--indigo); font-weight: 700; font-size: 11px; }
+
+  /* ICE TABLE */
+  .ice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 12px;
+  }
+  .ice-table th, .ice-table td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: center;
+  }
+  .ice-table th { background: var(--bg-input); color: var(--indigo); font-weight: 600; }
+  .ice-table td { color: var(--text-muted); }
+  .ice-table td:first-child { color: var(--amber); font-weight: 600; text-align: left; }
+  .ice-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* INTERACTIVE */
+  .interactive-area {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    margin: 14px 0;
+  }
+  .interactive-area h4 { color: var(--indigo); margin-top: 0; }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+  .slider-row label { font-size: 12px; color: var(--text-muted); min-width: 140px; }
+  input[type="range"] {
+    flex: 1;
+    min-width: 120px;
+    accent-color: var(--indigo);
+    cursor: pointer;
+  }
+  .readout {
+    font-size: 13px;
+    color: var(--indigo);
+    font-weight: 600;
+    min-width: 90px;
+    text-align: right;
+  }
+  .calc-output {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  /* PROBLEMS */
+  .problem {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 12px 0;
+    transition: transform 0.2s;
+  }
+  .problem-text { color: var(--text); font-size: 13px; margin-bottom: 12px; }
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .input-row input[type="number"] {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 7px 11px;
+    border-radius: 6px;
+    width: 140px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-row input[type="number"]:focus { border-color: var(--indigo); }
+  .check-btn, .reset-btn {
+    background: var(--indigo);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .check-btn:hover { opacity: 0.85; }
+  .reset-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); }
+  .reset-btn:hover { border-color: var(--text-muted); }
+  .feedback { font-size: 12px; margin-top: 8px; padding: 6px 10px; border-radius: 5px; display: none; }
+  .feedback.correct  { display: block; background: var(--green-dim);  color: var(--green);  border: 1px solid rgba(34,197,94,0.25); }
+  .feedback.incorrect { display: block; background: var(--pink-dim); color: var(--pink);   border: 1px solid rgba(236,72,153,0.25); }
+
+  /* MC BUTTONS */
+  .mc-options { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+  .mc-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .mc-btn:hover:not(.disabled) { border-color: var(--indigo); color: var(--text); }
+  .mc-btn.correct  { background: var(--green-dim);  border-color: var(--green);  color: var(--green); }
+  .mc-btn.wrong    { background: var(--pink-dim);   border-color: var(--pink);   color: var(--pink); }
+  .mc-btn.disabled { cursor: default; opacity: 0.7; }
+
+  /* QUIZ */
+  .quiz-q {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 12px 0;
+    transition: transform 0.2s;
+  }
+  .quiz-q-text { color: var(--text); font-size: 13px; margin-bottom: 10px; }
+  .choices { display: flex; flex-direction: column; gap: 6px; }
+  .choice-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .choice-btn:hover:not(.disabled) { border-color: var(--indigo); color: var(--text); }
+  .choice-btn.selected-correct { background: var(--green-dim);  border-color: var(--green);  color: var(--green); }
+  .choice-btn.selected-wrong   { background: var(--pink-dim);   border-color: var(--pink);   color: var(--pink); }
+  .choice-btn.reveal-correct   { background: var(--green-dim);  border-color: var(--green);  color: var(--green); opacity: 0.75; }
+  .choice-btn.disabled { cursor: default; }
+
+  .quiz-score-bar {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .quiz-score-bar .score-label { color: var(--text-muted); font-size: 12px; }
+  .quiz-score-bar .score-val { color: var(--green); font-size: 20px; font-weight: 700; }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+
+  /* ANIMATIONS */
+  @keyframes pop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.025); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  .pop   { animation: pop   0.35s ease forwards; }
+  .shake { animation: shake 0.4s ease forwards; }
+
+  /* STEP BLOCK */
+  .step-block {
+    counter-reset: step;
+    margin: 12px 0;
+  }
+  .step {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 22px;
+    height: 22px;
+    background: var(--indigo-dim);
+    border: 1px solid rgba(99,102,241,0.35);
+    border-radius: 50%;
+    color: var(--indigo);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-content { font-size: 13px; color: var(--text-muted); }
+  .step-content strong { color: var(--text); }
+
+  /* COMPARISON TABLE */
+  .cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 12px;
+  }
+  .cmp-table th { background: var(--bg-input); color: var(--indigo); padding: 8px 12px; border: 1px solid var(--border); text-align: left; }
+  .cmp-table td { border: 1px solid var(--border); padding: 8px 12px; color: var(--text-muted); }
+  .cmp-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .top-bar { padding: 10px 14px; gap: 10px; }
+    .lesson-title { font-size: 12px; }
+    .main { padding: 20px 12px 60px; }
+    .section-body { padding: 4px 14px 18px; }
+    .slider-row { flex-direction: column; align-items: flex-start; }
+    .readout { text-align: left; }
+    .input-row { flex-direction: column; align-items: flex-start; }
+    .formula-box .eq { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="lesson-badge">17</div>
+  <div class="lesson-title">Solubility Equilibria</div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 8 sections</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- INTRO -->
+  <div class="intro-block">
+    <h2>Lesson Overview</h2>
+    <p>Building on the equilibrium principles from Lesson 14, we now apply K-expressions to sparingly soluble ionic compounds. Ksp controls whether a precipitate forms or dissolves — a concept with direct implications for scale buildup in Navy ship systems, seawater desalination, and corrosion chemistry.</p>
+  </div>
+
+  <!-- SECTION 1: Ksp FUNDAMENTALS -->
+  <div class="section-card" data-section="1">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">1</div>
+      <div class="section-title">Ksp Fundamentals</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <h3>Dissolution Equilibria</h3>
+      <p>When a sparingly soluble salt dissolves, it reaches a dynamic equilibrium between the solid and its dissolved ions. Like all equilibrium constants, <strong>Ksp</strong> (solubility product constant) is derived from the law of mass action — but the pure solid is excluded from the expression (activity = 1).</p>
+
+      <div class="formula-box indigo">
+        <div class="label">General Dissolution</div>
+        <div class="eq">M<sub>a</sub>X<sub>b</sub>(s) &#8652; a M<sup>n+</sup>(aq) + b X<sup>m-</sup>(aq)</div>
+        <div class="sub">Ksp = [M<sup>n+</sup>]<sup>a</sup>[X<sup>m-</sup>]<sup>b</sup> &nbsp;(solid excluded)</div>
+      </div>
+
+      <p>The solid phase does not appear in Ksp because its concentration is constant (it is a pure phase). This parallels how we treated solids and liquids in Lesson 14's K expressions.</p>
+
+      <h3>Writing Ksp Expressions — Examples</h3>
+
+      <table class="cmp-table">
+        <tr>
+          <th>Compound</th>
+          <th>Dissolution Equation</th>
+          <th>Ksp Expression</th>
+          <th>Ksp (25°C)</th>
+        </tr>
+        <tr>
+          <td>AgCl</td>
+          <td>AgCl(s) &#8652; Ag⁺ + Cl⁻</td>
+          <td>[Ag⁺][Cl⁻]</td>
+          <td>1.8 × 10⁻¹⁰</td>
+        </tr>
+        <tr>
+          <td>Ag₂CrO₄</td>
+          <td>Ag₂CrO₄(s) &#8652; 2Ag⁺ + CrO₄²⁻</td>
+          <td>[Ag⁺]²[CrO₄²⁻]</td>
+          <td>1.12 × 10⁻¹²</td>
+        </tr>
+        <tr>
+          <td>PbCl₂</td>
+          <td>PbCl₂(s) &#8652; Pb²⁺ + 2Cl⁻</td>
+          <td>[Pb²⁺][Cl⁻]²</td>
+          <td>1.17 × 10⁻⁵</td>
+        </tr>
+        <tr>
+          <td>Mg(OH)₂</td>
+          <td>Mg(OH)₂(s) &#8652; Mg²⁺ + 2OH⁻</td>
+          <td>[Mg²⁺][OH⁻]²</td>
+          <td>5.61 × 10⁻¹²</td>
+        </tr>
+        <tr>
+          <td>CaF₂</td>
+          <td>CaF₂(s) &#8652; Ca²⁺ + 2F⁻</td>
+          <td>[Ca²⁺][F⁻]²</td>
+          <td>3.45 × 10⁻¹¹</td>
+        </tr>
+        <tr>
+          <td>Ca₃(PO₄)₂</td>
+          <td>Ca₃(PO₄)₂(s) &#8652; 3Ca²⁺ + 2PO₄³⁻</td>
+          <td>[Ca²⁺]³[PO₄³⁻]²</td>
+          <td>2.07 × 10⁻³³</td>
+        </tr>
+      </table>
+
+      <h3>ICE Table for Simple 1:1 Salt (AgCl)</h3>
+      <p>If we define molar solubility as <em>s</em> = mol of AgCl that dissolves per liter:</p>
+
+      <table class="ice-table">
+        <tr>
+          <th></th>
+          <th>AgCl(s)</th>
+          <th>Ag⁺(aq)</th>
+          <th>Cl⁻(aq)</th>
+        </tr>
+        <tr>
+          <td>I</td>
+          <td>solid</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>C</td>
+          <td>dissolves</td>
+          <td>+s</td>
+          <td>+s</td>
+        </tr>
+        <tr>
+          <td>E</td>
+          <td>solid</td>
+          <td>s</td>
+          <td>s</td>
+        </tr>
+      </table>
+
+      <div class="formula-box green">
+        <div class="label">Result for AgCl</div>
+        <div class="eq">Ksp = s &times; s = s² &nbsp;&#8594;&nbsp; s = &radic;Ksp</div>
+        <div class="sub">s = &radic;(1.8 &times; 10&#8315;&#185;&#8304;) = 1.34 &times; 10&#8315;&#8309; mol/L</div>
+      </div>
+
+      <div class="key-point">A smaller Ksp means lower molar solubility. For simple 1:1 salts, s = √Ksp. Stoichiometric coefficients change this relationship — covered in Section 2.</div>
+
+      <div class="navy-context">Calcium carbonate (CaCO₃, Ksp = 3.3×10⁻⁹) and calcium sulfate (CaSO₄, Ksp = 4.93×10⁻⁵) are the primary scale-forming compounds in Navy ship freshwater and cooling systems. When seawater is heated in evaporators, these equilibria shift toward precipitation, forming hard scale deposits on heat exchanger surfaces that degrade thermal efficiency.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: MOLAR SOLUBILITY -->
+  <div class="section-card" data-section="2">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">2</div>
+      <div class="section-title">Calculating Molar Solubility</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <h3>Stoichiometric Coefficients Matter</h3>
+      <p>When a salt dissolves with a ratio other than 1:1, the ion concentrations are multiples of <em>s</em>. This changes the Ksp expression dramatically.</p>
+
+      <h4>Example: Ag₂CrO₄ (2:1 stoichiometry)</h4>
+
+      <table class="ice-table">
+        <tr>
+          <th></th>
+          <th>Ag₂CrO₄(s)</th>
+          <th>2Ag⁺(aq)</th>
+          <th>CrO₄²⁻(aq)</th>
+        </tr>
+        <tr>
+          <td>I</td>
+          <td>solid</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>C</td>
+          <td>dissolves</td>
+          <td>+2s</td>
+          <td>+s</td>
+        </tr>
+        <tr>
+          <td>E</td>
+          <td>solid</td>
+          <td>2s</td>
+          <td>s</td>
+        </tr>
+      </table>
+
+      <div class="formula-box indigo">
+        <div class="label">Ag₂CrO₄ Ksp Calculation</div>
+        <div class="eq">Ksp = [Ag⁺]²[CrO₄²⁻] = (2s)² &times; (s) = 4s³</div>
+        <div class="sub">s = (Ksp / 4)^(1/3) = (1.12 &times; 10&#8315;&#185;² / 4)^(1/3) = 6.54 &times; 10&#8315;&#8309; mol/L</div>
+      </div>
+
+      <h4>Example: PbCl₂ (1:2 stoichiometry)</h4>
+
+      <table class="ice-table">
+        <tr>
+          <th></th>
+          <th>PbCl₂(s)</th>
+          <th>Pb²⁺(aq)</th>
+          <th>2Cl⁻(aq)</th>
+        </tr>
+        <tr>
+          <td>I</td>
+          <td>solid</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>C</td>
+          <td>dissolves</td>
+          <td>+s</td>
+          <td>+2s</td>
+        </tr>
+        <tr>
+          <td>E</td>
+          <td>solid</td>
+          <td>s</td>
+          <td>2s</td>
+        </tr>
+      </table>
+
+      <div class="formula-box green">
+        <div class="label">PbCl₂ Ksp Calculation</div>
+        <div class="eq">Ksp = [Pb²⁺][Cl⁻]² = (s)(2s)² = 4s³</div>
+        <div class="sub">s = (Ksp / 4)^(1/3) = (1.17 &times; 10&#8315;&#8309; / 4)^(1/3) = 0.0143 mol/L</div>
+      </div>
+
+      <div class="key-point">Despite very different Ksp values, both Ag₂CrO₄ and PbCl₂ yield the same algebraic form: Ksp = 4s³. The form of the equation depends on stoichiometry, not the identity of the compound.</div>
+
+      <h3>General Formula Reference</h3>
+      <table class="cmp-table">
+        <tr><th>Salt Type</th><th>Example</th><th>Ksp = f(s)</th><th>s = g(Ksp)</th></tr>
+        <tr><td>AB</td><td>AgCl</td><td>s²</td><td>√Ksp</td></tr>
+        <tr><td>AB₂ or A₂B</td><td>PbCl₂, Ag₂CrO₄</td><td>4s³</td><td>(Ksp/4)^(1/3)</td></tr>
+        <tr><td>AB₃ or A₃B</td><td>AlF₃, Ag₃PO₄</td><td>27s⁴</td><td>(Ksp/27)^(1/4)</td></tr>
+        <tr><td>A₂B₃ or A₃B₂</td><td>Ca₃(PO₄)₂</td><td>108s⁵</td><td>(Ksp/108)^(1/5)</td></tr>
+      </table>
+
+      <hr class="divider">
+      <h3>Interactive Ksp Calculator</h3>
+
+      <div class="interactive-area">
+        <h4>Molar Solubility from Ksp</h4>
+        <p style="color:var(--text-muted); font-size:12px; margin-bottom:14px;">Adjust the salt type and Ksp exponent to compute molar solubility.</p>
+
+        <div class="slider-row">
+          <label>Salt type:</label>
+          <select id="saltType" onchange="calcSolubility()" style="background:var(--bg-card);border:1px solid var(--border);color:var(--text);font-family:JetBrains Mono,monospace;font-size:12px;padding:6px 10px;border-radius:6px;cursor:pointer;">
+            <option value="AB">AB (e.g. AgCl)</option>
+            <option value="AB2">AB₂ or A₂B (e.g. PbCl₂)</option>
+            <option value="AB3">AB₃ or A₃B (e.g. AlF₃)</option>
+            <option value="A2B3">A₂B₃ or A₃B₂ (e.g. Ca₃(PO₄)₂)</option>
+          </select>
+        </div>
+
+        <div class="slider-row">
+          <label>Ksp exponent (10^x): x =</label>
+          <input type="range" id="kspExp" min="-18" max="-1" step="0.5" value="-10" oninput="calcSolubility()">
+          <div class="readout" id="kspExpReadout">x = -10.0</div>
+        </div>
+
+        <div class="calc-output" id="calcOutput">Computing...</div>
+      </div>
+
+      <div class="navy-context">Mg(OH)₂ (Ksp = 5.61×10⁻¹²) precipitates from seawater in reverse osmosis concentrates. Computing its molar solubility (s = (Ksp/4)^(1/3) = 1.12×10⁻⁴ mol/L) tells engineers the maximum Mg²⁺ concentration before scaling begins.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: COMMON ION EFFECT -->
+  <div class="section-card" data-section="3">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">3</div>
+      <div class="section-title">Common Ion Effect</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <h3>Le Chatelier in Action</h3>
+      <p>From Lesson 14: adding a product to an equilibrium shifts it toward reactants. In solubility, adding an ion that is already a product of dissolution <strong>suppresses</strong> how much of the salt dissolves. This is the <strong>common ion effect</strong>.</p>
+
+      <div class="formula-box indigo">
+        <div class="label">Setup: dissolving AgCl in NaCl solution</div>
+        <div class="eq">AgCl(s) &#8652; Ag⁺(aq) + Cl⁻(aq)</div>
+        <div class="sub">NaCl fully dissociates: provides initial [Cl⁻] = C mol/L before AgCl dissolves</div>
+      </div>
+
+      <h4>ICE Table with Common Ion (C = initial [Cl⁻])</h4>
+
+      <table class="ice-table">
+        <tr>
+          <th></th>
+          <th>AgCl(s)</th>
+          <th>Ag⁺</th>
+          <th>Cl⁻</th>
+        </tr>
+        <tr>
+          <td>I</td>
+          <td>solid</td>
+          <td>0</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td>C</td>
+          <td>dissolves</td>
+          <td>+s'</td>
+          <td>+s'</td>
+        </tr>
+        <tr>
+          <td>E</td>
+          <td>solid</td>
+          <td>s'</td>
+          <td>C + s'</td>
+        </tr>
+      </table>
+
+      <div class="formula-box green">
+        <div class="label">Common Ion Ksp Equation</div>
+        <div class="eq">Ksp = s'(C + s') &#8776; s' &times; C &nbsp; (when s' &#8810; C)</div>
+        <div class="sub">s' = Ksp / C &nbsp;&#8594;&nbsp; solubility is drastically reduced</div>
+      </div>
+
+      <h4>Worked Example: AgCl in 0.10 M NaCl</h4>
+      <div class="step-block">
+        <div class="step"><div class="step-num">1</div><div class="step-content">Pure water: s = √(1.8×10⁻¹⁰) = <strong>1.34×10⁻⁵ mol/L</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">In 0.10 M NaCl: s' = Ksp / C = 1.8×10⁻¹⁰ / 0.10 = <strong>1.8×10⁻⁹ mol/L</strong></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">Ratio: s/s' = 1.34×10⁻⁵ / 1.8×10⁻⁹ &#8776; <strong>7,400× less soluble</strong> in NaCl solution</div></div>
+      </div>
+
+      <div class="key-point">The common ion effect is an application of Le Chatelier's principle. Adding Cl⁻ shifts the equilibrium left, meaning less AgCl dissolves. Solubility decreases as common ion concentration increases.</div>
+
+      <hr class="divider">
+      <h3>Interactive: Common Ion Effect on AgCl</h3>
+
+      <div class="interactive-area">
+        <h4>AgCl Solubility vs. [Cl⁻] Added</h4>
+        <div class="slider-row">
+          <label>[NaCl] added (M):</label>
+          <input type="range" id="cionSlider" min="0.001" max="1.0" step="0.001" value="0.001" oninput="calcCommonIon()">
+          <div class="readout" id="cionReadout">0.001 M</div>
+        </div>
+        <div class="calc-output" id="cionOutput">Computing...</div>
+      </div>
+
+      <div class="navy-context">Chloride ions in seawater (≈0.55 M Cl⁻) dramatically reduce the solubility of silver compounds. This is why silver-based antifouling coatings on Navy hulls behave differently in seawater vs. freshwater environments.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: SELECTIVE PRECIPITATION -->
+  <div class="section-card" data-section="4">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">4</div>
+      <div class="section-title">Selective Precipitation</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <h3>Separating Ions Using Ksp Differences</h3>
+      <p>If two cations are both present in solution, and their salts with a given anion have very different Ksp values, we can precipitate one while leaving the other in solution. This is <strong>selective precipitation</strong>.</p>
+
+      <div class="key-point">A precipitate forms when Q > Ksp. By controlling the concentration of precipitating anion, we can selectively exceed Ksp for one ion but not another.</div>
+
+      <h3>Example: Separating Ag⁺ and Pb²⁺ Using Cl⁻</h3>
+      <p>Solution contains 0.10 M Ag⁺ and 0.10 M Pb²⁺. We slowly add NaCl. Which precipitates first?</p>
+
+      <table class="cmp-table">
+        <tr><th>Salt</th><th>Ksp</th><th>[Cl⁻] to begin precipitation</th></tr>
+        <tr>
+          <td>AgCl</td>
+          <td>1.8 × 10⁻¹⁰</td>
+          <td>[Cl⁻] = Ksp / [Ag⁺] = 1.8×10⁻¹⁰ / 0.10 = <strong>1.8×10⁻⁹ M</strong></td>
+        </tr>
+        <tr>
+          <td>PbCl₂</td>
+          <td>1.17 × 10⁻⁵</td>
+          <td>[Cl⁻] = √(Ksp / [Pb²⁺]) = √(1.17×10⁻⁵ / 0.10) = <strong>0.0108 M</strong></td>
+        </tr>
+      </table>
+
+      <div class="step-block">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><strong>AgCl precipitates first</strong> — it needs only 1.8×10⁻⁹ M Cl⁻, vastly less than PbCl₂.</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">Keep adding Cl⁻ slowly until [Cl⁻] approaches 0.0108 M but doesn't exceed it much — Ag⁺ is removed while Pb²⁺ stays in solution.</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">Check: when [Cl⁻] = 0.0108 M, how much Ag⁺ remains?<br>
+          [Ag⁺] = Ksp(AgCl) / [Cl⁻] = 1.8×10⁻¹⁰ / 0.0108 = <strong>1.67×10⁻⁸ M</strong></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content">Ag⁺ is &gt;99.99% removed before PbCl₂ starts to precipitate. <strong>Separation is complete.</strong></div></div>
+      </div>
+
+      <div class="formula-box amber">
+        <div class="label">Decision Rule</div>
+        <div class="eq">If Q &gt; Ksp &#8594; precipitate forms &nbsp;|&nbsp; If Q &lt; Ksp &#8594; remains in solution</div>
+        <div class="sub">Q = ion product (same form as Ksp, but using current concentrations, not equilibrium)</div>
+      </div>
+
+      <h4>Fraction Remaining When Separation is Complete</h4>
+      <div class="formula-box green">
+        <div class="label">Ag⁺ remaining when PbCl₂ just begins to precipitate</div>
+        <div class="eq">%Ag⁺ remaining = ([Ag⁺]final / [Ag⁺]initial) × 100</div>
+        <div class="sub">= (1.67×10⁻⁸ / 0.10) × 100 = 1.67×10⁻⁵ % &nbsp;— essentially complete removal</div>
+      </div>
+
+      <div class="navy-context">Ion exchange resins and precipitation processes in Navy shipboard water treatment exploit selective precipitation. In RO system brine management, selective precipitation of scale-forming Ca²⁺ and Mg²⁺ before brine discharge is controlled by pH and carbonate ion concentration — all governed by Ksp relationships.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: pH EFFECTS -->
+  <div class="section-card" data-section="5">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">5</div>
+      <div class="section-title">Effect of pH on Solubility</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <h3>Acid-Base Chemistry Coupled to Solubility</h3>
+      <p>When the anion of a sparingly soluble salt is the conjugate base of a weak acid, lowering the pH (adding H⁺) consumes that anion. By Le Chatelier's principle, the equilibrium shifts right — more salt dissolves.</p>
+
+      <div class="formula-box indigo">
+        <div class="label">Coupled Equilibria — Mg(OH)₂</div>
+        <div class="eq">Mg(OH)₂(s) &#8652; Mg²⁺(aq) + 2OH⁻(aq) &nbsp;[Ksp]</div>
+        <div class="sub">OH⁻(aq) + H⁺(aq) &#8594; H₂O(l) &nbsp;&nbsp;[K = 1/Kw = 10¹⁴]<br>
+        Net: Mg(OH)₂ dissolves more as pH decreases</div>
+      </div>
+
+      <h4>pH Dependence of Mg(OH)₂ Solubility</h4>
+      <p>At equilibrium: Ksp = [Mg²⁺][OH⁻]² and [OH⁻] = Kw / [H⁺]</p>
+
+      <div class="formula-box green">
+        <div class="label">Molar Solubility of Mg(OH)₂ as Function of [OH⁻]</div>
+        <div class="eq">s = Ksp / [OH⁻]²</div>
+        <div class="sub">At pH 10: [OH⁻]=10⁻⁴ M, s = 5.61×10⁻¹² / (10⁻⁴)² = 5.61×10⁻⁴ mol/L<br>
+        At pH 12: [OH⁻]=10⁻² M, s = 5.61×10⁻¹² / (10⁻²)² = 5.61×10⁻⁸ mol/L<br>
+        &#8594; 10,000× less soluble at pH 12 than pH 10</div>
+      </div>
+
+      <h4>CaF₂ — Fluoride Ion is Conjugate Base of HF</h4>
+      <div class="formula-box amber">
+        <div class="label">pH Effect on CaF₂</div>
+        <div class="eq">CaF₂(s) &#8652; Ca²⁺(aq) + 2F⁻(aq)</div>
+        <div class="sub">In acid: F⁻ + H⁺ &#8594; HF &nbsp;(Ka(HF) = 6.8×10⁻⁴, so HF is a weak acid)<br>
+        Consuming F⁻ pulls dissolution right — CaF₂ becomes more soluble as pH decreases</div>
+      </div>
+
+      <div class="step-block">
+        <div class="step"><div class="step-num">1</div><div class="step-content">Salts with OH⁻ anion (hydroxides): <strong>more soluble in acid</strong> (lower pH).</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">Salts with conjugate base anions (F⁻, CO₃²⁻, PO₄³⁻, S²⁻): <strong>more soluble in acid</strong>.</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">Salts with anions from strong acids (Cl⁻, NO₃⁻, SO₄²⁻): <strong>pH has no significant effect</strong>.</div></div>
+      </div>
+
+      <div class="key-point">Rule: If the anion of a sparingly soluble salt is the conjugate base of a weak acid, that salt's solubility increases as pH decreases. Strong acid anions are unaffected by pH.</div>
+
+      <hr class="divider">
+      <h3>Interactive: pH Effect on Mg(OH)₂ Solubility</h3>
+
+      <div class="interactive-area">
+        <h4>Mg(OH)₂ Molar Solubility vs. pH</h4>
+        <div class="slider-row">
+          <label>Solution pH:</label>
+          <input type="range" id="phSlider" min="8" max="14" step="0.1" value="10" oninput="calcPhEffect()">
+          <div class="readout" id="phReadout">pH 10.0</div>
+        </div>
+        <div class="calc-output" id="phOutput">Computing...</div>
+      </div>
+
+      <div class="navy-context">Navy corrosion engineers use pH control extensively. Keeping boiler feedwater at pH 10–11 precipitates Mg(OH)₂ and Ca(OH)₂ during pretreatment, removing hardness ions before they deposit scale on heat transfer surfaces. The pH must be balanced — too high wastes chemicals, too low allows corrosion.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: COMPLEX ION FORMATION -->
+  <div class="section-card" data-section="6">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">6</div>
+      <div class="section-title">Complex Ion Formation</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <h3>Lewis Acid-Base Chemistry Enhances Solubility</h3>
+      <p>Metal cations are Lewis acids — they accept electron pairs from Lewis base ligands (NH₃, CN⁻, OH⁻, Cl⁻, etc.) to form <strong>complex ions</strong>. When a complex ion forms, it removes free metal cation from solution, pulling the dissolution equilibrium further to the right and dramatically increasing solubility.</p>
+
+      <div class="formula-box indigo">
+        <div class="label">Example: Ag⁺ + NH₃ Complex Formation</div>
+        <div class="eq">Ag⁺(aq) + 2NH₃(aq) &#8652; [Ag(NH₃)₂]⁺(aq)</div>
+        <div class="sub">Kf = [[Ag(NH₃)₂]⁺] / ([Ag⁺][NH₃]²) = 1.7 × 10⁷ &nbsp;(very large &#8594; reaction strongly favored)</div>
+      </div>
+
+      <h4>Net Effect on AgCl Solubility in NH₃ Solution</h4>
+      <p>Two coupled equilibria combine:</p>
+
+      <div class="formula-box green">
+        <div class="label">Combined Equilibrium</div>
+        <div class="eq">AgCl(s) + 2NH₃(aq) &#8652; [Ag(NH₃)₂]⁺(aq) + Cl⁻(aq)</div>
+        <div class="sub">K_net = Ksp × Kf = (1.8×10⁻¹⁰)(1.7×10⁷) = 3.1×10⁻³<br>
+        [Ag(NH₃)₂⁺][Cl⁻] / [NH₃]² = 3.1×10⁻³</div>
+      </div>
+
+      <h4>What Kf Tells Us</h4>
+      <table class="cmp-table">
+        <tr><th>Complex Ion</th><th>Kf</th><th>Stability</th></tr>
+        <tr><td>[Ag(NH₃)₂]⁺</td><td>1.7 × 10⁷</td><td>Very stable</td></tr>
+        <tr><td>[Ag(S₂O₃)₂]³⁻</td><td>2.9 × 10¹³</td><td>Extremely stable</td></tr>
+        <tr><td>[Cu(NH₃)₄]²⁺</td><td>1.1 × 10¹³</td><td>Extremely stable</td></tr>
+        <tr><td>[Fe(CN)₆]⁴⁻</td><td>1.0 × 10³⁵</td><td>Extraordinarily stable</td></tr>
+      </table>
+
+      <div class="step-block">
+        <div class="step"><div class="step-num">1</div><div class="step-content">Write dissolution: AgCl(s) &#8652; Ag⁺ + Cl⁻ &nbsp;(Ksp = 1.8×10⁻¹⁰)</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">Write complexation: Ag⁺ + 2NH₃ &#8652; [Ag(NH₃)₂]⁺ &nbsp;(Kf = 1.7×10⁷)</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">Add equations: K_net = Ksp × Kf = 3.1×10⁻³</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content">Large K_net means AgCl is significantly more soluble in NH₃ than in pure water.</div></div>
+      </div>
+
+      <div class="formula-box amber">
+        <div class="label">Quantitative Estimate in 1.0 M NH₃</div>
+        <div class="eq">K_net = s² / [NH₃]² = 3.1×10⁻³</div>
+        <div class="sub">s = [NH₃] × √(3.1×10⁻³) = 1.0 × 0.0557 = 0.056 mol/L<br>
+        Compare: pure water solubility = 1.34×10⁻⁵ mol/L<br>
+        &#8594; NH₃ increases AgCl solubility by ~4,200×</div>
+      </div>
+
+      <div class="key-point">Complex ion formation couples with dissolution to give K_net = Ksp × Kf. The larger Kf is, the more dramatically solubility increases. This is called dissolution via complexation.</div>
+
+      <div class="navy-context">Thiosulfate (S₂O₃²⁻) forms extremely stable complexes with Ag⁺ (Kf = 2.9×10¹³) — this is how photographic fixing works and why silver-contaminated waste streams in Navy photo labs require specific treatment protocols. Cyanide (CN⁻) similarly dissolves gold deposits (Kf for [Au(CN)₂]⁻ = 2×10³⁸), relevant to certain anti-corrosion and electronics processes aboard ship.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: PRACTICE PROBLEMS -->
+  <div class="section-card" data-section="7">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">7</div>
+      <div class="section-title">Practice Problems</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <h3>Apply What You've Learned</h3>
+      <p style="font-size:12px;">Enter your answer and click Check. Answers are accepted within the indicated tolerance.</p>
+
+      <!-- P1 -->
+      <div class="problem" id="prob1">
+        <div class="problem-text">
+          <strong>Problem 1.</strong> Calculate the molar solubility of BaSO₄ in pure water.<br>
+          Ksp(BaSO₄) = 1.08 × 10⁻¹⁰. Give your answer in mol/L using scientific notation as a decimal (e.g. 1.04e-5 = 0.0000104).<br>
+          <span style="color:var(--text-muted); font-size:12px;">Hint: BaSO₄ &#8652; Ba²⁺ + SO₄²⁻, so Ksp = s². Answer in units of mol/L.</span>
+        </div>
+        <div class="input-row">
+          <input type="number" id="p1-inp" placeholder="e.g. 0.0000104" step="any">
+          <button class="check-btn" onclick="checkNum('p1-inp', 1.039e-5, 5e-7)">Check</button>
+        </div>
+        <div class="feedback" id="p1-inp-fb"></div>
+      </div>
+
+      <!-- P2 -->
+      <div class="problem" id="prob2">
+        <div class="problem-text">
+          <strong>Problem 2.</strong> Calculate the molar solubility of Ca₃(PO₄)₂ in pure water.<br>
+          Ksp = 2.07 × 10⁻³³. Salt type is A₃B₂, so Ksp = 108s⁵.<br>
+          <span style="color:var(--text-muted); font-size:12px;">s = (Ksp/108)^(1/5). Give answer in mol/L.</span>
+        </div>
+        <div class="input-row">
+          <input type="number" id="p2-inp" placeholder="e.g. 1.6e-7" step="any">
+          <button class="check-btn" onclick="checkNum('p2-inp', 1.616e-7, 1e-8)">Check</button>
+        </div>
+        <div class="feedback" id="p2-inp-fb"></div>
+      </div>
+
+      <!-- P3 -->
+      <div class="problem" id="prob3">
+        <div class="problem-text">
+          <strong>Problem 3.</strong> What is the molar solubility of AgCl in a solution that is 0.050 M in CaCl₂?<br>
+          Ksp(AgCl) = 1.8 × 10⁻¹⁰. CaCl₂ fully dissociates: each formula unit gives 2 Cl⁻.<br>
+          <span style="color:var(--text-muted); font-size:12px;">Initial [Cl⁻] = 2 × 0.050 = 0.10 M. Use s' = Ksp / [Cl⁻].</span>
+        </div>
+        <div class="input-row">
+          <input type="number" id="p3-inp" placeholder="e.g. 1.8e-9" step="any">
+          <button class="check-btn" onclick="checkNum('p3-inp', 1.8e-9, 1e-10)">Check</button>
+        </div>
+        <div class="feedback" id="p3-inp-fb"></div>
+      </div>
+
+      <!-- P4 -->
+      <div class="problem" id="prob4">
+        <div class="problem-text">
+          <strong>Problem 4.</strong> A solution contains 0.010 M Ba²⁺ and 0.010 M Ca²⁺.<br>
+          Ksp(BaSO₄) = 1.08×10⁻¹⁰, Ksp(CaSO₄) = 4.93×10⁻⁵.<br>
+          What [SO₄²⁻] is required to just begin precipitating BaSO₄?<br>
+          <span style="color:var(--text-muted); font-size:12px;">[SO₄²⁻] = Ksp(BaSO₄) / [Ba²⁺] = ?</span>
+        </div>
+        <div class="input-row">
+          <input type="number" id="p4-inp" placeholder="e.g. 1.08e-8" step="any">
+          <button class="check-btn" onclick="checkNum('p4-inp', 1.08e-8, 5e-10)">Check</button>
+        </div>
+        <div class="feedback" id="p4-inp-fb"></div>
+      </div>
+
+      <!-- P5 -->
+      <div class="problem" id="prob5">
+        <div class="problem-text">
+          <strong>Problem 5.</strong> Calculate the molar solubility of Mg(OH)₂ at pH = 9.00 (basic solution).<br>
+          Ksp(Mg(OH)₂) = 5.61 × 10⁻¹². At pH 9, [OH⁻] = 10⁻⁵ M.<br>
+          <span style="color:var(--text-muted); font-size:12px;">s = Ksp / [OH⁻]²</span>
+        </div>
+        <div class="input-row">
+          <input type="number" id="p5-inp" placeholder="e.g. 0.0561" step="any">
+          <button class="check-btn" onclick="checkNum('p5-inp', 0.0561, 0.002)">Check</button>
+        </div>
+        <div class="feedback" id="p5-inp-fb"></div>
+      </div>
+
+      <!-- P6 -->
+      <div class="problem" id="prob6">
+        <div class="problem-text">
+          <strong>Problem 6.</strong> AgBr dissolves in excess NH₃ solution.<br>
+          Ksp(AgBr) = 5.4 × 10⁻¹³, Kf([Ag(NH₃)₂]⁺) = 1.7 × 10⁷.<br>
+          Calculate K_net for the reaction: AgBr(s) + 2NH₃(aq) &#8652; [Ag(NH₃)₂]⁺(aq) + Br⁻(aq).<br>
+          <span style="color:var(--text-muted); font-size:12px;">K_net = Ksp × Kf</span>
+        </div>
+        <div class="input-row">
+          <input type="number" id="p6-inp" placeholder="e.g. 9.18e-6" step="any">
+          <button class="check-btn" onclick="checkNum('p6-inp', 9.18e-6, 5e-7)">Check</button>
+        </div>
+        <div class="feedback" id="p6-inp-fb"></div>
+      </div>
+
+      <!-- MC Problem -->
+      <div class="problem" id="probmc">
+        <div class="problem-text">
+          <strong>Concept Check.</strong> A researcher adds NaF to a solution containing Pb²⁺ ions. Given Ksp(PbF₂) = 3.3×10⁻⁸, which expression correctly gives the [F⁻] required to just begin precipitating PbF₂ from 0.050 M Pb²⁺ solution?
+        </div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'probmc','wrong')">A) [F⁻] = Ksp / [Pb²⁺] = 6.6×10⁻⁷ M</button>
+          <button class="mc-btn" onclick="checkMC(this,'probmc','correct')">B) [F⁻] = √(Ksp / [Pb²⁺]) = √(3.3×10⁻⁸ / 0.050) = 8.1×10⁻⁴ M</button>
+          <button class="mc-btn" onclick="checkMC(this,'probmc','wrong')">C) [F⁻] = Ksp / [Pb²⁺]² = 1.3×10⁻⁵ M</button>
+          <button class="mc-btn" onclick="checkMC(this,'probmc','wrong')">D) [F⁻] = (Ksp)^(1/3) = 3.2×10⁻³ M</button>
+        </div>
+        <div class="feedback" id="probmc-fb"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 8: QUIZ -->
+  <div class="section-card" data-section="8">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">8</div>
+      <div class="section-title">Quiz — 10 Questions</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <h3>Solubility Equilibria Assessment</h3>
+      <p style="font-size:12px;">Select the best answer for each question. Correct answers are highlighted after your selection.</p>
+
+      <!-- Q1 -->
+      <div class="quiz-q" id="qq1">
+        <div class="quiz-q-text"><strong>1.</strong> Which expression is correct for the Ksp of Ca₃(PO₄)₂?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(1, this, false)">(A) [Ca²⁺][PO₄³⁻]</button>
+          <button class="choice-btn" onclick="quizAnswer(1, this, false)">(B) [Ca²⁺]²[PO₄³⁻]³</button>
+          <button class="choice-btn" onclick="quizAnswer(1, this, true)">(C) [Ca²⁺]³[PO₄³⁻]²</button>
+          <button class="choice-btn" onclick="quizAnswer(1, this, false)">(D) [Ca²⁺][PO₄³⁻]²</button>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-q" id="qq2">
+        <div class="quiz-q-text"><strong>2.</strong> For a salt that dissolves as AB₂(s) &#8652; A²⁺ + 2B⁻, what is the relationship between molar solubility s and Ksp?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(2, this, false)">(A) Ksp = s²</button>
+          <button class="choice-btn" onclick="quizAnswer(2, this, true)">(B) Ksp = 4s³</button>
+          <button class="choice-btn" onclick="quizAnswer(2, this, false)">(C) Ksp = 2s²</button>
+          <button class="choice-btn" onclick="quizAnswer(2, this, false)">(D) Ksp = s³</button>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-q" id="qq3">
+        <div class="quiz-q-text"><strong>3.</strong> AgCl (Ksp = 1.8×10⁻¹⁰) is placed in 0.20 M NaCl. What happens to the molar solubility compared to pure water?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(3, this, false)">(A) Solubility increases — more Cl⁻ pulls equilibrium right</button>
+          <button class="choice-btn" onclick="quizAnswer(3, this, false)">(B) Solubility is unchanged — Ksp is a constant</button>
+          <button class="choice-btn" onclick="quizAnswer(3, this, true)">(C) Solubility decreases — Le Chatelier shifts equilibrium left</button>
+          <button class="choice-btn" onclick="quizAnswer(3, this, false)">(D) Solubility decreases only if NaCl concentration exceeds 1 M</button>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-q" id="qq4">
+        <div class="quiz-q-text"><strong>4.</strong> In a selective precipitation experiment, you have a mixture of Ba²⁺ and Sr²⁺. Adding SO₄²⁻ precipitates BaSO₄ (Ksp = 1.08×10⁻¹⁰) before SrSO₄ (Ksp = 3.44×10⁻⁷). Why?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(4, this, true)">(A) BaSO₄ has a smaller Ksp, so Q exceeds its Ksp at lower [SO₄²⁻]</button>
+          <button class="choice-btn" onclick="quizAnswer(4, this, false)">(B) BaSO₄ has a larger molar mass, so it precipitates by gravity first</button>
+          <button class="choice-btn" onclick="quizAnswer(4, this, false)">(C) Sr²⁺ forms a complex with SO₄²⁻ that prevents precipitation</button>
+          <button class="choice-btn" onclick="quizAnswer(4, this, false)">(D) SrSO₄ is more thermodynamically stable</button>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="quiz-q" id="qq5">
+        <div class="quiz-q-text"><strong>5.</strong> The solubility of which compound is most affected by decreasing pH?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(5, this, false)">(A) AgCl — because Cl⁻ is a product of dissolution</button>
+          <button class="choice-btn" onclick="quizAnswer(5, this, false)">(B) NaNO₃ — because it is very soluble</button>
+          <button class="choice-btn" onclick="quizAnswer(5, this, true)">(C) CaCO₃ — because CO₃²⁻ is the conjugate base of a weak acid</button>
+          <button class="choice-btn" onclick="quizAnswer(5, this, false)">(D) BaSO₄ — because sulfate is a large anion</button>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="quiz-q" id="qq6">
+        <div class="quiz-q-text"><strong>6.</strong> Kf for [Ag(NH₃)₂]⁺ is 1.7×10⁷. What does this large value imply?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(6, this, false)">(A) The complex ion is unstable and rapidly dissociates</button>
+          <button class="choice-btn" onclick="quizAnswer(6, this, true)">(B) The complex ion is very stable; equilibrium strongly favors its formation</button>
+          <button class="choice-btn" onclick="quizAnswer(6, this, false)">(C) NH₃ is a stronger acid than water</button>
+          <button class="choice-btn" onclick="quizAnswer(6, this, false)">(D) AgCl becomes less soluble in ammonia solution</button>
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="quiz-q" id="qq7">
+        <div class="quiz-q-text"><strong>7.</strong> The molar solubility of Ag₂CrO₄ (Ksp = 1.12×10⁻¹²) is most accurately calculated as:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(7, this, false)">(A) s = √(1.12×10⁻¹²) = 1.06×10⁻⁶ mol/L</button>
+          <button class="choice-btn" onclick="quizAnswer(7, this, false)">(B) s = (1.12×10⁻¹²/2)^(1/2) = 7.48×10⁻⁷ mol/L</button>
+          <button class="choice-btn" onclick="quizAnswer(7, this, true)">(C) s = (1.12×10⁻¹²/4)^(1/3) = 6.54×10⁻⁵ mol/L</button>
+          <button class="choice-btn" onclick="quizAnswer(7, this, false)">(D) s = 1.12×10⁻¹² mol/L</button>
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="quiz-q" id="qq8">
+        <div class="quiz-q-text"><strong>8.</strong> You mix equal volumes of 2.0×10⁻⁴ M AgNO₃ and 2.0×10⁻⁴ M NaCl. Will AgCl precipitate? (Ksp AgCl = 1.8×10⁻¹⁰)</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(8, this, true)">(A) Yes — Q = (1.0×10⁻⁴)² = 1.0×10⁻⁸ > Ksp</button>
+          <button class="choice-btn" onclick="quizAnswer(8, this, false)">(B) No — Q = (2.0×10⁻⁴)² = 4.0×10⁻⁸ < 1 so no precipitate</button>
+          <button class="choice-btn" onclick="quizAnswer(8, this, false)">(C) No — concentrations are too low for any reaction</button>
+          <button class="choice-btn" onclick="quizAnswer(8, this, false)">(D) Yes — because Ksp is always exceeded in mixed solutions</button>
+        </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="quiz-q" id="qq9">
+        <div class="quiz-q-text"><strong>9.</strong> Which best describes the effect of adding NH₃ to a suspension of AgCl(s)?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(9, this, false)">(A) AgCl dissolves less because NH₃ raises pH and OH⁻ competes with Cl⁻</button>
+          <button class="choice-btn" onclick="quizAnswer(9, this, true)">(B) AgCl dissolves more because Ag⁺ is removed from solution by complex formation, shifting dissolution equilibrium right</button>
+          <button class="choice-btn" onclick="quizAnswer(9, this, false)">(C) NH₃ has no effect because Ksp is temperature-dependent only</button>
+          <button class="choice-btn" onclick="quizAnswer(9, this, false)">(D) AgCl dissolves more because NH₃ reacts with Cl⁻ to form NH₄Cl</button>
+        </div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="quiz-q" id="qq10">
+        <div class="quiz-q-text"><strong>10.</strong> A Navy engineer needs to minimize CaSO₄ scale in a piping system. Which approach is NOT consistent with solubility equilibrium principles?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(10, this, false)">(A) Adding a sequestering agent (chelator) that binds Ca²⁺, forming a stable complex ion</button>
+          <button class="choice-btn" onclick="quizAnswer(10, this, false)">(B) Diluting the feed water to keep Q &lt; Ksp for CaSO₄</button>
+          <button class="choice-btn" onclick="quizAnswer(10, this, true)">(C) Raising the pH to above 12 to precipitate SO₄²⁻ as a hydroxide salt</button>
+          <button class="choice-btn" onclick="quizAnswer(10, this, false)">(D) Pre-removing Ca²⁺ via ion exchange before entering the system</button>
+        </div>
+      </div>
+
+      <div class="quiz-score-bar">
+        <div class="score-label">Score:</div>
+        <div class="score-val"><span id="quizScore">0</span> / 10</div>
+        <button class="reset-btn" style="margin-left:auto;" onclick="resetQuiz()">Reset Quiz</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── PROGRESS TRACKING ──────────────────────────────────────────────
+  var completedSections = new Set();
+
+  function updateProgress() {
+    var cards = document.querySelectorAll('.section-card');
+    var total = cards.length;
+    var pct = (completedSections.size / total) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+  }
+
+  function markComplete(n) {
+    if (completedSections.has(n)) return;
+    completedSections.add(n);
+    var card = document.querySelector('.section-card[data-section="' + n + '"]');
+    if (card) card.classList.add('completed');
+    updateProgress();
+  }
+
+  function toggleSection(header) {
+    var card = header.parentElement;
+    card.classList.toggle('open');
+    if (card.classList.contains('open')) {
+      markComplete(+card.getAttribute('data-section'));
+    }
+    updateProgress();
+  }
+
+  // ── ANSWER CHECKING ────────────────────────────────────────────────
+  function checkNum(id, answer, tol) {
+    var inp = document.getElementById(id);
+    var fb = document.getElementById(id + '-fb');
+    var val = parseFloat(inp.value);
+    if (isNaN(val)) {
+      fb.className = 'feedback incorrect';
+      fb.textContent = 'Enter a number.';
+      inp.parentElement.parentElement.classList.add('shake');
+      setTimeout(function() { inp.parentElement.parentElement.classList.remove('shake'); }, 400);
+      return;
+    }
+    if (Math.abs(val - answer) <= tol) {
+      fb.className = 'feedback correct';
+      fb.textContent = 'Correct! The answer is ' + answer + '.';
+      inp.parentElement.parentElement.classList.add('pop');
+      setTimeout(function() { inp.parentElement.parentElement.classList.remove('pop'); }, 350);
+    } else {
+      fb.className = 'feedback incorrect';
+      fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(4) + ')';
+      inp.parentElement.parentElement.classList.add('shake');
+      setTimeout(function() { inp.parentElement.parentElement.classList.remove('shake'); }, 400);
+    }
+  }
+
+  function checkMC(btn, id, result) {
+    var fb = document.getElementById(id + '-fb');
+    var btns = btn.parentElement.querySelectorAll('.mc-btn');
+    btns.forEach(function(b) { b.classList.add('disabled'); });
+    if (result === 'correct') {
+      btn.classList.add('correct');
+      fb.className = 'feedback correct';
+      fb.textContent = 'Correct!';
+      btn.closest('.problem').classList.add('pop');
+      setTimeout(function() { btn.closest('.problem').classList.remove('pop'); }, 350);
+    } else {
+      btn.classList.add('wrong');
+      fb.className = 'feedback incorrect';
+      fb.textContent = 'Not quite. Review the concept above.';
+      btn.closest('.problem').classList.add('shake');
+      setTimeout(function() { btn.closest('.problem').classList.remove('shake'); }, 400);
+    }
+  }
+
+  var quizScoreVal = 0, quizAnswered = new Set();
+
+  function quizAnswer(qn, btn, correct) {
+    if (quizAnswered.has(qn)) return;
+    quizAnswered.add(qn);
+    var btns = btn.parentElement.querySelectorAll('.choice-btn');
+    btns.forEach(function(b) { b.classList.add('disabled'); });
+    if (correct) {
+      btn.classList.add('selected-correct');
+      quizScoreVal++;
+      btn.closest('.quiz-q').classList.add('pop');
+      setTimeout(function() { btn.closest('.quiz-q').classList.remove('pop'); }, 350);
+    } else {
+      btn.classList.add('selected-wrong');
+      btns.forEach(function(b) {
+        if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf('true') !== -1) {
+          b.classList.add('reveal-correct');
+        }
+      });
+      btn.closest('.quiz-q').classList.add('shake');
+      setTimeout(function() { btn.closest('.quiz-q').classList.remove('shake'); }, 400);
+    }
+    document.getElementById('quizScore').textContent = quizScoreVal;
+  }
+
+  function resetQuiz() {
+    quizScoreVal = 0;
+    quizAnswered.clear();
+    document.getElementById('quizScore').textContent = '0';
+    document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) {
+      b.className = 'choice-btn';
+    });
+  }
+
+  // ── INTERACTIVE CALCULATORS ────────────────────────────────────────
+
+  function calcSolubility() {
+    var type = document.getElementById('saltType').value;
+    var exp = parseFloat(document.getElementById('kspExp').value);
+    document.getElementById('kspExpReadout').textContent = 'x = ' + exp.toFixed(1);
+    var ksp = Math.pow(10, exp);
+    var s, formula;
+    if (type === 'AB') {
+      s = Math.sqrt(ksp);
+      formula = 'Ksp = s²  →  s = √Ksp';
+    } else if (type === 'AB2') {
+      s = Math.pow(ksp / 4, 1 / 3);
+      formula = 'Ksp = 4s³  →  s = (Ksp/4)^(1/3)';
+    } else if (type === 'AB3') {
+      s = Math.pow(ksp / 27, 1 / 4);
+      formula = 'Ksp = 27s⁴  →  s = (Ksp/27)^(1/4)';
+    } else {
+      s = Math.pow(ksp / 108, 1 / 5);
+      formula = 'Ksp = 108s⁵  →  s = (Ksp/108)^(1/5)';
+    }
+    var kspStr = ksp.toExponential(3);
+    var sStr = s.toExponential(4);
+    document.getElementById('calcOutput').textContent =
+      'Ksp = 10^(' + exp.toFixed(1) + ') = ' + kspStr + '\n' + formula + '\ns = ' + sStr + ' mol/L';
+    document.getElementById('calcOutput').style.whiteSpace = 'pre';
+  }
+
+  function calcCommonIon() {
+    var c = parseFloat(document.getElementById('cionSlider').value);
+    document.getElementById('cionReadout').textContent = c.toFixed(3) + ' M';
+    var ksp = 1.8e-10;
+    var sPure = Math.sqrt(ksp);
+    // solve s'(c + s') = ksp, approximate if c >> s'
+    var sCommon;
+    // quadratic: s'^2 + c*s' - ksp = 0
+    sCommon = (-c + Math.sqrt(c * c + 4 * ksp)) / 2;
+    var factor = sPure / sCommon;
+    document.getElementById('cionOutput').textContent =
+      'Pure water solubility:   s = ' + sPure.toExponential(3) + ' mol/L\n' +
+      'In ' + c.toFixed(3) + ' M Cl⁻:            s\' = ' + sCommon.toExponential(3) + ' mol/L\n' +
+      'Reduction factor:         ' + factor.toFixed(1) + '× less soluble';
+    document.getElementById('cionOutput').style.whiteSpace = 'pre';
+  }
+
+  function calcPhEffect() {
+    var pH = parseFloat(document.getElementById('phSlider').value);
+    document.getElementById('phReadout').textContent = 'pH ' + pH.toFixed(1);
+    var ksp = 5.61e-12;
+    var OH = Math.pow(10, pH - 14);
+    var s = ksp / (OH * OH);
+    var sStr = s.toExponential(3);
+    var pHpure = 9.0;
+    var OHpure = Math.pow(10, pHpure - 14);
+    var sPure = ksp / (OHpure * OHpure);
+    var note = '';
+    if (s > 1) {
+      note = '(exceeds 1 mol/L — in reality all Mg(OH)₂ has dissolved)';
+      s = '>1';
+      sStr = '>1 mol/L ' + note;
+    }
+    document.getElementById('phOutput').textContent =
+      'pH = ' + pH.toFixed(1) + '  →  [OH⁻] = 10^(' + (pH - 14).toFixed(1) + ') M\n' +
+      'Molar solubility of Mg(OH)₂ = Ksp / [OH⁻]² = ' + sStr + '\n' +
+      '(Reference pH 9.0: s = ' + sPure.toExponential(3) + ' mol/L)';
+    document.getElementById('phOutput').style.whiteSpace = 'pre';
+  }
+
+  // ── INIT ──────────────────────────────────────────────────────────
+  calcSolubility();
+  calcCommonIon();
+  calcPhEffect();
+  updateProgress();
+</script>
+</body>
+</html>

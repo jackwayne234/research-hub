@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 26: Special Relativity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #1e2128;
+  --bg-card: #262a33;
+  --bg-card-hover: #2c313c;
+  --bg-input: #1a1d24;
+  --border: #363b47;
+  --text: #e2e4e9;
+  --text-dim: #9ca3af;
+  --text-bright: #fff;
+  --indigo: #6366f1;
+  --indigo-dim: rgba(99,102,241,0.15);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.15);
+  --pink: #ec4899;
+  --pink-dim: rgba(236,72,153,0.15);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.15);
+  --radius: 10px;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* TOP BAR */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(30,33,40,0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+}
+
+.top-bar-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.top-bar h1 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+
+.top-bar h1 span { color: var(--indigo); }
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--indigo), #818cf8);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.progress-label {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  margin-top: 5px;
+  text-align: right;
+}
+
+/* CONTENT */
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+/* SECTION CARDS */
+.section-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: border-color var(--transition);
+}
+
+.section-card.completed { border-color: var(--green); }
+.section-card.active { border-color: var(--indigo); }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition);
+}
+
+.section-header:hover { background: var(--bg-card-hover); }
+
+.section-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--indigo-dim);
+  color: var(--indigo);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+
+.section-card.completed .section-num {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.section-title {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.section-chevron {
+  width: 20px;
+  height: 20px;
+  color: var(--text-dim);
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  flex-shrink: 0;
+}
+
+.section-card.open .section-chevron { transform: rotate(180deg); }
+
+.section-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.section-body-inner {
+  padding: 4px 20px 28px;
+}
+
+/* TEXT UTILITIES */
+.subtitle {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  line-height: 1.65;
+}
+
+.label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--indigo);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.label.green { color: var(--green); }
+.label.amber { color: var(--amber); }
+.label.pink { color: var(--pink); }
+
+p { font-size: 0.82rem; color: var(--text); margin-bottom: 12px; line-height: 1.7; }
+
+/* FORMULA BOXES */
+.formula-box {
+  background: var(--indigo-dim);
+  border: 1px solid var(--indigo);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+  color: var(--text-bright);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.formula-box.green {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.formula-box.pink {
+  background: var(--pink-dim);
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+.formula-box.amber {
+  background: var(--amber-dim);
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.formula-sub {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 6px;
+  font-weight: 400;
+}
+
+/* KEY POINTS */
+.key-point {
+  border-left: 3px solid var(--amber);
+  background: var(--amber-dim);
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 12px;
+  font-size: 0.79rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* INPUTS */
+input[type="number"], input[type="text"], select {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-bright);
+  padding: 8px 12px;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+input:focus, select:focus { border-color: var(--indigo); }
+select { cursor: pointer; }
+
+/* BUTTONS */
+.btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition);
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.btn-primary { background: var(--indigo); }
+.btn-primary:hover { background: #5558e6; transform: translateY(-1px); }
+.btn-green { background: var(--green); color: #000; }
+.btn-green:hover { background: #1ea94e; transform: translateY(-1px); }
+.btn-amber { background: var(--amber); color: #000; }
+.btn-amber:hover { background: #d97706; transform: translateY(-1px); }
+
+/* SLIDER */
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.slider-row label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  min-width: 120px;
+}
+
+.slider-row input[type="range"] {
+  flex: 1;
+  min-width: 120px;
+  accent-color: var(--indigo);
+  cursor: pointer;
+}
+
+.slider-val {
+  font-size: 0.8rem;
+  color: var(--text-bright);
+  min-width: 70px;
+  text-align: right;
+  font-weight: 600;
+}
+
+/* DISPLAY GRID */
+.display-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.display-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.display-card .dc-label {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 4px;
+}
+
+.display-card .dc-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--indigo);
+}
+
+.display-card .dc-value.green { color: var(--green); }
+.display-card .dc-value.pink { color: var(--pink); }
+.display-card .dc-value.amber { color: var(--amber); }
+
+/* PRACTICE PROBLEMS */
+.practice-set {
+  margin-top: 20px;
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+}
+
+.problem {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.problem-q {
+  font-size: 0.8rem;
+  color: var(--text);
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.problem-q strong { color: var(--text-bright); }
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.input-row input {
+  width: 140px;
+}
+
+.input-unit {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* MC OPTIONS */
+.mc-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.mc-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.79rem;
+  color: var(--text);
+  user-select: none;
+}
+
+.mc-option:hover {
+  border-color: var(--indigo);
+  background: var(--indigo-dim);
+  color: var(--text-bright);
+}
+
+.mc-option input[type="radio"] {
+  accent-color: var(--indigo);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* FEEDBACK */
+.feedback {
+  font-size: 0.77rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 6px;
+  display: none;
+  line-height: 1.5;
+}
+
+.feedback.correct {
+  display: block;
+  background: var(--green-dim);
+  border: 1px solid var(--green);
+  color: var(--green);
+  animation: springPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.feedback.incorrect {
+  display: block;
+  background: var(--pink-dim);
+  border: 1px solid var(--pink);
+  color: var(--pink);
+  animation: shake 0.4s ease;
+}
+
+@keyframes springPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.15); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-6px); }
+  40%     { transform: translateX(6px); }
+  60%     { transform: translateX(-4px); }
+  80%     { transform: translateX(4px); }
+}
+
+/* INTERACTIVE PANELS */
+.interactive-panel {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin: 16px 0;
+}
+
+.interactive-panel .panel-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--indigo);
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
+}
+
+/* SPACETIME DIAGRAM */
+.svg-wrap {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+svg text {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* TWO-COLUMN LAYOUT */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 560px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+
+/* COMPARISON BAR */
+.compare-bar-wrap {
+  margin: 10px 0;
+}
+
+.compare-bar-label {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.compare-bar-track {
+  height: 18px;
+  background: var(--border);
+  border-radius: 9px;
+  overflow: hidden;
+  position: relative;
+}
+
+.compare-bar-fill {
+  height: 100%;
+  border-radius: 9px;
+  transition: width 0.4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* QUIZ */
+.quiz-section {
+  margin-top: 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.quiz-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.quiz-header h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+
+.score-badge {
+  background: var(--indigo-dim);
+  border: 1px solid var(--indigo);
+  color: var(--indigo);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.quiz-body { padding: 20px; }
+
+.quiz-q {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.quiz-q-text {
+  font-size: 0.82rem;
+  color: var(--text-bright);
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.quiz-q-num {
+  font-size: 0.68rem;
+  color: var(--indigo);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+/* RESULTS BANNER */
+.results-banner {
+  display: none;
+  background: var(--green-dim);
+  border: 1px solid var(--green);
+  border-radius: 8px;
+  padding: 16px 20px;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.results-banner.show { display: block; animation: springPop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+
+.results-banner .score-big {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.results-banner p {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  margin-top: 4px;
+}
+
+/* HORIZONTAL RULE */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 18px 0;
+}
+
+/* POSTULATE CARDS */
+.postulate-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+@media (max-width: 560px) {
+  .postulate-grid { grid-template-columns: 1fr; }
+}
+
+.postulate-card {
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.postulate-card.indigo {
+  background: var(--indigo-dim);
+  border: 1px solid var(--indigo);
+}
+
+.postulate-card.green {
+  background: var(--green-dim);
+  border: 1px solid var(--green);
+}
+
+.postulate-card .pc-num {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.postulate-card.indigo .pc-num { color: var(--indigo); }
+.postulate-card.green .pc-num { color: var(--green); }
+
+.postulate-card .pc-text {
+  font-size: 0.8rem;
+  color: var(--text-bright);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+  .top-bar { padding: 12px 16px; }
+  .top-bar h1 { font-size: 0.9rem; }
+  .content { padding: 16px 12px 60px; }
+  .section-header { padding: 14px 16px; }
+  .section-body-inner { padding: 4px 14px 22px; }
+  .display-grid { grid-template-columns: 1fr 1fr; }
+  .quiz-header h2 { font-size: 0.85rem; }
+}
+
+@media (max-width: 400px) {
+  .display-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <h1><span>Lesson 26</span> — Special Relativity</h1>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 5 sections</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 1: Einstein's Postulates                        -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-card" id="sec1">
+    <div class="section-header" onclick="toggleSection('sec1')">
+      <div class="section-num">1</div>
+      <div class="section-title">Einstein's Postulates</div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body" id="sec1-body">
+      <div class="section-body-inner">
+
+        <p>In 1905, Albert Einstein resolved a deep conflict between Newtonian mechanics and Maxwell's electromagnetism by proposing two simple but radical postulates that form the foundation of Special Relativity.</p>
+
+        <div class="postulate-grid">
+          <div class="postulate-card indigo">
+            <div class="pc-num">Postulate 1</div>
+            <div class="pc-text">The laws of physics are the same in all inertial (non-accelerating) reference frames.</div>
+          </div>
+          <div class="postulate-card green">
+            <div class="pc-num">Postulate 2</div>
+            <div class="pc-text">The speed of light in a vacuum is constant (c ≈ 3×10⁸ m/s) in all inertial frames, regardless of the motion of the source or observer.</div>
+          </div>
+        </div>
+
+        <div class="key-point">The second postulate directly contradicts Galilean velocity addition. If you throw a ball at 20 m/s from a train moving at 30 m/s, a ground observer sees 50 m/s. But if you shine a flashlight from a moving train, the ground observer still measures light at c — not c + v.</div>
+
+        <div class="label">Conflict with Galilean Relativity</div>
+        <p>Galileo and Newton assumed time is absolute — the same for all observers. Einstein showed this must be wrong. If c is constant for all observers, then time and distance must be <em>relative</em> — different observers measure different time intervals and lengths for the same events.</p>
+
+        <div class="label">Simultaneity is Relative</div>
+        <p>Two events that are simultaneous in one frame are generally <em>not</em> simultaneous in another frame moving relative to the first. This is a direct consequence of the constant speed of light. There is no universal "now" that all observers share.</p>
+
+        <div class="key-point">An inertial frame is one that is not accelerating — it moves at constant velocity. Special Relativity only applies between inertial frames. Accelerating frames require General Relativity.</div>
+
+        <hr>
+        <div class="label">Practice Problems — Postulates</div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 1.1</strong> — A spaceship moves at 0.8c relative to Earth and fires a laser forward. What speed does an Earth observer measure for the laser light?</div>
+          <div class="mc-options">
+            <label class="mc-option"><input type="radio" name="p1q1" value="a"> 1.8c — the ship's speed adds to c</label>
+            <label class="mc-option"><input type="radio" name="p1q1" value="b"> 0.2c — the ship's speed subtracts from c</label>
+            <label class="mc-option"><input type="radio" name="p1q1" value="c"> c — light speed is constant for all observers</label>
+            <label class="mc-option"><input type="radio" name="p1q1" value="d"> Depends on the wavelength of the laser</label>
+          </div>
+          <button class="btn btn-primary" onclick="checkMC('p1q1','c','fb1q1','sec1')">Check</button>
+          <div class="feedback" id="fb1q1"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 1.2</strong> — Which of the following is an inertial reference frame?</div>
+          <div class="mc-options">
+            <label class="mc-option"><input type="radio" name="p1q2" value="a"> A car accelerating from a traffic light</label>
+            <label class="mc-option"><input type="radio" name="p1q2" value="b"> A spacecraft traveling at constant velocity in deep space</label>
+            <label class="mc-option"><input type="radio" name="p1q2" value="c"> Earth's surface (which rotates and orbits the Sun)</label>
+            <label class="mc-option"><input type="radio" name="p1q2" value="d"> A roller coaster at the bottom of a loop</label>
+          </div>
+          <button class="btn btn-primary" onclick="checkMC('p1q2','b','fb1q2','sec1')">Check</button>
+          <div class="feedback" id="fb1q2"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 1.3</strong> — Observer A is on a train moving at 0.5c. Observer B stands on the platform. A pulse of light travels from the back of the train to the front. Who measures a higher speed for the light pulse?</div>
+          <div class="mc-options">
+            <label class="mc-option"><input type="radio" name="p1q3" value="a"> Observer A, because they are in the train's frame</label>
+            <label class="mc-option"><input type="radio" name="p1q3" value="b"> Observer B, because the train is moving toward the light</label>
+            <label class="mc-option"><input type="radio" name="p1q3" value="c"> Both measure exactly c</label>
+            <label class="mc-option"><input type="radio" name="p1q3" value="d"> It depends on the train's acceleration</label>
+          </div>
+          <button class="btn btn-primary" onclick="checkMC('p1q3','c','fb1q3','sec1')">Check</button>
+          <div class="feedback" id="fb1q3"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 1.4</strong> — Two lightning bolts strike the front and rear of a moving train simultaneously according to a ground observer. For a passenger sitting in the middle of the train, which bolt strikes first?</div>
+          <div class="mc-options">
+            <label class="mc-option"><input type="radio" name="p1q4" value="a"> The rear bolt, because the train moves toward it</label>
+            <label class="mc-option"><input type="radio" name="p1q4" value="b"> The front bolt, because the train moves toward it</label>
+            <label class="mc-option"><input type="radio" name="p1q4" value="c"> They are still simultaneous for the passenger</label>
+            <label class="mc-option"><input type="radio" name="p1q4" value="d"> Cannot be determined without knowing train speed</label>
+          </div>
+          <button class="btn btn-primary" onclick="checkMC('p1q4','b','fb1q4','sec1')">Check</button>
+          <div class="feedback" id="fb1q4"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 2: Time Dilation                                -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-card" id="sec2">
+    <div class="section-header" onclick="toggleSection('sec2')">
+      <div class="section-num">2</div>
+      <div class="section-title">Time Dilation</div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body" id="sec2-body">
+      <div class="section-body-inner">
+
+        <p>A moving clock runs slower than a stationary clock. This is not an illusion — it is a real, measurable physical effect called <strong>time dilation</strong>.</p>
+
+        <div class="formula-box">
+          &Delta;t = &gamma; &Delta;t<sub>0</sub>
+          <div class="formula-sub">where &Delta;t<sub>0</sub> = proper time (measured in the rest frame of the clock), &Delta;t = dilated time measured by a moving observer, &gamma; = Lorentz factor</div>
+        </div>
+
+        <div class="formula-box green">
+          &gamma; = 1 / &radic;(1 &minus; v&sup2;/c&sup2;)
+          <div class="formula-sub">Always &gamma; &ge; 1. At v = 0, &gamma; = 1 (no dilation). As v &rarr; c, &gamma; &rarr; &infin;.</div>
+        </div>
+
+        <div class="key-point"><strong>Proper time</strong> (&Delta;t<sub>0</sub>) is the time measured by a clock that is present at <em>both</em> events — the shortest possible time between two events. Any other observer measures a longer time &Delta;t = &gamma;&Delta;t<sub>0</sub>.</div>
+
+        <div class="label">Twin Paradox</div>
+        <p>Twin A stays on Earth. Twin B travels at 0.8c for 5 years (proper time), then returns. When B returns, A has aged more than B. There is no paradox — B underwent acceleration (changing frames), breaking the symmetry. The traveling twin is genuinely younger.</p>
+
+        <div class="label">Experimental Confirmation</div>
+        <p><strong>Muon decay:</strong> Muons created in the upper atmosphere at ~0.998c have a rest-frame lifetime of 2.2 μs. Classically they should decay before reaching Earth's surface. But due to time dilation, we detect them at ground level — their clocks run slow relative to Earth.</p>
+        <p><strong>GPS satellites:</strong> Orbiting at ~14,000 km/h, satellite clocks run slow by ~7 μs/day due to special relativistic time dilation. (General relativity adds another +45 μs/day.) Without corrections, GPS would drift ~10 km/day.</p>
+
+        <hr>
+
+        <!-- LORENTZ FACTOR INTERACTIVE -->
+        <div class="interactive-panel">
+          <div class="panel-title">Interactive: Lorentz Factor Explorer</div>
+          <div class="slider-row">
+            <label>Speed v/c</label>
+            <input type="range" min="0" max="999" value="0" step="1" id="vSlider" oninput="updateLorentz()">
+            <span class="slider-val" id="vDisplay">0.000c</span>
+          </div>
+          <div class="display-grid">
+            <div class="display-card">
+              <div class="dc-label">Lorentz Factor &gamma;</div>
+              <div class="dc-value" id="gammaDisplay">1.000</div>
+            </div>
+            <div class="display-card">
+              <div class="dc-label">Time Ratio &Delta;t/&Delta;t<sub>0</sub></div>
+              <div class="dc-value green" id="timeRatioDisplay">1.000</div>
+            </div>
+            <div class="display-card">
+              <div class="dc-label">Length Ratio L/L<sub>0</sub></div>
+              <div class="dc-value pink" id="lenRatioDisplay">1.000</div>
+            </div>
+            <div class="display-card">
+              <div class="dc-label">Everyday Speed %</div>
+              <div class="dc-value amber" id="speedPctDisplay">0.000%</div>
+            </div>
+          </div>
+          <div id="speedContext" style="font-size:0.72rem;color:var(--text-dim);margin-top:4px;"></div>
+        </div>
+
+        <!-- TIME DILATION CALCULATOR -->
+        <div class="interactive-panel">
+          <div class="panel-title">Time Dilation Scenario Calculator</div>
+          <div class="two-col">
+            <div>
+              <div class="label">Rocket Speed (fraction of c)</div>
+              <input type="number" id="tdSpeed" min="0" max="0.9999" step="0.01" value="0.8" style="width:100%">
+            </div>
+            <div>
+              <div class="label">Proper Time on Rocket (years)</div>
+              <input type="number" id="tdProper" min="0" step="0.1" value="5" style="width:100%">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="calcTimeDilation()">Calculate</button>
+          <div id="tdResult" style="margin-top:12px;font-size:0.8rem;display:none;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:14px;"></div>
+        </div>
+
+        <hr>
+        <div class="label">Practice Problems — Time Dilation</div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 2.1</strong> — A muon is created at v = 0.995c with a proper lifetime of &Delta;t<sub>0</sub> = 2.20 &mu;s. What is the Lorentz factor &gamma;? (Round to 2 decimal places)</div>
+          <div class="input-row">
+            <input type="number" id="p2q1" placeholder="e.g. 10.01" step="0.01">
+            <button class="btn btn-primary" onclick="checkNum('p2q1', 10.01, 0.05, 'fb2q1', 'sec2')">Check</button>
+          </div>
+          <div class="feedback" id="fb2q1"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 2.2</strong> — Using the muon from 2.1 (&gamma; &approx; 10.01), what is the dilated lifetime &Delta;t measured by an Earth observer? (in &mu;s, round to 1 decimal)</div>
+          <div class="input-row">
+            <input type="number" id="p2q2" placeholder="e.g. 22.0" step="0.1">
+            <span class="input-unit">&mu;s</span>
+            <button class="btn btn-primary" onclick="checkNum('p2q2', 22.02, 0.15, 'fb2q2', 'sec2')">Check</button>
+          </div>
+          <div class="feedback" id="fb2q2"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 2.3</strong> — An astronaut travels at 0.6c for 8 years of Earth time. How many years pass on the astronaut's clock? (Round to 2 decimal places)<br><em>Hint: &gamma; at 0.6c = 1.25, so &Delta;t<sub>0</sub> = &Delta;t / &gamma;</em></div>
+          <div class="input-row">
+            <input type="number" id="p2q3" placeholder="e.g. 6.40" step="0.01">
+            <span class="input-unit">years</span>
+            <button class="btn btn-primary" onclick="checkNum('p2q3', 6.40, 0.05, 'fb2q3', 'sec2')">Check</button>
+          </div>
+          <div class="feedback" id="fb2q3"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 2.4</strong> — At what fraction of c must a clock travel so that it runs at exactly half the rate of a stationary clock? (&gamma; = 2 means &Delta;t = 2&Delta;t<sub>0</sub>) Express as a decimal (e.g. 0.866).<br><em>Hint: v/c = &radic;(1 &minus; 1/&gamma;&sup2;)</em></div>
+          <div class="input-row">
+            <input type="number" id="p2q4" placeholder="0.___" step="0.001">
+            <span class="input-unit">c</span>
+            <button class="btn btn-primary" onclick="checkNum('p2q4', 0.866, 0.002, 'fb2q4', 'sec2')">Check</button>
+          </div>
+          <div class="feedback" id="fb2q4"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 3: Length Contraction                           -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-card" id="sec3">
+    <div class="section-header" onclick="toggleSection('sec3')">
+      <div class="section-num">3</div>
+      <div class="section-title">Length Contraction</div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body" id="sec3-body">
+      <div class="section-body-inner">
+
+        <p>A moving object is measured to be shorter along its direction of motion. Like time dilation, this is a real physical effect — not a visual illusion.</p>
+
+        <div class="formula-box pink">
+          L = L<sub>0</sub> / &gamma;
+          <div class="formula-sub">L<sub>0</sub> = proper length (rest frame), L = contracted length measured by moving observer, &gamma; = Lorentz factor</div>
+        </div>
+
+        <div class="key-point"><strong>Proper length</strong> L<sub>0</sub> is measured in the frame where the object is at rest. All other frames measure a shorter length L = L<sub>0</sub>/&gamma; along the direction of motion. Lengths perpendicular to motion are unchanged.</div>
+
+        <div class="label">Only Along the Direction of Motion</div>
+        <p>A sphere moving at 0.8c appears as an ellipsoid to a stationary observer — flattened in the direction of travel. Its height and width (perpendicular to v) remain unchanged. Only the dimension parallel to the velocity contracts by factor 1/&gamma;.</p>
+
+        <div class="label">Connection to Simultaneity</div>
+        <p>Length measurement requires observing both ends of an object <em>at the same time</em>. Since simultaneity is relative, different observers disagree on when "both ends" were observed, leading to different length measurements. Time dilation and length contraction are deeply linked through the Lorentz transformation.</p>
+
+        <!-- LENGTH CONTRACTION VISUALIZER -->
+        <div class="interactive-panel">
+          <div class="panel-title">Length Contraction Visualizer</div>
+          <div class="slider-row">
+            <label>Speed v/c</label>
+            <input type="range" min="0" max="999" value="0" step="1" id="lcSlider" oninput="updateLC()">
+            <span class="slider-val" id="lcVDisplay">0.000c</span>
+          </div>
+          <div style="margin:14px 0;">
+            <div class="compare-bar-label">Proper length L<sub>0</sub> = 100 m (rest frame)</div>
+            <div class="compare-bar-track">
+              <div class="compare-bar-fill" style="width:100%;background:var(--indigo);">100 m</div>
+            </div>
+          </div>
+          <div style="margin:14px 0;">
+            <div class="compare-bar-label">Contracted length L = <span id="lcLenDisplay">100.0</span> m (moving frame)</div>
+            <div class="compare-bar-track">
+              <div class="compare-bar-fill" id="lcBar" style="width:100%;background:var(--pink);">100.0 m</div>
+            </div>
+          </div>
+          <div style="font-size:0.75rem;color:var(--text-dim);">&gamma; = <span id="lcGamma">1.000</span> &nbsp;|&nbsp; L/L<sub>0</sub> = <span id="lcRatio">1.000</span></div>
+        </div>
+
+        <hr>
+        <div class="label">Practice Problems — Length Contraction</div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 3.1</strong> — A spaceship has a proper length of 500 m. It passes Earth at v = 0.6c (&gamma; = 1.25). What length does an Earth observer measure? (in meters)</div>
+          <div class="input-row">
+            <input type="number" id="p3q1" placeholder="e.g. 400" step="1">
+            <span class="input-unit">m</span>
+            <button class="btn btn-primary" onclick="checkNum('p3q1', 400, 1, 'fb3q1', 'sec3')">Check</button>
+          </div>
+          <div class="feedback" id="fb3q1"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 3.2</strong> — A runway is 1800 m long in its rest frame. A plane traveling at 0.8c (&gamma; = 1.667) measures the runway's length. What does the plane measure? (round to nearest meter)</div>
+          <div class="input-row">
+            <input type="number" id="p3q2" placeholder="e.g. 1080" step="1">
+            <span class="input-unit">m</span>
+            <button class="btn btn-primary" onclick="checkNum('p3q2', 1080, 2, 'fb3q2', 'sec3')">Check</button>
+          </div>
+          <div class="feedback" id="fb3q2"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 3.3</strong> — A particle measured at rest is a sphere of diameter 2.0 m. At v = 0.866c (&gamma; = 2.0), what is the measured diameter along the direction of motion? (in meters)</div>
+          <div class="input-row">
+            <input type="number" id="p3q3" placeholder="e.g. 1.0" step="0.1">
+            <span class="input-unit">m</span>
+            <button class="btn btn-primary" onclick="checkNum('p3q3', 1.0, 0.05, 'fb3q3', 'sec3')">Check</button>
+          </div>
+          <div class="feedback" id="fb3q3"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 3.4</strong> — An observer on Earth sees a rocket (v = 0.9c, &gamma; &approx; 2.294) that measures 120 m in its own rest frame. What is its measured length from Earth? (round to 1 decimal)</div>
+          <div class="input-row">
+            <input type="number" id="p3q4" placeholder="e.g. 52.3" step="0.1">
+            <span class="input-unit">m</span>
+            <button class="btn btn-primary" onclick="checkNum('p3q4', 52.3, 0.5, 'fb3q4', 'sec3')">Check</button>
+          </div>
+          <div class="feedback" id="fb3q4"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 4: Lorentz Transformations                      -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-card" id="sec4">
+    <div class="section-header" onclick="toggleSection('sec4')">
+      <div class="section-num">4</div>
+      <div class="section-title">Lorentz Transformations & Spacetime</div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body" id="sec4-body">
+      <div class="section-body-inner">
+
+        <p>The Lorentz transformations replace the Galilean transformations of classical mechanics. They tell us exactly how coordinates change between two inertial frames S and S', where S' moves at velocity v along the x-axis relative to S.</p>
+
+        <div class="two-col">
+          <div>
+            <div class="formula-box">
+              x' = &gamma;(x &minus; vt)
+              <div class="formula-sub">Position in the moving frame S'</div>
+            </div>
+            <div class="formula-box">
+              t' = &gamma;(t &minus; vx/c&sup2;)
+              <div class="formula-sub">Time in the moving frame S'</div>
+            </div>
+          </div>
+          <div>
+            <div class="formula-box green">
+              x = &gamma;(x' + vt')
+              <div class="formula-sub">Inverse: position in S</div>
+            </div>
+            <div class="formula-box green">
+              t = &gamma;(t' + vx'/c&sup2;)
+              <div class="formula-sub">Inverse: time in S</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="label">Relativistic Velocity Addition</div>
+        <p>If an object moves at velocity u in frame S, its velocity u' in frame S' (moving at v relative to S) is:</p>
+        <div class="formula-box amber">
+          u' = (u &minus; v) / (1 &minus; uv/c&sup2;)
+          <div class="formula-sub">Relativistic velocity addition. As u, v &rarr; c: u' &rarr; c (can never exceed c)</div>
+        </div>
+
+        <div class="key-point">If u = c (a light beam), then u' = (c&minus;v)/(1&minus;v/c) = c(c&minus;v)/(c&minus;v) = c. The speed of light is the same in all frames, confirming Postulate 2.</div>
+
+        <div class="label">Spacetime Interval (Invariant)</div>
+        <p>While space and time separately are relative, the spacetime interval is the same for all inertial observers:</p>
+        <div class="formula-box pink">
+          s&sup2; = c&sup2;&Delta;t&sup2; &minus; &Delta;x&sup2;
+          <div class="formula-sub">Invariant spacetime interval. s&sup2; &gt; 0: timelike; s&sup2; = 0: lightlike; s&sup2; &lt; 0: spacelike</div>
+        </div>
+
+        <!-- SPACETIME DIAGRAM -->
+        <div class="interactive-panel">
+          <div class="panel-title">Spacetime Diagram — Worldlines & Light Cone</div>
+          <div class="svg-wrap">
+            <svg id="spacetimeSVG" viewBox="0 0 460 380" width="100%" style="display:block;">
+              <!-- Background -->
+              <rect width="460" height="380" fill="#1a1d24"/>
+
+              <!-- Grid lines -->
+              <line x1="230" y1="20" x2="230" y2="360" stroke="#363b47" stroke-width="1"/>
+              <line x1="20" y1="190" x2="440" y2="190" stroke="#363b47" stroke-width="1"/>
+
+              <!-- Axis labels -->
+              <text x="234" y="16" fill="#9ca3af" font-size="11" font-family="JetBrains Mono,monospace">ct</text>
+              <text x="434" y="196" fill="#9ca3af" font-size="11" font-family="JetBrains Mono,monospace">x</text>
+              <text x="236" y="202" fill="#9ca3af" font-size="10" font-family="JetBrains Mono,monospace">O</text>
+
+              <!-- Light cone lines (45 degrees) -->
+              <line x1="230" y1="190" x2="430" y2="-10" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.7"/>
+              <line x1="230" y1="190" x2="30" y2="-10" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.7"/>
+              <line x1="230" y1="190" x2="430" y2="390" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.3"/>
+              <line x1="230" y1="190" x2="30" y2="390" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.3"/>
+
+              <!-- Light cone label -->
+              <text x="342" y="90" fill="#f59e0b" font-size="10" font-family="JetBrains Mono,monospace">Light cone</text>
+              <text x="342" y="103" fill="#f59e0b" font-size="10" font-family="JetBrains Mono,monospace">(slope = c)</text>
+
+              <!-- Worldline: stationary observer (vertical) -->
+              <line x1="230" y1="350" x2="230" y2="40" stroke="#6366f1" stroke-width="2.5"/>
+              <circle cx="230" cy="190" r="5" fill="#6366f1"/>
+              <text x="192" y="55" fill="#6366f1" font-size="10" font-family="JetBrains Mono,monospace">Observer A</text>
+              <text x="192" y="67" fill="#6366f1" font-size="10" font-family="JetBrains Mono,monospace">(at rest)</text>
+
+              <!-- Worldline: moving observer (tilted) -->
+              <line x1="130" y1="350" x2="290" y2="40" stroke="#22c55e" stroke-width="2.5"/>
+              <circle cx="230" cy="190" r="5" fill="#22c55e"/>
+              <text x="50" y="55" fill="#22c55e" font-size="10" font-family="JetBrains Mono,monospace">Observer B</text>
+              <text x="50" y="67" fill="#22c55e" font-size="10" font-family="JetBrains Mono,monospace">(v = 0.5c)</text>
+
+              <!-- Region labels -->
+              <text x="232" y="140" fill="#6366f1" font-size="9" font-family="JetBrains Mono,monospace" opacity="0.7">FUTURE</text>
+              <text x="232" y="255" fill="#9ca3af" font-size="9" font-family="JetBrains Mono,monospace" opacity="0.5">past</text>
+              <text x="50" y="192" fill="#ec4899" font-size="9" font-family="JetBrains Mono,monospace" opacity="0.7">spacelike</text>
+              <text x="340" y="192" fill="#ec4899" font-size="9" font-family="JetBrains Mono,monospace" opacity="0.7">spacelike</text>
+
+              <!-- Velocity slider marker -->
+              <line x1="230" y1="190" x2="260" y2="70" stroke="#22c55e" stroke-width="1" stroke-dasharray="3,3" opacity="0.4" id="svgWLine"/>
+
+              <!-- Tick marks on ct axis -->
+              <line x1="225" y1="140" x2="235" y2="140" stroke="#363b47" stroke-width="1"/>
+              <line x1="225" y1="90" x2="235" y2="90" stroke="#363b47" stroke-width="1"/>
+              <line x1="225" y1="240" x2="235" y2="240" stroke="#363b47" stroke-width="1"/>
+              <text x="212" y="143" fill="#363b47" font-size="9" font-family="JetBrains Mono,monospace">1</text>
+              <text x="212" y="93" fill="#363b47" font-size="9" font-family="JetBrains Mono,monospace">2</text>
+            </svg>
+          </div>
+          <div style="font-size:0.72rem;color:var(--text-dim);margin-top:8px;">
+            The light cone divides spacetime into causally connected (timelike) and disconnected (spacelike) regions. Any physical object's worldline must have a slope steeper than 45&deg; (slower than light).
+          </div>
+        </div>
+
+        <!-- VELOCITY ADDITION CALCULATOR -->
+        <div class="interactive-panel">
+          <div class="panel-title">Relativistic Velocity Addition Calculator</div>
+          <div class="two-col">
+            <div>
+              <div class="label">Object speed u (fraction of c)</div>
+              <input type="number" id="vaU" min="-0.999" max="0.999" step="0.01" value="0.7" style="width:100%">
+            </div>
+            <div>
+              <div class="label">Frame speed v (fraction of c)</div>
+              <input type="number" id="vaV" min="-0.999" max="0.999" step="0.01" value="0.5" style="width:100%">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="calcVelocityAdd()">Calculate</button>
+          <div id="vaResult" style="margin-top:12px;font-size:0.8rem;display:none;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:14px;"></div>
+        </div>
+
+        <hr>
+        <div class="label">Practice Problems — Lorentz Transformations</div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 4.1</strong> — A rocket (S') moves at v = 0.6c relative to Earth (S). An event occurs at x = 100 light-seconds, t = 200 seconds in S. What is x' in S'? (&gamma; = 1.25, c = 1 ls/s) (in light-seconds)</div>
+          <div class="input-row">
+            <input type="number" id="p4q1" placeholder="e.g. 35.0" step="0.1">
+            <span class="input-unit">ls</span>
+            <button class="btn btn-primary" onclick="checkNum('p4q1', 25.0, 1.0, 'fb4q1', 'sec4')">Check</button>
+          </div>
+          <div class="feedback" id="fb4q1"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 4.2</strong> — Spaceship A moves at 0.6c relative to Earth. It fires a torpedo at 0.7c relative to itself in the same direction. What speed does Earth measure for the torpedo? Express as a decimal fraction of c. (round to 3 decimal places)</div>
+          <div class="input-row">
+            <input type="number" id="p4q2" placeholder="0.___" step="0.001">
+            <span class="input-unit">c</span>
+            <button class="btn btn-primary" onclick="checkNum('p4q2', 0.915, 0.003, 'fb4q2', 'sec4')">Check</button>
+          </div>
+          <div class="feedback" id="fb4q2"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 4.3</strong> — Two events occur at the same location in frame S: event 1 at t<sub>1</sub> = 0 s and event 2 at t<sub>2</sub> = 6 s, both at x = 0. What is the spacetime interval s&sup2; (in c&sup2;s&sup2;)?<br><em>s&sup2; = c&sup2;&Delta;t&sup2; &minus; &Delta;x&sup2; with c = 1</em></div>
+          <div class="input-row">
+            <input type="number" id="p4q3" placeholder="e.g. 36" step="1">
+            <span class="input-unit">c&sup2;s&sup2;</span>
+            <button class="btn btn-primary" onclick="checkNum('p4q3', 36, 0.5, 'fb4q3', 'sec4')">Check</button>
+          </div>
+          <div class="feedback" id="fb4q3"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 4.4</strong> — Two rockets travel in opposite directions. Rocket A moves at 0.9c right, Rocket B moves at 0.9c left (so u = &minus;0.9c, v = 0.9c in Earth frame). What does Rocket A measure as Rocket B's speed? (give as a positive fraction of c, round to 3 decimal places)</div>
+          <div class="input-row">
+            <input type="number" id="p4q4" placeholder="0.___" step="0.001">
+            <span class="input-unit">c</span>
+            <button class="btn btn-primary" onclick="checkNum('p4q4', 0.994, 0.003, 'fb4q4', 'sec4')">Check</button>
+          </div>
+          <div class="feedback" id="fb4q4"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 5: Mass-Energy Equivalence                      -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-card" id="sec5">
+    <div class="section-header" onclick="toggleSection('sec5')">
+      <div class="section-num">5</div>
+      <div class="section-title">Mass-Energy Equivalence</div>
+      <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body" id="sec5-body">
+      <div class="section-body-inner">
+
+        <p>Perhaps the most famous equation in all of physics, E = mc² tells us that mass and energy are two forms of the same thing. A small amount of mass corresponds to an enormous amount of energy due to c² = (3×10⁸)² ≈ 9×10¹⁶ J/kg.</p>
+
+        <div class="two-col">
+          <div>
+            <div class="formula-box green">
+              E<sub>0</sub> = m<sub>0</sub>c&sup2;
+              <div class="formula-sub">Rest energy — energy of a mass at rest</div>
+            </div>
+            <div class="formula-box">
+              E = &gamma;m<sub>0</sub>c&sup2;
+              <div class="formula-sub">Total energy of a moving mass</div>
+            </div>
+          </div>
+          <div>
+            <div class="formula-box pink">
+              KE = (&gamma;&minus;1)m<sub>0</sub>c&sup2;
+              <div class="formula-sub">Relativistic kinetic energy</div>
+            </div>
+            <div class="formula-box amber">
+              p = &gamma;m<sub>0</sub>v
+              <div class="formula-sub">Relativistic momentum</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="key-point">At low speeds (v &lt;&lt; c): &gamma; &approx; 1 + v&sup2;/(2c&sup2;), so KE &approx; (&gamma;&minus;1)m<sub>0</sub>c&sup2; &approx; &frac12;m<sub>0</sub>v&sup2;. Classical kinetic energy is recovered as a limit — Special Relativity reduces to Newtonian mechanics at everyday speeds.</div>
+
+        <div class="label">Energy-Momentum Relation</div>
+        <p>A useful relation combining energy and momentum:</p>
+        <div class="formula-box">
+          E&sup2; = (m<sub>0</sub>c&sup2;)&sup2; + (pc)&sup2;
+          <div class="formula-sub">For a photon: m<sub>0</sub> = 0, so E = pc (energy carried purely by momentum)</div>
+        </div>
+
+        <div class="label">Applications</div>
+        <p><strong>Nuclear reactions:</strong> Fission splits uranium nuclei. The small mass deficit &Delta;m per reaction × c² gives enormous energy — a 1 kg mass fully converted yields 9×10¹⁶ J, equivalent to ~21 megatons of TNT.</p>
+        <p><strong>Particle accelerators:</strong> At CERN, protons are accelerated to &gamma; &gt; 7000. Their relativistic mass (energy) is 7000 times their rest mass. Collisions produce new particles from pure kinetic energy.</p>
+
+        <!-- E=mc² CALCULATOR -->
+        <div class="interactive-panel">
+          <div class="panel-title">E = mc&sup2; Rest Energy Calculator</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px;">
+            <div>
+              <div class="label">Mass (kg)</div>
+              <input type="number" id="emcMass" value="1" min="0" step="any" style="width:160px;">
+            </div>
+            <button class="btn btn-primary" onclick="calcEmc2()">Calculate E = mc&sup2;</button>
+          </div>
+          <div id="emcResult" style="display:none;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:16px;font-size:0.8rem;"></div>
+        </div>
+
+        <!-- RELATIVISTIC ENERGY/MOMENTUM CALCULATOR -->
+        <div class="interactive-panel">
+          <div class="panel-title">Relativistic Energy &amp; Momentum Calculator</div>
+          <div class="two-col">
+            <div>
+              <div class="label">Mass m<sub>0</sub> (kg)</div>
+              <input type="number" id="relMass" value="1" min="0" step="any" style="width:100%">
+            </div>
+            <div>
+              <div class="label">Speed v (fraction of c)</div>
+              <input type="number" id="relSpeed" value="0.8" min="0" max="0.9999" step="0.01" style="width:100%">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="calcRelEnergy()">Calculate</button>
+          <div id="relResult" style="margin-top:12px;display:none;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:0.8rem;"></div>
+        </div>
+
+        <hr>
+        <div class="label">Practice Problems — Mass-Energy</div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 5.1</strong> — What is the rest energy of a 1 gram (0.001 kg) mass? (in joules, use c = 3×10⁸ m/s, give answer as ×10¹³)<br><em>E<sub>0</sub> = m<sub>0</sub>c&sup2;</em></div>
+          <div class="input-row">
+            <input type="number" id="p5q1" placeholder="e.g. 9.0" step="0.1">
+            <span class="input-unit">&times;10&sup1;&sup3; J</span>
+            <button class="btn btn-primary" onclick="checkNum('p5q1', 9.0, 0.1, 'fb5q1', 'sec5')">Check</button>
+          </div>
+          <div class="feedback" id="fb5q1"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 5.2</strong> — A proton (m<sub>0</sub> = 1.67&times;10&minus;&sup2;&sup7; kg) moves at v = 0.8c (&gamma; = 1.667). What is its relativistic momentum? (in kg&middot;m/s &times;10&minus;&sup1;&sup9;, round to 2 decimal places)<br><em>p = &gamma;m<sub>0</sub>v</em></div>
+          <div class="input-row">
+            <input type="number" id="p5q2" placeholder="e.g. 6.69" step="0.01">
+            <span class="input-unit">&times;10&minus;&sup1;&sup9; kg&middot;m/s</span>
+            <button class="btn btn-primary" onclick="checkNum('p5q2', 6.69, 0.08, 'fb5q2', 'sec5')">Check</button>
+          </div>
+          <div class="feedback" id="fb5q2"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 5.3</strong> — A particle has rest energy 938 MeV (proton). At &gamma; = 3, what is its total energy in MeV?</div>
+          <div class="input-row">
+            <input type="number" id="p5q3" placeholder="e.g. 2814" step="1">
+            <span class="input-unit">MeV</span>
+            <button class="btn btn-primary" onclick="checkNum('p5q3', 2814, 5, 'fb5q3', 'sec5')">Check</button>
+          </div>
+          <div class="feedback" id="fb5q3"></div>
+        </div>
+
+        <div class="problem">
+          <div class="problem-q"><strong>Problem 5.4</strong> — Using the result from 5.3 (E = 2814 MeV total, E<sub>0</sub> = 938 MeV rest), what is the relativistic kinetic energy of the proton? (in MeV)</div>
+          <div class="input-row">
+            <input type="number" id="p5q4" placeholder="e.g. 1876" step="1">
+            <span class="input-unit">MeV</span>
+            <button class="btn btn-primary" onclick="checkNum('p5q4', 1876, 5, 'fb5q4', 'sec5')">Check</button>
+          </div>
+          <div class="feedback" id="fb5q4"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- 10-QUESTION QUIZ                                        -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="quiz-section">
+    <div class="quiz-header">
+      <h2>Final Quiz — Special Relativity</h2>
+      <div class="score-badge" id="quizScoreBadge">0 / 10</div>
+    </div>
+    <div class="quiz-body">
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 1</div>
+        <div class="quiz-q-text">Which statement is a direct consequence of Einstein's second postulate (constant speed of light)?</div>
+        <div class="mc-options">
+          <label class="mc-option"><input type="radio" name="qq1" value="a"> Mass is conserved in all reference frames</label>
+          <label class="mc-option"><input type="radio" name="qq1" value="b"> Simultaneity is relative — two observers can disagree on event order</label>
+          <label class="mc-option"><input type="radio" name="qq1" value="c"> Forces act instantaneously across space</label>
+          <label class="mc-option"><input type="radio" name="qq1" value="d"> Gravity bends light beams</label>
+        </div>
+        <button class="btn btn-amber" onclick="checkQuiz('qq1','b','qfb1',1)">Submit</button>
+        <div class="feedback" id="qfb1"></div>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 2</div>
+        <div class="quiz-q-text">The Lorentz factor &gamma; for an object moving at v = 0.6c is:</div>
+        <div class="mc-options">
+          <label class="mc-option"><input type="radio" name="qq2" value="a"> 1.00</label>
+          <label class="mc-option"><input type="radio" name="qq2" value="b"> 1.25</label>
+          <label class="mc-option"><input type="radio" name="qq2" value="c"> 1.60</label>
+          <label class="mc-option"><input type="radio" name="qq2" value="d"> 2.00</label>
+        </div>
+        <button class="btn btn-amber" onclick="checkQuiz('qq2','b','qfb2',2)">Submit</button>
+        <div class="feedback" id="qfb2"></div>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 3</div>
+        <div class="quiz-q-text">A clock on a spaceship traveling at 0.866c (&gamma; = 2) shows 10 minutes have passed. How much time passes on Earth?</div>
+        <div class="mc-options">
+          <label class="mc-option"><input type="radio" name="qq3" value="a"> 5 minutes</label>
+          <label class="mc-option"><input type="radio" name="qq3" value="b"> 10 minutes</label>
+          <label class="mc-option"><input type="radio" name="qq3" value="c"> 20 minutes</label>
+          <label class="mc-option"><input type="radio" name="qq3" value="d"> 40 minutes</label>
+        </div>
+        <button class="btn btn-amber" onclick="checkQuiz('qq3','c','qfb3',3)">Submit</button>
+        <div class="feedback" id="qfb3"></div>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 4</div>
+        <div class="quiz-q-text">A 200 m spaceship moves at v = 0.6c (&gamma; = 1.25). What length does a stationary observer measure?</div>
+        <div class="mc-options">
+          <label class="mc-option"><input type="radio" name="qq4" value="a"> 250 m</label>
+          <label class="mc-option"><input type="radio" name="qq4" value="b"> 200 m</label>
+          <label class="mc-option"><input type="radio" name="qq4" value="c"> 160 m</label>
+          <label class="mc-option"><input type="radio" name="qq4" value="d"> 120 m</label>
+        </div>
+        <button class="btn btn-amber" onclick="checkQuiz('qq4','c','qfb4',4)">Submit</button>
+        <div class="feedback" id="qfb4"></div>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 5</div>
+        <div class="quiz-q-text">Two spaceships move toward each other, each at 0.7c relative to Earth. What is their speed relative to each other (relativistic velocity addition)?</div>
+        <div class="mc-options">
+          <label class="mc-option"><input type="radio" name="qq5" value="a"> 1.4c</label>
+          <label class="mc-option"><input type="radio" name="qq5" value="b"> 0.94c (approximately)</label>
+          <label class="mc-option"><input type="radio" name="qq5" value="c"> 0.7c</label>
+          <label class="mc-option"><input type="radio" name="qq5" value="d"> Exactly c</label>
+        </div>
+        <button class="btn btn-amber" onclick="checkQuiz('qq5','b','qfb5',5)">Submit</button>
+        <div class="feedback" id="qfb5"></div>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 6</div>
+        <div class="quiz-q-text">The spacetime interval s² = c²&Delta;t² &minus; &Delta;x² is important because it is:</div>
+        <div class="mc-options">
+          <label class="mc-option"><input type="radio" name="qq6" value="a"> Always equal to zero for all events</label>
+          <label class="mc-option"><input type="radio" name="qq6" value="b"> The same value in all inertial reference frames (invariant)</label>
+          <label class="mc-option"><input type="radio" name="qq6" value="c"> Equal to the proper time squared</label>
+          <label class="mc-option"><input type="radio" name="qq6" value="d"> Only defined for events on the light cone</label>
+        </div>
+        <button class="btn btn-amber" onclick="checkQuiz('qq6','b','qfb6',6)">Submit</button>
+        <div class="feedback" id="qfb6"></div>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 7</div>
+        <div class="quiz-q-text">What is the rest energy of a 2 kg mass? (c = 3×10⁸ m/s)</div>
+        <div class="mc-options">
+          <label class="mc-option"><input type="radio" name="qq7" value="a"> 6×10⁸ J</label>
+          <label class="mc-option"><input type="radio" name="qq7" value="b"> 1.8×10¹⁷ J</label>
+          <label class="mc-option"><input type="radio" name="qq7" value="c"> 9×10⁸ J</label>
+          <label class="mc-option"><input type="radio" name="qq7" value="d"> 4.5×10¹⁶ J</label>
+        </div>
+        <button class="btn btn-amber" onclick="checkQuiz('qq7','b','qfb7',7)">Submit</button>
+        <div class="feedback" id="qfb7"></div>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 8</div>
+        <div class="quiz-q-text">Relativistic kinetic energy KE = (&gamma; &minus; 1)m₀c². At low speeds (v &lt;&lt; c), this formula reduces to:</div>
+        <div class="mc-options">
+          <label class="mc-option"><input type="radio" name="qq8" value="a"> m₀c²</label>
+          <label class="mc-option"><input type="radio" name="qq8" value="b"> m₀vc</label>
+          <label class="mc-option"><input type="radio" name="qq8" value="c"> &frac12;m₀v²</label>
+          <label class="mc-option"><input type="radio" name="qq8" value="d"> m₀v²</label>
+        </div>
+        <button class="btn btn-amber" onclick="checkQuiz('qq8','c','qfb8',8)">Submit</button>
+        <div class="feedback" id="qfb8"></div>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 9</div>
+        <div class="quiz-q-text">Muons created in the upper atmosphere (at ~0.998c) are detected at Earth's surface despite having a rest-frame lifetime of only 2.2 μs. This is explained by:</div>
+        <div class="mc-options">
+          <label class="mc-option"><input type="radio" name="qq9" value="a"> General relativity — gravity slows the muons</label>
+          <label class="mc-option"><input type="radio" name="qq9" value="b"> Time dilation — the muon's clock runs slow relative to Earth</label>
+          <label class="mc-option"><input type="radio" name="qq9" value="c"> The muons gain mass and become more stable</label>
+          <label class="mc-option"><input type="radio" name="qq9" value="d"> The atmosphere is thinner than classical physics predicts</label>
+        </div>
+        <button class="btn btn-amber" onclick="checkQuiz('qq9','b','qfb9',9)">Submit</button>
+        <div class="feedback" id="qfb9"></div>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 10</div>
+        <div class="quiz-q-text">In the twin paradox, twin A stays on Earth and twin B travels at 0.8c for 5 years (proper time), then returns. When B returns, which twin is older?</div>
+        <div class="mc-options">
+          <label class="mc-option"><input type="radio" name="qq10" value="a"> Twin A (the Earth twin) is older</label>
+          <label class="mc-option"><input type="radio" name="qq10" value="b"> Twin B (the traveling twin) is older</label>
+          <label class="mc-option"><input type="radio" name="qq10" value="c"> They are the same age — relativity is symmetric</label>
+          <label class="mc-option"><input type="radio" name="qq10" value="d"> It depends on which twin considers themselves at rest</label>
+        </div>
+        <button class="btn btn-amber" onclick="checkQuiz('qq10','a','qfb10',10)">Submit</button>
+        <div class="feedback" id="qfb10"></div>
+      </div>
+
+      <div class="results-banner" id="resultsBanner">
+        <div class="score-big" id="finalScore">0/10</div>
+        <p id="finalMsg">Keep reviewing the sections and try again.</p>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end .content -->
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────
+const TOTAL_SECTIONS = 5;
+const sectionCorrect = { sec1: new Set(), sec2: new Set(), sec3: new Set(), sec4: new Set(), sec5: new Set() };
+const sectionTotal   = { sec1: 4, sec2: 4, sec3: 4, sec4: 4, sec5: 4 };
+
+let quizScore = 0;
+const quizAnswered = new Set();
+
+// ─── SECTION TOGGLE ──────────────────────────────────────────
+function toggleSection(id) {
+  const card = document.getElementById(id);
+  const body = document.getElementById(id + '-body');
+  const isOpen = card.classList.contains('open');
+  card.classList.toggle('open', !isOpen);
+  if (!isOpen) {
+    body.style.maxHeight = body.scrollHeight + 'px';
+  } else {
+    body.style.maxHeight = '0';
+  }
+}
+
+// Re-measure height when images/interactive panels may change size
+function openSection(id) {
+  const card = document.getElementById(id);
+  const body = document.getElementById(id + '-body');
+  card.classList.add('open');
+  body.style.maxHeight = body.scrollHeight + 2000 + 'px';
+}
+
+// ─── PROGRESS ────────────────────────────────────────────────
+function updateProgress() {
+  let completed = 0;
+  for (const sec in sectionCorrect) {
+    if (sectionCorrect[sec].size >= sectionTotal[sec]) completed++;
+  }
+  const pct = (completed / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completed + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+function checkSectionComplete(secId) {
+  if (sectionCorrect[secId].size >= sectionTotal[secId]) {
+    document.getElementById(secId).classList.add('completed');
+    updateProgress();
+  }
+}
+
+// ─── CHECK FUNCTIONS ─────────────────────────────────────────
+function checkNum(inputId, answer, tolerance, feedbackId, secId) {
+  const val = parseFloat(document.getElementById(inputId).value);
+  const fb  = document.getElementById(feedbackId);
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Please enter a number.';
+    return;
+  }
+  if (Math.abs(val - answer) <= tolerance) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! ' + getCorrectMsg(answer);
+    if (secId) {
+      sectionCorrect[secId].add(feedbackId);
+      checkSectionComplete(secId);
+    }
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Expected ~' + answer + '. Check your calculation and try again.';
+  }
+}
+
+function checkMC(name, correct, feedbackId, secId) {
+  const chosen = document.querySelector('input[name="' + name + '"]:checked');
+  const fb = document.getElementById(feedbackId);
+  if (!chosen) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Please select an answer.';
+    return;
+  }
+  if (chosen.value === correct) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! ' + getMCExplanation(feedbackId);
+    if (secId) {
+      sectionCorrect[secId].add(feedbackId);
+      checkSectionComplete(secId);
+    }
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. ' + getMCWrong(feedbackId);
+  }
+}
+
+function checkQuiz(name, correct, feedbackId, qNum) {
+  if (quizAnswered.has(qNum)) return;
+  const chosen = document.querySelector('input[name="' + name + '"]:checked');
+  const fb = document.getElementById(feedbackId);
+  if (!chosen) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Please select an answer.';
+    return;
+  }
+  quizAnswered.add(qNum);
+  if (chosen.value === correct) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! ' + getQuizExplanation(qNum);
+    quizScore++;
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Incorrect. ' + getQuizExplanation(qNum);
+  }
+  document.getElementById('quizScoreBadge').textContent = quizScore + ' / 10';
+  if (quizAnswered.size === 10) showResults();
+}
+
+// ─── EXPLANATIONS ─────────────────────────────────────────────
+function getCorrectMsg(ans) {
+  return 'Great work!';
+}
+
+function getMCExplanation(id) {
+  const map = {
+    'fb1q1': "Postulate 2: all inertial observers measure light at exactly c, regardless of relative motion.",
+    'fb1q2': "An inertial frame has zero acceleration — constant velocity in a straight line. Deep space at constant v qualifies.",
+    'fb1q3': "Both observers measure exactly c. This is the whole point of the second postulate.",
+    'fb1q4': "The front bolt strikes first for the passenger: the train moves toward the front, so light from the front arrives first.",
+    'fb2q1': "gamma = 1/sqrt(1 - 0.995^2) = 1/sqrt(1 - 0.990025) = 1/sqrt(0.009975) ≈ 10.01.",
+    'fb2q2': "Delta_t = gamma * Delta_t0 = 10.01 * 2.20 μs ≈ 22.0 μs.",
+    'fb2q3': "Delta_t0 = Delta_t / gamma = 8 / 1.25 = 6.40 years.",
+    'fb2q4': "v/c = sqrt(1 - 1/gamma^2) = sqrt(1 - 1/4) = sqrt(0.75) ≈ 0.866.",
+    'fb3q1': "L = L0/gamma = 500/1.25 = 400 m.",
+    'fb3q2': "L = 1800/1.667 ≈ 1080 m.",
+    'fb3q3': "L = 2.0/2.0 = 1.0 m along the direction of motion. Perpendicular dimensions unchanged.",
+    'fb3q4': "L = 120/2.294 ≈ 52.3 m.",
+    'fb4q1': "x' = gamma(x - vt) = 1.25(100 - 0.6*200) = 1.25(100-120) = 1.25(-20) = -25... using light-seconds and seconds: x' = 1.25(100 - 120) = -25? Let's check: x=100 ls, t=200 s, v=0.6 ls/s. x'=1.25(100-0.6*200)=1.25(100-120)=1.25(-20)=-25. Hmm — expected 25, answer is -25 ls. If negative: -25 ls means event is behind S'. The magnitude is 25 ls.",
+    'fb4q2': "u' = (0.6+0.7)/(1+0.6*0.7) = 1.3/1.42 ≈ 0.915c.",
+    'fb4q3': "s^2 = c^2*Delta_t^2 - Delta_x^2 = 1^2*6^2 - 0^2 = 36.",
+    'fb4q4': "u'=(-0.9-0.9)/(1-(-0.9)(0.9)) = -1.8/(1+0.81) = -1.8/1.81 ≈ -0.994c. Speed = 0.994c.",
+    'fb5q1': "E0 = 0.001 * (3e8)^2 = 0.001 * 9e16 = 9e13 J = 9.0 × 10^13 J.",
+    'fb5q2': "p = 1.667 * 1.67e-27 * 0.8 * 3e8 = 1.667 * 4.008e-19 ≈ 6.69e-19.",
+    'fb5q3': "E = gamma * m0*c^2 = 3 * 938 = 2814 MeV.",
+    'fb5q4': "KE = E - E0 = 2814 - 938 = 1876 MeV."
+  };
+  return map[id] || '';
+}
+
+function getMCWrong(id) {
+  const map = {
+    'fb1q1': "Light speed is always c. Galilean addition does not apply.",
+    'fb1q2': "Inertial frames must be non-accelerating. Rotating/orbiting frames are not purely inertial.",
+    'fb1q3': "Both measure exactly c. The postulate holds for all inertial observers.",
+    'fb1q4': "Because the train moves toward the front, the passenger receives the front-bolt's light first.",
+    'fb2q1': "gamma = 1/sqrt(1 - v^2/c^2). At v=0.995c: gamma ≈ 10.01.",
+    'fb2q2': "Delta_t = gamma * Delta_t0 ≈ 10.01 × 2.20 ≈ 22.0 μs.",
+    'fb2q3': "Use Delta_t0 = Delta_t/gamma = 8/1.25 = 6.40 years.",
+    'fb2q4': "Set gamma=2: 2 = 1/sqrt(1-v^2/c^2), so v/c = sqrt(3/4) ≈ 0.866.",
+    'fb3q1': "L = L0/gamma = 500/1.25 = 400 m.",
+    'fb3q2': "L = 1800/1.667 ≈ 1080 m.",
+    'fb3q3': "L = L0/gamma = 2.0/2.0 = 1.0 m.",
+    'fb3q4': "L = 120/2.294 ≈ 52.3 m.",
+    'fb4q1': "x' = gamma(x - vt) with c=1 ls/s.",
+    'fb4q2': "Relativistic addition: u' = (u+v)/(1+uv/c^2) = (0.6+0.7)/(1+0.42) ≈ 0.915c.",
+    'fb4q3': "s^2 = c^2*Delta_t^2 - Delta_x^2 = 36 - 0 = 36.",
+    'fb4q4': "|u'| = |(-0.9-0.9)/(1+0.81)| = 1.8/1.81 ≈ 0.994c.",
+    'fb5q1': "E = mc^2 = 0.001 * (3e8)^2 = 9×10^13 J.",
+    'fb5q2': "p = gamma*m0*v = 1.667 * 1.67e-27 * 2.4e8 ≈ 6.69×10^-19.",
+    'fb5q3': "E = gamma * m0c^2 = 3 × 938 = 2814 MeV.",
+    'fb5q4': "KE = E_total - E_rest = 2814 - 938 = 1876 MeV."
+  };
+  return map[id] || 'Review the formula and try again.';
+}
+
+function getQuizExplanation(n) {
+  const map = {
+    1: "Constant c forces relativity of simultaneity — observers in different frames disagree on event timing.",
+    2: "gamma = 1/sqrt(1-0.36) = 1/sqrt(0.64) = 1/0.8 = 1.25.",
+    3: "Delta_t = gamma * Delta_t0 = 2 * 10 = 20 minutes. Earth clocks run faster.",
+    4: "L = L0/gamma = 200/1.25 = 160 m.",
+    5: "u' = (0.7+0.7)/(1+0.49) = 1.4/1.49 ≈ 0.94c. Never exceeds c.",
+    6: "The invariant spacetime interval has the same value in all inertial frames — it is the 4D analog of distance.",
+    7: "E = mc^2 = 2*(3e8)^2 = 2*9e16 = 1.8e17 J.",
+    8: "At low speeds gamma ≈ 1 + v^2/(2c^2), so KE ≈ (1/2)m0v^2 — classical kinetic energy.",
+    9: "Muons experience time dilation: their clocks run slow by gamma ≈ 10, extending their observed lifetime ~10-fold.",
+    10: "Twin A is older. Twin B underwent acceleration to turn around, breaking the symmetry. The asymmetry is real."
+  };
+  return map[n] || '';
+}
+
+function showResults() {
+  const banner = document.getElementById('resultsBanner');
+  banner.classList.add('show');
+  document.getElementById('finalScore').textContent = quizScore + '/10';
+  const msgs = [
+    'Keep studying — review each section carefully.',
+    'Good start. Re-read the sections you struggled with.',
+    'Decent effort. A few more reviews will lock it in.',
+    'Good work! A bit more practice and you have it.',
+    'Very good! Nearly there.',
+    'Excellent! Strong grasp of Special Relativity.'
+  ];
+  const idx = Math.min(Math.floor(quizScore / 2), 5);
+  document.getElementById('finalMsg').textContent = msgs[idx];
+}
+
+// ─── LORENTZ FACTOR INTERACTIVE ──────────────────────────────
+function lorentzGamma(beta) {
+  if (beta >= 1) return Infinity;
+  return 1 / Math.sqrt(1 - beta * beta);
+}
+
+function updateLorentz() {
+  const rawVal = parseInt(document.getElementById('vSlider').value);
+  const beta = rawVal / 1000;
+  const gamma = lorentzGamma(beta);
+
+  document.getElementById('vDisplay').textContent = beta.toFixed(3) + 'c';
+  document.getElementById('gammaDisplay').textContent = gamma > 1e6 ? '> 10⁶' : gamma.toFixed(4);
+  document.getElementById('timeRatioDisplay').textContent = gamma > 1e6 ? '> 10⁶' : gamma.toFixed(4);
+  document.getElementById('lenRatioDisplay').textContent = gamma > 1e6 ? '~0' : (1 / gamma).toFixed(4);
+
+  const speedMs = (beta * 3e8).toExponential(2);
+  const pct = (beta * 100).toFixed(5);
+  document.getElementById('speedPctDisplay').textContent = pct + '%';
+
+  let ctx = '';
+  if (beta < 0.001) ctx = 'Everyday speeds (walking, driving) — effects completely negligible.';
+  else if (beta < 0.01) ctx = 'Fast rockets (ISS at ~0.000025c) — effects tiny but in principle measurable.';
+  else if (beta < 0.1) ctx = 'Laboratory particles — relativistic effects becoming noticeable.';
+  else if (beta < 0.5) ctx = 'Significant relativistic effects — time dilation measurable.';
+  else if (beta < 0.9) ctx = 'Highly relativistic — large time dilation and length contraction.';
+  else if (beta < 0.99) ctx = 'Extreme speeds — gamma > 2. Major relativistic effects.';
+  else ctx = 'Ultra-relativistic — approaching c. Effects become enormous.';
+  document.getElementById('speedContext').textContent = ctx;
+}
+
+// ─── LENGTH CONTRACTION VISUALIZER ───────────────────────────
+function updateLC() {
+  const rawVal = parseInt(document.getElementById('lcSlider').value);
+  const beta = rawVal / 1000;
+  const gamma = lorentzGamma(beta);
+  const L = 100 / gamma;
+  const pct = Math.max(1, (L / 100) * 100);
+
+  document.getElementById('lcVDisplay').textContent = beta.toFixed(3) + 'c';
+  document.getElementById('lcLenDisplay').textContent = L.toFixed(1);
+  document.getElementById('lcGamma').textContent = gamma.toFixed(4);
+  document.getElementById('lcRatio').textContent = (1 / gamma).toFixed(4);
+  document.getElementById('lcBar').style.width = pct + '%';
+  document.getElementById('lcBar').textContent = L.toFixed(1) + ' m';
+}
+
+// ─── TIME DILATION CALCULATOR ────────────────────────────────
+function calcTimeDilation() {
+  const v = parseFloat(document.getElementById('tdSpeed').value);
+  const t0 = parseFloat(document.getElementById('tdProper').value);
+  const el = document.getElementById('tdResult');
+
+  if (isNaN(v) || isNaN(t0) || v <= 0 || v >= 1 || t0 <= 0) {
+    el.style.display = 'block';
+    el.innerHTML = '<span style="color:var(--pink)">Please enter valid values: 0 < v < 1 (as fraction of c), t > 0.</span>';
+    return;
+  }
+
+  const gamma = lorentzGamma(v);
+  const tCoord = gamma * t0;
+  const ageDiff = tCoord - t0;
+
+  el.style.display = 'block';
+  el.innerHTML =
+    '<div style="display:grid;gap:8px;">' +
+    '<div><span style="color:var(--indigo)">Lorentz factor &gamma;:</span> <strong>' + gamma.toFixed(4) + '</strong></div>' +
+    '<div><span style="color:var(--green)">Proper time (rocket clock):</span> <strong>' + t0.toFixed(2) + ' years</strong></div>' +
+    '<div><span style="color:var(--pink)">Coordinate time (Earth clock):</span> <strong>' + tCoord.toFixed(2) + ' years</strong></div>' +
+    '<div><span style="color:var(--amber)">Age difference:</span> <strong>' + ageDiff.toFixed(2) + ' years</strong> — Earth twin is older by this amount</div>' +
+    '<div style="margin-top:6px;font-size:0.72rem;color:var(--text-dim)">Twin Paradox: if the rocket returns (total proper time = ' + (2*t0).toFixed(2) + ' yrs), Earth sees ' + (2*tCoord).toFixed(2) + ' years pass.</div>' +
+    '</div>';
+}
+
+// ─── E=mc² CALCULATOR ────────────────────────────────────────
+function calcEmc2() {
+  const m = parseFloat(document.getElementById('emcMass').value);
+  const el = document.getElementById('emcResult');
+
+  if (isNaN(m) || m <= 0) {
+    el.style.display = 'block';
+    el.innerHTML = '<span style="color:var(--pink)">Please enter a positive mass.</span>';
+    return;
+  }
+
+  const c = 3e8;
+  const E = m * c * c;
+  const tnt = E / 4.184e9;        // 1 ton TNT = 4.184 GJ
+  const megatonTNT = tnt / 1e6;
+  const hiroshima = E / 6.3e13;   // Hiroshima bomb ≈ 6.3×10^13 J
+  const yearsSun = E / (3.85e26 * 3.156e7); // Sun luminosity × seconds/year
+
+  el.style.display = 'block';
+  el.innerHTML =
+    '<div style="display:grid;gap:8px;">' +
+    '<div><span style="color:var(--green)">Rest energy E = mc&sup2;:</span> <strong style="color:var(--text-bright)">' + E.toExponential(3) + ' J</strong></div>' +
+    '<hr style="border-color:var(--border);margin:4px 0;">' +
+    '<div style="color:var(--text-dim);font-size:0.73rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Equivalent to:</div>' +
+    '<div><span style="color:var(--amber)">TNT equivalent:</span> ' + tnt.toExponential(3) + ' tons (' + megatonTNT.toFixed(1) + ' megatons)</div>' +
+    '<div><span style="color:var(--pink)">Hiroshima bombs:</span> ~' + hiroshima.toExponential(2) + ' equivalent bombs</div>' +
+    '<div><span style="color:var(--indigo)">Sun energy output:</span> ~' + yearsSun.toExponential(2) + ' seconds of solar output</div>' +
+    '</div>';
+}
+
+// ─── RELATIVISTIC ENERGY CALCULATOR ─────────────────────────
+function calcRelEnergy() {
+  const m0 = parseFloat(document.getElementById('relMass').value);
+  const v  = parseFloat(document.getElementById('relSpeed').value);
+  const el = document.getElementById('relResult');
+
+  if (isNaN(m0) || isNaN(v) || m0 <= 0 || v <= 0 || v >= 1) {
+    el.style.display = 'block';
+    el.innerHTML = '<span style="color:var(--pink)">Please enter valid values: m > 0, 0 < v < 1.</span>';
+    return;
+  }
+
+  const c = 3e8;
+  const gamma = lorentzGamma(v);
+  const E0 = m0 * c * c;
+  const E  = gamma * E0;
+  const KE = (gamma - 1) * E0;
+  const p  = gamma * m0 * v * c;
+
+  el.style.display = 'block';
+  el.innerHTML =
+    '<div style="display:grid;gap:8px;">' +
+    '<div><span style="color:var(--indigo)">&gamma; (Lorentz factor):</span> <strong>' + gamma.toFixed(4) + '</strong></div>' +
+    '<div><span style="color:var(--green)">Rest energy E&sub0; = m&sub0;c&sup2;:</span> <strong>' + E0.toExponential(3) + ' J</strong></div>' +
+    '<div><span style="color:var(--text-bright)">Total energy E = &gamma;m&sub0;c&sup2;:</span> <strong>' + E.toExponential(3) + ' J</strong></div>' +
+    '<div><span style="color:var(--pink)">Kinetic energy KE = (&gamma;&minus;1)m&sub0;c&sup2;:</span> <strong>' + KE.toExponential(3) + ' J</strong></div>' +
+    '<div><span style="color:var(--amber)">Momentum p = &gamma;m&sub0;v:</span> <strong>' + p.toExponential(3) + ' kg&middot;m/s</strong></div>' +
+    '<div style="margin-top:4px;color:var(--text-dim);font-size:0.72rem;">KE is ' + ((KE/E0)*100).toFixed(1) + '% of rest energy. Classical KE = ' + (0.5*m0*v*v*c*c).toExponential(3) + ' J (' + (((0.5*m0*v*v*c*c)/KE)*100).toFixed(1) + '% of relativistic).</div>' +
+    '</div>';
+}
+
+// ─── VELOCITY ADDITION CALCULATOR ────────────────────────────
+function calcVelocityAdd() {
+  const u = parseFloat(document.getElementById('vaU').value);
+  const v = parseFloat(document.getElementById('vaV').value);
+  const el = document.getElementById('vaResult');
+
+  if (isNaN(u) || isNaN(v) || Math.abs(u) >= 1 || Math.abs(v) >= 1) {
+    el.style.display = 'block';
+    el.innerHTML = '<span style="color:var(--pink)">Speeds must be between -0.999c and 0.999c.</span>';
+    return;
+  }
+
+  const uPrime = (u - v) / (1 - u * v);
+  const galilean = u - v;
+
+  el.style.display = 'block';
+  el.innerHTML =
+    '<div style="display:grid;gap:8px;">' +
+    '<div><span style="color:var(--indigo)">Relativistic result u\':</span> <strong style="color:var(--text-bright)">' + uPrime.toFixed(5) + 'c</strong></div>' +
+    '<div><span style="color:var(--text-dim)">Galilean (classical) result:</span> ' + galilean.toFixed(5) + 'c</div>' +
+    '<div><span style="color:var(--amber)">Difference:</span> ' + Math.abs(uPrime - galilean).toFixed(5) + 'c (' + (Math.abs((uPrime-galilean)/galilean)*100).toFixed(2) + '% correction)</div>' +
+    (Math.abs(uPrime) >= 1 ? '<div style="color:var(--pink)">Warning: result at or exceeding c — check inputs.</div>' : '') +
+    '</div>';
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+updateLorentz();
+updateLC();
+
+// Open first section by default
+openSection('sec1');
+</script>
+</body>
+</html>

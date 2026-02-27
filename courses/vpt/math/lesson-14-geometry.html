@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 14 -- Geometry Foundations</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #262a33;
+    --border: #363b47;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* -- Progress Bar -- */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* -- Header -- */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* -- Collapsible Cards -- */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details[open] { border-color: var(--accent); }
+  details.completed { border-color: var(--green); }
+  details.completed summary::after {
+    content: 'Done';
+    font-size: 0.65rem;
+    background: rgba(34,197,94,0.15);
+    color: var(--green);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    margin-left: auto;
+    font-weight: 600;
+  }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s var(--spring);
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .card-body { padding: 1.25rem; }
+  .card-body p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+  .card-body h3 {
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  /* -- Equation display -- */
+  .eq {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--orange);
+    text-align: center;
+    margin: 0.75rem 0;
+    padding: 0.5rem;
+    background: rgba(245,158,11,0.06);
+    border-radius: var(--radius);
+  }
+
+  /* -- Info boxes -- */
+  .info-box {
+    background: rgba(99,102,241,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+  }
+  .info-box.green {
+    background: rgba(34,197,94,0.08);
+    border-color: var(--green);
+  }
+  .info-box.pink {
+    background: rgba(236,72,153,0.08);
+    border-color: var(--pink);
+  }
+  .info-box.amber {
+    background: rgba(245,158,11,0.08);
+    border-color: var(--orange);
+  }
+
+  /* -- Buttons -- */
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn.green { background: var(--green); }
+  .btn.pink { background: var(--pink); }
+  .btn.orange { background: var(--orange); color: #1e2128; }
+  .btn.outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0.75rem 0;
+  }
+
+  /* -- Rule Cards -- */
+  .rule-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .rule-card {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .rule-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .rule-card .rule-name {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  .rule-card .rule-formula {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .rule-card .rule-example {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .rule-card .rule-example strong { color: var(--green); }
+
+  /* -- Practice Problems -- */
+  .problem-set {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    transition: border-color 0.3s, transform 0.15s;
+  }
+  .problem.correct { border-color: var(--green); }
+  .problem.incorrect { border-color: var(--pink); }
+  .problem .prompt {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    min-width: 200px;
+  }
+  .problem input[type="text"] {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .problem input:focus { border-color: var(--accent); }
+  .problem .feedback {
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 60px;
+  }
+  .problem .feedback.correct { color: var(--green); }
+  .problem .feedback.incorrect { color: var(--pink); }
+
+  /* -- Slider rows -- */
+  .slider-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0.75rem 0;
+    align-items: center;
+  }
+  .slider-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 200px;
+  }
+  .slider-group label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    min-width: 15px;
+  }
+  .slider-group input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    outline: none;
+  }
+  .slider-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+  .slider-group input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+  }
+  .slider-val {
+    font-size: 0.8rem;
+    color: var(--orange);
+    min-width: 50px;
+    text-align: right;
+    font-weight: 600;
+  }
+
+  /* -- Graph wrap -- */
+  .graph-wrap {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .graph-wrap svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* -- Feature tags -- */
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+  }
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .tag.indigo { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .tag.green { background: rgba(34,197,94,0.15); color: var(--green); }
+  .tag.pink { background: rgba(236,72,153,0.15); color: var(--pink); }
+  .tag.amber { background: rgba(245,158,11,0.15); color: var(--orange); }
+
+  /* -- Quiz -- */
+  .quiz-score {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    background: rgba(99,102,241,0.08);
+    border-radius: var(--radius);
+  }
+  .quiz-score span { color: var(--green); }
+
+  .quiz-problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.75rem 0;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem.correct { border-color: var(--green); }
+  .quiz-problem.incorrect { border-color: var(--pink); }
+  .quiz-problem .q-num {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  .quiz-problem .q-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .quiz-problem input[type="text"] {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem input:focus { border-color: var(--accent); }
+  .quiz-problem .q-feedback {
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    min-height: 1.2em;
+  }
+  .quiz-problem .q-feedback.correct { color: var(--green); }
+  .quiz-problem .q-feedback.incorrect { color: var(--pink); }
+
+  /* -- Physics context boxes -- */
+  .physics-box {
+    background: rgba(99,102,241,0.05);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.75rem 0;
+  }
+  .physics-box .phys-label {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+
+  /* -- SVG interactive area -- */
+  .svg-interactive {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.5rem;
+    margin: 1rem 0;
+    overflow: hidden;
+    touch-action: none;
+  }
+  .svg-interactive svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+    cursor: default;
+  }
+
+  /* -- Converter/calc Box -- */
+  .converter-box {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin: 1rem 0;
+    text-align: center;
+  }
+  .converter-box input[type="text"],
+  .converter-box input[type="number"] {
+    padding: 0.5rem 0.75rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    text-align: center;
+    width: 120px;
+    max-width: 100%;
+    transition: border-color 0.3s;
+  }
+  .converter-box input:focus { border-color: var(--accent); }
+  .converter-result {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--green);
+    margin-top: 0.75rem;
+    min-height: 1.5em;
+  }
+
+  /* -- Shape card grid -- */
+  .shape-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .shape-card {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .shape-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .shape-card.active { border-color: var(--orange); }
+  .shape-card .shape-name {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.4rem;
+    font-weight: 600;
+  }
+  .shape-card .shape-formula {
+    font-size: 0.7rem;
+    color: var(--orange);
+    margin-top: 0.2rem;
+    font-weight: 600;
+  }
+
+  /* -- Shape detail panel -- */
+  .shape-detail {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 1rem 0;
+    display: none;
+  }
+  .shape-detail.visible { display: block; }
+  .shape-detail .detail-title {
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  /* -- Triples table -- */
+  .triples-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+  }
+  .triples-table th {
+    color: var(--accent);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .triples-table td {
+    text-align: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .triples-table tr:hover td { color: var(--orange); }
+
+  /* -- Animations -- */
+  @keyframes popIn {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* -- Responsive -- */
+  @media (max-width: 600px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.2rem; }
+    summary { font-size: 0.9rem; padding: 0.75rem 1rem; }
+    .card-body { padding: 1rem; }
+    .rule-cards { grid-template-columns: 1fr; }
+    .problem { flex-direction: column; align-items: stretch; }
+    .problem .prompt { min-width: unset; }
+    .slider-group { min-width: 100%; }
+    .converter-box input { width: 100%; }
+    .shape-grid { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar">
+  <div class="seg" data-section="0"></div>
+  <div class="seg" data-section="1"></div>
+  <div class="seg" data-section="2"></div>
+  <div class="seg" data-section="3"></div>
+  <div class="seg" data-section="4"></div>
+  <div class="seg" data-section="5"></div>
+</div>
+
+<h1>Week 11: Geometry Foundations</h1>
+<p class="subtitle">Triangles, Pythagorean theorem, circles, area &amp; volume, similarity &amp; congruence // Lesson 14 of VPT Prep</p>
+
+<!-- ===================== SECTION 1: Triangle Fundamentals ===================== -->
+<details id="sec0" open>
+  <summary>1. Triangle Fundamentals</summary>
+  <div class="card-body">
+    <p>Every triangle has angles that sum to exactly 180 degrees. Drag the vertices below to explore how changing the shape affects the classification.</p>
+
+    <div class="svg-interactive" id="triContainer">
+      <svg id="triSvg" width="500" height="350" viewBox="0 0 500 350"></svg>
+    </div>
+
+    <div class="features" id="triTags">
+      <span class="tag indigo" id="triSideClass">Scalene</span>
+      <span class="tag amber" id="triAngleClass">Acute</span>
+      <span class="tag green" id="triAreaTag">Area: --</span>
+    </div>
+
+    <div class="info-box">
+      <strong>Angle sum property:</strong> The interior angles of any triangle always sum to 180 degrees. This is a consequence of the parallel postulate in Euclidean geometry.
+    </div>
+
+    <div class="eq">
+      A = (1/2) &times; base &times; height
+    </div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">By Sides</div>
+        <div class="rule-formula">Equilateral / Isosceles / Scalene</div>
+        <div class="rule-example">All equal / Two equal / <strong>None equal</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">By Angles</div>
+        <div class="rule-formula">Acute / Right / Obtuse</div>
+        <div class="rule-example">All &lt; 90 / One = 90 / <strong>One &gt; 90</strong></div>
+      </div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="triProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkTriProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showTriAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 2: Pythagorean Theorem ===================== -->
+<details id="sec1">
+  <summary>2. Pythagorean Theorem</summary>
+  <div class="card-body">
+    <p>For any right triangle with legs <em>a</em> and <em>b</em> and hypotenuse <em>c</em>:</p>
+
+    <div class="eq">a&sup2; + b&sup2; = c&sup2;</div>
+
+    <h3>Visual Proof</h3>
+    <p>The squares built on each side of a right triangle demonstrate the theorem. The area of the square on the hypotenuse equals the sum of the areas on the two legs.</p>
+
+    <div class="svg-interactive">
+      <svg id="pythSvg" width="500" height="380" viewBox="0 0 500 380"></svg>
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-group">
+        <label>a</label>
+        <input type="range" id="pythA" min="2" max="10" value="3" step="0.5">
+        <span class="slider-val" id="pythAVal">3</span>
+      </div>
+      <div class="slider-group">
+        <label>b</label>
+        <input type="range" id="pythB" min="2" max="10" value="4" step="0.5">
+        <span class="slider-val" id="pythBVal">4</span>
+      </div>
+    </div>
+    <div class="features" id="pythTags">
+      <span class="tag amber" id="pythCVal">c = 5.00</span>
+      <span class="tag indigo" id="pythEqTag">9 + 16 = 25</span>
+    </div>
+
+    <h3>Calculator: Find the Missing Side</h3>
+    <div class="converter-box">
+      <p style="font-size:0.8rem;color:var(--text-dim);margin-bottom:0.75rem;">Enter any two sides. Leave one blank to calculate it.</p>
+      <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;align-items:center;">
+        <div>
+          <label style="font-size:0.7rem;color:var(--accent);display:block;margin-bottom:0.2rem;">a (leg)</label>
+          <input type="number" id="calcA" placeholder="a" style="width:80px;">
+        </div>
+        <div>
+          <label style="font-size:0.7rem;color:var(--accent);display:block;margin-bottom:0.2rem;">b (leg)</label>
+          <input type="number" id="calcB" placeholder="b" style="width:80px;">
+        </div>
+        <div>
+          <label style="font-size:0.7rem;color:var(--accent);display:block;margin-bottom:0.2rem;">c (hyp)</label>
+          <input type="number" id="calcC" placeholder="c" style="width:80px;">
+        </div>
+      </div>
+      <div style="margin-top:0.75rem;">
+        <button class="btn" onclick="calcPyth()">Calculate</button>
+      </div>
+      <div class="converter-result" id="pythCalcResult"></div>
+    </div>
+
+    <h3>Common Pythagorean Triples</h3>
+    <table class="triples-table">
+      <tr><th>a</th><th>b</th><th>c</th><th>a&sup2; + b&sup2;</th><th>c&sup2;</th></tr>
+      <tr><td>3</td><td>4</td><td>5</td><td>9 + 16 = 25</td><td>25</td></tr>
+      <tr><td>5</td><td>12</td><td>13</td><td>25 + 144 = 169</td><td>169</td></tr>
+      <tr><td>8</td><td>15</td><td>17</td><td>64 + 225 = 289</td><td>289</td></tr>
+      <tr><td>7</td><td>24</td><td>25</td><td>49 + 576 = 625</td><td>625</td></tr>
+    </table>
+
+    <div class="physics-box">
+      <div class="phys-label">Navy Context</div>
+      <p style="font-size:0.85rem;">A ship is detected at bearing 090 (due East), range 12 nautical miles. You need to travel North to a waypoint, then East to the ship. If the waypoint is 5 nm North, how far East must you travel from the waypoint?</p>
+      <div class="eq">d = sqrt(12&sup2; - 5&sup2;) = sqrt(144 - 25) = sqrt(119) &approx; 10.91 nm</div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="pythProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkPythProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showPythAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 3: Circles ===================== -->
+<details id="sec2">
+  <summary>3. Circles</summary>
+  <div class="card-body">
+    <p>A circle is the set of all points equidistant from a center point. Every measurement flows from the radius.</p>
+
+    <div class="svg-interactive">
+      <svg id="circleSvg" width="500" height="400" viewBox="0 0 500 400"></svg>
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-group">
+        <label>r</label>
+        <input type="range" id="circleR" min="30" max="150" value="100" step="1">
+        <span class="slider-val" id="circleRVal">100</span>
+      </div>
+    </div>
+
+    <div class="features" id="circleTags">
+      <span class="tag amber" id="circDiam">d = 200</span>
+      <span class="tag indigo" id="circCirc">C = 628.32</span>
+      <span class="tag green" id="circArea">A = 31415.93</span>
+    </div>
+
+    <h3>Sweep an Arc</h3>
+    <p>Drag the slider to sweep an arc around the circle. Watch arc length and sector area update.</p>
+    <div class="slider-row">
+      <div class="slider-group">
+        <label style="min-width:40px;">Angle</label>
+        <input type="range" id="arcAngle" min="0" max="360" value="90" step="1">
+        <span class="slider-val" id="arcAngleVal">90 deg</span>
+      </div>
+    </div>
+    <div class="features" id="arcTags">
+      <span class="tag pink" id="arcLength">Arc = 157.08</span>
+      <span class="tag amber" id="sectorArea">Sector = 7853.98</span>
+    </div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Circumference</div>
+        <div class="rule-formula">C = 2 pi r</div>
+        <div class="rule-example">r = 7: C = <strong>43.98</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Area</div>
+        <div class="rule-formula">A = pi r&sup2;</div>
+        <div class="rule-example">r = 7: A = <strong>153.94</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Arc Length</div>
+        <div class="rule-formula">s = (theta/360) &times; 2 pi r</div>
+        <div class="rule-example">theta=90, r=7: s = <strong>11.00</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Sector Area</div>
+        <div class="rule-formula">A = (theta/360) &times; pi r&sup2;</div>
+        <div class="rule-example">theta=90, r=7: A = <strong>38.48</strong></div>
+      </div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="circProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkCircProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showCircAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 4: Area & Volume ===================== -->
+<details id="sec3">
+  <summary>4. Area &amp; Volume</summary>
+  <div class="card-body">
+    <p>Click any shape below to explore its formula with adjustable dimensions.</p>
+
+    <h3>2D Shapes</h3>
+    <div class="shape-grid" id="shapes2d">
+      <div class="shape-card" onclick="showShape2d('rectangle')">
+        <svg width="60" height="40" viewBox="0 0 60 40"><rect x="5" y="5" width="50" height="30" fill="none" stroke="#6366f1" stroke-width="2" rx="2"/></svg>
+        <div class="shape-name">Rectangle</div>
+        <div class="shape-formula">A = l &times; w</div>
+      </div>
+      <div class="shape-card" onclick="showShape2d('triangle')">
+        <svg width="60" height="40" viewBox="0 0 60 40"><polygon points="30,5 5,35 55,35" fill="none" stroke="#22c55e" stroke-width="2"/></svg>
+        <div class="shape-name">Triangle</div>
+        <div class="shape-formula">A = (1/2)bh</div>
+      </div>
+      <div class="shape-card" onclick="showShape2d('parallelogram')">
+        <svg width="60" height="40" viewBox="0 0 60 40"><polygon points="15,5 55,5 45,35 5,35" fill="none" stroke="#f59e0b" stroke-width="2"/></svg>
+        <div class="shape-name">Parallelogram</div>
+        <div class="shape-formula">A = b &times; h</div>
+      </div>
+      <div class="shape-card" onclick="showShape2d('trapezoid')">
+        <svg width="60" height="40" viewBox="0 0 60 40"><polygon points="18,5 42,5 55,35 5,35" fill="none" stroke="#ec4899" stroke-width="2"/></svg>
+        <div class="shape-name">Trapezoid</div>
+        <div class="shape-formula">A = (1/2)(a+b)h</div>
+      </div>
+      <div class="shape-card" onclick="showShape2d('circle')">
+        <svg width="60" height="40" viewBox="0 0 60 40"><ellipse cx="30" cy="20" rx="18" ry="18" fill="none" stroke="#6366f1" stroke-width="2"/></svg>
+        <div class="shape-name">Circle</div>
+        <div class="shape-formula">A = pi r&sup2;</div>
+      </div>
+    </div>
+
+    <div class="shape-detail" id="detail2d"></div>
+
+    <h3>3D Shapes</h3>
+    <div class="shape-grid" id="shapes3d">
+      <div class="shape-card" onclick="showShape3d('cube')">
+        <svg width="60" height="50" viewBox="0 0 60 50"><path d="M15,15 L45,15 L45,40 L15,40 Z" fill="none" stroke="#6366f1" stroke-width="1.5"/><path d="M15,15 L25,8 L55,8 L45,15" fill="none" stroke="#6366f1" stroke-width="1.5"/><path d="M55,8 L55,33 L45,40" fill="none" stroke="#6366f1" stroke-width="1.5"/></svg>
+        <div class="shape-name">Cube</div>
+        <div class="shape-formula">V = s&sup3;</div>
+      </div>
+      <div class="shape-card" onclick="showShape3d('rectprism')">
+        <svg width="60" height="50" viewBox="0 0 60 50"><path d="M10,18 L40,18 L40,43 L10,43 Z" fill="none" stroke="#22c55e" stroke-width="1.5"/><path d="M10,18 L22,8 L52,8 L40,18" fill="none" stroke="#22c55e" stroke-width="1.5"/><path d="M52,8 L52,33 L40,43" fill="none" stroke="#22c55e" stroke-width="1.5"/></svg>
+        <div class="shape-name">Rect. Prism</div>
+        <div class="shape-formula">V = lwh</div>
+      </div>
+      <div class="shape-card" onclick="showShape3d('cylinder')">
+        <svg width="60" height="50" viewBox="0 0 60 50"><ellipse cx="30" cy="14" rx="18" ry="6" fill="none" stroke="#f59e0b" stroke-width="1.5"/><line x1="12" y1="14" x2="12" y2="38" stroke="#f59e0b" stroke-width="1.5"/><line x1="48" y1="14" x2="48" y2="38" stroke="#f59e0b" stroke-width="1.5"/><ellipse cx="30" cy="38" rx="18" ry="6" fill="none" stroke="#f59e0b" stroke-width="1.5"/></svg>
+        <div class="shape-name">Cylinder</div>
+        <div class="shape-formula">V = pi r&sup2;h</div>
+      </div>
+      <div class="shape-card" onclick="showShape3d('sphere')">
+        <svg width="60" height="50" viewBox="0 0 60 50"><circle cx="30" cy="25" r="18" fill="none" stroke="#ec4899" stroke-width="1.5"/><ellipse cx="30" cy="25" rx="18" ry="6" fill="none" stroke="#ec4899" stroke-width="1" stroke-dasharray="3,2"/></svg>
+        <div class="shape-name">Sphere</div>
+        <div class="shape-formula">V = (4/3)pi r&sup3;</div>
+      </div>
+      <div class="shape-card" onclick="showShape3d('cone')">
+        <svg width="60" height="50" viewBox="0 0 60 50"><line x1="30" y1="8" x2="12" y2="40" stroke="#6366f1" stroke-width="1.5"/><line x1="30" y1="8" x2="48" y2="40" stroke="#6366f1" stroke-width="1.5"/><ellipse cx="30" cy="40" rx="18" ry="6" fill="none" stroke="#6366f1" stroke-width="1.5"/></svg>
+        <div class="shape-name">Cone</div>
+        <div class="shape-formula">V = (1/3)pi r&sup2;h</div>
+      </div>
+    </div>
+
+    <div class="shape-detail" id="detail3d"></div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="areaVolProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkAreaVolProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showAreaVolAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 5: Similarity & Congruence ===================== -->
+<details id="sec4">
+  <summary>5. Similarity &amp; Congruence</summary>
+  <div class="card-body">
+    <p>Two triangles are <strong>congruent</strong> if they have the same shape and size. They are <strong>similar</strong> if they have the same shape but possibly different sizes (proportional sides).</p>
+
+    <h3>Interactive Congruence Tester</h3>
+    <p>Adjust the second triangle and see which congruence criteria are satisfied.</p>
+
+    <div class="svg-interactive">
+      <svg id="congSvg" width="500" height="280" viewBox="0 0 500 280"></svg>
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-group">
+        <label style="min-width:20px;">a'</label>
+        <input type="range" id="congA" min="40" max="200" value="120" step="1">
+        <span class="slider-val" id="congAVal">120</span>
+      </div>
+      <div class="slider-group">
+        <label style="min-width:20px;">b'</label>
+        <input type="range" id="congB" min="40" max="200" value="100" step="1">
+        <span class="slider-val" id="congBVal">100</span>
+      </div>
+    </div>
+    <div class="slider-row">
+      <div class="slider-group">
+        <label style="min-width:30px;">Angle</label>
+        <input type="range" id="congAngle" min="20" max="140" value="50" step="1">
+        <span class="slider-val" id="congAngleVal">50 deg</span>
+      </div>
+    </div>
+
+    <div class="features" id="congTags"></div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">SSS</div>
+        <div class="rule-formula">Side-Side-Side</div>
+        <div class="rule-example">All three sides equal</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">SAS</div>
+        <div class="rule-formula">Side-Angle-Side</div>
+        <div class="rule-example">Two sides and <strong>included</strong> angle equal</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">ASA</div>
+        <div class="rule-formula">Angle-Side-Angle</div>
+        <div class="rule-example">Two angles and <strong>included</strong> side equal</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">AAS</div>
+        <div class="rule-formula">Angle-Angle-Side</div>
+        <div class="rule-example">Two angles and a <strong>non-included</strong> side equal</div>
+      </div>
+    </div>
+
+    <h3>Similarity</h3>
+    <div class="info-box">
+      <strong>AA Similarity:</strong> If two angles of one triangle equal two angles of another, the triangles are similar. Corresponding sides are in proportion with ratio <em>k</em>.
+    </div>
+
+    <div class="physics-box">
+      <div class="phys-label">Physics: Thin Lens Equation</div>
+      <p style="font-size:0.85rem;">The thin lens equation 1/f = 1/do + 1/di uses similar triangles formed by light rays. An object of height h at distance do from a lens forms an image of height h' at distance di. The magnification M = h'/h = di/do comes from the proportional sides of similar triangles.</p>
+      <div class="eq">M = h'/h = d<sub>i</sub> / d<sub>o</sub></div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="simProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkSimProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showSimAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 6: Quick Quiz ===================== -->
+<details id="sec5">
+  <summary>6. Quick Quiz</summary>
+  <div class="card-body">
+    <p>10 mixed problems covering all geometry topics. Score 7 or more to complete this section.</p>
+
+    <div class="quiz-score" id="quizScore">Score: <span>-- / 10</span></div>
+
+    <div id="quizProblems"></div>
+
+    <div class="btn-row">
+      <button class="btn green" onclick="gradeQuiz()">Grade Quiz</button>
+      <button class="btn outline" onclick="showQuizAnswers()">Show Answers</button>
+      <button class="btn pink" onclick="resetQuiz()">Reset</button>
+    </div>
+  </div>
+</details>
+
+<script>
+// ====== UTILITIES ======
+const $ = id => document.getElementById(id);
+const sections = 6;
+const completed = new Array(sections).fill(false);
+
+function updateProgress() {
+  const segs = document.querySelectorAll('.progress-bar .seg');
+  segs.forEach((seg, i) => {
+    if (completed[i]) seg.classList.add('done');
+    else seg.classList.remove('done');
+  });
+}
+
+function markComplete(idx) {
+  completed[idx] = true;
+  updateProgress();
+  const sec = $('sec' + idx);
+  sec.classList.add('completed');
+}
+
+function normalize(s) {
+  return s.replace(/\s+/g, '')
+           .replace(/\u2212/g, '-')
+           .replace(/\u00d7/g, '*')
+           .replace(/\u00b7/g, '*')
+           .replace(/x/gi, 'x')
+           .toLowerCase()
+           .replace(/\*\*/g, '^');
+}
+
+function springPop(el) {
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = 'popIn 0.35s var(--spring)';
+}
+
+function shakeEl(el) {
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = 'shake 0.4s ease';
+}
+
+function buildProblems(data, containerId, prefix) {
+  const cont = $(containerId);
+  cont.innerHTML = '';
+  data.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = prefix + i;
+    div.innerHTML = `
+      <div class="prompt">${p.prompt}</div>
+      <input type="text" id="${prefix}In${i}" placeholder="${p.placeholder || 'answer'}">
+      <div class="feedback" id="${prefix}Fb${i}"></div>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function checkProblems(data, prefix, sectionIdx) {
+  let allCorrect = true;
+  data.forEach((p, i) => {
+    const input = normalize($(prefix + 'In' + i).value);
+    const answers = [p.answer, ...(p.alts || [])].map(normalize);
+    const isRight = answers.includes(input);
+    const el = $(prefix + i);
+    const fb = $(prefix + 'Fb' + i);
+
+    if (isRight) {
+      el.className = 'problem correct';
+      fb.textContent = 'Correct!';
+      fb.className = 'feedback correct';
+      springPop(el);
+    } else {
+      allCorrect = false;
+      el.className = 'problem incorrect';
+      fb.innerHTML = p.display ? `Answer: ${p.display}` : `Answer: ${p.answer}`;
+      fb.className = 'feedback incorrect';
+      shakeEl(el);
+    }
+  });
+  if (allCorrect) markComplete(sectionIdx);
+}
+
+function showAnswers(data, prefix, sectionIdx) {
+  data.forEach((p, i) => {
+    $(prefix + 'In' + i).value = p.answer;
+    $(prefix + i).className = 'problem correct';
+    const fb = $(prefix + 'Fb' + i);
+    fb.textContent = p.display || p.answer;
+    fb.className = 'feedback correct';
+  });
+  markComplete(sectionIdx);
+}
+
+// Enter key listener for all problem inputs
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  const t = e.target;
+  if (!t || t.tagName !== 'INPUT') return;
+  const card = t.closest('details');
+  if (!card) return;
+  const id = card.id;
+  if (id === 'sec0') checkTriProblems();
+  else if (id === 'sec1') checkPythProblems();
+  else if (id === 'sec2') checkCircProblems();
+  else if (id === 'sec3') checkAreaVolProblems();
+  else if (id === 'sec4') checkSimProblems();
+  else if (id === 'sec5') gradeQuiz();
+});
+
+
+// ====== SECTION 1: Triangle Fundamentals ======
+
+// Draggable triangle vertices
+let triVerts = [
+  { x: 250, y: 40 },
+  { x: 80, y: 300 },
+  { x: 420, y: 300 }
+];
+const triColors = ['#6366f1', '#22c55e', '#ec4899'];
+let draggingVert = -1;
+
+function dist(a, b) {
+  return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+}
+
+function angleBetween(a, vertex, b) {
+  const v1 = { x: a.x - vertex.x, y: a.y - vertex.y };
+  const v2 = { x: b.x - vertex.x, y: b.y - vertex.y };
+  const dot = v1.x * v2.x + v1.y * v2.y;
+  const mag1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+  const mag2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+  if (mag1 === 0 || mag2 === 0) return 0;
+  let cos = dot / (mag1 * mag2);
+  cos = Math.max(-1, Math.min(1, cos));
+  return Math.acos(cos) * 180 / Math.PI;
+}
+
+function drawTriangle() {
+  const svg = $('triSvg');
+  const [A, B, C] = triVerts;
+
+  const angleA = angleBetween(B, A, C);
+  const angleB = angleBetween(A, B, C);
+  const angleC = angleBetween(A, C, B);
+
+  const sideA = dist(B, C);
+  const sideB = dist(A, C);
+  const sideC = dist(A, B);
+
+  // Classification by sides
+  const tolerance = 8;
+  let sideClass = 'Scalene';
+  const abEq = Math.abs(sideA - sideB) < tolerance;
+  const bcEq = Math.abs(sideB - sideC) < tolerance;
+  const acEq = Math.abs(sideA - sideC) < tolerance;
+  if (abEq && bcEq) sideClass = 'Equilateral';
+  else if (abEq || bcEq || acEq) sideClass = 'Isosceles';
+
+  // Classification by angles
+  const maxAngle = Math.max(angleA, angleB, angleC);
+  let angleClass = 'Acute';
+  if (Math.abs(maxAngle - 90) < 3) angleClass = 'Right';
+  else if (maxAngle > 90) angleClass = 'Obtuse';
+
+  // Area using cross product
+  const area = Math.abs((B.x - A.x) * (C.y - A.y) - (C.x - A.x) * (B.y - A.y)) / 2;
+
+  // Find base (bottom side B-C) and height
+  const baseLen = sideA;
+  const height = 2 * area / baseLen;
+
+  // Foot of perpendicular from A to line BC
+  const bx = C.x - B.x, by = C.y - B.y;
+  const t = ((A.x - B.x) * bx + (A.y - B.y) * by) / (bx * bx + by * by);
+  const footX = B.x + t * bx;
+  const footY = B.y + t * by;
+
+  let html = '';
+
+  // Dashed height line
+  html += `<line x1="${A.x}" y1="${A.y}" x2="${footX}" y2="${footY}" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.6"/>`;
+  // Dashed base indicator
+  html += `<line x1="${B.x}" y1="${B.y + 8}" x2="${C.x}" y2="${C.y + 8}" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.6"/>`;
+
+  // Height label
+  const hMidX = (A.x + footX) / 2 + 12;
+  const hMidY = (A.y + footY) / 2;
+  html += `<text x="${hMidX}" y="${hMidY}" fill="#f59e0b" font-size="11" font-family="JetBrains Mono" font-weight="600" opacity="0.8">h=${height.toFixed(0)}</text>`;
+
+  // Triangle fill
+  html += `<polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}" fill="rgba(99,102,241,0.05)" stroke="none"/>`;
+
+  // Triangle edges
+  html += `<line x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}" stroke="${triColors[2]}" stroke-width="2"/>`;
+  html += `<line x1="${B.x}" y1="${B.y}" x2="${C.x}" y2="${C.y}" stroke="${triColors[0]}" stroke-width="2"/>`;
+  html += `<line x1="${C.x}" y1="${C.y}" x2="${A.x}" y2="${A.y}" stroke="${triColors[1]}" stroke-width="2"/>`;
+
+  // Angle arcs
+  const arcR = 25;
+  function drawAngleArc(vertex, p1, p2, color, label) {
+    const a1 = Math.atan2(p1.y - vertex.y, p1.x - vertex.x);
+    const a2 = Math.atan2(p2.y - vertex.y, p2.x - vertex.x);
+    let start = a1, end = a2;
+    let diff = end - start;
+    if (diff > Math.PI) end -= 2 * Math.PI;
+    if (diff < -Math.PI) end += 2 * Math.PI;
+    if (end < start) { const tmp = start; start = end; end = tmp; }
+
+    const x1 = vertex.x + arcR * Math.cos(start);
+    const y1 = vertex.y + arcR * Math.sin(start);
+    const x2 = vertex.x + arcR * Math.cos(end);
+    const y2 = vertex.y + arcR * Math.sin(end);
+    const largeArc = (end - start) > Math.PI ? 1 : 0;
+
+    html += `<path d="M${x1},${y1} A${arcR},${arcR} 0 ${largeArc} 1 ${x2},${y2}" fill="none" stroke="${color}" stroke-width="1.5" opacity="0.7"/>`;
+
+    const midA = (start + end) / 2;
+    const lx = vertex.x + (arcR + 14) * Math.cos(midA);
+    const ly = vertex.y + (arcR + 14) * Math.sin(midA);
+    html += `<text x="${lx}" y="${ly}" fill="${color}" font-size="10" font-family="JetBrains Mono" font-weight="600" text-anchor="middle" dominant-baseline="middle">${label}</text>`;
+  }
+
+  drawAngleArc(A, B, C, triColors[0], angleA.toFixed(1) + '\u00B0');
+  drawAngleArc(B, A, C, triColors[1], angleB.toFixed(1) + '\u00B0');
+  drawAngleArc(C, A, B, triColors[2], angleC.toFixed(1) + '\u00B0');
+
+  // Draggable vertex circles
+  triVerts.forEach((v, i) => {
+    html += `<circle cx="${v.x}" cy="${v.y}" r="10" fill="${triColors[i]}" stroke="#1a1d24" stroke-width="2" style="cursor:grab;" data-vert="${i}"/>`;
+    const labels = ['A', 'B', 'C'];
+    const offX = i === 0 ? 0 : (i === 1 ? -16 : 16);
+    const offY = i === 0 ? -16 : 16;
+    html += `<text x="${v.x + offX}" y="${v.y + offY}" fill="${triColors[i]}" font-size="12" font-family="JetBrains Mono" font-weight="700" text-anchor="middle">${labels[i]}</text>`;
+  });
+
+  // Side length labels
+  function sideLabelPos(p1, p2, offset) {
+    const mx = (p1.x + p2.x) / 2;
+    const my = (p1.y + p2.y) / 2;
+    const dx = p2.x - p1.x, dy = p2.y - p1.y;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    if (len === 0) return { x: mx, y: my };
+    const nx = -dy / len * offset, ny = dx / len * offset;
+    return { x: mx + nx, y: my + ny };
+  }
+
+  const labAB = sideLabelPos(A, B, -14);
+  const labBC = sideLabelPos(B, C, 18);
+  const labCA = sideLabelPos(C, A, -14);
+  html += `<text x="${labAB.x}" y="${labAB.y}" fill="${triColors[2]}" font-size="10" font-family="JetBrains Mono" font-weight="600" text-anchor="middle" opacity="0.8">${sideC.toFixed(0)}</text>`;
+  html += `<text x="${labBC.x}" y="${labBC.y}" fill="${triColors[0]}" font-size="10" font-family="JetBrains Mono" font-weight="600" text-anchor="middle" opacity="0.8">${sideA.toFixed(0)}</text>`;
+  html += `<text x="${labCA.x}" y="${labCA.y}" fill="${triColors[1]}" font-size="10" font-family="JetBrains Mono" font-weight="600" text-anchor="middle" opacity="0.8">${sideB.toFixed(0)}</text>`;
+
+  svg.innerHTML = html;
+
+  // Update tags
+  $('triSideClass').textContent = sideClass;
+  $('triSideClass').className = 'tag ' + (sideClass === 'Equilateral' ? 'green' : sideClass === 'Isosceles' ? 'amber' : 'indigo');
+  $('triAngleClass').textContent = angleClass;
+  $('triAngleClass').className = 'tag ' + (angleClass === 'Right' ? 'green' : angleClass === 'Obtuse' ? 'pink' : 'amber');
+  $('triAreaTag').textContent = 'Area: ' + area.toFixed(0) + ' px\u00B2';
+}
+
+// Mouse/touch drag for triangle vertices
+(function() {
+  const svg = $('triSvg');
+  const container = $('triContainer');
+
+  function getPos(e) {
+    const rect = svg.getBoundingClientRect();
+    const scaleX = 500 / rect.width;
+    const scaleY = 350 / rect.height;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  }
+
+  function onDown(e) {
+    const pos = getPos(e);
+    triVerts.forEach((v, i) => {
+      if (dist(pos, v) < 20) draggingVert = i;
+    });
+  }
+
+  function onMove(e) {
+    if (draggingVert < 0) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    triVerts[draggingVert].x = Math.max(15, Math.min(485, pos.x));
+    triVerts[draggingVert].y = Math.max(15, Math.min(335, pos.y));
+    drawTriangle();
+  }
+
+  function onUp() {
+    draggingVert = -1;
+  }
+
+  svg.addEventListener('mousedown', onDown);
+  svg.addEventListener('touchstart', onDown, { passive: true });
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('mouseup', onUp);
+  window.addEventListener('touchend', onUp);
+})();
+
+drawTriangle();
+
+// Triangle practice problems
+const triProbData = [
+  {
+    prompt: 'A triangle has angles 50 and 70. What is the third angle?',
+    answer: '60',
+    alts: ['60deg', '60 degrees'],
+    display: '60 degrees (180 - 50 - 70 = 60)'
+  },
+  {
+    prompt: 'Triangle with base=12 and height=8. What is the area?',
+    answer: '48',
+    alts: [],
+    display: '48 (A = 1/2 x 12 x 8 = 48)'
+  },
+  {
+    prompt: 'A triangle has sides 5, 5, 8. Classify by sides.',
+    answer: 'isosceles',
+    alts: [],
+    display: 'Isosceles (two equal sides: 5 and 5)'
+  }
+];
+buildProblems(triProbData, 'triProblems', 'tp');
+function checkTriProblems() { checkProblems(triProbData, 'tp', 0); }
+function showTriAnswers() { showAnswers(triProbData, 'tp', 0); }
+
+
+// ====== SECTION 2: Pythagorean Theorem ======
+
+function drawPythagoras() {
+  const a = parseFloat($('pythA').value);
+  const b = parseFloat($('pythB').value);
+  const c = Math.sqrt(a * a + b * b);
+  $('pythAVal').textContent = a;
+  $('pythBVal').textContent = b;
+  $('pythCVal').textContent = 'c = ' + c.toFixed(2);
+  $('pythEqTag').textContent = `${(a*a).toFixed(1)} + ${(b*b).toFixed(1)} = ${(c*c).toFixed(1)}`;
+
+  const svg = $('pythSvg');
+  const scale = 22;
+  const ox = 120, oy = 280;
+  const ax = a * scale, by = b * scale;
+
+  let html = '';
+
+  // Square on side a (vertical leg, bottom-left)
+  html += `<rect x="${ox - ax}" y="${oy - by}" width="${ax}" height="${by}" fill="none" stroke="#363b47" stroke-width="1" stroke-dasharray="3,3"/>`;
+
+  // Square on side a (left of vertical leg)
+  html += `<rect x="${ox - ax}" y="${oy}" width="${ax}" height="${ax}" fill="rgba(99,102,241,0.12)" stroke="#6366f1" stroke-width="1.5"/>`;
+  html += `<text x="${ox - ax/2}" y="${oy + ax/2 + 4}" fill="#6366f1" font-size="12" font-family="JetBrains Mono" font-weight="700" text-anchor="middle">a&sup2;=${(a*a).toFixed(0)}</text>`;
+
+  // Square on side b (below horizontal leg)
+  html += `<rect x="${ox}" y="${oy}" width="${by}" height="${by}" fill="rgba(34,197,94,0.12)" stroke="#22c55e" stroke-width="1.5"/>`;
+  html += `<text x="${ox + by/2}" y="${oy + by/2 + 4}" fill="#22c55e" font-size="12" font-family="JetBrains Mono" font-weight="700" text-anchor="middle">b&sup2;=${(b*b).toFixed(0)}</text>`;
+
+  // The right triangle itself
+  const triPts = `${ox},${oy} ${ox + by},${oy} ${ox},${oy - ax}`;
+  html += `<polygon points="${triPts}" fill="rgba(245,158,11,0.08)" stroke="#f59e0b" stroke-width="2.5"/>`;
+
+  // Right angle marker
+  const rm = 12;
+  html += `<path d="M${ox + rm},${oy} L${ox + rm},${oy - rm} L${ox},${oy - rm}" fill="none" stroke="#f59e0b" stroke-width="1.5"/>`;
+
+  // Square on hypotenuse (rotated)
+  const hx = ox + by - ox, hy = oy - (oy - ax);
+  const dx = by, dy = -ax;
+  const cScale = c * scale;
+  // Direction of hypotenuse
+  const hdx = by / (c * scale), hdy = -ax / (c * scale);
+  // Perpendicular
+  const px = hdy, py = -hdx;
+  const p1x = ox, p1y = oy - ax;
+  const p2x = ox + by, p2y = oy;
+  const p3x = p2x + px * cScale, p3y = p2y + py * cScale;
+  const p4x = p1x + px * cScale, p4y = p1y + py * cScale;
+  html += `<polygon points="${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y} ${p4x},${p4y}" fill="rgba(236,72,153,0.10)" stroke="#ec4899" stroke-width="1.5"/>`;
+  const cCenterX = (p1x + p2x + p3x + p4x) / 4;
+  const cCenterY = (p1y + p2y + p3y + p4y) / 4;
+  html += `<text x="${cCenterX}" y="${cCenterY + 4}" fill="#ec4899" font-size="12" font-family="JetBrains Mono" font-weight="700" text-anchor="middle">c&sup2;=${(c*c).toFixed(0)}</text>`;
+
+  // Side labels on the triangle
+  html += `<text x="${ox - 14}" y="${oy - ax/2 + 4}" fill="#6366f1" font-size="13" font-family="JetBrains Mono" font-weight="700" text-anchor="end">a=${a}</text>`;
+  html += `<text x="${ox + by/2}" y="${oy + 18}" fill="#22c55e" font-size="13" font-family="JetBrains Mono" font-weight="700" text-anchor="middle">b=${b}</text>`;
+  const hypMx = (ox + ox + by) / 2 + 10;
+  const hypMy = (oy - ax + oy) / 2 - 6;
+  html += `<text x="${hypMx}" y="${hypMy}" fill="#ec4899" font-size="13" font-family="JetBrains Mono" font-weight="700" text-anchor="start">c=${c.toFixed(2)}</text>`;
+
+  svg.innerHTML = html;
+}
+
+$('pythA').addEventListener('input', drawPythagoras);
+$('pythB').addEventListener('input', drawPythagoras);
+drawPythagoras();
+
+function calcPyth() {
+  const a = $('calcA').value ? parseFloat($('calcA').value) : null;
+  const b = $('calcB').value ? parseFloat($('calcB').value) : null;
+  const c = $('calcC').value ? parseFloat($('calcC').value) : null;
+  const result = $('pythCalcResult');
+
+  if (a !== null && b !== null && c === null) {
+    const cVal = Math.sqrt(a * a + b * b);
+    result.textContent = `c = sqrt(${a}\u00B2 + ${b}\u00B2) = sqrt(${a*a + b*b}) = ${cVal.toFixed(4)}`;
+  } else if (a !== null && c !== null && b === null) {
+    if (c <= a) { result.textContent = 'Error: c must be greater than a'; result.style.color = '#ec4899'; return; }
+    const bVal = Math.sqrt(c * c - a * a);
+    result.textContent = `b = sqrt(${c}\u00B2 - ${a}\u00B2) = sqrt(${c*c - a*a}) = ${bVal.toFixed(4)}`;
+  } else if (b !== null && c !== null && a === null) {
+    if (c <= b) { result.textContent = 'Error: c must be greater than b'; result.style.color = '#ec4899'; return; }
+    const aVal = Math.sqrt(c * c - b * b);
+    result.textContent = `a = sqrt(${c}\u00B2 - ${b}\u00B2) = sqrt(${c*c - b*b}) = ${aVal.toFixed(4)}`;
+  } else {
+    result.textContent = 'Enter exactly two values';
+    result.style.color = '#ec4899';
+    return;
+  }
+  result.style.color = '#22c55e';
+}
+
+const pythProbData = [
+  {
+    prompt: 'Right triangle: a=6, b=8. Find c.',
+    answer: '10',
+    alts: ['10.0'],
+    display: '10 (36 + 64 = 100, sqrt(100) = 10)'
+  },
+  {
+    prompt: 'Right triangle: a=5, c=13. Find b.',
+    answer: '12',
+    alts: ['12.0'],
+    display: '12 (169 - 25 = 144, sqrt(144) = 12)'
+  },
+  {
+    prompt: 'Is a triangle with sides 9, 12, 15 a right triangle? (yes/no)',
+    answer: 'yes',
+    alts: [],
+    display: 'Yes (81 + 144 = 225 = 15 squared)'
+  },
+  {
+    prompt: 'Find hypotenuse: legs = 1 and 1. Round to 2 decimal places.',
+    answer: '1.41',
+    alts: ['1.414', '1.4142', 'sqrt(2)', 'sqrt2'],
+    display: '1.41 (sqrt(2) = 1.4142...)'
+  }
+];
+buildProblems(pythProbData, 'pythProblems', 'pyp');
+function checkPythProblems() { checkProblems(pythProbData, 'pyp', 1); }
+function showPythAnswers() { showAnswers(pythProbData, 'pyp', 1); }
+
+
+// ====== SECTION 3: Circles ======
+
+function drawCircle() {
+  const r = parseFloat($('circleR').value);
+  const angle = parseFloat($('arcAngle').value);
+  const svg = $('circleSvg');
+  const cx = 250, cy = 200;
+
+  $('circleRVal').textContent = r;
+  $('arcAngleVal').textContent = angle + ' deg';
+
+  const d = 2 * r;
+  const circ = 2 * Math.PI * r;
+  const area = Math.PI * r * r;
+  const arcLen = (angle / 360) * circ;
+  const sectArea = (angle / 360) * area;
+
+  $('circDiam').textContent = 'd = ' + d.toFixed(0);
+  $('circCirc').textContent = 'C = ' + circ.toFixed(2);
+  $('circArea').textContent = 'A = ' + area.toFixed(2);
+  $('arcLength').textContent = 'Arc = ' + arcLen.toFixed(2);
+  $('sectorArea').textContent = 'Sector = ' + sectArea.toFixed(2);
+
+  let html = '';
+
+  // Grid
+  for (let i = -3; i <= 3; i++) {
+    const gx = cx + i * 50;
+    html += `<line x1="${gx}" y1="20" x2="${gx}" y2="380" stroke="#2a2e38" stroke-width="0.5"/>`;
+    const gy = cy + i * 50;
+    html += `<line x1="20" y1="${gy}" x2="480" y2="${gy}" stroke="#2a2e38" stroke-width="0.5"/>`;
+  }
+
+  // Sector fill
+  if (angle > 0 && angle < 360) {
+    const startAngle = -Math.PI / 2;
+    const endAngle = startAngle + (angle * Math.PI / 180);
+    const x1 = cx + r * Math.cos(startAngle);
+    const y1 = cy + r * Math.sin(startAngle);
+    const x2 = cx + r * Math.cos(endAngle);
+    const y2 = cy + r * Math.sin(endAngle);
+    const largeArc = angle > 180 ? 1 : 0;
+    html += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc} 1 ${x2},${y2} Z" fill="rgba(236,72,153,0.12)" stroke="none"/>`;
+    // Arc stroke
+    html += `<path d="M${x1},${y1} A${r},${r} 0 ${largeArc} 1 ${x2},${y2}" fill="none" stroke="#ec4899" stroke-width="2.5"/>`;
+    // Sector radii
+    html += `<line x1="${cx}" y1="${cy}" x2="${x1}" y2="${y1}" stroke="#ec4899" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>`;
+    html += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#ec4899" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>`;
+    // Point on arc
+    html += `<circle cx="${x2}" cy="${y2}" r="5" fill="#ec4899"/>`;
+  } else if (angle >= 360) {
+    html += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(236,72,153,0.12)" stroke="none"/>`;
+  }
+
+  // Main circle
+  html += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#6366f1" stroke-width="2"/>`;
+
+  // Center dot
+  html += `<circle cx="${cx}" cy="${cy}" r="3" fill="#f59e0b"/>`;
+
+  // Radius line
+  html += `<line x1="${cx}" y1="${cy}" x2="${cx + r}" y2="${cy}" stroke="#f59e0b" stroke-width="2"/>`;
+  html += `<text x="${cx + r/2}" y="${cy - 8}" fill="#f59e0b" font-size="11" font-family="JetBrains Mono" font-weight="700" text-anchor="middle">r=${r}</text>`;
+
+  // Diameter line (dashed)
+  html += `<line x1="${cx - r}" y1="${cy}" x2="${cx + r}" y2="${cy}" stroke="#22c55e" stroke-width="1" stroke-dasharray="5,4" opacity="0.5"/>`;
+  html += `<text x="${cx}" y="${cy + r/2 + 20}" fill="#22c55e" font-size="10" font-family="JetBrains Mono" font-weight="600" text-anchor="middle" opacity="0.7">d=${d}</text>`;
+
+  // Chord (example, from -45deg to 45deg on circle)
+  const chordA1 = Math.PI * 0.6;
+  const chordA2 = Math.PI * 0.85;
+  const cx1 = cx + r * Math.cos(chordA1), cy1 = cy + r * Math.sin(chordA1);
+  const cx2 = cx + r * Math.cos(chordA2), cy2 = cy + r * Math.sin(chordA2);
+  html += `<line x1="${cx1}" y1="${cy1}" x2="${cx2}" y2="${cy2}" stroke="#8a8578" stroke-width="1.5" opacity="0.6"/>`;
+  const chordMx = (cx1 + cx2) / 2 - 30;
+  const chordMy = (cy1 + cy2) / 2 + 4;
+  html += `<text x="${chordMx}" y="${chordMy}" fill="#8a8578" font-size="9" font-family="JetBrains Mono" font-weight="600" opacity="0.7">chord</text>`;
+
+  // Labels
+  html += `<text x="${cx}" y="${cy + r + 28}" fill="#6366f1" font-size="10" font-family="JetBrains Mono" font-weight="600" text-anchor="middle">circumference</text>`;
+
+  svg.innerHTML = html;
+}
+
+$('circleR').addEventListener('input', drawCircle);
+$('arcAngle').addEventListener('input', drawCircle);
+drawCircle();
+
+const circProbData = [
+  {
+    prompt: 'Circle with r=7. Find the circumference. Round to 2 decimals.',
+    answer: '43.98',
+    alts: ['43.982', '14pi', '14*pi'],
+    display: '43.98 (2 * pi * 7 = 43.982...)'
+  },
+  {
+    prompt: 'Circle with r=5. Find the area. Round to 2 decimals.',
+    answer: '78.54',
+    alts: ['78.5', '78.540', '25pi', '25*pi'],
+    display: '78.54 (pi * 25 = 78.5398...)'
+  },
+  {
+    prompt: 'Arc length: r=10, central angle=60 degrees. Round to 2 decimals.',
+    answer: '10.47',
+    alts: ['10.472', '10.5'],
+    display: '10.47 ((60/360) * 2 * pi * 10 = 10.472)'
+  },
+  {
+    prompt: 'Sector area: r=6, central angle=90 degrees. Round to 2 decimals.',
+    answer: '28.27',
+    alts: ['28.274', '9pi', '9*pi', '28.3'],
+    display: '28.27 ((90/360) * pi * 36 = 9*pi = 28.274)'
+  }
+];
+buildProblems(circProbData, 'circProblems', 'cp');
+function checkCircProblems() { checkProblems(circProbData, 'cp', 2); }
+function showCircAnswers() { showAnswers(circProbData, 'cp', 2); }
+
+
+// ====== SECTION 4: Area & Volume ======
+
+function showShape2d(shape) {
+  document.querySelectorAll('#shapes2d .shape-card').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  const detail = $('detail2d');
+  detail.classList.add('visible');
+
+  let html = '';
+  switch (shape) {
+    case 'rectangle':
+      html = `
+        <div class="detail-title">Rectangle</div>
+        <div class="slider-row">
+          <div class="slider-group"><label>l</label><input type="range" id="rectL" min="1" max="20" value="8" step="0.5" oninput="updateRect()"><span class="slider-val" id="rectLVal">8</span></div>
+          <div class="slider-group"><label>w</label><input type="range" id="rectW" min="1" max="15" value="5" step="0.5" oninput="updateRect()"><span class="slider-val" id="rectWVal">5</span></div>
+        </div>
+        <div class="eq" id="rectResult">A = 8 x 5 = 40</div>
+        <div style="text-align:center;margin:0.5rem 0;"><svg id="rectSvg" width="300" height="200" viewBox="0 0 300 200"></svg></div>
+      `;
+      break;
+    case 'triangle':
+      html = `
+        <div class="detail-title">Triangle</div>
+        <div class="slider-row">
+          <div class="slider-group"><label>b</label><input type="range" id="triBase" min="1" max="20" value="10" step="0.5" oninput="updateTri2d()"><span class="slider-val" id="triBaseVal">10</span></div>
+          <div class="slider-group"><label>h</label><input type="range" id="triH" min="1" max="15" value="7" step="0.5" oninput="updateTri2d()"><span class="slider-val" id="triHVal">7</span></div>
+        </div>
+        <div class="eq" id="triResult">A = (1/2)(10)(7) = 35</div>
+        <div style="text-align:center;margin:0.5rem 0;"><svg id="tri2dSvg" width="300" height="200" viewBox="0 0 300 200"></svg></div>
+      `;
+      break;
+    case 'parallelogram':
+      html = `
+        <div class="detail-title">Parallelogram</div>
+        <div class="slider-row">
+          <div class="slider-group"><label>b</label><input type="range" id="paraB" min="1" max="20" value="10" step="0.5" oninput="updatePara()"><span class="slider-val" id="paraBVal">10</span></div>
+          <div class="slider-group"><label>h</label><input type="range" id="paraH" min="1" max="15" value="6" step="0.5" oninput="updatePara()"><span class="slider-val" id="paraHVal">6</span></div>
+        </div>
+        <div class="eq" id="paraResult">A = 10 x 6 = 60</div>
+        <div style="text-align:center;margin:0.5rem 0;"><svg id="paraSvg" width="300" height="200" viewBox="0 0 300 200"></svg></div>
+      `;
+      break;
+    case 'trapezoid':
+      html = `
+        <div class="detail-title">Trapezoid</div>
+        <div class="slider-row">
+          <div class="slider-group"><label>a</label><input type="range" id="trapA" min="1" max="15" value="6" step="0.5" oninput="updateTrap()"><span class="slider-val" id="trapAVal">6</span></div>
+          <div class="slider-group"><label>b</label><input type="range" id="trapB" min="1" max="20" value="12" step="0.5" oninput="updateTrap()"><span class="slider-val" id="trapBVal">12</span></div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-group"><label>h</label><input type="range" id="trapH" min="1" max="15" value="5" step="0.5" oninput="updateTrap()"><span class="slider-val" id="trapHVal">5</span></div>
+        </div>
+        <div class="eq" id="trapResult">A = (1/2)(6 + 12)(5) = 45</div>
+        <div style="text-align:center;margin:0.5rem 0;"><svg id="trapSvg" width="300" height="200" viewBox="0 0 300 200"></svg></div>
+      `;
+      break;
+    case 'circle':
+      html = `
+        <div class="detail-title">Circle</div>
+        <div class="slider-row">
+          <div class="slider-group"><label>r</label><input type="range" id="circR2" min="1" max="15" value="7" step="0.5" oninput="updateCirc2d()"><span class="slider-val" id="circR2Val">7</span></div>
+        </div>
+        <div class="eq" id="circResult">A = pi(7)&sup2; = 153.94</div>
+        <div style="text-align:center;margin:0.5rem 0;"><svg id="circ2dSvg" width="300" height="200" viewBox="0 0 300 200"></svg></div>
+      `;
+      break;
+  }
+  detail.innerHTML = html;
+
+  // Draw initial shapes after DOM update
+  setTimeout(() => {
+    if (shape === 'rectangle') updateRect();
+    if (shape === 'triangle') updateTri2d();
+    if (shape === 'parallelogram') updatePara();
+    if (shape === 'trapezoid') updateTrap();
+    if (shape === 'circle') updateCirc2d();
+  }, 10);
+}
+
+function updateRect() {
+  const l = parseFloat($('rectL').value), w = parseFloat($('rectW').value);
+  $('rectLVal').textContent = l; $('rectWVal').textContent = w;
+  $('rectResult').textContent = `A = ${l} x ${w} = ${(l * w).toFixed(1)}`;
+  const svg = $('rectSvg');
+  const sx = 250 / 20, sy = 150 / 15;
+  const rw = l * sx, rh = w * sy;
+  const rx = (300 - rw) / 2, ry = (200 - rh) / 2;
+  svg.innerHTML = `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" fill="rgba(99,102,241,0.12)" stroke="#6366f1" stroke-width="2" rx="2"/>
+    <text x="${rx + rw/2}" y="${ry - 6}" fill="#f59e0b" font-size="11" font-family="JetBrains Mono" font-weight="600" text-anchor="middle">l = ${l}</text>
+    <text x="${rx + rw + 8}" y="${ry + rh/2 + 4}" fill="#f59e0b" font-size="11" font-family="JetBrains Mono" font-weight="600">w = ${w}</text>`;
+}
+
+function updateTri2d() {
+  const b = parseFloat($('triBase').value), h = parseFloat($('triH').value);
+  $('triBaseVal').textContent = b; $('triHVal').textContent = h;
+  $('triResult').textContent = `A = (1/2)(${b})(${h}) = ${(0.5 * b * h).toFixed(1)}`;
+  const svg = $('tri2dSvg');
+  const sx = 250 / 20, sy = 150 / 15;
+  const tw = b * sx, th = h * sy;
+  const bx = (300 - tw) / 2, by = 180;
+  svg.innerHTML = `<polygon points="${bx + tw/2},${by - th} ${bx},${by} ${bx + tw},${by}" fill="rgba(34,197,94,0.12)" stroke="#22c55e" stroke-width="2"/>
+    <line x1="${bx + tw/2}" y1="${by - th}" x2="${bx + tw/2}" y2="${by}" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="${bx + tw/2}" y="${by + 16}" fill="#f59e0b" font-size="11" font-family="JetBrains Mono" font-weight="600" text-anchor="middle">b = ${b}</text>
+    <text x="${bx + tw/2 + 10}" y="${by - th/2}" fill="#f59e0b" font-size="11" font-family="JetBrains Mono" font-weight="600">h = ${h}</text>`;
+}
+
+function updatePara() {
+  const b = parseFloat($('paraB').value), h = parseFloat($('paraH').value);
+  $('paraBVal').textContent = b; $('paraHVal').textContent = h;
+  $('paraResult').textContent = `A = ${b} x ${h} = ${(b * h).toFixed(1)}`;
+  const svg = $('paraSvg');
+  const sx = 250 / 20, sy = 150 / 15;
+  const pw = b * sx, ph = h * sy, skew = 30;
+  const bx = (300 - pw) / 2, by = 180;
+  svg.innerHTML = `<polygon points="${bx + skew},${by - ph} ${bx + pw + skew},${by - ph} ${bx + pw},${by} ${bx},${by}" fill="rgba(245,158,11,0.12)" stroke="#f59e0b" stroke-width="2"/>
+    <line x1="${bx + skew}" y1="${by - ph}" x2="${bx + skew}" y2="${by}" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="${bx + pw/2}" y="${by + 16}" fill="#f59e0b" font-size="11" font-family="JetBrains Mono" font-weight="600" text-anchor="middle">b = ${b}</text>
+    <text x="${bx + skew + 10}" y="${by - ph/2}" fill="#ec4899" font-size="11" font-family="JetBrains Mono" font-weight="600">h = ${h}</text>`;
+}
+
+function updateTrap() {
+  const a = parseFloat($('trapA').value), b = parseFloat($('trapB').value), h = parseFloat($('trapH').value);
+  $('trapAVal').textContent = a; $('trapBVal').textContent = b; $('trapHVal').textContent = h;
+  $('trapResult').textContent = `A = (1/2)(${a} + ${b})(${h}) = ${(0.5 * (a + b) * h).toFixed(1)}`;
+  const svg = $('trapSvg');
+  const sx = 250 / 20, sy = 150 / 15;
+  const bw = b * sx, aw = a * sx, th = h * sy;
+  const bx = (300 - bw) / 2, by = 180;
+  const ax = (300 - aw) / 2;
+  svg.innerHTML = `<polygon points="${ax},${by - th} ${ax + aw},${by - th} ${bx + bw},${by} ${bx},${by}" fill="rgba(236,72,153,0.12)" stroke="#ec4899" stroke-width="2"/>
+    <line x1="${ax}" y1="${by - th}" x2="${ax}" y2="${by}" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="${ax + aw/2}" y="${by - th - 6}" fill="#f59e0b" font-size="11" font-family="JetBrains Mono" font-weight="600" text-anchor="middle">a = ${a}</text>
+    <text x="${bx + bw/2}" y="${by + 16}" fill="#f59e0b" font-size="11" font-family="JetBrains Mono" font-weight="600" text-anchor="middle">b = ${b}</text>
+    <text x="${ax - 10}" y="${by - th/2}" fill="#f59e0b" font-size="11" font-family="JetBrains Mono" font-weight="600" text-anchor="end">h = ${h}</text>`;
+}
+
+function updateCirc2d() {
+  const r = parseFloat($('circR2').value);
+  $('circR2Val').textContent = r;
+  $('circResult').innerHTML = `A = pi(${r})&sup2; = ${(Math.PI * r * r).toFixed(2)}`;
+  const svg = $('circ2dSvg');
+  const sr = Math.min(r * 8, 80);
+  svg.innerHTML = `<circle cx="150" cy="100" r="${sr}" fill="rgba(99,102,241,0.12)" stroke="#6366f1" stroke-width="2"/>
+    <line x1="150" y1="100" x2="${150 + sr}" y2="100" stroke="#f59e0b" stroke-width="2"/>
+    <text x="${150 + sr/2}" y="92" fill="#f59e0b" font-size="11" font-family="JetBrains Mono" font-weight="600" text-anchor="middle">r = ${r}</text>
+    <circle cx="150" cy="100" r="3" fill="#f59e0b"/>`;
+}
+
+function showShape3d(shape) {
+  document.querySelectorAll('#shapes3d .shape-card').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  const detail = $('detail3d');
+  detail.classList.add('visible');
+
+  let html = '';
+  switch (shape) {
+    case 'cube':
+      html = `
+        <div class="detail-title">Cube</div>
+        <div class="slider-row">
+          <div class="slider-group"><label>s</label><input type="range" id="cubeS" min="1" max="15" value="5" step="0.5" oninput="updateCube()"><span class="slider-val" id="cubeSVal">5</span></div>
+        </div>
+        <div class="eq" id="cubeResult">V = 5&sup3; = 125 | SA = 6(5)&sup2; = 150</div>
+      `;
+      break;
+    case 'rectprism':
+      html = `
+        <div class="detail-title">Rectangular Prism</div>
+        <div class="slider-row">
+          <div class="slider-group"><label>l</label><input type="range" id="rpL" min="1" max="15" value="6" step="0.5" oninput="updateRP()"><span class="slider-val" id="rpLVal">6</span></div>
+          <div class="slider-group"><label>w</label><input type="range" id="rpW" min="1" max="10" value="4" step="0.5" oninput="updateRP()"><span class="slider-val" id="rpWVal">4</span></div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-group"><label>h</label><input type="range" id="rpH" min="1" max="10" value="3" step="0.5" oninput="updateRP()"><span class="slider-val" id="rpHVal">3</span></div>
+        </div>
+        <div class="eq" id="rpResult">V = 6 x 4 x 3 = 72 | SA = 2(24 + 18 + 12) = 108</div>
+      `;
+      break;
+    case 'cylinder':
+      html = `
+        <div class="detail-title">Cylinder</div>
+        <div class="slider-row">
+          <div class="slider-group"><label>r</label><input type="range" id="cylR" min="1" max="10" value="5" step="0.5" oninput="updateCyl()"><span class="slider-val" id="cylRVal">5</span></div>
+          <div class="slider-group"><label>h</label><input type="range" id="cylH" min="1" max="15" value="8" step="0.5" oninput="updateCyl()"><span class="slider-val" id="cylHVal">8</span></div>
+        </div>
+        <div class="eq" id="cylResult">V = pi(5)&sup2;(8) = 628.32</div>
+      `;
+      break;
+    case 'sphere':
+      html = `
+        <div class="detail-title">Sphere</div>
+        <div class="slider-row">
+          <div class="slider-group"><label>r</label><input type="range" id="sphR" min="1" max="12" value="6" step="0.5" oninput="updateSph()"><span class="slider-val" id="sphRVal">6</span></div>
+        </div>
+        <div class="eq" id="sphResult">V = (4/3)pi(6)&sup3; = 904.78</div>
+      `;
+      break;
+    case 'cone':
+      html = `
+        <div class="detail-title">Cone</div>
+        <div class="slider-row">
+          <div class="slider-group"><label>r</label><input type="range" id="coneR" min="1" max="10" value="4" step="0.5" oninput="updateCone()"><span class="slider-val" id="coneRVal">4</span></div>
+          <div class="slider-group"><label>h</label><input type="range" id="coneH" min="1" max="15" value="9" step="0.5" oninput="updateCone()"><span class="slider-val" id="coneHVal">9</span></div>
+        </div>
+        <div class="eq" id="coneResult">V = (1/3)pi(4)&sup2;(9) = 150.80</div>
+      `;
+      break;
+  }
+  detail.innerHTML = html;
+
+  setTimeout(() => {
+    if (shape === 'cube') updateCube();
+    if (shape === 'rectprism') updateRP();
+    if (shape === 'cylinder') updateCyl();
+    if (shape === 'sphere') updateSph();
+    if (shape === 'cone') updateCone();
+  }, 10);
+}
+
+function updateCube() {
+  const s = parseFloat($('cubeS').value);
+  $('cubeSVal').textContent = s;
+  const v = s * s * s, sa = 6 * s * s;
+  $('cubeResult').innerHTML = `V = ${s}&sup3; = ${v.toFixed(1)} | SA = 6(${s})&sup2; = ${sa.toFixed(1)}`;
+}
+
+function updateRP() {
+  const l = parseFloat($('rpL').value), w = parseFloat($('rpW').value), h = parseFloat($('rpH').value);
+  $('rpLVal').textContent = l; $('rpWVal').textContent = w; $('rpHVal').textContent = h;
+  const v = l * w * h, sa = 2 * (l * w + l * h + w * h);
+  $('rpResult').innerHTML = `V = ${l} x ${w} x ${h} = ${v.toFixed(1)} | SA = ${sa.toFixed(1)}`;
+}
+
+function updateCyl() {
+  const r = parseFloat($('cylR').value), h = parseFloat($('cylH').value);
+  $('cylRVal').textContent = r; $('cylHVal').textContent = h;
+  const v = Math.PI * r * r * h;
+  $('cylResult').innerHTML = `V = pi(${r})&sup2;(${h}) = ${v.toFixed(2)}`;
+}
+
+function updateSph() {
+  const r = parseFloat($('sphR').value);
+  $('sphRVal').textContent = r;
+  const v = (4 / 3) * Math.PI * r * r * r;
+  $('sphResult').innerHTML = `V = (4/3)pi(${r})&sup3; = ${v.toFixed(2)}`;
+}
+
+function updateCone() {
+  const r = parseFloat($('coneR').value), h = parseFloat($('coneH').value);
+  $('coneRVal').textContent = r; $('coneHVal').textContent = h;
+  const v = (1 / 3) * Math.PI * r * r * h;
+  $('coneResult').innerHTML = `V = (1/3)pi(${r})&sup2;(${h}) = ${v.toFixed(2)}`;
+}
+
+const areaVolProbData = [
+  {
+    prompt: 'Area of trapezoid: bases 8 and 14, height 6.',
+    answer: '66',
+    alts: ['66.0'],
+    display: '66 (A = (1/2)(8+14)(6) = (1/2)(22)(6) = 66)'
+  },
+  {
+    prompt: 'Volume of cylinder: r=3, h=10. Round to 2 decimals.',
+    answer: '282.74',
+    alts: ['282.7', '282.743', '90pi', '90*pi'],
+    display: '282.74 (V = pi * 9 * 10 = 90*pi = 282.74)'
+  },
+  {
+    prompt: 'Volume of sphere with r=4. Round to 2 decimals.',
+    answer: '268.08',
+    alts: ['268.1', '268.083'],
+    display: '268.08 (V = (4/3)*pi*64 = 268.08)'
+  },
+  {
+    prompt: 'Surface area of a cube with side=7.',
+    answer: '294',
+    alts: ['294.0'],
+    display: '294 (SA = 6 * 49 = 294)'
+  }
+];
+buildProblems(areaVolProbData, 'areaVolProblems', 'avp');
+function checkAreaVolProblems() { checkProblems(areaVolProbData, 'avp', 3); }
+function showAreaVolAnswers() { showAnswers(areaVolProbData, 'avp', 3); }
+
+
+// ====== SECTION 5: Similarity & Congruence ======
+
+// Reference triangle (fixed)
+const refTri = { a: 120, b: 100, angleC: 50 };
+
+function drawCongruence() {
+  const a2 = parseFloat($('congA').value);
+  const b2 = parseFloat($('congB').value);
+  const angleC2 = parseFloat($('congAngle').value);
+
+  $('congAVal').textContent = a2;
+  $('congBVal').textContent = b2;
+  $('congAngleVal').textContent = angleC2 + ' deg';
+
+  const svg = $('congSvg');
+  let html = '';
+
+  // Draw reference triangle (left side)
+  const refAngleRad = refTri.angleC * Math.PI / 180;
+  const refBx = 30, refBy = 240;
+  const refCx = refBx + refTri.b, refCy = refBy;
+  const refAx = refBx + refTri.a * Math.cos(refAngleRad);
+  const refAy = refBy - refTri.a * Math.sin(refAngleRad);
+
+  html += `<text x="130" y="20" fill="#6366f1" font-size="11" font-family="JetBrains Mono" font-weight="700" text-anchor="middle">REFERENCE</text>`;
+  html += `<polygon points="${refBx},${refBy} ${refCx},${refCy} ${refAx},${refAy}" fill="rgba(99,102,241,0.08)" stroke="#6366f1" stroke-width="2"/>`;
+
+  // Side labels for reference
+  const rmAB = { x: (refBx + refAx) / 2 - 14, y: (refBy + refAy) / 2 };
+  const rmBC = { x: (refBx + refCx) / 2, y: refBy + 16 };
+  html += `<text x="${rmAB.x}" y="${rmAB.y}" fill="#6366f1" font-size="10" font-family="JetBrains Mono" font-weight="600" text-anchor="end">a=${refTri.a}</text>`;
+  html += `<text x="${rmBC.x}" y="${rmBC.y}" fill="#6366f1" font-size="10" font-family="JetBrains Mono" font-weight="600" text-anchor="middle">b=${refTri.b}</text>`;
+
+  // Compute third side of reference via law of cosines
+  const refC2 = Math.sqrt(refTri.a * refTri.a + refTri.b * refTri.b - 2 * refTri.a * refTri.b * Math.cos(refAngleRad));
+  const rmAC = { x: (refAx + refCx) / 2 + 10, y: (refAy + refCy) / 2 - 6 };
+  html += `<text x="${rmAC.x}" y="${rmAC.y}" fill="#6366f1" font-size="10" font-family="JetBrains Mono" font-weight="600">c=${refC2.toFixed(0)}</text>`;
+
+  // Angle label
+  html += `<text x="${refBx + 30}" y="${refBy - 12}" fill="#f59e0b" font-size="10" font-family="JetBrains Mono" font-weight="600">${refTri.angleC}\u00B0</text>`;
+
+  // Draw comparison triangle (right side)
+  const ang2Rad = angleC2 * Math.PI / 180;
+  const t2Bx = 280, t2By = 240;
+  const t2Cx = t2Bx + b2, t2Cy = t2By;
+  const t2Ax = t2Bx + a2 * Math.cos(ang2Rad);
+  const t2Ay = t2By - a2 * Math.sin(ang2Rad);
+
+  // Clamp to viewBox
+  const clampedAx = Math.max(260, Math.min(495, t2Ax));
+  const clampedAy = Math.max(5, Math.min(270, t2Ay));
+
+  html += `<text x="380" y="20" fill="#22c55e" font-size="11" font-family="JetBrains Mono" font-weight="700" text-anchor="middle">COMPARISON</text>`;
+  html += `<polygon points="${t2Bx},${t2By} ${Math.min(t2Cx, 495)},${t2Cy} ${clampedAx},${clampedAy}" fill="rgba(34,197,94,0.08)" stroke="#22c55e" stroke-width="2"/>`;
+
+  const m2AB = { x: (t2Bx + clampedAx) / 2 - 14, y: (t2By + clampedAy) / 2 };
+  const m2BC = { x: (t2Bx + Math.min(t2Cx, 495)) / 2, y: t2By + 16 };
+  html += `<text x="${m2AB.x}" y="${m2AB.y}" fill="#22c55e" font-size="10" font-family="JetBrains Mono" font-weight="600" text-anchor="end">a'=${a2}</text>`;
+  html += `<text x="${m2BC.x}" y="${m2BC.y}" fill="#22c55e" font-size="10" font-family="JetBrains Mono" font-weight="600" text-anchor="middle">b'=${b2}</text>`;
+
+  const c2Val = Math.sqrt(a2 * a2 + b2 * b2 - 2 * a2 * b2 * Math.cos(ang2Rad));
+  html += `<text x="${t2Bx + 30}" y="${t2By - 12}" fill="#f59e0b" font-size="10" font-family="JetBrains Mono" font-weight="600">${angleC2}\u00B0</text>`;
+
+  svg.innerHTML = html;
+
+  // Compute angles via law of cosines for both triangles
+  const refAngleA = Math.acos((refTri.b * refTri.b + refC2 * refC2 - refTri.a * refTri.a) / (2 * refTri.b * refC2)) * 180 / Math.PI;
+  const refAngleB = 180 - refTri.angleC - refAngleA;
+
+  const t2AngleA = Math.acos((b2 * b2 + c2Val * c2Val - a2 * a2) / (2 * b2 * c2Val)) * 180 / Math.PI;
+  const t2AngleB = 180 - angleC2 - t2AngleA;
+
+  // Check congruence criteria
+  const tol = 2;
+  const sidesRef = [refTri.a, refTri.b, refC2].sort((x, y) => x - y);
+  const sides2 = [a2, b2, c2Val].sort((x, y) => x - y);
+  const anglesRef = [refTri.angleC, refAngleA, refAngleB].sort((x, y) => x - y);
+  const angles2 = [angleC2, t2AngleA, t2AngleB].sort((x, y) => x - y);
+
+  const sideMatch = [
+    Math.abs(sidesRef[0] - sides2[0]) < tol,
+    Math.abs(sidesRef[1] - sides2[1]) < tol,
+    Math.abs(sidesRef[2] - sides2[2]) < tol
+  ];
+  const angleMatch = [
+    Math.abs(anglesRef[0] - angles2[0]) < tol,
+    Math.abs(anglesRef[1] - angles2[1]) < tol,
+    Math.abs(anglesRef[2] - angles2[2]) < tol
+  ];
+
+  const sssMatch = sideMatch[0] && sideMatch[1] && sideMatch[2];
+  const sasMatch = (Math.abs(refTri.a - a2) < tol && Math.abs(refTri.b - b2) < tol && Math.abs(refTri.angleC - angleC2) < tol);
+  const asaMatch = angleMatch[0] && angleMatch[1] && sideMatch.filter(Boolean).length >= 1;
+  const aasMatch = angleMatch.filter(Boolean).length >= 2 && sideMatch.filter(Boolean).length >= 1;
+
+  // Similarity check
+  const ratios = [sides2[0] / sidesRef[0], sides2[1] / sidesRef[1], sides2[2] / sidesRef[2]];
+  const isSimilar = angleMatch[0] && angleMatch[1] && angleMatch[2];
+  const ratio = isSimilar ? ratios[0].toFixed(2) : null;
+
+  const tags = $('congTags');
+  let tagHtml = '';
+  if (sssMatch) tagHtml += '<span class="tag green">SSS Congruent</span>';
+  if (sasMatch) tagHtml += '<span class="tag green">SAS Congruent</span>';
+  if (asaMatch) tagHtml += '<span class="tag green">ASA Congruent</span>';
+  if (aasMatch) tagHtml += '<span class="tag green">AAS Congruent</span>';
+  if (isSimilar && !sssMatch) tagHtml += `<span class="tag amber">Similar (k=${ratio})</span>`;
+  if (!sssMatch && !sasMatch && !asaMatch && !aasMatch && !isSimilar) tagHtml += '<span class="tag pink">Not congruent or similar</span>';
+  tags.innerHTML = tagHtml;
+}
+
+$('congA').addEventListener('input', drawCongruence);
+$('congB').addEventListener('input', drawCongruence);
+$('congAngle').addEventListener('input', drawCongruence);
+drawCongruence();
+
+const simProbData = [
+  {
+    prompt: 'Triangles with sides 3,4,5 and 6,8,10. Similar, congruent, or neither?',
+    answer: 'similar',
+    alts: [],
+    display: 'Similar (ratio k = 2, all sides proportional)'
+  },
+  {
+    prompt: 'Two triangles share two angles: 40 and 70. What criteria makes them similar?',
+    answer: 'aa',
+    alts: ['aa similarity'],
+    display: 'AA (Angle-Angle) Similarity'
+  },
+  {
+    prompt: 'Object 10cm tall at 30cm from lens, image at 60cm. What is image height?',
+    answer: '20',
+    alts: ['20cm', '20 cm'],
+    display: '20 cm (M = di/do = 60/30 = 2, so h\' = 2 x 10 = 20)'
+  }
+];
+buildProblems(simProbData, 'simProblems', 'sp');
+function checkSimProblems() { checkProblems(simProbData, 'sp', 4); }
+function showSimAnswers() { showAnswers(simProbData, 'sp', 4); }
+
+
+// ====== SECTION 6: Quick Quiz ======
+
+const quizData = [
+  { q: 'A triangle has angles 35 and 90. What is the third angle?', answer: '55', alts: ['55deg'], explanation: '180 - 35 - 90 = 55 degrees.' },
+  { q: 'Right triangle with legs 9 and 12. Find the hypotenuse.', answer: '15', alts: ['15.0'], explanation: '81 + 144 = 225. sqrt(225) = 15.' },
+  { q: 'Circle with diameter 20. What is the circumference? (round to 2 dec)', answer: '62.83', alts: ['62.832','20pi','20*pi'], explanation: 'C = pi * d = pi * 20 = 62.83.' },
+  { q: 'Area of a triangle: base=15, height=10.', answer: '75', alts: ['75.0'], explanation: 'A = (1/2)(15)(10) = 75.' },
+  { q: 'Volume of a cube with side length 4.', answer: '64', alts: ['64.0'], explanation: 'V = 4^3 = 64.' },
+  { q: 'Is a triangle with sides 6, 8, 11 a right triangle? (yes/no)', answer: 'no', alts: [], explanation: '36 + 64 = 100, but 11^2 = 121. Not equal, so no.' },
+  { q: 'Area of a circle with r=9. (round to 2 dec)', answer: '254.47', alts: ['254.469','254.5','81pi','81*pi'], explanation: 'A = pi * 81 = 254.47.' },
+  { q: 'Volume of a cylinder: r=3, h=7. (round to 2 dec)', answer: '197.92', alts: ['197.920','63pi','63*pi','197.9'], explanation: 'V = pi * 9 * 7 = 63*pi = 197.92.' },
+  { q: 'Triangles with sides 5,12,13 and 10,24,26 -- similar or congruent?', answer: 'similar', alts: [], explanation: 'Ratio = 2 for all sides. Similar but not congruent.' },
+  { q: 'Sector area: r=8, angle=45 degrees. (round to 2 dec)', answer: '25.13', alts: ['25.133','8pi','8*pi','25.1'], explanation: 'A = (45/360) * pi * 64 = 8*pi = 25.13.' },
+];
+
+function buildQuiz() {
+  const cont = $('quizProblems');
+  cont.innerHTML = '';
+  quizData.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-problem';
+    div.id = 'qp' + i;
+    div.innerHTML = `
+      <div class="q-num">Question ${i + 1}</div>
+      <div class="q-text">${q.q}</div>
+      <input type="text" id="qIn${i}" placeholder="your answer">
+      <div class="q-feedback" id="qFb${i}"></div>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function gradeQuiz() {
+  let score = 0;
+  quizData.forEach((q, i) => {
+    const input = normalize($('qIn' + i).value);
+    const answers = [q.answer, ...q.alts].map(normalize);
+    const isRight = answers.includes(input);
+
+    if (isRight) {
+      score++;
+      $('qp' + i).className = 'quiz-problem correct';
+      $('qFb' + i).textContent = 'Correct!';
+      $('qFb' + i).className = 'q-feedback correct';
+      springPop($('qp' + i));
+    } else {
+      $('qp' + i).className = 'quiz-problem incorrect';
+      $('qFb' + i).innerHTML = `Incorrect. Answer: ${q.answer}. ${q.explanation}`;
+      $('qFb' + i).className = 'q-feedback incorrect';
+      shakeEl($('qp' + i));
+    }
+  });
+
+  $('quizScore').innerHTML = `Score: <span>${score} / 10</span>`;
+  if (score >= 7) markComplete(5);
+}
+
+function showQuizAnswers() {
+  quizData.forEach((q, i) => {
+    $('qIn' + i).value = q.answer;
+    $('qp' + i).className = 'quiz-problem correct';
+    $('qFb' + i).innerHTML = q.explanation;
+    $('qFb' + i).className = 'q-feedback correct';
+  });
+  $('quizScore').innerHTML = `Score: <span>10 / 10</span>`;
+  markComplete(5);
+}
+
+function resetQuiz() {
+  quizData.forEach((q, i) => {
+    $('qIn' + i).value = '';
+    $('qp' + i).className = 'quiz-problem';
+    $('qFb' + i).textContent = '';
+    $('qFb' + i).className = 'q-feedback';
+  });
+  $('quizScore').innerHTML = `Score: <span>-- / 10</span>`;
+  completed[5] = false;
+  $('sec5').classList.remove('completed');
+  updateProgress();
+}
+
+buildQuiz();
+
+</script>
+</body>
+</html>

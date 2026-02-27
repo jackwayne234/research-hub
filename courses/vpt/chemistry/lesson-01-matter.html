@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 1: Matter, Measurement &amp; Math</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  background: #1e2128;
+  color: #c9cdd5;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.65;
+  min-height: 100vh;
+  padding: 0 0 4rem;
+}
+
+/* ── Palette ──────────────────────────────────────── */
+:root {
+  --bg: #1e2128;
+  --surface: #262a33;
+  --surface2: #2e323d;
+  --border: #383d49;
+  --text: #c9cdd5;
+  --text-dim: #8b90a0;
+  --primary: #6366f1;
+  --primary-dim: rgba(99,102,241,.15);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,.15);
+  --pink: #ec4899;
+  --pink-dim: rgba(236,72,153,.15);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,.15);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,.15);
+  --orange: #f97316;
+  --orange-dim: rgba(249,115,22,.15);
+}
+
+/* ── Header ───────────────────────────────────────── */
+.page-header {
+  text-align: center;
+  padding: 2.5rem 1rem 1rem;
+}
+.page-header h1 {
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.page-header .subtitle {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-top: .3rem;
+}
+
+/* ── Progress Bar ─────────────────────────────────── */
+.progress-wrap {
+  max-width: 740px;
+  margin: 1.2rem auto .5rem;
+  padding: 0 1rem;
+}
+.progress-bar-outer {
+  background: var(--surface);
+  border-radius: 8px;
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-bar-inner {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), #818cf8);
+  border-radius: 8px;
+  transition: width .5s ease;
+}
+.progress-label {
+  font-size: .7rem;
+  color: var(--text-dim);
+  text-align: right;
+  margin-top: .3rem;
+}
+
+/* ── Container ────────────────────────────────────── */
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ── Collapsible Card ─────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: border-color .3s;
+}
+.card.completed { border-color: var(--green); }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background .2s;
+}
+.card-header:hover { background: var(--surface2); }
+.card-header .num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--primary-dim);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: .8rem;
+  flex-shrink: 0;
+}
+.card.completed .card-header .num {
+  background: var(--green-dim);
+  color: var(--green);
+}
+.card-header .title {
+  flex: 1;
+  font-weight: 600;
+  font-size: .9rem;
+  color: #eee;
+}
+.card-header .chevron {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  transition: transform .3s;
+}
+.card.open .card-header .chevron { transform: rotate(180deg); }
+.card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .5s ease, padding .3s ease;
+}
+.card.open .card-body {
+  max-height: 12000px;
+  padding: 0 1.2rem 1.5rem;
+}
+
+/* ── Section Internals ────────────────────────────── */
+.section-desc {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+
+/* Hierarchy Diagram */
+.hierarchy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 1.5rem;
+}
+.h-node {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .5rem 1.2rem;
+  font-size: .78rem;
+  font-weight: 600;
+  color: #ddd;
+  text-align: center;
+  position: relative;
+}
+.h-node.root { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
+.h-connector {
+  width: 2px;
+  height: 18px;
+  background: var(--border);
+}
+.h-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+.h-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: var(--border);
+}
+.h-branch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* Classification Game */
+.classify-game {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1.2rem;
+  text-align: center;
+}
+.classify-game .cg-substance {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: .2rem;
+}
+.classify-game .cg-prompt {
+  font-size: .75rem;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+.classify-game .cg-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  justify-content: center;
+  margin-bottom: .8rem;
+}
+.cg-buttons button {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem;
+  padding: .5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all .2s;
+}
+.cg-buttons button:hover { border-color: var(--primary); color: #fff; }
+.cg-buttons button.correct {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+.cg-buttons button.incorrect {
+  background: var(--pink-dim);
+  border-color: var(--pink);
+  color: var(--pink);
+}
+.cg-feedback {
+  font-size: .78rem;
+  min-height: 1.4em;
+  font-weight: 600;
+}
+.cg-score {
+  font-size: .7rem;
+  color: var(--text-dim);
+  margin-top: .5rem;
+}
+
+/* Two column layout */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .8rem;
+  margin-bottom: 1.2rem;
+}
+@media (max-width: 560px) { .two-col { grid-template-columns: 1fr; } }
+.col-card {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid var(--border);
+}
+.col-card h4 {
+  font-size: .8rem;
+  margin-bottom: .6rem;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.col-card.physical h4 { color: var(--blue); }
+.col-card.chemical h4 { color: var(--orange); }
+.col-card ul {
+  list-style: none;
+  font-size: .75rem;
+}
+.col-card li {
+  padding: .3rem 0;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.col-card li .icon { font-size: 1rem; }
+
+/* Classify click game (physical vs chemical) */
+.pvc-game {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1.2rem;
+  text-align: center;
+  margin-bottom: .5rem;
+}
+.pvc-game .pvc-item {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: .8rem;
+}
+.pvc-game .pvc-btns {
+  display: flex;
+  gap: .6rem;
+  justify-content: center;
+}
+.pvc-btns button {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  padding: .5rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all .2s;
+}
+.pvc-btns button:hover { border-color: var(--primary); }
+
+/* Reference Table */
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .72rem;
+  margin-bottom: 1.2rem;
+}
+.ref-table th {
+  text-align: left;
+  padding: .5rem .6rem;
+  background: var(--bg);
+  color: var(--primary);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border);
+}
+.ref-table td {
+  padding: .45rem .6rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.ref-table tr:hover td { background: var(--surface2); }
+
+/* Unit Converter */
+.converter-box {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+.converter-box h4 {
+  font-size: .82rem;
+  color: var(--primary);
+  margin-bottom: .8rem;
+}
+.conv-row {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: .8rem;
+}
+.conv-row input, .conv-row select {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  padding: .45rem .6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: #fff;
+  outline: none;
+}
+.conv-row input:focus, .conv-row select:focus { border-color: var(--primary); }
+.conv-row input { width: 120px; }
+.conv-row select { min-width: 80px; }
+.conv-row .arrow { color: var(--text-dim); font-size: .9rem; }
+.conv-result {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--green);
+  min-height: 1.4em;
+}
+
+/* Staircase */
+.staircase {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  margin: 1.2rem 0;
+  padding: 0 .5rem;
+  overflow-x: auto;
+}
+.stair-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.stair-block {
+  width: clamp(42px, 8vw, 60px);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: .3rem .15rem;
+  font-size: .6rem;
+  color: var(--text);
+  text-align: center;
+}
+.stair-block .prefix { font-weight: 700; color: var(--primary); font-size: .72rem; }
+.stair-block .power { color: var(--text-dim); font-size: .58rem; }
+.stair-step:nth-child(1) .stair-block { height: 120px; }
+.stair-step:nth-child(2) .stair-block { height: 108px; }
+.stair-step:nth-child(3) .stair-block { height: 96px; }
+.stair-step:nth-child(4) .stair-block { height: 84px; }
+.stair-step:nth-child(5) .stair-block { height: 72px; }
+.stair-step:nth-child(6) .stair-block { height: 60px; }
+.stair-step:nth-child(7) .stair-block { height: 48px; }
+.stair-step:nth-child(8) .stair-block { height: 36px; }
+.stair-step.active .stair-block {
+  border-color: var(--primary);
+  background: var(--primary-dim);
+}
+
+/* Sig Fig Interactive */
+.sf-digits {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+.sf-digit {
+  width: 36px; height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 6px;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: all .2s;
+  color: #fff;
+  user-select: none;
+}
+.sf-digit.selected { border-color: var(--primary); background: var(--primary-dim); }
+.sf-digit.correct-digit { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+.sf-digit.incorrect-digit { border-color: var(--pink); background: var(--pink-dim); color: var(--pink); }
+.sf-digit.dot {
+  cursor: default;
+  font-size: 1.4rem;
+  border: none;
+  background: transparent;
+  width: 16px;
+  color: var(--text-dim);
+}
+
+/* Railroad / Dimensional Analysis */
+.railroad {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+}
+.rr-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  padding: 0 .5rem;
+  white-space: nowrap;
+}
+.rr-fraction {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-left: 2px solid var(--border);
+  padding: 0 .7rem;
+  min-width: 70px;
+}
+.rr-num, .rr-den {
+  font-size: .75rem;
+  padding: .2rem 0;
+  white-space: nowrap;
+}
+.rr-num { border-bottom: 2px solid var(--text-dim); color: #ddd; }
+.rr-den { color: #ddd; }
+.rr-cancel { text-decoration: line-through; color: var(--pink); }
+.rr-equals {
+  font-size: 1rem;
+  color: var(--text-dim);
+  padding: 0 .5rem;
+}
+.rr-result {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--green);
+  padding: 0 .5rem;
+  white-space: nowrap;
+}
+
+/* Practice Problems */
+.practice {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: .8rem;
+}
+.practice .p-question {
+  font-size: .82rem;
+  color: #ddd;
+  margin-bottom: .6rem;
+  font-weight: 500;
+}
+.practice .p-input-row {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.practice input[type="text"], .practice input[type="number"] {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82rem;
+  padding: .45rem .7rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: #fff;
+  outline: none;
+  width: 160px;
+}
+.practice input:focus { border-color: var(--primary); }
+.practice .check-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem;
+  padding: .45rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--primary);
+  background: var(--primary-dim);
+  color: var(--primary);
+  cursor: pointer;
+  transition: all .2s;
+  font-weight: 600;
+}
+.practice .check-btn:hover { background: var(--primary); color: #fff; }
+.practice .p-feedback {
+  font-size: .75rem;
+  margin-top: .4rem;
+  min-height: 1.2em;
+  font-weight: 600;
+}
+
+/* Quiz Section */
+.quiz-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: .8rem;
+}
+.quiz-score { color: var(--green); font-weight: 600; }
+.quiz-progress { color: var(--text-dim); }
+.quiz-question {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1.2rem;
+}
+.quiz-question .qq-text {
+  font-size: .88rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+.quiz-option {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  padding: .6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: all .2s;
+}
+.quiz-option:hover { border-color: var(--primary); color: #fff; }
+.quiz-option.selected-correct {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+.quiz-option.selected-wrong {
+  background: var(--pink-dim);
+  border-color: var(--pink);
+  color: var(--pink);
+}
+.quiz-option.show-correct {
+  border-color: var(--green);
+  color: var(--green);
+}
+.quiz-option.disabled { pointer-events: none; }
+.quiz-next-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  padding: .5rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  margin-top: 1rem;
+  display: none;
+  font-weight: 600;
+}
+.quiz-next-btn:hover { background: #4f46e5; }
+.quiz-final {
+  text-align: center;
+  padding: 2rem 0;
+  display: none;
+}
+.quiz-final .big-score {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--green);
+}
+.quiz-final .big-label {
+  font-size: .85rem;
+  color: var(--text-dim);
+  margin-top: .3rem;
+}
+
+/* Sig Fig Rules */
+.sf-rules {
+  display: grid;
+  gap: .5rem;
+  margin-bottom: 1.2rem;
+}
+.sf-rule {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: .7rem 1rem;
+  border-left: 3px solid var(--primary);
+}
+.sf-rule .rule-num {
+  font-size: .68rem;
+  color: var(--primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.sf-rule .rule-text {
+  font-size: .78rem;
+  color: #ddd;
+  margin-top: .15rem;
+}
+.sf-rule .rule-ex {
+  font-size: .72rem;
+  color: var(--text-dim);
+  margin-top: .2rem;
+}
+
+/* DA walkthrough */
+.da-walkthrough {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+}
+.da-walkthrough h4 {
+  font-size: .82rem;
+  color: var(--primary);
+  margin-bottom: .8rem;
+}
+.da-step-indicator {
+  display: flex;
+  gap: .5rem;
+  margin-bottom: 1rem;
+}
+.da-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  transition: all .3s;
+}
+.da-dot.active { background: var(--primary); border-color: var(--primary); }
+.da-step-text {
+  font-size: .8rem;
+  color: #ddd;
+  margin-bottom: .8rem;
+  min-height: 2.5em;
+}
+.da-nav {
+  display: flex;
+  gap: .5rem;
+}
+.da-nav button {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  padding: .35rem .8rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+.da-nav button:hover { border-color: var(--primary); }
+.da-nav button:disabled { opacity: .3; cursor: default; }
+
+/* Section complete button */
+.section-done {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem;
+  padding: .5rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid var(--green);
+  background: var(--green-dim);
+  color: var(--green);
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 1rem;
+  transition: all .2s;
+}
+.section-done:hover { background: var(--green); color: #fff; }
+.section-done.done {
+  pointer-events: none;
+  opacity: .6;
+}
+
+/* DA Practice */
+.da-practice {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: .8rem;
+}
+.da-practice .p-question {
+  font-size: .82rem;
+  color: #ddd;
+  margin-bottom: .6rem;
+  font-weight: 500;
+}
+.da-practice .p-input-row {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.da-practice input {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82rem;
+  padding: .45rem .7rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: #fff;
+  outline: none;
+  width: 160px;
+}
+.da-practice input:focus { border-color: var(--primary); }
+
+/* Flash animation */
+@keyframes flash-green {
+  0% { box-shadow: 0 0 0 0 rgba(34,197,94,.5); }
+  50% { box-shadow: 0 0 20px 5px rgba(34,197,94,.3); }
+  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+}
+@keyframes flash-red {
+  0% { box-shadow: 0 0 0 0 rgba(236,72,153,.5); }
+  50% { box-shadow: 0 0 20px 5px rgba(236,72,153,.3); }
+  100% { box-shadow: 0 0 0 0 rgba(236,72,153,0); }
+}
+.flash-green { animation: flash-green .5s ease; }
+.flash-red { animation: flash-red .5s ease; }
+
+/* Responsive */
+@media (max-width: 500px) {
+  .card-header { padding: .8rem .9rem; }
+  .card.open .card-body { padding: 0 .9rem 1.2rem; }
+  .sf-digit { width: 30px; height: 38px; font-size: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="page-header">
+  <h1>Week 1: Matter, Measurement &amp; Math</h1>
+  <div class="subtitle">General Chemistry Prep -- VPT Series</div>
+</header>
+
+<!-- Progress Bar -->
+<div class="progress-wrap">
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: Classification of Matter -->
+<!-- ============================================================ -->
+<div class="card" data-section="1">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="num">1</span>
+    <span class="title">Classification of Matter</span>
+    <span class="chevron">&#9662;</span>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">All matter can be classified into pure substances (elements and compounds) or mixtures (homogeneous and heterogeneous). Use the hierarchy below, then test yourself.</p>
+
+    <!-- Hierarchy Diagram -->
+    <div class="hierarchy">
+      <div class="h-node root">MATTER</div>
+      <div class="h-connector"></div>
+      <div class="h-row">
+        <div class="h-branch">
+          <div class="h-connector"></div>
+          <div class="h-node" style="border-color:var(--blue);color:var(--blue);">Pure Substance</div>
+          <div class="h-connector"></div>
+          <div class="h-row">
+            <div class="h-branch">
+              <div class="h-connector"></div>
+              <div class="h-node">Element</div>
+            </div>
+            <div class="h-branch">
+              <div class="h-connector"></div>
+              <div class="h-node">Compound</div>
+            </div>
+          </div>
+        </div>
+        <div class="h-branch">
+          <div class="h-connector"></div>
+          <div class="h-node" style="border-color:var(--orange);color:var(--orange);">Mixture</div>
+          <div class="h-connector"></div>
+          <div class="h-row">
+            <div class="h-branch">
+              <div class="h-connector"></div>
+              <div class="h-node">Homogeneous</div>
+            </div>
+            <div class="h-branch">
+              <div class="h-connector"></div>
+              <div class="h-node">Heterogeneous</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Classification Game -->
+    <div class="classify-game" id="classifyGame">
+      <div class="cg-substance" id="cgSubstance">--</div>
+      <div class="cg-prompt">Classify this substance:</div>
+      <div class="cg-buttons" id="cgButtons">
+        <button onclick="classifyAnswer('element')">Element</button>
+        <button onclick="classifyAnswer('compound')">Compound</button>
+        <button onclick="classifyAnswer('homogeneous')">Homogeneous Mixture</button>
+        <button onclick="classifyAnswer('heterogeneous')">Heterogeneous Mixture</button>
+      </div>
+      <div class="cg-feedback" id="cgFeedback"></div>
+      <div class="cg-score" id="cgScore"></div>
+    </div>
+
+    <button class="section-done" onclick="markDone(1)">Mark Complete</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: Physical vs Chemical Properties/Changes -->
+<!-- ============================================================ -->
+<div class="card" data-section="2">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="num">2</span>
+    <span class="title">Physical vs Chemical Changes</span>
+    <span class="chevron">&#9662;</span>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">Physical changes alter appearance but not composition. Chemical changes produce new substances with different properties.</p>
+
+    <div class="two-col">
+      <div class="col-card physical">
+        <h4><span class="icon">&#9670;</span> Physical Changes</h4>
+        <ul>
+          <li><span class="icon">&#10052;</span> Melting ice</li>
+          <li><span class="icon">&#9737;</span> Boiling water</li>
+          <li><span class="icon">&#9827;</span> Dissolving sugar</li>
+          <li><span class="icon">&#9674;</span> Crushing a can</li>
+          <li><span class="icon">&#8644;</span> Reversible process</li>
+        </ul>
+      </div>
+      <div class="col-card chemical">
+        <h4><span class="icon">&#9883;</span> Chemical Changes</h4>
+        <ul>
+          <li><span class="icon">&#9055;</span> Rusting iron</li>
+          <li><span class="icon">&#9832;</span> Burning wood</li>
+          <li><span class="icon">&#9851;</span> Cooking an egg</li>
+          <li><span class="icon">&#9889;</span> Tarnishing silver</li>
+          <li><span class="icon">&#8655;</span> New substance formed</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Physical vs Chemical Game -->
+    <div class="pvc-game" id="pvcGame">
+      <div class="pvc-item" id="pvcItem">--</div>
+      <div class="cg-prompt">Is this a physical or chemical change?</div>
+      <div class="pvc-btns">
+        <button onclick="pvcAnswer('physical')" style="border-color:var(--blue);">Physical</button>
+        <button onclick="pvcAnswer('chemical')" style="border-color:var(--orange);">Chemical</button>
+      </div>
+      <div class="cg-feedback" id="pvcFeedback" style="margin-top:.6rem;"></div>
+      <div class="cg-score" id="pvcScore"></div>
+    </div>
+
+    <button class="section-done" onclick="markDone(2)">Mark Complete</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: SI Units & Metric Prefixes -->
+<!-- ============================================================ -->
+<div class="card" data-section="3">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="num">3</span>
+    <span class="title">SI Units &amp; Metric Prefixes</span>
+    <span class="chevron">&#9662;</span>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">The International System of Units (SI) provides a universal measurement framework. Metric prefixes scale base units by powers of 10.</p>
+
+    <table class="ref-table">
+      <thead>
+        <tr><th>Quantity</th><th>SI Unit</th><th>Symbol</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Length</td><td>meter</td><td>m</td></tr>
+        <tr><td>Mass</td><td>kilogram</td><td>kg</td></tr>
+        <tr><td>Time</td><td>second</td><td>s</td></tr>
+        <tr><td>Temperature</td><td>kelvin</td><td>K</td></tr>
+        <tr><td>Amount</td><td>mole</td><td>mol</td></tr>
+        <tr><td>Electric Current</td><td>ampere</td><td>A</td></tr>
+        <tr><td>Luminous Intensity</td><td>candela</td><td>cd</td></tr>
+      </tbody>
+    </table>
+
+    <table class="ref-table">
+      <thead>
+        <tr><th>Prefix</th><th>Symbol</th><th>Factor</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>tera</td><td>T</td><td>10<sup>12</sup></td></tr>
+        <tr><td>giga</td><td>G</td><td>10<sup>9</sup></td></tr>
+        <tr><td>mega</td><td>M</td><td>10<sup>6</sup></td></tr>
+        <tr><td>kilo</td><td>k</td><td>10<sup>3</sup></td></tr>
+        <tr><td>(base)</td><td>--</td><td>10<sup>0</sup></td></tr>
+        <tr><td>deci</td><td>d</td><td>10<sup>-1</sup></td></tr>
+        <tr><td>centi</td><td>c</td><td>10<sup>-2</sup></td></tr>
+        <tr><td>milli</td><td>m</td><td>10<sup>-3</sup></td></tr>
+        <tr><td>micro</td><td>&mu;</td><td>10<sup>-6</sup></td></tr>
+        <tr><td>nano</td><td>n</td><td>10<sup>-9</sup></td></tr>
+        <tr><td>pico</td><td>p</td><td>10<sup>-12</sup></td></tr>
+      </tbody>
+    </table>
+
+    <!-- Staircase Visualization -->
+    <div style="font-size:.78rem;color:var(--text-dim);margin-bottom:.5rem;">Metric Staircase (each step = x10):</div>
+    <div class="staircase">
+      <div class="stair-step"><div class="stair-block"><span class="prefix">kilo</span><span class="power">10<sup>3</sup></span></div></div>
+      <div class="stair-step"><div class="stair-block"><span class="prefix">hecto</span><span class="power">10<sup>2</sup></span></div></div>
+      <div class="stair-step"><div class="stair-block"><span class="prefix">deka</span><span class="power">10<sup>1</sup></span></div></div>
+      <div class="stair-step active"><div class="stair-block"><span class="prefix">BASE</span><span class="power">10<sup>0</sup></span></div></div>
+      <div class="stair-step"><div class="stair-block"><span class="prefix">deci</span><span class="power">10<sup>-1</sup></span></div></div>
+      <div class="stair-step"><div class="stair-block"><span class="prefix">centi</span><span class="power">10<sup>-2</sup></span></div></div>
+      <div class="stair-step"><div class="stair-block"><span class="prefix">milli</span><span class="power">10<sup>-3</sup></span></div></div>
+    </div>
+    <div style="font-size:.68rem;color:var(--text-dim);margin-bottom:1.2rem;">Going right (smaller): move decimal right. Going left (larger): move decimal left.</div>
+
+    <!-- Unit Converter -->
+    <div class="converter-box">
+      <h4>Interactive Converter</h4>
+      <div class="conv-row">
+        <input type="number" id="convInput" value="1" oninput="doConvert()">
+        <select id="convFrom" onchange="doConvert()">
+          <option value="1e12">Tm</option>
+          <option value="1e9">Gm</option>
+          <option value="1e6">Mm</option>
+          <option value="1e3" selected>km</option>
+          <option value="1">m</option>
+          <option value="1e-1">dm</option>
+          <option value="1e-2">cm</option>
+          <option value="1e-3">mm</option>
+          <option value="1e-6">&mu;m</option>
+          <option value="1e-9">nm</option>
+          <option value="1e-12">pm</option>
+        </select>
+        <span class="arrow">&#10145;</span>
+        <select id="convTo" onchange="doConvert()">
+          <option value="1e12">Tm</option>
+          <option value="1e9">Gm</option>
+          <option value="1e6">Mm</option>
+          <option value="1e3">km</option>
+          <option value="1" selected>m</option>
+          <option value="1e-1">dm</option>
+          <option value="1e-2">cm</option>
+          <option value="1e-3">mm</option>
+          <option value="1e-6">&mu;m</option>
+          <option value="1e-9">nm</option>
+          <option value="1e-12">pm</option>
+        </select>
+      </div>
+      <div class="conv-result" id="convResult">1000 m</div>
+    </div>
+
+    <!-- Practice -->
+    <div class="practice">
+      <div class="p-question">1. Convert 4500 mm to meters.</div>
+      <div class="p-input-row">
+        <input type="text" id="si1" placeholder="Answer in m">
+        <button class="check-btn" onclick="checkSI(1, '4.5', 'si1', 'si1fb')">Check</button>
+      </div>
+      <div class="p-feedback" id="si1fb"></div>
+    </div>
+    <div class="practice">
+      <div class="p-question">2. How many centimeters are in 2.3 km?</div>
+      <div class="p-input-row">
+        <input type="text" id="si2" placeholder="Answer in cm">
+        <button class="check-btn" onclick="checkSI(2, '230000', 'si2', 'si2fb')">Check</button>
+      </div>
+      <div class="p-feedback" id="si2fb"></div>
+    </div>
+    <div class="practice">
+      <div class="p-question">3. Express 0.000045 m in micrometers (&mu;m).</div>
+      <div class="p-input-row">
+        <input type="text" id="si3" placeholder="Answer in &mu;m">
+        <button class="check-btn" onclick="checkSI(3, '45', 'si3', 'si3fb')">Check</button>
+      </div>
+      <div class="p-feedback" id="si3fb"></div>
+    </div>
+
+    <button class="section-done" onclick="markDone(3)">Mark Complete</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: Significant Figures -->
+<!-- ============================================================ -->
+<div class="card" data-section="4">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="num">4</span>
+    <span class="title">Significant Figures</span>
+    <span class="chevron">&#9662;</span>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">Significant figures communicate the precision of a measurement. Master these five rules.</p>
+
+    <div class="sf-rules">
+      <div class="sf-rule">
+        <div class="rule-num">Rule 1</div>
+        <div class="rule-text">Non-zero digits always count.</div>
+        <div class="rule-ex">e.g. 1234 has 4 sig figs</div>
+      </div>
+      <div class="sf-rule">
+        <div class="rule-num">Rule 2</div>
+        <div class="rule-text">Zeros between non-zero digits (captive zeros) always count.</div>
+        <div class="rule-ex">e.g. 1002 has 4 sig figs</div>
+      </div>
+      <div class="sf-rule">
+        <div class="rule-num">Rule 3</div>
+        <div class="rule-text">Leading zeros never count -- they are placeholders.</div>
+        <div class="rule-ex">e.g. 0.0045 has 2 sig figs</div>
+      </div>
+      <div class="sf-rule">
+        <div class="rule-num">Rule 4</div>
+        <div class="rule-text">Trailing zeros after a decimal point always count.</div>
+        <div class="rule-ex">e.g. 2.300 has 4 sig figs</div>
+      </div>
+      <div class="sf-rule">
+        <div class="rule-num">Rule 5</div>
+        <div class="rule-text">Trailing zeros in a whole number without a decimal are ambiguous (usually not significant).</div>
+        <div class="rule-ex">e.g. 1500 has 2 sig figs (ambiguous)</div>
+      </div>
+    </div>
+
+    <!-- Interactive: Click significant digits -->
+    <div style="font-size:.82rem;color:#ddd;margin-bottom:.3rem;font-weight:600;">Click the significant digits:</div>
+    <div style="font-size:.72rem;color:var(--text-dim);margin-bottom:.5rem;">Select digits you believe are significant, then check.</div>
+    <div class="sf-digits" id="sfDigits"></div>
+    <div style="text-align:center;margin-bottom:.5rem;">
+      <button class="check-btn" onclick="checkSfDigits()" id="sfCheckBtn">Check</button>
+      <button class="check-btn" onclick="nextSfDigit()" id="sfNextBtn" style="display:none;margin-left:.4rem;">Next</button>
+    </div>
+    <div class="cg-feedback" id="sfDigitFb" style="text-align:center;"></div>
+
+    <!-- Sig Fig Practice -->
+    <div style="margin-top:1.2rem;font-size:.82rem;color:#ddd;font-weight:600;margin-bottom:.6rem;">How many sig figs?</div>
+    <div class="practice" id="sf1wrap">
+      <div class="p-question">1. 0.00340</div>
+      <div class="p-input-row">
+        <input type="text" id="sf1" placeholder="# of sig figs">
+        <button class="check-btn" onclick="checkSF('3','sf1','sf1fb')">Check</button>
+      </div>
+      <div class="p-feedback" id="sf1fb"></div>
+    </div>
+    <div class="practice">
+      <div class="p-question">2. 100.0</div>
+      <div class="p-input-row">
+        <input type="text" id="sf2" placeholder="# of sig figs">
+        <button class="check-btn" onclick="checkSF('4','sf2','sf2fb')">Check</button>
+      </div>
+      <div class="p-feedback" id="sf2fb"></div>
+    </div>
+    <div class="practice">
+      <div class="p-question">3. 5020</div>
+      <div class="p-input-row">
+        <input type="text" id="sf3" placeholder="# of sig figs">
+        <button class="check-btn" onclick="checkSF('3','sf3','sf3fb')">Check</button>
+      </div>
+      <div class="p-feedback" id="sf3fb"></div>
+    </div>
+    <div class="practice">
+      <div class="p-question">4. 0.0700</div>
+      <div class="p-input-row">
+        <input type="text" id="sf4" placeholder="# of sig figs">
+        <button class="check-btn" onclick="checkSF('3','sf4','sf4fb')">Check</button>
+      </div>
+      <div class="p-feedback" id="sf4fb"></div>
+    </div>
+    <div class="practice">
+      <div class="p-question">5. 8.040</div>
+      <div class="p-input-row">
+        <input type="text" id="sf5" placeholder="# of sig figs">
+        <button class="check-btn" onclick="checkSF('4','sf5','sf5fb')">Check</button>
+      </div>
+      <div class="p-feedback" id="sf5fb"></div>
+    </div>
+
+    <button class="section-done" onclick="markDone(4)">Mark Complete</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: Dimensional Analysis -->
+<!-- ============================================================ -->
+<div class="card" data-section="5">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="num">5</span>
+    <span class="title">Dimensional Analysis</span>
+    <span class="chevron">&#9662;</span>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">Dimensional analysis (the "factor-label" or "railroad track" method) uses conversion factors to cancel units until you reach the desired unit.</p>
+
+    <!-- Animated Walkthrough -->
+    <div class="da-walkthrough">
+      <h4>Walkthrough: Convert 5.0 kg to mg</h4>
+      <div class="da-step-indicator" id="daStepDots"></div>
+      <div class="da-step-text" id="daStepText"></div>
+      <div id="daRailroad"></div>
+      <div class="da-nav">
+        <button onclick="daStep(-1)" id="daPrev" disabled>Prev</button>
+        <button onclick="daStep(1)" id="daNext">Next</button>
+      </div>
+    </div>
+
+    <!-- Practice Problems -->
+    <div style="font-size:.82rem;color:#ddd;font-weight:600;margin-bottom:.6rem;">Practice Problems</div>
+    <div class="da-practice">
+      <div class="p-question">1. Convert 2.5 miles to feet. (1 mile = 5280 ft)</div>
+      <div class="p-input-row">
+        <input type="text" id="da1" placeholder="Answer in ft">
+        <button class="check-btn" onclick="checkDA('13200','da1','da1fb')">Check</button>
+      </div>
+      <div class="p-feedback" id="da1fb"></div>
+    </div>
+    <div class="da-practice">
+      <div class="p-question">2. Convert 3.0 hours to seconds.</div>
+      <div class="p-input-row">
+        <input type="text" id="da2" placeholder="Answer in s">
+        <button class="check-btn" onclick="checkDA('10800','da2','da2fb')">Check</button>
+      </div>
+      <div class="p-feedback" id="da2fb"></div>
+    </div>
+    <div class="da-practice">
+      <div class="p-question">3. Convert 250 mL to liters.</div>
+      <div class="p-input-row">
+        <input type="text" id="da3" placeholder="Answer in L">
+        <button class="check-btn" onclick="checkDA('0.25','da3','da3fb')">Check</button>
+      </div>
+      <div class="p-feedback" id="da3fb"></div>
+    </div>
+    <div class="da-practice">
+      <div class="p-question">4. Convert 65 mph to m/s. (1 mile = 1609.34 m)</div>
+      <div class="p-input-row">
+        <input type="text" id="da4" placeholder="Answer in m/s">
+        <button class="check-btn" onclick="checkDA('29.06','da4','da4fb', 0.1)">Check</button>
+      </div>
+      <div class="p-feedback" id="da4fb"></div>
+    </div>
+    <div class="da-practice">
+      <div class="p-question">5. Convert 0.75 kg to mg.</div>
+      <div class="p-input-row">
+        <input type="text" id="da5" placeholder="Answer in mg">
+        <button class="check-btn" onclick="checkDA('750000','da5','da5fb')">Check</button>
+      </div>
+      <div class="p-feedback" id="da5fb"></div>
+    </div>
+
+    <button class="section-done" onclick="markDone(5)">Mark Complete</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: Quick Quiz -->
+<!-- ============================================================ -->
+<div class="card" data-section="6">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="num">6</span>
+    <span class="title">Quick Quiz (10 Questions)</span>
+    <span class="chevron">&#9662;</span>
+  </div>
+  <div class="card-body">
+    <div class="quiz-status">
+      <span class="quiz-progress" id="quizProgress">Question 1 / 10</span>
+      <span class="quiz-score" id="quizScoreDisplay">Score: 0 / 0</span>
+    </div>
+    <div class="quiz-question" id="quizQuestionBox">
+      <div class="qq-text" id="quizText"></div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <button class="quiz-next-btn" id="quizNextBtn" onclick="quizNext()">Next Question</button>
+    </div>
+    <div class="quiz-final" id="quizFinal">
+      <div class="big-score" id="quizFinalScore">0 / 10</div>
+      <div class="big-label">Final Score</div>
+      <button class="check-btn" onclick="quizRestart()" style="margin-top:1rem;">Retake Quiz</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- .container -->
+
+<script>
+/* ============================================================
+   GLOBAL STATE
+   ============================================================ */
+const completedSections = new Set();
+
+function updateProgress() {
+  const pct = (completedSections.size / 6) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / 6 sections';
+}
+
+function markDone(n) {
+  completedSections.add(n);
+  const card = document.querySelector('.card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  const btn = card.querySelector('.section-done');
+  if (btn) { btn.textContent = 'Completed'; btn.classList.add('done'); }
+  updateProgress();
+}
+
+/* ============================================================
+   COLLAPSIBLE CARDS
+   ============================================================ */
+function toggleCard(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+/* ============================================================
+   SECTION 1: Classification of Matter
+   ============================================================ */
+const classifyItems = [
+  { name: 'Salt water', answer: 'homogeneous', explain: 'Salt dissolves uniformly in water.' },
+  { name: 'Gold (Au)', answer: 'element', explain: 'Gold is a single type of atom on the periodic table.' },
+  { name: 'Air', answer: 'homogeneous', explain: 'Air is a uniform mixture of gases (N2, O2, etc.).' },
+  { name: 'Iron (Fe)', answer: 'element', explain: 'Iron is element 26 on the periodic table.' },
+  { name: 'Table sugar (C12H22O11)', answer: 'compound', explain: 'Sugar is a molecule made of C, H, and O atoms bonded together.' },
+  { name: 'Bronze', answer: 'homogeneous', explain: 'Bronze is an alloy (uniform mixture of copper and tin).' },
+  { name: 'Trail mix', answer: 'heterogeneous', explain: 'You can see and pick out individual components.' },
+  { name: 'Water (H2O)', answer: 'compound', explain: 'Water is a compound of hydrogen and oxygen.' },
+  { name: 'Italian dressing', answer: 'heterogeneous', explain: 'Oil and vinegar separate into visible layers.' },
+  { name: 'Carbon dioxide (CO2)', answer: 'compound', explain: 'CO2 is a compound of carbon and oxygen.' },
+];
+let cgIndex = 0, cgCorrect = 0, cgTotal = 0;
+
+function loadClassify() {
+  if (cgIndex >= classifyItems.length) cgIndex = 0;
+  document.getElementById('cgSubstance').textContent = classifyItems[cgIndex].name;
+  document.getElementById('cgFeedback').textContent = '';
+  document.getElementById('cgFeedback').style.color = '';
+  // reset button states
+  document.querySelectorAll('#cgButtons button').forEach(b => {
+    b.classList.remove('correct','incorrect');
+    b.disabled = false;
+  });
+}
+
+function classifyAnswer(choice) {
+  const item = classifyItems[cgIndex];
+  const game = document.getElementById('classifyGame');
+  const fb = document.getElementById('cgFeedback');
+  cgTotal++;
+
+  const buttons = document.querySelectorAll('#cgButtons button');
+  buttons.forEach(b => b.disabled = true);
+
+  if (choice === item.answer) {
+    cgCorrect++;
+    fb.textContent = 'Correct! ' + item.explain;
+    fb.style.color = 'var(--green)';
+    game.classList.add('flash-green');
+    // highlight correct button
+    buttons.forEach(b => {
+      if (b.textContent.toLowerCase().includes(choice)) b.classList.add('correct');
+    });
+  } else {
+    fb.textContent = 'Not quite. ' + item.explain;
+    fb.style.color = 'var(--pink)';
+    game.classList.add('flash-red');
+    buttons.forEach(b => {
+      if (b.textContent.toLowerCase().includes(choice)) b.classList.add('incorrect');
+      if (b.textContent.toLowerCase().includes(item.answer)) b.classList.add('correct');
+    });
+  }
+
+  document.getElementById('cgScore').textContent = cgCorrect + ' / ' + cgTotal + ' correct';
+  setTimeout(() => { game.classList.remove('flash-green','flash-red'); }, 600);
+  setTimeout(() => { cgIndex++; loadClassify(); }, 1800);
+}
+
+loadClassify();
+
+/* ============================================================
+   SECTION 2: Physical vs Chemical
+   ============================================================ */
+const pvcItems = [
+  { name: 'Melting butter', answer: 'physical', explain: 'Phase change -- composition unchanged.' },
+  { name: 'Burning gasoline', answer: 'chemical', explain: 'Combustion produces CO2 and H2O -- new substances.' },
+  { name: 'Cutting paper', answer: 'physical', explain: 'Shape changes but it is still paper.' },
+  { name: 'Baking a cake', answer: 'chemical', explain: 'Heat causes chemical reactions -- new substances form.' },
+  { name: 'Dissolving salt in water', answer: 'physical', explain: 'Salt can be recovered by evaporation -- no new substance.' },
+  { name: 'Milk turning sour', answer: 'chemical', explain: 'Bacteria produce lactic acid -- new substance.' },
+  { name: 'Breaking glass', answer: 'physical', explain: 'Only shape changes -- still glass.' },
+  { name: 'Fireworks exploding', answer: 'chemical', explain: 'Combustion and oxidation produce new compounds and light.' },
+];
+let pvcIndex = 0, pvcCorrectCount = 0, pvcTotal = 0;
+
+function loadPvc() {
+  if (pvcIndex >= pvcItems.length) pvcIndex = 0;
+  document.getElementById('pvcItem').textContent = pvcItems[pvcIndex].name;
+  document.getElementById('pvcFeedback').textContent = '';
+  document.getElementById('pvcFeedback').style.color = '';
+  document.querySelectorAll('#pvcGame .pvc-btns button').forEach(b => b.disabled = false);
+}
+
+function pvcAnswer(choice) {
+  const item = pvcItems[pvcIndex];
+  const game = document.getElementById('pvcGame');
+  const fb = document.getElementById('pvcFeedback');
+  pvcTotal++;
+  document.querySelectorAll('#pvcGame .pvc-btns button').forEach(b => b.disabled = true);
+
+  if (choice === item.answer) {
+    pvcCorrectCount++;
+    fb.textContent = 'Correct! ' + item.explain;
+    fb.style.color = 'var(--green)';
+    game.classList.add('flash-green');
+  } else {
+    fb.textContent = 'Incorrect. ' + item.explain;
+    fb.style.color = 'var(--pink)';
+    game.classList.add('flash-red');
+  }
+  document.getElementById('pvcScore').textContent = pvcCorrectCount + ' / ' + pvcTotal + ' correct';
+  setTimeout(() => game.classList.remove('flash-green','flash-red'), 600);
+  setTimeout(() => { pvcIndex++; loadPvc(); }, 1800);
+}
+
+loadPvc();
+
+/* ============================================================
+   SECTION 3: Unit Converter
+   ============================================================ */
+function doConvert() {
+  const val = parseFloat(document.getElementById('convInput').value);
+  const from = parseFloat(document.getElementById('convFrom').value);
+  const to = parseFloat(document.getElementById('convTo').value);
+  if (isNaN(val)) { document.getElementById('convResult').textContent = '--'; return; }
+  const result = val * (from / to);
+  const toLabel = document.getElementById('convTo').selectedOptions[0].textContent;
+  // Smart formatting
+  let formatted;
+  if (Math.abs(result) >= 1e9 || (Math.abs(result) < 0.0001 && result !== 0)) {
+    formatted = result.toExponential(4);
+  } else {
+    formatted = parseFloat(result.toPrecision(8)).toString();
+  }
+  document.getElementById('convResult').textContent = formatted + ' ' + toLabel;
+}
+doConvert();
+
+function checkSI(n, correct, inputId, fbId) {
+  const val = document.getElementById(inputId).value.trim();
+  const fb = document.getElementById(fbId);
+  if (parseFloat(val) === parseFloat(correct)) {
+    fb.textContent = 'Correct!';
+    fb.style.color = 'var(--green)';
+  } else {
+    fb.textContent = 'Not quite. Answer: ' + correct;
+    fb.style.color = 'var(--pink)';
+  }
+}
+
+/* ============================================================
+   SECTION 4: Significant Figures
+   ============================================================ */
+function checkSF(correct, inputId, fbId) {
+  const val = document.getElementById(inputId).value.trim();
+  const fb = document.getElementById(fbId);
+  if (val === correct) {
+    fb.textContent = 'Correct!';
+    fb.style.color = 'var(--green)';
+  } else {
+    fb.textContent = 'Incorrect. Answer: ' + correct;
+    fb.style.color = 'var(--pink)';
+  }
+}
+
+/* Interactive digit selector */
+const sfDigitProblems = [
+  { number: '0.00250', sigDigits: [4,5,6] }, // 2, 5, 0 (indices of significant chars, skipping dot)
+  { number: '30700', sigDigits: [0,1,2] },    // 3, 0, 7
+  { number: '1.0040', sigDigits: [0,2,3,4,5] }, // 1, 0, 0, 4, 0
+  { number: '0.0081', sigDigits: [4,5] },     // 8, 1
+  { number: '40.020', sigDigits: [0,1,3,4,5] }, // 4, 0, 0, 2, 0
+];
+let sfDigitIndex = 0;
+
+function loadSfDigitProblem() {
+  const prob = sfDigitProblems[sfDigitIndex];
+  const container = document.getElementById('sfDigits');
+  container.innerHTML = '';
+  const chars = prob.number.split('');
+  chars.forEach((ch, i) => {
+    const el = document.createElement('div');
+    el.className = 'sf-digit' + (ch === '.' ? ' dot' : '');
+    el.textContent = ch;
+    el.dataset.index = i;
+    if (ch !== '.') {
+      el.onclick = function() { this.classList.toggle('selected'); };
+    }
+    container.appendChild(el);
+  });
+  document.getElementById('sfDigitFb').textContent = '';
+  document.getElementById('sfCheckBtn').style.display = 'inline-block';
+  document.getElementById('sfNextBtn').style.display = 'none';
+}
+
+function checkSfDigits() {
+  const prob = sfDigitProblems[sfDigitIndex];
+  const digits = document.querySelectorAll('#sfDigits .sf-digit:not(.dot)');
+  let allCorrect = true;
+  digits.forEach(d => {
+    const idx = parseInt(d.dataset.index);
+    const isSig = prob.sigDigits.includes(idx);
+    const isSelected = d.classList.contains('selected');
+    d.classList.remove('selected');
+    if (isSig && isSelected) {
+      d.classList.add('correct-digit');
+    } else if (isSig && !isSelected) {
+      d.classList.add('correct-digit');
+      allCorrect = false;
+    } else if (!isSig && isSelected) {
+      d.classList.add('incorrect-digit');
+      allCorrect = false;
+    }
+    d.onclick = null;
+  });
+  const fb = document.getElementById('sfDigitFb');
+  if (allCorrect) {
+    fb.textContent = 'Perfect!';
+    fb.style.color = 'var(--green)';
+  } else {
+    fb.textContent = 'Green = significant. Review the rules above.';
+    fb.style.color = 'var(--amber)';
+  }
+  document.getElementById('sfCheckBtn').style.display = 'none';
+  if (sfDigitIndex < sfDigitProblems.length - 1) {
+    document.getElementById('sfNextBtn').style.display = 'inline-block';
+  }
+}
+
+function nextSfDigit() {
+  sfDigitIndex++;
+  if (sfDigitIndex >= sfDigitProblems.length) sfDigitIndex = 0;
+  loadSfDigitProblem();
+}
+
+loadSfDigitProblem();
+
+/* ============================================================
+   SECTION 5: Dimensional Analysis
+   ============================================================ */
+const daSteps = [
+  {
+    text: 'Start with what you know: 5.0 kg.',
+    html: '<div class="railroad"><span class="rr-value">5.0 kg</span></div>'
+  },
+  {
+    text: 'Convert kg to g. We know 1 kg = 1000 g. Place kg in the denominator so it cancels.',
+    html: '<div class="railroad"><span class="rr-value">5.0 <span class="rr-cancel">kg</span></span><div class="rr-fraction"><span class="rr-num">1000 g</span><span class="rr-den">1 <span class="rr-cancel">kg</span></span></div></div>'
+  },
+  {
+    text: 'The kg units cancel! We now have 5000 g.',
+    html: '<div class="railroad"><span class="rr-value">5.0</span><div class="rr-fraction"><span class="rr-num">1000 g</span><span class="rr-den">1</span></div><span class="rr-equals">=</span><span class="rr-result">5000 g</span></div>'
+  },
+  {
+    text: 'Now convert g to mg. We know 1 g = 1000 mg. Put g in the denominator.',
+    html: '<div class="railroad"><span class="rr-value">5000 <span class="rr-cancel">g</span></span><div class="rr-fraction"><span class="rr-num">1000 mg</span><span class="rr-den">1 <span class="rr-cancel">g</span></span></div></div>'
+  },
+  {
+    text: 'The g units cancel! Final answer: 5.0 kg = 5,000,000 mg = 5.0 x 10^6 mg.',
+    html: '<div class="railroad"><span class="rr-value">5.0 <span class="rr-cancel">kg</span></span><div class="rr-fraction"><span class="rr-num">1000 <span class="rr-cancel">g</span></span><span class="rr-den">1 <span class="rr-cancel">kg</span></span></div><div class="rr-fraction"><span class="rr-num">1000 mg</span><span class="rr-den">1 <span class="rr-cancel">g</span></span></div><span class="rr-equals">=</span><span class="rr-result">5,000,000 mg</span></div>'
+  }
+];
+let daCurrentStep = 0;
+
+function renderDaStep() {
+  const dotsContainer = document.getElementById('daStepDots');
+  dotsContainer.innerHTML = '';
+  daSteps.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'da-dot' + (i <= daCurrentStep ? ' active' : '');
+    dotsContainer.appendChild(dot);
+  });
+  document.getElementById('daStepText').textContent = daSteps[daCurrentStep].text;
+  document.getElementById('daRailroad').innerHTML = daSteps[daCurrentStep].html;
+  document.getElementById('daPrev').disabled = daCurrentStep === 0;
+  document.getElementById('daNext').disabled = daCurrentStep === daSteps.length - 1;
+}
+
+function daStep(dir) {
+  daCurrentStep = Math.max(0, Math.min(daSteps.length - 1, daCurrentStep + dir));
+  renderDaStep();
+}
+
+renderDaStep();
+
+function checkDA(correct, inputId, fbId, tolerance) {
+  const val = document.getElementById(inputId).value.trim();
+  const fb = document.getElementById(fbId);
+  const tol = tolerance || 0.5;
+  const numVal = parseFloat(val);
+  const numCorrect = parseFloat(correct);
+  if (!isNaN(numVal) && Math.abs(numVal - numCorrect) <= tol) {
+    fb.textContent = 'Correct!';
+    fb.style.color = 'var(--green)';
+  } else {
+    fb.textContent = 'Incorrect. Answer: ' + correct;
+    fb.style.color = 'var(--pink)';
+  }
+}
+
+/* ============================================================
+   SECTION 6: Quick Quiz
+   ============================================================ */
+const quizQuestions = [
+  {
+    q: 'Which of the following is a compound?',
+    opts: ['Gold (Au)', 'Table salt (NaCl)', 'Air', 'Trail mix'],
+    correct: 1
+  },
+  {
+    q: 'Dissolving sugar in water is an example of:',
+    opts: ['A chemical change', 'A physical change', 'A nuclear reaction', 'Decomposition'],
+    correct: 1
+  },
+  {
+    q: 'How many significant figures are in 0.00420?',
+    opts: ['2', '3', '4', '5'],
+    correct: 1
+  },
+  {
+    q: 'The SI base unit for mass is:',
+    opts: ['gram', 'pound', 'kilogram', 'ounce'],
+    correct: 2
+  },
+  {
+    q: 'Convert 3.5 km to meters.',
+    opts: ['35 m', '350 m', '3500 m', '35000 m'],
+    correct: 2
+  },
+  {
+    q: 'Which is a heterogeneous mixture?',
+    opts: ['Salt water', 'Bronze', 'Italian dressing', 'Air'],
+    correct: 2
+  },
+  {
+    q: 'Burning wood is a:',
+    opts: ['Physical change', 'Phase change', 'Chemical change', 'State function'],
+    correct: 2
+  },
+  {
+    q: 'How many sig figs in 100.0?',
+    opts: ['1', '2', '3', '4'],
+    correct: 3
+  },
+  {
+    q: 'The prefix "nano" represents:',
+    opts: ['10^-3', '10^-6', '10^-9', '10^-12'],
+    correct: 2
+  },
+  {
+    q: 'Using dimensional analysis, convert 2.0 hours to seconds.',
+    opts: ['120 s', '1200 s', '7200 s', '72000 s'],
+    correct: 2
+  }
+];
+
+let quizIndex = 0, quizScore = 0, quizAnswered = false;
+
+function renderQuiz() {
+  if (quizIndex >= quizQuestions.length) {
+    document.getElementById('quizQuestionBox').style.display = 'none';
+    document.getElementById('quizFinal').style.display = 'block';
+    document.getElementById('quizFinalScore').textContent = quizScore + ' / 10';
+    document.getElementById('quizProgress').textContent = 'Complete!';
+    markDone(6);
+    return;
+  }
+  const q = quizQuestions[quizIndex];
+  document.getElementById('quizText').textContent = (quizIndex+1) + '. ' + q.q;
+  const optsContainer = document.getElementById('quizOptions');
+  optsContainer.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.textContent = opt;
+    btn.onclick = function() { quizSelect(i); };
+    optsContainer.appendChild(btn);
+  });
+  document.getElementById('quizNextBtn').style.display = 'none';
+  document.getElementById('quizProgress').textContent = 'Question ' + (quizIndex+1) + ' / 10';
+  document.getElementById('quizScoreDisplay').textContent = 'Score: ' + quizScore + ' / ' + quizIndex;
+  quizAnswered = false;
+}
+
+function quizSelect(i) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = quizQuestions[quizIndex];
+  const btns = document.querySelectorAll('.quiz-option');
+  btns.forEach((b, j) => {
+    b.classList.add('disabled');
+    if (j === q.correct) b.classList.add('show-correct');
+  });
+  if (i === q.correct) {
+    quizScore++;
+    btns[i].classList.add('selected-correct');
+    btns[i].classList.remove('show-correct');
+  } else {
+    btns[i].classList.add('selected-wrong');
+  }
+  document.getElementById('quizScoreDisplay').textContent = 'Score: ' + quizScore + ' / ' + (quizIndex+1);
+  document.getElementById('quizNextBtn').style.display = 'inline-block';
+}
+
+function quizNext() {
+  quizIndex++;
+  renderQuiz();
+}
+
+function quizRestart() {
+  quizIndex = 0;
+  quizScore = 0;
+  quizAnswered = false;
+  document.getElementById('quizQuestionBox').style.display = 'block';
+  document.getElementById('quizFinal').style.display = 'none';
+  renderQuiz();
+}
+
+renderQuiz();
+
+/* ============================================================
+   OPEN FIRST CARD BY DEFAULT
+   ============================================================ */
+document.querySelector('.card').classList.add('open');
+</script>
+</body>
+</html>

@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 11: Oscillations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.graph-container{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.momentum-bar{display:flex;align-items:center;gap:8px;margin:6px 0}
+.momentum-bar .bar-label{font-size:.68rem;color:var(--text-dim);min-width:70px}
+.momentum-bar .bar-track{flex:1;height:22px;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;overflow:hidden;position:relative}
+.momentum-bar .bar-fill{height:100%;border-radius:3px;transition:width .3s ease}
+.momentum-bar .bar-val{font-size:.68rem;color:var(--text-bright);font-weight:600;min-width:80px;text-align:right}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.graph-container{grid-template-columns:1fr}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>11</span> Oscillations</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 7 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: SIMPLE HARMONIC MOTION -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Simple Harmonic Motion</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Simple harmonic motion (SHM)</strong> occurs whenever a restoring force is proportional to displacement from equilibrium: F = -kx. The resulting motion is sinusoidal. The position as a function of time is <strong>x(t) = A cos(wt + phi)</strong>, where A is the amplitude, w (omega) is the angular frequency, and phi is the phase constant. The velocity is <strong>v(t) = -Aw sin(wt + phi)</strong> and the acceleration is <strong>a(t) = -Aw^2 cos(wt + phi)</strong>.
+    </p>
+    <div class="formula-box large">x(t) = A cos(&omega;t + &phi;)</div>
+    <div class="formula-box green">v(t) = -A&omega; sin(&omega;t + &phi;) &nbsp;&nbsp; | &nbsp;&nbsp; v_max = A&omega;</div>
+    <div class="formula-box pink">a(t) = -A&omega;&sup2; cos(&omega;t + &phi;) &nbsp;&nbsp; | &nbsp;&nbsp; a_max = A&omega;&sup2;</div>
+    <div class="formula-box amber">T = 2&pi;/&omega; &nbsp;&nbsp; | &nbsp;&nbsp; f = 1/T = &omega;/(2&pi;) &nbsp;&nbsp; | &nbsp;&nbsp; &omega; = 2&pi;f</div>
+    <div class="key-point">Acceleration is always opposite to displacement (points toward equilibrium). When x is at +A, acceleration is at -A&omega;&sup2;. Velocity leads displacement by 90 degrees -- it is maximum when x = 0 (passing through equilibrium).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Animated SHM with Real-Time Graphs</div>
+      <div class="slider-row">
+        <label>Amplitude A</label>
+        <input type="range" id="s1A" min="0.1" max="2" value="1.0" step="0.1" oninput="updateS1Labels()">
+        <span class="slider-val" id="s1AVal">1.0 m</span>
+      </div>
+      <div class="slider-row">
+        <label>&omega; (rad/s)</label>
+        <input type="range" id="s1W" min="0.5" max="8" value="3" step="0.1" oninput="updateS1Labels()">
+        <span class="slider-val" id="s1WVal">3.0 rad/s</span>
+      </div>
+      <div class="slider-row">
+        <label>&phi; (phase)</label>
+        <input type="range" id="s1Phi" min="0" max="6.28" value="0" step="0.1" oninput="updateS1Labels()">
+        <span class="slider-val" id="s1PhiVal">0.0 rad</span>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" id="s1PlayBtn" onclick="toggleS1Anim()">Play</button>
+        <button class="btn" onclick="resetS1()">Reset</button>
+      </div>
+      <svg id="s1MassSvg" width="100%" viewBox="0 0 700 80" style="display:block;margin:8px 0"></svg>
+      <div class="graph-container">
+        <div>
+          <div class="sub-label">Position x(t)</div>
+          <svg id="s1GraphX" width="100%" viewBox="0 0 340 120" style="display:block"></svg>
+        </div>
+        <div>
+          <div class="sub-label">Velocity v(t)</div>
+          <svg id="s1GraphV" width="100%" viewBox="0 0 340 120" style="display:block"></svg>
+        </div>
+      </div>
+      <div class="sub-label">Acceleration a(t)</div>
+      <svg id="s1GraphA" width="100%" viewBox="0 0 700 120" style="display:block"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">x(t)</span><br><span class="value indigo" id="s1RX">--</span></div>
+        <div class="readout-item"><span class="label">v(t)</span><br><span class="value green" id="s1RV">--</span></div>
+        <div class="readout-item"><span class="label">a(t)</span><br><span class="value pink" id="s1RA">--</span></div>
+        <div class="readout-item"><span class="label">Period T</span><br><span class="value amber" id="s1RT">--</span></div>
+        <div class="readout-item"><span class="label">Freq f</span><br><span class="value amber" id="s1RF">--</span></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: MASS-SPRING SYSTEM -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Mass-Spring System</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A mass m attached to a spring with spring constant k undergoes SHM when displaced from equilibrium. <strong>Hooke's Law</strong> gives the restoring force: F = -kx. Newton's 2nd law gives ma = -kx, so <strong>a = -(k/m)x</strong>. The angular frequency is <strong>&omega; = sqrt(k/m)</strong> and the period is <strong>T = 2&pi; sqrt(m/k)</strong>. Notice: period does NOT depend on amplitude -- this is a defining feature of SHM.
+    </p>
+    <div class="formula-box large">F = -kx &nbsp;&nbsp; (Hooke's Law)</div>
+    <div class="formula-box green">&omega; = &radic;(k/m) &nbsp;&nbsp; | &nbsp;&nbsp; T = 2&pi;&radic;(m/k)</div>
+    <div class="formula-box pink">E_total = &frac12;kA&sup2; = &frac12;mv&sup2; + &frac12;kx&sup2;</div>
+    <div class="key-point">Doubling the mass increases T by a factor of &radic;2 (slower oscillation). Doubling the spring constant k decreases T by &radic;2 (faster, stiffer spring). Changing amplitude does NOT change the period.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Mass-Spring Oscillator</div>
+      <div class="slider-row">
+        <label>Spring k (N/m)</label>
+        <input type="range" id="s2K" min="1" max="100" value="20" step="1" oninput="updateS2Labels()">
+        <span class="slider-val" id="s2KVal">20 N/m</span>
+      </div>
+      <div class="slider-row">
+        <label>Mass m (kg)</label>
+        <input type="range" id="s2M" min="0.1" max="10" value="2" step="0.1" oninput="updateS2Labels()">
+        <span class="slider-val" id="s2MVal">2.0 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Amplitude A (m)</label>
+        <input type="range" id="s2Amp" min="0.1" max="2" value="1.0" step="0.1" oninput="updateS2Labels()">
+        <span class="slider-val" id="s2AmpVal">1.0 m</span>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" id="s2PlayBtn" onclick="toggleS2Anim()">Play</button>
+        <button class="btn" onclick="resetS2()">Reset</button>
+      </div>
+      <svg id="s2SpringSvg" width="100%" viewBox="0 0 700 120" style="display:block;margin:8px 0"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">&omega;</span><br><span class="value indigo" id="s2RW">--</span></div>
+        <div class="readout-item"><span class="label">Period T</span><br><span class="value green" id="s2RTPeriod">--</span></div>
+        <div class="readout-item"><span class="label">Freq f</span><br><span class="value amber" id="s2RFreq">--</span></div>
+        <div class="readout-item"><span class="label">x(t)</span><br><span class="value indigo" id="s2RX">--</span></div>
+        <div class="readout-item"><span class="label">v(t)</span><br><span class="value pink" id="s2RVel">--</span></div>
+        <div class="readout-item"><span class="label">E_total</span><br><span class="value amber" id="s2RE">--</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Vibration isolators on ship machinery are tuned mass-spring systems. Engine mounts with specific k values decouple vibrations from the hull. If the natural frequency of the mount matches engine RPM, resonance occurs -- potentially catastrophic. Engineers choose k and m so that the natural frequency is far from operating frequencies.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: THE PENDULUM -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> The Pendulum</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>simple pendulum</strong> is a point mass on a massless string of length L. For small angles (theta &lt; ~15 degrees), the restoring torque is approximately proportional to angular displacement, giving SHM. The period is <strong>T = 2&pi; sqrt(L/g)</strong> -- it depends ONLY on length and gravity, NOT on mass or amplitude (for small angles). A <strong>physical pendulum</strong> is any rigid body pivoted about a point. Its period is <strong>T = 2&pi; sqrt(I/mgd)</strong> where I is the moment of inertia about the pivot and d is the distance from pivot to center of mass.
+    </p>
+    <div class="formula-box large">Simple: T = 2&pi;&radic;(L/g)</div>
+    <div class="formula-box green">Physical: T = 2&pi;&radic;(I / mgd)</div>
+    <div class="formula-box amber">Small angle: sin(&theta;) &asymp; &theta; &nbsp;&nbsp; (in radians, error &lt; 1% for &theta; &lt; 15&deg;)</div>
+    <div class="key-point">The pendulum period does NOT depend on mass. This is why Galileo could time his observations by counting pendulum swings. Doubling the length increases T by &radic;2. On the Moon (g = 1.6 m/s&sup2;), a 1 m pendulum has T = 5.0 s vs 2.0 s on Earth.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Simple Pendulum</div>
+      <div class="slider-row">
+        <label>Length L (m)</label>
+        <input type="range" id="s3L" min="0.1" max="4" value="1.0" step="0.1" oninput="updateS3Labels()">
+        <span class="slider-val" id="s3LVal">1.0 m</span>
+      </div>
+      <div class="slider-row">
+        <label>Gravity g (m/s&sup2;)</label>
+        <input type="range" id="s3G" min="1" max="20" value="9.8" step="0.1" oninput="updateS3Labels()">
+        <span class="slider-val" id="s3GVal">9.8 m/s&sup2;</span>
+      </div>
+      <div class="slider-row">
+        <label>Start angle (&deg;)</label>
+        <input type="range" id="s3Ang" min="1" max="60" value="15" step="1" oninput="updateS3Labels()">
+        <span class="slider-val" id="s3AngVal">15&deg;</span>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" id="s3PlayBtn" onclick="toggleS3Anim()">Play</button>
+        <button class="btn" onclick="resetS3()">Reset</button>
+      </div>
+      <svg id="s3PendSvg" width="100%" viewBox="0 0 700 320" style="display:block;margin:8px 0"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Period T</span><br><span class="value indigo" id="s3RT">--</span></div>
+        <div class="readout-item"><span class="label">Frequency f</span><br><span class="value green" id="s3RF">--</span></div>
+        <div class="readout-item"><span class="label">&omega;</span><br><span class="value amber" id="s3RW">--</span></div>
+        <div class="readout-item"><span class="label">&theta;(t)</span><br><span class="value pink" id="s3RTheta">--</span></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: ENERGY IN SHM -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Energy in SHM</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      In SHM with no damping, total mechanical energy is conserved. For a mass-spring system: <strong>E = &frac12;kA&sup2; = &frac12;kx&sup2; + &frac12;mv&sup2;</strong>. At maximum displacement (x = &plusmn;A), all energy is potential (KE = 0). At equilibrium (x = 0), all energy is kinetic (PE = 0). The total energy is constant and proportional to A&sup2;.
+    </p>
+    <div class="formula-box large">E_total = &frac12;kA&sup2; = constant</div>
+    <div class="formula-box green">KE = &frac12;mv&sup2; = &frac12;kA&sup2; - &frac12;kx&sup2; = &frac12;k(A&sup2; - x&sup2;)</div>
+    <div class="formula-box pink">PE = &frac12;kx&sup2;</div>
+    <div class="key-point">At x = &plusmn;A/&radic;2, KE = PE = &frac12;E_total. The energy swings back and forth between kinetic and potential at twice the oscillation frequency (because KE and PE each go through two cycles per oscillation period).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Energy Diagram -- KE and PE vs Position</div>
+      <div class="slider-row">
+        <label>Spring k (N/m)</label>
+        <input type="range" id="s4K" min="1" max="50" value="10" step="1" oninput="updateS4()">
+        <span class="slider-val" id="s4KVal">10 N/m</span>
+      </div>
+      <div class="slider-row">
+        <label>Amplitude A (m)</label>
+        <input type="range" id="s4Amp" min="0.2" max="2" value="1.0" step="0.1" oninput="updateS4()">
+        <span class="slider-val" id="s4AmpVal">1.0 m</span>
+      </div>
+      <div class="slider-row">
+        <label>Position x (m)</label>
+        <input type="range" id="s4X" min="-2" max="2" value="0" step="0.01" oninput="updateS4()">
+        <span class="slider-val" id="s4XVal">0.0 m</span>
+      </div>
+      <svg id="s4EnergySvg" width="100%" viewBox="0 0 700 300" style="display:block;margin:8px 0"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">KE</span><br><span class="value green" id="s4RKE">--</span></div>
+        <div class="readout-item"><span class="label">PE</span><br><span class="value pink" id="s4RPE">--</span></div>
+        <div class="readout-item"><span class="label">E_total</span><br><span class="value amber" id="s4RE">--</span></div>
+        <div class="readout-item"><span class="label">KE/E ratio</span><br><span class="value indigo" id="s4RRatio">--</span></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: DAMPED & DRIVEN OSCILLATIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Damped &amp; Driven Oscillations</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Real oscillators lose energy to friction or drag. The damping force is typically modeled as <strong>F_damp = -bv</strong> where b is the damping coefficient. Three regimes exist: <strong>underdamped</strong> (b &lt; 2sqrt(km)) -- oscillates with decaying amplitude; <strong>critically damped</strong> (b = 2sqrt(km)) -- returns to equilibrium fastest without oscillating; <strong>overdamped</strong> (b &gt; 2sqrt(km)) -- returns slowly without oscillating. A <strong>driven oscillator</strong> has an external periodic force F_0 cos(&omega;_d t). At steady state, the amplitude peaks sharply when the driving frequency matches the natural frequency: <strong>&omega;_d = &omega;_0</strong>. This is <strong>resonance</strong>.
+    </p>
+    <div class="formula-box large">ma = -kx - bv + F_0 cos(&omega;_d t)</div>
+    <div class="formula-box green">Underdamped: x(t) = A e^(-bt/2m) cos(&omega;'t + &phi;)</div>
+    <div class="formula-box pink">Critical damping: b_c = 2&radic;(km)</div>
+    <div class="formula-box amber">Resonance: max amplitude when &omega;_drive = &omega;_natural = &radic;(k/m)</div>
+    <div class="key-point">The Tacoma Narrows Bridge collapsed in 1940 because wind-driven oscillations matched the bridge's natural frequency, causing resonance. Engineers now design structures to avoid resonance with common driving frequencies (wind, earthquakes, footsteps).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Damping Regimes</div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setDampMode('under',this)">Underdamped</button>
+        <button class="scenario-tab" onclick="setDampMode('critical',this)">Critically Damped</button>
+        <button class="scenario-tab" onclick="setDampMode('over',this)">Overdamped</button>
+      </div>
+      <div class="slider-row">
+        <label>k (N/m)</label>
+        <input type="range" id="s5K" min="1" max="50" value="20" step="1" oninput="updateS5()">
+        <span class="slider-val" id="s5KVal">20 N/m</span>
+      </div>
+      <div class="slider-row">
+        <label>m (kg)</label>
+        <input type="range" id="s5M" min="0.5" max="10" value="2" step="0.1" oninput="updateS5()">
+        <span class="slider-val" id="s5MVal">2.0 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Damping b</label>
+        <input type="range" id="s5B" min="0" max="40" value="2" step="0.1" oninput="updateS5Manual()">
+        <span class="slider-val" id="s5BVal">2.0 Ns/m</span>
+      </div>
+      <svg id="s5DampSvg" width="100%" viewBox="0 0 700 250" style="display:block;margin:8px 0"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">&omega;_0</span><br><span class="value indigo" id="s5RW0">--</span></div>
+        <div class="readout-item"><span class="label">b_critical</span><br><span class="value pink" id="s5RBc">--</span></div>
+        <div class="readout-item"><span class="label">Regime</span><br><span class="value amber" id="s5RRegime">--</span></div>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Resonance Curve -- Amplitude vs Driving Frequency</div>
+      <div class="slider-row">
+        <label>&omega;_0 (natural)</label>
+        <input type="range" id="s5Wn" min="1" max="10" value="5" step="0.1" oninput="drawResonance()">
+        <span class="slider-val" id="s5WnVal">5.0 rad/s</span>
+      </div>
+      <div class="slider-row">
+        <label>Damping (Q)</label>
+        <input type="range" id="s5Q" min="1" max="50" value="10" step="1" oninput="drawResonance()">
+        <span class="slider-val" id="s5QVal">Q = 10</span>
+      </div>
+      <svg id="s5ResSvg" width="100%" viewBox="0 0 700 280" style="display:block;margin:8px 0"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Peak at &omega;_d</span><br><span class="value indigo" id="s5RPeakW">--</span></div>
+        <div class="readout-item"><span class="label">Peak amplitude</span><br><span class="value green" id="s5RPeakA">--</span></div>
+        <div class="readout-item"><span class="label">Bandwidth</span><br><span class="value amber" id="s5RBW">--</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Ship hull vibrations at certain speeds create resonance with structural members, a phenomenon called "hull whipping." Sonar transducers rely on resonance to amplify specific frequencies -- the transducer's natural frequency is tuned to the desired sonar ping frequency. Anti-shock mounts on electronics are critically damped to absorb blast energy without oscillation.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: PRACTICE PROBLEMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Practice Problems</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="practice-block">
+      <div class="practice-title">Numerical Problems</div>
+
+      <div class="problem">
+        <p><strong>1.</strong> A 0.5 kg mass on a spring (k = 200 N/m) oscillates with amplitude 0.1 m. What is the period of oscillation?</p>
+        <p style="font-size:.72rem;color:var(--text-dim)">T = 2&pi;&radic;(m/k) = 2&pi;&radic;(0.5/200)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p1" step="0.001" placeholder="T = ?" onkeydown="if(event.key==='Enter')checkNum('s6p1',0.314,0.015)">
+          <span class="unit-label">s</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p1',0.314,0.015)">Check</button>
+        </div>
+        <div class="feedback" id="s6p1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>2.</strong> A simple pendulum has a period of 2.0 s on Earth (g = 9.8 m/s&sup2;). What is its length?</p>
+        <p style="font-size:.72rem;color:var(--text-dim)">T = 2&pi;&radic;(L/g) so L = gT&sup2;/(4&pi;&sup2;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p2" step="0.01" placeholder="L = ?" onkeydown="if(event.key==='Enter')checkNum('s6p2',0.993,0.03)">
+          <span class="unit-label">m</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p2',0.993,0.03)">Check</button>
+        </div>
+        <div class="feedback" id="s6p2-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>3.</strong> A mass-spring system (k = 50 N/m, A = 0.4 m) oscillates. What is the maximum speed of the 2 kg mass?</p>
+        <p style="font-size:.72rem;color:var(--text-dim)">v_max = A&omega; = A&radic;(k/m)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p3" step="0.01" placeholder="v_max = ?" onkeydown="if(event.key==='Enter')checkNum('s6p3',2.0,0.1)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p3',2.0,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s6p3-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>4.</strong> A mass-spring system has total energy E = 5 J and amplitude A = 0.5 m. When x = 0.3 m, what is the kinetic energy?</p>
+        <p style="font-size:.72rem;color:var(--text-dim)">KE = E - PE = E - E(x/A)&sup2; = E(1 - x&sup2;/A&sup2;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p4" step="0.1" placeholder="KE = ?" onkeydown="if(event.key==='Enter')checkNum('s6p4',3.2,0.2)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p4',3.2,0.2)">Check</button>
+        </div>
+        <div class="feedback" id="s6p4-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>5.</strong> A damped oscillator has m = 1 kg and k = 100 N/m. What value of damping coefficient b gives critical damping?</p>
+        <p style="font-size:.72rem;color:var(--text-dim)">b_c = 2&radic;(km)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p5" step="0.1" placeholder="b_c = ?" onkeydown="if(event.key==='Enter')checkNum('s6p5',20,0.5)">
+          <span class="unit-label">Ns/m</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p5',20,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s6p5-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">7</span> Quick Quiz &mdash; Oscillations</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- SHM basics</div>
+      <p class="q-text">In simple harmonic motion, when is the acceleration greatest in magnitude?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">At equilibrium (x = 0)</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">At maximum displacement (x = A or x = -A)</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">At the midpoint between equilibrium and max displacement</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Acceleration is constant in SHM</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Spring period</div>
+      <p class="q-text">A mass on a spring has period T. If you double the mass AND double the spring constant, the new period is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">T (unchanged)</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">2T</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">T/2</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">&radic;2 T</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Pendulum</div>
+      <p class="q-text">A simple pendulum on Earth has period 1 s. If you take it to a planet where g = 2.45 m/s&sup2; (1/4 of Earth's), the period becomes:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">4 s</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">2 s</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">0.5 s</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">1 s (period does not depend on g)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Energy in SHM</div>
+      <p class="q-text">In a mass-spring SHM, when the displacement is half the amplitude (x = A/2), what fraction of the total energy is kinetic?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">1/2</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">3/4</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">1/4</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">1/8</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Velocity in SHM</div>
+      <p class="q-text">Where in the oscillation cycle is the speed of the mass at its maximum?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">At the equilibrium position (x = 0)</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">At the turning points (x = +/- A)</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">Halfway between equilibrium and the turning point</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">Speed is constant throughout SHM</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Amplitude and period</div>
+      <p class="q-text">If you double the amplitude of a mass-spring oscillator, the period:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Doubles</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Quadruples</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Halves</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">Stays the same</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Damping</div>
+      <p class="q-text">Which damping regime returns the system to equilibrium in the shortest time without oscillating?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Underdamped</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">Critically damped</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Overdamped</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Undamped</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Resonance</div>
+      <p class="q-text">Resonance occurs in a driven oscillator when:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">The driving force amplitude equals the restoring force</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">The driving frequency equals the natural frequency</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">The driving frequency is twice the natural frequency</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">The damping coefficient is zero</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Phase relationship</div>
+      <p class="q-text">In SHM, velocity and displacement are:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">In phase (peak together)</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">180 degrees out of phase</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">90 degrees out of phase (velocity leads by &pi;/2)</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">45 degrees out of phase</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Physical pendulum</div>
+      <p class="q-text">A uniform rod of length L is pivoted at one end and swings as a physical pendulum. Its period is T = 2&pi;&radic;(2L/3g). Compared to a simple pendulum of the same length L, the rod's period is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">The same</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">Shorter, because &radic;(2/3) &lt; 1 so T_rod &lt; T_simple</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Longer, because the rod has distributed mass</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Depends on the mass of the rod</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(2) + ')';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: SHM ANIMATION ==================== */
+var s1Anim = null, s1Time = 0, s1Playing = false;
+
+function updateS1Labels() {
+  document.getElementById('s1AVal').textContent = (+document.getElementById('s1A').value).toFixed(1) + ' m';
+  document.getElementById('s1WVal').textContent = (+document.getElementById('s1W').value).toFixed(1) + ' rad/s';
+  document.getElementById('s1PhiVal').textContent = (+document.getElementById('s1Phi').value).toFixed(1) + ' rad';
+  drawS1Frame();
+}
+
+function toggleS1Anim() {
+  s1Playing = !s1Playing;
+  document.getElementById('s1PlayBtn').textContent = s1Playing ? 'Pause' : 'Play';
+  if (s1Playing) s1Loop();
+}
+
+function resetS1() {
+  s1Playing = false; s1Time = 0;
+  document.getElementById('s1PlayBtn').textContent = 'Play';
+  if (s1Anim) cancelAnimationFrame(s1Anim);
+  drawS1Frame();
+}
+
+function s1Loop() {
+  if (!s1Playing) return;
+  s1Time += 0.03;
+  drawS1Frame();
+  s1Anim = requestAnimationFrame(s1Loop);
+}
+
+function drawS1Frame() {
+  var A = +document.getElementById('s1A').value;
+  var w = +document.getElementById('s1W').value;
+  var phi = +document.getElementById('s1Phi').value;
+  var T = 2*Math.PI/w;
+  var f = 1/T;
+
+  var x = A * Math.cos(w*s1Time + phi);
+  var v = -A*w * Math.sin(w*s1Time + phi);
+  var a = -A*w*w * Math.cos(w*s1Time + phi);
+
+  document.getElementById('s1RX').textContent = x.toFixed(3) + ' m';
+  document.getElementById('s1RV').textContent = v.toFixed(3) + ' m/s';
+  document.getElementById('s1RA').textContent = a.toFixed(2) + ' m/s^2';
+  document.getElementById('s1RT').textContent = T.toFixed(3) + ' s';
+  document.getElementById('s1RF').textContent = f.toFixed(3) + ' Hz';
+
+  // Mass on track
+  var ms = document.getElementById('s1MassSvg');
+  var cx = 350 + (x/2)*250;
+  var h = '<defs><marker id="s1arr" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4Z" fill="var(--green)"/></marker></defs>';
+  h += '<rect x="50" y="35" width="600" height="4" rx="2" fill="#363b47"/>';
+  h += '<line x1="350" y1="25" x2="350" y2="50" stroke="#9ca3af" stroke-width="1" stroke-dasharray="4"/>';
+  h += '<text x="350" y="70" text-anchor="middle" fill="#9ca3af" font-size="9">x=0</text>';
+  h += '<circle cx="'+cx+'" cy="37" r="14" fill="var(--indigo)" stroke="var(--text-bright)" stroke-width="2"/>';
+  h += '<text x="'+cx+'" y="41" text-anchor="middle" fill="white" font-size="9" font-weight="600">m</text>';
+  // velocity arrow
+  var vScale = v * 15;
+  if (Math.abs(vScale) > 3) {
+    h += '<line x1="'+cx+'" y1="16" x2="'+(cx+vScale)+'" y2="16" stroke="var(--green)" stroke-width="2" marker-end="url(#s1arr)"/>';
+    h += '<text x="'+(cx+vScale/2)+'" y="10" text-anchor="middle" fill="var(--green)" font-size="8">v</text>';
+  }
+  ms.innerHTML = h;
+
+  // Graphs
+  drawS1Graph('s1GraphX', 340, 120, A, w, phi, s1Time, 'pos', '#6366f1');
+  drawS1Graph('s1GraphV', 340, 120, A, w, phi, s1Time, 'vel', '#22c55e');
+  drawS1Graph('s1GraphA', 700, 120, A, w, phi, s1Time, 'acc', '#ec4899');
+}
+
+function drawS1Graph(id, W, H, A, w, phi, t, type, color) {
+  var svg = document.getElementById(id);
+  var ox=40, oy=10, gw=W-60, gh=H-30;
+  var tWin = 6;
+  var h = '<rect x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="#1a1d24" stroke="#363b47" rx="3"/>';
+  var midY = oy + gh/2;
+  h += '<line x1="'+ox+'" y1="'+midY+'" x2="'+(ox+gw)+'" y2="'+midY+'" stroke="#363b47" stroke-width="1"/>';
+  var maxVal;
+  if (type === 'pos') maxVal = A;
+  else if (type === 'vel') maxVal = A*w;
+  else maxVal = A*w*w;
+  if (maxVal < 0.01) maxVal = 1;
+  h += '<text x="'+(ox-4)+'" y="'+(oy+8)+'" text-anchor="end" fill="#9ca3af" font-size="8">+'+maxVal.toFixed(1)+'</text>';
+  h += '<text x="'+(ox-4)+'" y="'+(oy+gh)+'" text-anchor="end" fill="#9ca3af" font-size="8">-'+maxVal.toFixed(1)+'</text>';
+
+  var pts = [];
+  var nPts = 200;
+  for (var i = 0; i <= nPts; i++) {
+    var ti = (i/nPts)*tWin;
+    var val;
+    if (type === 'pos') val = A * Math.cos(w*ti + phi);
+    else if (type === 'vel') val = -A*w * Math.sin(w*ti + phi);
+    else val = -A*w*w * Math.cos(w*ti + phi);
+    var px = ox + (i/nPts)*gw;
+    var py = midY - (val/maxVal)*(gh/2 - 4);
+    pts.push(px+','+py);
+  }
+  h += '<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+color+'" stroke-width="1.5" opacity="0.7"/>';
+
+  var tFrac = (t % tWin) / tWin;
+  var mx = ox + tFrac * gw;
+  var curVal;
+  if (type === 'pos') curVal = A * Math.cos(w*t + phi);
+  else if (type === 'vel') curVal = -A*w * Math.sin(w*t + phi);
+  else curVal = -A*w*w * Math.cos(w*t + phi);
+  var my = midY - (curVal/maxVal)*(gh/2-4);
+  h += '<circle cx="'+mx+'" cy="'+my+'" r="4" fill="'+color+'" stroke="white" stroke-width="1.5"/>';
+  h += '<line x1="'+mx+'" y1="'+oy+'" x2="'+mx+'" y2="'+(oy+gh)+'" stroke="'+color+'" stroke-width="0.5" opacity="0.4"/>';
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 2: MASS-SPRING ==================== */
+var s2Anim = null, s2Time = 0, s2Playing = false;
+
+function updateS2Labels() {
+  document.getElementById('s2KVal').textContent = (+document.getElementById('s2K').value).toFixed(0) + ' N/m';
+  document.getElementById('s2MVal').textContent = (+document.getElementById('s2M').value).toFixed(1) + ' kg';
+  document.getElementById('s2AmpVal').textContent = (+document.getElementById('s2Amp').value).toFixed(1) + ' m';
+  drawS2Frame();
+}
+
+function toggleS2Anim() {
+  s2Playing = !s2Playing;
+  document.getElementById('s2PlayBtn').textContent = s2Playing ? 'Pause' : 'Play';
+  if (s2Playing) s2Loop();
+}
+
+function resetS2() {
+  s2Playing = false; s2Time = 0;
+  document.getElementById('s2PlayBtn').textContent = 'Play';
+  if (s2Anim) cancelAnimationFrame(s2Anim);
+  drawS2Frame();
+}
+
+function s2Loop() {
+  if (!s2Playing) return;
+  s2Time += 0.03;
+  drawS2Frame();
+  s2Anim = requestAnimationFrame(s2Loop);
+}
+
+function drawS2Frame() {
+  var k = +document.getElementById('s2K').value;
+  var m = +document.getElementById('s2M').value;
+  var amp = +document.getElementById('s2Amp').value;
+  var w = Math.sqrt(k/m);
+  var T = 2*Math.PI/w;
+  var f = 1/T;
+  var x = amp * Math.cos(w * s2Time);
+  var v = -amp * w * Math.sin(w * s2Time);
+  var E = 0.5 * k * amp * amp;
+
+  document.getElementById('s2RW').textContent = w.toFixed(2) + ' rad/s';
+  document.getElementById('s2RTPeriod').textContent = T.toFixed(3) + ' s';
+  document.getElementById('s2RFreq').textContent = f.toFixed(3) + ' Hz';
+  document.getElementById('s2RX').textContent = x.toFixed(3) + ' m';
+  document.getElementById('s2RVel').textContent = v.toFixed(3) + ' m/s';
+  document.getElementById('s2RE').textContent = E.toFixed(2) + ' J';
+
+  var svg = document.getElementById('s2SpringSvg');
+  var wallX = 60, eqX = 400, massR = 20;
+  var dx = (x / 2) * 150;
+  var massX = eqX + dx;
+  var springEnd = massX - massR;
+
+  var h = '';
+  // wall
+  h += '<rect x="40" y="20" width="20" height="80" fill="#363b47" rx="2"/>';
+  for (var i = 0; i < 5; i++) {
+    h += '<line x1="40" y1="'+(25+i*16)+'" x2="30" y2="'+(33+i*16)+'" stroke="#9ca3af" stroke-width="1.5"/>';
+  }
+  // spring zigzag
+  var nCoils = 12;
+  var springLen = springEnd - wallX;
+  if (springLen < 20) springLen = 20;
+  var coilW = springLen / nCoils;
+  var springPts = wallX + ',' + 60;
+  for (var c = 0; c < nCoils; c++) {
+    var sx = wallX + (c + 0.25) * coilW;
+    var sy = (c % 2 === 0) ? 40 : 80;
+    springPts += ' ' + sx + ',' + sy;
+    var sx2 = wallX + (c + 0.75) * coilW;
+    var sy2 = (c % 2 === 0) ? 80 : 40;
+    springPts += ' ' + sx2 + ',' + sy2;
+  }
+  springPts += ' ' + springEnd + ',60';
+  h += '<polyline points="' + springPts + '" fill="none" stroke="var(--indigo)" stroke-width="2"/>';
+  // mass
+  h += '<rect x="'+(massX-massR)+'" y="'+(60-massR)+'" width="'+(massR*2)+'" height="'+(massR*2)+'" rx="4" fill="var(--indigo)" stroke="var(--text-bright)" stroke-width="2"/>';
+  h += '<text x="'+massX+'" y="64" text-anchor="middle" fill="white" font-size="10" font-weight="600">m</text>';
+  // equilibrium marker
+  h += '<line x1="'+eqX+'" y1="90" x2="'+eqX+'" y2="105" stroke="#9ca3af" stroke-width="1" stroke-dasharray="3"/>';
+  h += '<text x="'+eqX+'" y="115" text-anchor="middle" fill="#9ca3af" font-size="8">eq</text>';
+  // floor
+  h += '<line x1="60" y1="82" x2="650" y2="82" stroke="#363b47" stroke-width="1"/>';
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 3: PENDULUM ==================== */
+var s3Anim = null, s3Time = 0, s3Playing = false;
+
+function updateS3Labels() {
+  document.getElementById('s3LVal').textContent = (+document.getElementById('s3L').value).toFixed(1) + ' m';
+  document.getElementById('s3GVal').textContent = (+document.getElementById('s3G').value).toFixed(1) + ' m/s^2';
+  document.getElementById('s3AngVal').textContent = (+document.getElementById('s3Ang').value).toFixed(0) + ' deg';
+  drawS3Frame();
+}
+
+function toggleS3Anim() {
+  s3Playing = !s3Playing;
+  document.getElementById('s3PlayBtn').textContent = s3Playing ? 'Pause' : 'Play';
+  if (s3Playing) s3PendLoop();
+}
+
+function resetS3() {
+  s3Playing = false; s3Time = 0;
+  document.getElementById('s3PlayBtn').textContent = 'Play';
+  if (s3Anim) cancelAnimationFrame(s3Anim);
+  drawS3Frame();
+}
+
+function s3PendLoop() {
+  if (!s3Playing) return;
+  s3Time += 0.03;
+  drawS3Frame();
+  s3Anim = requestAnimationFrame(s3PendLoop);
+}
+
+function drawS3Frame() {
+  var L = +document.getElementById('s3L').value;
+  var g = +document.getElementById('s3G').value;
+  var angDeg = +document.getElementById('s3Ang').value;
+  var angRad = angDeg * Math.PI / 180;
+  var w = Math.sqrt(g / L);
+  var T = 2 * Math.PI / w;
+  var f = 1 / T;
+
+  var theta = angRad * Math.cos(w * s3Time);
+
+  document.getElementById('s3RT').textContent = T.toFixed(3) + ' s';
+  document.getElementById('s3RF').textContent = f.toFixed(3) + ' Hz';
+  document.getElementById('s3RW').textContent = w.toFixed(2) + ' rad/s';
+  document.getElementById('s3RTheta').textContent = (theta * 180 / Math.PI).toFixed(1) + ' deg';
+
+  var svg = document.getElementById('s3PendSvg');
+  var pivotX = 350, pivotY = 30;
+  var drawL = Math.min(L * 60, 240);
+  var bobX = pivotX + drawL * Math.sin(theta);
+  var bobY = pivotY + drawL * Math.cos(theta);
+
+  var h = '';
+  // pivot
+  h += '<circle cx="'+pivotX+'" cy="'+pivotY+'" r="5" fill="#9ca3af"/>';
+  // ceiling
+  h += '<line x1="200" y1="'+pivotY+'" x2="500" y2="'+pivotY+'" stroke="#363b47" stroke-width="2"/>';
+  // ghost at equilibrium
+  h += '<line x1="'+pivotX+'" y1="'+pivotY+'" x2="'+pivotX+'" y2="'+(pivotY+drawL)+'" stroke="#363b47" stroke-width="1" stroke-dasharray="4"/>';
+  h += '<circle cx="'+pivotX+'" cy="'+(pivotY+drawL)+'" r="16" fill="none" stroke="#363b47" stroke-width="1" stroke-dasharray="4"/>';
+  // trajectory arc (ghost)
+  var nArcPts = 40;
+  var arcPts = [];
+  for (var i = 0; i <= nArcPts; i++) {
+    var ai = -angRad + (2*angRad*i/nArcPts);
+    arcPts.push((pivotX + drawL*Math.sin(ai))+','+(pivotY + drawL*Math.cos(ai)));
+  }
+  h += '<polyline points="'+arcPts.join(' ')+'" fill="none" stroke="var(--amber)" stroke-width="1" opacity="0.15"/>';
+  // string
+  h += '<line x1="'+pivotX+'" y1="'+pivotY+'" x2="'+bobX+'" y2="'+bobY+'" stroke="var(--text-dim)" stroke-width="2"/>';
+  // bob
+  h += '<circle cx="'+bobX+'" cy="'+bobY+'" r="16" fill="var(--amber)" stroke="var(--text-bright)" stroke-width="2"/>';
+  // angle arc
+  if (Math.abs(theta) > 0.02) {
+    var arcR = 40;
+    var a1x = pivotX + arcR * Math.sin(0);
+    var a1y = pivotY + arcR * Math.cos(0);
+    var a2x = pivotX + arcR * Math.sin(theta);
+    var a2y = pivotY + arcR * Math.cos(theta);
+    var largeArc = Math.abs(theta) > Math.PI ? 1 : 0;
+    var sweep = theta > 0 ? 1 : 0;
+    h += '<path d="M'+a1x+','+a1y+' A'+arcR+','+arcR+' 0 '+largeArc+','+sweep+' '+a2x+','+a2y+'" fill="none" stroke="var(--amber)" stroke-width="1.5" opacity="0.6"/>';
+    var labelX = pivotX + 50 * Math.sin(theta/2);
+    var labelY = pivotY + 50 * Math.cos(theta/2);
+    h += '<text x="'+labelX+'" y="'+labelY+'" fill="var(--amber)" font-size="10">' + (theta*180/Math.PI).toFixed(1) + '&deg;</text>';
+  }
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 4: ENERGY DIAGRAM ==================== */
+function updateS4() {
+  var k = +document.getElementById('s4K').value;
+  var A = +document.getElementById('s4Amp').value;
+  var x = +document.getElementById('s4X').value;
+
+  document.getElementById('s4KVal').textContent = k.toFixed(0) + ' N/m';
+  document.getElementById('s4AmpVal').textContent = A.toFixed(1) + ' m';
+
+  // Clamp x to [-A, A]
+  if (x > A) x = A;
+  if (x < -A) x = -A;
+  document.getElementById('s4X').max = A;
+  document.getElementById('s4X').min = -A;
+  document.getElementById('s4XVal').textContent = x.toFixed(2) + ' m';
+
+  var E = 0.5 * k * A * A;
+  var PE = 0.5 * k * x * x;
+  var KE = E - PE;
+  if (KE < 0) KE = 0;
+  var ratio = E > 0 ? (KE / E) : 0;
+
+  document.getElementById('s4RKE').textContent = KE.toFixed(2) + ' J';
+  document.getElementById('s4RPE').textContent = PE.toFixed(2) + ' J';
+  document.getElementById('s4RE').textContent = E.toFixed(2) + ' J';
+  document.getElementById('s4RRatio').textContent = (ratio * 100).toFixed(1) + '%';
+
+  drawS4Graph(k, A, x, E, KE, PE);
+}
+
+function drawS4Graph(k, A, x, E, KE, PE) {
+  var svg = document.getElementById('s4EnergySvg');
+  var ox = 60, oy = 20, gw = 580, gh = 230;
+  var maxE = E * 1.2;
+  if (maxE < 0.1) maxE = 1;
+
+  var h = '<rect x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="#1a1d24" stroke="#363b47" rx="4"/>';
+  h += '<text x="'+(ox+gw/2)+'" y="'+(oy+gh+25)+'" text-anchor="middle" fill="#9ca3af" font-size="10">Position x (m)</text>';
+  h += '<text x="'+(ox-10)+'" y="'+(oy+gh/2)+'" fill="#9ca3af" font-size="10" text-anchor="middle" transform="rotate(-90,'+(ox-10)+','+(oy+gh/2)+')">Energy (J)</text>';
+
+  // x-axis ticks
+  for (var xi = -A; xi <= A*1.01; xi += A/2) {
+    var px = ox + gw/2 + (xi/A)*(gw/2-10);
+    h += '<line x1="'+px+'" y1="'+(oy+gh)+'" x2="'+px+'" y2="'+(oy+gh+4)+'" stroke="#9ca3af" stroke-width="1"/>';
+    h += '<text x="'+px+'" y="'+(oy+gh+14)+'" text-anchor="middle" fill="#9ca3af" font-size="8">'+xi.toFixed(1)+'</text>';
+  }
+
+  // Total energy line
+  var eY = oy + gh - (E/maxE)*gh;
+  h += '<line x1="'+ox+'" y1="'+eY+'" x2="'+(ox+gw)+'" y2="'+eY+'" stroke="var(--amber)" stroke-width="2" stroke-dasharray="6"/>';
+  h += '<text x="'+(ox+gw-5)+'" y="'+(eY-5)+'" text-anchor="end" fill="var(--amber)" font-size="9">E = '+E.toFixed(1)+' J</text>';
+
+  // PE parabola
+  var pePts = [];
+  var nPts = 100;
+  for (var i = 0; i <= nPts; i++) {
+    var xi2 = -A + (2*A*i/nPts);
+    var pei = 0.5 * k * xi2 * xi2;
+    var px2 = ox + gw/2 + (xi2/A)*(gw/2-10);
+    var py2 = oy + gh - (pei/maxE)*gh;
+    pePts.push(px2+','+py2);
+  }
+  h += '<polyline points="'+pePts.join(' ')+'" fill="none" stroke="var(--pink)" stroke-width="2.5"/>';
+  h += '<text x="'+(ox+gw-5)+'" y="'+(oy+gh-10)+'" text-anchor="end" fill="var(--pink)" font-size="9">PE = kx^2/2</text>';
+
+  // KE curve
+  var kePts = [];
+  for (var j = 0; j <= nPts; j++) {
+    var xj = -A + (2*A*j/nPts);
+    var kej = E - 0.5*k*xj*xj;
+    if (kej < 0) kej = 0;
+    var pxj = ox + gw/2 + (xj/A)*(gw/2-10);
+    var pyj = oy + gh - (kej/maxE)*gh;
+    kePts.push(pxj+','+pyj);
+  }
+  h += '<polyline points="'+kePts.join(' ')+'" fill="none" stroke="var(--green)" stroke-width="2.5"/>';
+  h += '<text x="'+(ox+10)+'" y="'+(eY-5)+'" fill="var(--green)" font-size="9">KE</text>';
+
+  // Current position vertical bars
+  var curPx = ox + gw/2 + (x/A)*(gw/2-10);
+  var curPEy = oy + gh - (PE/maxE)*gh;
+  var curTotY = oy + gh - (E/maxE)*gh;
+  // PE bar (bottom)
+  h += '<rect x="'+(curPx-4)+'" y="'+curPEy+'" width="8" height="'+((oy+gh)-curPEy)+'" fill="var(--pink)" opacity="0.4" rx="2"/>';
+  // KE bar (top)
+  h += '<rect x="'+(curPx-4)+'" y="'+curTotY+'" width="8" height="'+(curPEy-curTotY)+'" fill="var(--green)" opacity="0.4" rx="2"/>';
+  // dots
+  h += '<circle cx="'+curPx+'" cy="'+curPEy+'" r="5" fill="var(--pink)" stroke="white" stroke-width="1.5"/>';
+  h += '<circle cx="'+curPx+'" cy="'+curTotY+'" r="4" fill="var(--amber)" stroke="white" stroke-width="1"/>';
+  h += '<line x1="'+curPx+'" y1="'+oy+'" x2="'+curPx+'" y2="'+(oy+gh)+'" stroke="var(--text-dim)" stroke-width="0.5" opacity="0.3"/>';
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 5: DAMPED OSCILLATIONS ==================== */
+var dampMode = 'under';
+
+function setDampMode(mode, btn) {
+  dampMode = mode;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  var k = +document.getElementById('s5K').value;
+  var m = +document.getElementById('s5M').value;
+  var bc = 2*Math.sqrt(k*m);
+  if (mode === 'under') document.getElementById('s5B').value = (bc * 0.2).toFixed(1);
+  else if (mode === 'critical') document.getElementById('s5B').value = bc.toFixed(1);
+  else document.getElementById('s5B').value = Math.min(bc * 2.5, 40).toFixed(1);
+  updateS5();
+}
+
+function updateS5Manual() {
+  document.getElementById('s5BVal').textContent = (+document.getElementById('s5B').value).toFixed(1) + ' Ns/m';
+  document.getElementById('s5KVal').textContent = (+document.getElementById('s5K').value).toFixed(0) + ' N/m';
+  document.getElementById('s5MVal').textContent = (+document.getElementById('s5M').value).toFixed(1) + ' kg';
+  var k = +document.getElementById('s5K').value;
+  var m = +document.getElementById('s5M').value;
+  var b = +document.getElementById('s5B').value;
+  var bc = 2*Math.sqrt(k*m);
+  if (Math.abs(b - bc) < 0.5) dampMode = 'critical';
+  else if (b < bc) dampMode = 'under';
+  else dampMode = 'over';
+  drawS5Damp();
+}
+
+function updateS5() {
+  document.getElementById('s5KVal').textContent = (+document.getElementById('s5K').value).toFixed(0) + ' N/m';
+  document.getElementById('s5MVal').textContent = (+document.getElementById('s5M').value).toFixed(1) + ' kg';
+  document.getElementById('s5BVal').textContent = (+document.getElementById('s5B').value).toFixed(1) + ' Ns/m';
+  drawS5Damp();
+}
+
+function drawS5Damp() {
+  var k = +document.getElementById('s5K').value;
+  var m = +document.getElementById('s5M').value;
+  var b = +document.getElementById('s5B').value;
+  var w0 = Math.sqrt(k/m);
+  var bc = 2*Math.sqrt(k*m);
+  var gamma = b/(2*m);
+
+  var regime;
+  if (b < bc - 0.5) regime = 'Underdamped';
+  else if (b > bc + 0.5) regime = 'Overdamped';
+  else regime = 'Critically Damped';
+
+  document.getElementById('s5RW0').textContent = w0.toFixed(2) + ' rad/s';
+  document.getElementById('s5RBc').textContent = bc.toFixed(1) + ' Ns/m';
+  document.getElementById('s5RRegime').textContent = regime;
+
+  var svg = document.getElementById('s5DampSvg');
+  var ox=60, oy=20, gw=580, gh=200;
+  var tMax = 8;
+  var h = '<rect x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="#1a1d24" stroke="#363b47" rx="4"/>';
+
+  var midY = oy + gh/2;
+  h += '<line x1="'+ox+'" y1="'+midY+'" x2="'+(ox+gw)+'" y2="'+midY+'" stroke="#363b47" stroke-width="1"/>';
+  h += '<text x="'+(ox+gw/2)+'" y="'+(oy+gh+20)+'" text-anchor="middle" fill="#9ca3af" font-size="10">Time (s)</text>';
+
+  for (var ti = 0; ti <= tMax; ti++) {
+    var tx = ox + (ti/tMax)*gw;
+    h += '<line x1="'+tx+'" y1="'+(oy+gh)+'" x2="'+tx+'" y2="'+(oy+gh+4)+'" stroke="#9ca3af" stroke-width="1"/>';
+    h += '<text x="'+tx+'" y="'+(oy+gh+14)+'" text-anchor="middle" fill="#9ca3af" font-size="8">'+ti+'</text>';
+  }
+
+  var A0 = 1;
+  var nPts = 400;
+  var pts = [];
+
+  for (var i = 0; i <= nPts; i++) {
+    var t = (i/nPts)*tMax;
+    var xVal;
+    if (b < bc - 0.3) {
+      var wd = Math.sqrt(Math.max(w0*w0 - gamma*gamma, 0.001));
+      xVal = A0 * Math.exp(-gamma*t) * Math.cos(wd*t);
+    } else if (b > bc + 0.3) {
+      var disc = Math.sqrt(Math.max(gamma*gamma - w0*w0, 0.001));
+      var r1 = -gamma + disc;
+      var r2 = -gamma - disc;
+      if (Math.abs(r2 - r1) < 0.001) {
+        xVal = A0 * (1 + gamma*t) * Math.exp(-gamma*t);
+      } else {
+        xVal = A0 * (r2*Math.exp(r1*t) - r1*Math.exp(r2*t)) / (r2 - r1);
+      }
+    } else {
+      xVal = A0 * (1 + gamma*t) * Math.exp(-gamma*t);
+    }
+    var px = ox + (i/nPts)*gw;
+    var py = midY - xVal * (gh/2 - 10);
+    if (py < oy) py = oy;
+    if (py > oy+gh) py = oy+gh;
+    pts.push(px+','+py);
+  }
+
+  var color = b < bc-0.3 ? 'var(--indigo)' : b > bc+0.3 ? 'var(--pink)' : 'var(--green)';
+  h += '<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+color+'" stroke-width="2.5"/>';
+
+  // Envelope for underdamped
+  if (b < bc - 0.3) {
+    var envUp = [], envDown = [];
+    for (var j = 0; j <= 200; j++) {
+      var tj = (j/200)*tMax;
+      var env = A0 * Math.exp(-gamma*tj);
+      var pxj = ox + (j/200)*gw;
+      envUp.push(pxj+','+(midY - env*(gh/2-10)));
+      envDown.push(pxj+','+(midY + env*(gh/2-10)));
+    }
+    h += '<polyline points="'+envUp.join(' ')+'" fill="none" stroke="var(--amber)" stroke-width="1" stroke-dasharray="4" opacity="0.6"/>';
+    h += '<polyline points="'+envDown.join(' ')+'" fill="none" stroke="var(--amber)" stroke-width="1" stroke-dasharray="4" opacity="0.6"/>';
+    h += '<text x="'+(ox+gw-10)+'" y="'+(oy+14)+'" text-anchor="end" fill="var(--amber)" font-size="9" opacity="0.6">envelope: e^(-bt/2m)</text>';
+  }
+
+  h += '<text x="'+(ox+10)+'" y="'+(oy+14)+'" fill="'+color+'" font-size="10" font-weight="600">'+regime+'</text>';
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 5: RESONANCE CURVE ==================== */
+function drawResonance() {
+  var wn = +document.getElementById('s5Wn').value;
+  var Q = +document.getElementById('s5Q').value;
+  document.getElementById('s5WnVal').textContent = wn.toFixed(1) + ' rad/s';
+  document.getElementById('s5QVal').textContent = 'Q = ' + Q;
+
+  var svg = document.getElementById('s5ResSvg');
+  var ox=60, oy=20, gw=580, gh=220;
+  var wMax = wn * 3;
+  var gamma = wn / (2*Q);
+
+  var h = '<rect x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="#1a1d24" stroke="#363b47" rx="4"/>';
+  h += '<text x="'+(ox+gw/2)+'" y="'+(oy+gh+25)+'" text-anchor="middle" fill="#9ca3af" font-size="10">Driving frequency w_d (rad/s)</text>';
+  h += '<text x="'+(ox-10)+'" y="'+(oy+gh/2)+'" fill="#9ca3af" font-size="10" text-anchor="middle" transform="rotate(-90,'+(ox-10)+','+(oy+gh/2)+')">Amplitude</text>';
+
+  var nPts = 300;
+  var maxAmp = 0;
+  var amps = [];
+  for (var i = 0; i <= nPts; i++) {
+    var wd = 0.01 + (i/nPts)*wMax;
+    var denom = Math.sqrt(Math.pow(wn*wn - wd*wd, 2) + Math.pow(2*gamma*wd, 2));
+    var amp = 1.0 / denom;
+    amps.push({w: wd, a: amp});
+    if (amp > maxAmp) maxAmp = amp;
+  }
+
+  // x-axis ticks
+  var wStep = Math.max(1, Math.round(wMax/6));
+  for (var wi = 0; wi <= wMax; wi += wStep) {
+    var wx = ox + (wi/wMax)*gw;
+    h += '<line x1="'+wx+'" y1="'+(oy+gh)+'" x2="'+wx+'" y2="'+(oy+gh+4)+'" stroke="#9ca3af" stroke-width="1"/>';
+    h += '<text x="'+wx+'" y="'+(oy+gh+14)+'" text-anchor="middle" fill="#9ca3af" font-size="8">'+wi.toFixed(0)+'</text>';
+  }
+
+  // natural frequency marker
+  var wnX = ox + (wn/wMax)*gw;
+  h += '<line x1="'+wnX+'" y1="'+oy+'" x2="'+wnX+'" y2="'+(oy+gh)+'" stroke="var(--amber)" stroke-width="1" stroke-dasharray="4" opacity="0.6"/>';
+  h += '<text x="'+(wnX+4)+'" y="'+(oy+14)+'" fill="var(--amber)" font-size="9">w_0</text>';
+
+  // curve fill
+  var pts = [];
+  for (var j = 0; j < amps.length; j++) {
+    var px = ox + (amps[j].w/wMax)*gw;
+    var py = oy + gh - (amps[j].a/maxAmp)*(gh-10);
+    pts.push(px+','+py);
+  }
+  var fillPts = (ox+','+(oy+gh)) + ' ' + pts.join(' ') + ' ' + ((ox+gw)+','+(oy+gh));
+  h += '<polygon points="'+fillPts+'" fill="var(--indigo)" opacity="0.1"/>';
+  h += '<polyline points="'+pts.join(' ')+'" fill="none" stroke="var(--indigo)" stroke-width="2.5"/>';
+
+  // Peak marker
+  var peakW = Math.sqrt(Math.max(wn*wn - 2*gamma*gamma, 0.01));
+  var peakDenom = Math.sqrt(Math.pow(wn*wn - peakW*peakW, 2) + Math.pow(2*gamma*peakW, 2));
+  var peakAmp = 1.0 / peakDenom;
+  var peakPx = ox + (peakW/wMax)*gw;
+  var peakPy = oy + gh - (peakAmp/maxAmp)*(gh-10);
+  h += '<circle cx="'+peakPx+'" cy="'+peakPy+'" r="5" fill="var(--green)" stroke="white" stroke-width="1.5"/>';
+  h += '<text x="'+(peakPx+8)+'" y="'+(peakPy-8)+'" fill="var(--green)" font-size="9">peak</text>';
+
+  var bw = wn / Q;
+  document.getElementById('s5RPeakW').textContent = peakW.toFixed(2) + ' rad/s';
+  document.getElementById('s5RPeakA').textContent = 'Q = ' + Q;
+  document.getElementById('s5RBW').textContent = bw.toFixed(2) + ' rad/s';
+
+  svg.innerHTML = h;
+}
+
+/* ==================== INIT ==================== */
+updateS1Labels();
+drawS1Frame();
+updateS2Labels();
+drawS2Frame();
+updateS3Labels();
+drawS3Frame();
+updateS4();
+drawS5Damp();
+drawResonance();
+markComplete(1);
+</script>
+</body>
+</html>

@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 4: Chemical Bonding I</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  background: #1e2128;
+  color: #c9cdd5;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.65;
+  min-height: 100vh;
+  padding: 0 0 4rem;
+}
+
+/* ── Palette ──────────────────────────────────────── */
+:root {
+  --bg: #1e2128;
+  --surface: #262a33;
+  --surface2: #2e323d;
+  --border: #383d49;
+  --text: #c9cdd5;
+  --text-dim: #8b90a0;
+  --primary: #6366f1;
+  --primary-dim: rgba(99,102,241,.15);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,.15);
+  --pink: #ec4899;
+  --pink-dim: rgba(236,72,153,.15);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,.15);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,.15);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,.15);
+  --cyan: #06b6d4;
+  --cyan-dim: rgba(6,182,212,.15);
+}
+
+/* ── Header ───────────────────────────────────────── */
+.page-header {
+  text-align: center;
+  padding: 2.5rem 1rem 1rem;
+}
+.page-header h1 {
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.page-header .subtitle {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-top: .3rem;
+}
+
+/* ── Progress Bar ─────────────────────────────────── */
+.progress-wrap {
+  max-width: 740px;
+  margin: 1.2rem auto .5rem;
+  padding: 0 1rem;
+}
+.progress-bar-outer {
+  background: var(--surface);
+  border-radius: 8px;
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-bar-inner {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), #818cf8);
+  border-radius: 8px;
+  transition: width .5s ease;
+}
+.progress-label {
+  font-size: .7rem;
+  color: var(--text-dim);
+  text-align: right;
+  margin-top: .3rem;
+}
+
+/* ── Container ────────────────────────────────────── */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ── Collapsible Card ─────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: border-color .3s;
+}
+.card.completed { border-color: var(--green); }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background .2s;
+}
+.card-header:hover { background: var(--surface2); }
+.card-header .num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--primary-dim);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: .8rem;
+  flex-shrink: 0;
+}
+.card.completed .card-header .num {
+  background: var(--green-dim);
+  color: var(--green);
+}
+.card-header .title {
+  flex: 1;
+  font-weight: 600;
+  font-size: .9rem;
+  color: #eee;
+}
+.card-header .chevron {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  transition: transform .3s;
+}
+.card.open .card-header .chevron { transform: rotate(180deg); }
+.card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .5s ease, padding .3s ease;
+}
+.card.open .card-body {
+  max-height: 80000px;
+  padding: 0 1.2rem 1.5rem;
+}
+
+/* ── Section Internals ────────────────────────────── */
+.section-desc {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+h3.sub-heading {
+  font-size: .85rem;
+  color: var(--primary);
+  margin: 1.5rem 0 .8rem;
+  font-weight: 600;
+}
+h3.sub-heading:first-of-type { margin-top: .5rem; }
+
+/* ── Interactive Box ──────────────────────────────── */
+.interactive-box {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid var(--border);
+}
+.interactive-box h4 {
+  font-size: .82rem;
+  color: var(--primary);
+  margin-bottom: .8rem;
+}
+
+/* ── Buttons ──────────────────────────────────────── */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: .8rem;
+}
+.btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  padding: .45rem .9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn:hover { border-color: var(--primary); color: #fff; }
+.btn.active {
+  background: var(--primary-dim);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.btn.correct {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+.btn.incorrect {
+  background: var(--pink-dim);
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+/* ── Feedback ─────────────────────────────────────── */
+.feedback {
+  font-size: .75rem;
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  margin-top: .6rem;
+  display: none;
+}
+.feedback.show { display: block; }
+.feedback.correct-fb { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+.feedback.incorrect-fb { background: var(--pink-dim); color: var(--pink); border: 1px solid var(--pink); }
+
+/* ── Explanation Block ────────────────────────────── */
+.explanation {
+  font-size: .78rem;
+  color: var(--text);
+  background: var(--surface2);
+  border-left: 3px solid var(--primary);
+  padding: .8rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 1.2rem;
+  line-height: 1.7;
+}
+
+/* ── Formula Display ─────────────────────────────── */
+.formula-display {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  font-size: .9rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+/* ── SVG Canvas ──────────────────────────────────── */
+.svg-container {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.svg-container svg {
+  width: 100%;
+  height: auto;
+}
+
+/* ── Spectrum Bar ────────────────────────────────── */
+.spectrum-wrap {
+  margin: 1rem 0;
+}
+.spectrum-bar {
+  height: 28px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--pink), var(--amber), var(--cyan));
+  position: relative;
+  margin-bottom: .3rem;
+}
+.spectrum-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: .65rem;
+  color: var(--text-dim);
+}
+.spectrum-marker {
+  position: absolute;
+  top: -6px;
+  width: 16px; height: 40px;
+  border: 2px solid #fff;
+  border-radius: 4px;
+  background: rgba(255,255,255,.2);
+  transition: left .4s ease;
+  pointer-events: none;
+}
+.spectrum-marker::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: .6rem;
+  color: #fff;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+/* ── Element Picker Grid ─────────────────────────── */
+.elem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: .4rem;
+  margin-bottom: .8rem;
+}
+.elem-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem;
+  padding: .5rem .2rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  text-align: center;
+  transition: all .2s;
+}
+.elem-btn:hover { border-color: var(--primary); color: #fff; }
+.elem-btn.selected {
+  background: var(--primary-dim);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.elem-btn .sym { font-weight: 700; font-size: .85rem; display: block; }
+.elem-btn .en { font-size: .55rem; color: var(--text-dim); display: block; }
+
+/* ── Result Display ──────────────────────────────── */
+.result-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .8rem 1rem;
+  font-size: .78rem;
+  color: var(--text);
+  margin-bottom: .8rem;
+  min-height: 2.5rem;
+}
+.result-box .label { color: var(--text-dim); font-size: .65rem; }
+.result-box .value { color: #fff; font-weight: 600; font-size: .9rem; }
+.result-box .bond-type { font-weight: 600; }
+.bond-ionic { color: var(--pink); }
+.bond-polar { color: var(--amber); }
+.bond-nonpolar { color: var(--cyan); }
+
+/* ── Lewis Structure Canvas ──────────────────────── */
+.lewis-canvas {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: .8rem;
+  position: relative;
+}
+
+/* ── Step Indicator ──────────────────────────────── */
+.step-bar {
+  display: flex;
+  gap: .3rem;
+  margin-bottom: .8rem;
+}
+.step-dot {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface2);
+  transition: background .3s;
+}
+.step-dot.active { background: var(--primary); }
+.step-dot.done { background: var(--green); }
+
+.step-info {
+  font-size: .75rem;
+  color: var(--amber);
+  margin-bottom: .6rem;
+  padding: .5rem .7rem;
+  background: var(--amber-dim);
+  border-radius: 6px;
+  border: 1px solid rgba(245,158,11,.25);
+}
+
+/* ── Formal Charge Table ─────────────────────────── */
+.fc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .72rem;
+  margin-bottom: .8rem;
+}
+.fc-table th, .fc-table td {
+  padding: .5rem .6rem;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.fc-table th {
+  background: var(--surface2);
+  color: var(--primary);
+  font-weight: 600;
+}
+.fc-table td { color: var(--text); }
+.fc-table .best { background: var(--green-dim); color: var(--green); font-weight: 700; }
+
+/* ── Dipole Molecule Viewer ──────────────────────── */
+.mol-viewer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .8rem;
+  margin-bottom: 1rem;
+}
+@media (max-width: 500px) { .mol-viewer { grid-template-columns: 1fr; } }
+.mol-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .8rem;
+  cursor: pointer;
+  transition: all .2s;
+  text-align: center;
+}
+.mol-card:hover { border-color: var(--primary); }
+.mol-card.selected { border-color: var(--primary); background: var(--primary-dim); }
+.mol-card .name { font-size: .75rem; font-weight: 600; color: #fff; }
+.mol-card .polarity-tag {
+  display: inline-block;
+  font-size: .6rem;
+  padding: .15rem .5rem;
+  border-radius: 4px;
+  margin-top: .3rem;
+}
+.tag-polar { background: var(--amber-dim); color: var(--amber); }
+.tag-nonpolar { background: var(--cyan-dim); color: var(--cyan); }
+
+/* ── Quiz Score ──────────────────────────────────── */
+.score-display {
+  text-align: center;
+  font-size: 1rem;
+  color: #fff;
+  margin: 1rem 0;
+}
+.score-display .score-num {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--green);
+}
+
+/* ── Practice Problem ────────────────────────────── */
+.practice-problem {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: .8rem;
+}
+.practice-problem .q-text {
+  font-size: .78rem;
+  color: #ddd;
+  margin-bottom: .6rem;
+}
+.practice-problem .q-num {
+  font-size: .65rem;
+  color: var(--text-dim);
+  margin-bottom: .3rem;
+}
+
+/* ── Utility ─────────────────────────────────────── */
+.mt-1 { margin-top: .8rem; }
+.mb-1 { margin-bottom: .8rem; }
+.text-center { text-align: center; }
+.text-sm { font-size: .72rem; }
+.text-dim { color: var(--text-dim); }
+.hidden { display: none !important; }
+sup, sub { font-size: .7em; }
+
+@media (max-width: 600px) {
+  .card.open .card-body { padding: 0 .8rem 1.2rem; }
+  .interactive-box { padding: .8rem; }
+  .elem-grid { grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header class="page-header">
+  <h1>Week 4: Chemical Bonding I</h1>
+  <p class="subtitle">Ionic, Covalent, Lewis Structures, Formal Charge &amp; Polarity</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 5 sections</div>
+</div>
+
+<div class="container" id="mainContainer">
+
+<!-- ═══════════════════ SECTION 1 ═══════════════════ -->
+<div class="card open" data-section="1">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="num">1</span>
+    <span class="title">Types of Chemical Bonds</span>
+    <span class="chevron">&#9662;</span>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Chemical bonds form when atoms share or transfer electrons. The type of bond depends on the
+      <strong style="color:var(--amber)">electronegativity difference</strong> between the bonded atoms.
+      A large difference means electrons are transferred (ionic); a small or zero difference means they are shared (covalent).
+    </p>
+
+    <div class="explanation">
+      <strong>Electronegativity difference (&#916;EN) classifies bonds:</strong><br>
+      &#916;EN &gt; 1.7 &rarr; <span class="bond-ionic">Ionic bond</span> (electron transfer)<br>
+      0.4 &lt; &#916;EN &le; 1.7 &rarr; <span class="bond-polar">Polar covalent</span> (unequal sharing)<br>
+      &#916;EN &le; 0.4 &rarr; <span class="bond-nonpolar">Nonpolar covalent</span> (equal sharing)
+    </div>
+
+    <h3 class="sub-heading">Bond Type Spectrum</h3>
+    <div class="interactive-box">
+      <h4>Interactive: Select Two Elements</h4>
+      <p class="text-sm text-dim mb-1">Click two elements to see their electronegativity difference and bond classification.</p>
+
+      <div class="elem-grid" id="elemGrid1"></div>
+
+      <div class="result-box" id="bondResult1">
+        <span class="text-dim">Select two elements above...</span>
+      </div>
+
+      <div class="spectrum-wrap">
+        <div class="spectrum-bar" id="spectrumBar1">
+          <div class="spectrum-marker hidden" id="specMarker1"></div>
+        </div>
+        <div class="spectrum-labels">
+          <span>Nonpolar Covalent</span>
+          <span>Polar Covalent</span>
+          <span>Ionic</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Practice Problems</h3>
+    <div id="s1Practice"></div>
+    <div class="feedback" id="s1Feedback"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SECTION 2 ═══════════════════ -->
+<div class="card" data-section="2">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="num">2</span>
+    <span class="title">Lewis Structures</span>
+    <span class="chevron">&#9662;</span>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Lewis structures show how valence electrons are arranged in a molecule. They reveal bonding pairs (shared between atoms)
+      and lone pairs (on a single atom). Follow these steps to draw any Lewis structure.
+    </p>
+
+    <div class="explanation">
+      <strong>Steps to Draw Lewis Structures:</strong><br>
+      1. Count total valence electrons (adjust for charge)<br>
+      2. Draw skeleton: central atom bonded to surrounding atoms<br>
+      3. Place lone pairs on outer atoms to complete octets<br>
+      4. Check central atom &mdash; if short of octet, form double/triple bonds
+    </div>
+
+    <h3 class="sub-heading">Step-by-Step Builder</h3>
+    <div class="interactive-box">
+      <h4>Select a Molecule to Build</h4>
+      <div class="btn-row" id="lewisSelect"></div>
+
+      <div class="step-bar" id="lewisStepBar">
+        <div class="step-dot" data-step="1"></div>
+        <div class="step-dot" data-step="2"></div>
+        <div class="step-dot" data-step="3"></div>
+        <div class="step-dot" data-step="4"></div>
+      </div>
+
+      <div class="step-info" id="lewisStepInfo">Select a molecule above to begin.</div>
+
+      <div class="lewis-canvas" id="lewisCanvas">
+        <svg id="lewisSVG" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+          <text x="200" y="145" fill="#8b90a0" font-family="JetBrains Mono" font-size="13" text-anchor="middle">Select a molecule</text>
+        </svg>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" id="lewisPrev" onclick="lewisStep(-1)" disabled>Previous</button>
+        <button class="btn" id="lewisNext" onclick="lewisStep(1)" disabled>Next Step</button>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Practice Problems</h3>
+    <div id="s2Practice"></div>
+    <div class="feedback" id="s2Feedback"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SECTION 3 ═══════════════════ -->
+<div class="card" data-section="3">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="num">3</span>
+    <span class="title">Formal Charge</span>
+    <span class="chevron">&#9662;</span>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Formal charge helps determine which Lewis structure is most stable.
+      The best structure minimizes formal charges on all atoms and places negative formal charges on more electronegative atoms.
+    </p>
+
+    <div class="formula-display">
+      FC = Valence e<sup>&minus;</sup> &minus; (Lone pair e<sup>&minus;</sup> + &frac12; Bonding e<sup>&minus;</sup>)
+    </div>
+
+    <div class="explanation">
+      <strong>Rules for Best Lewis Structure:</strong><br>
+      1. Formal charges closest to zero are preferred<br>
+      2. Negative formal charge should be on the most electronegative atom<br>
+      3. Like charges on adjacent atoms are unfavorable
+    </div>
+
+    <h3 class="sub-heading">SCN<sup>&minus;</sup> Example: Three Possible Structures</h3>
+    <div class="interactive-box">
+      <h4>Compare Formal Charges for SCN<sup>&minus;</sup></h4>
+      <p class="text-sm text-dim mb-1">Click each structure to see its formal charges. The best structure is highlighted.</p>
+
+      <div class="btn-row" id="scnSelect">
+        <button class="btn" onclick="showSCN(0)">S=C=N (A)</button>
+        <button class="btn" onclick="showSCN(1)">S-C&#8801;N (B)</button>
+        <button class="btn" onclick="showSCN(2)">S&#8801;C-N (C)</button>
+      </div>
+
+      <div class="lewis-canvas" id="scnCanvas">
+        <svg id="scnSVG" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <text x="200" y="105" fill="#8b90a0" font-family="JetBrains Mono" font-size="13" text-anchor="middle">Select a structure above</text>
+        </svg>
+      </div>
+
+      <table class="fc-table" id="scnTable">
+        <thead>
+          <tr><th>Structure</th><th>FC(S)</th><th>FC(C)</th><th>FC(N)</th><th>Sum |FC|</th></tr>
+        </thead>
+        <tbody id="scnBody"></tbody>
+      </table>
+    </div>
+
+    <h3 class="sub-heading">Interactive Calculator</h3>
+    <div class="interactive-box">
+      <h4>Formal Charge Calculator</h4>
+      <p class="text-sm text-dim mb-1">Enter values for any atom to compute its formal charge.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.6rem;">
+        <div>
+          <label class="text-sm text-dim">Valence e<sup>&minus;</sup></label>
+          <input type="number" id="fcValence" min="0" max="8" value="" placeholder="e.g. 6"
+            style="width:100%;padding:.4rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:#fff;font-family:inherit;font-size:.75rem;">
+        </div>
+        <div>
+          <label class="text-sm text-dim">Lone pair e<sup>&minus;</sup></label>
+          <input type="number" id="fcLone" min="0" max="8" value="" placeholder="e.g. 2"
+            style="width:100%;padding:.4rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:#fff;font-family:inherit;font-size:.75rem;">
+        </div>
+        <div>
+          <label class="text-sm text-dim">Bonding e<sup>&minus;</sup></label>
+          <input type="number" id="fcBond" min="0" max="8" value="" placeholder="e.g. 4"
+            style="width:100%;padding:.4rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:#fff;font-family:inherit;font-size:.75rem;">
+        </div>
+      </div>
+      <button class="btn" onclick="calcFC()">Calculate FC</button>
+      <div class="result-box mt-1" id="fcResult">
+        <span class="text-dim">Enter values and click Calculate...</span>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Practice Problems</h3>
+    <div id="s3Practice"></div>
+    <div class="feedback" id="s3Feedback"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SECTION 4 ═══════════════════ -->
+<div class="card" data-section="4">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="num">4</span>
+    <span class="title">Electronegativity &amp; Bond Polarity</span>
+    <span class="chevron">&#9662;</span>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Even if individual bonds are polar, the <strong style="color:var(--amber)">molecular geometry</strong> determines
+      whether the molecule as a whole is polar. If bond dipoles cancel due to symmetry, the molecule is nonpolar.
+    </p>
+
+    <div class="explanation">
+      <strong>Key Concept:</strong> A bond dipole is an arrow pointing toward the more electronegative atom.
+      If the dipole vectors sum to zero (due to symmetry), the molecule is nonpolar. If they do not cancel, it is polar.
+    </div>
+
+    <h3 class="sub-heading">Molecular Dipole Viewer</h3>
+    <div class="interactive-box">
+      <h4>Click a Molecule to View Its Dipoles</h4>
+
+      <div class="mol-viewer" id="molViewer">
+        <div class="mol-card" onclick="showDipole('CO2')">
+          <div class="name">CO<sub>2</sub></div>
+          <div class="polarity-tag tag-nonpolar">Nonpolar</div>
+        </div>
+        <div class="mol-card" onclick="showDipole('H2O')">
+          <div class="name">H<sub>2</sub>O</div>
+          <div class="polarity-tag tag-polar">Polar</div>
+        </div>
+        <div class="mol-card" onclick="showDipole('CCl4')">
+          <div class="name">CCl<sub>4</sub></div>
+          <div class="polarity-tag tag-nonpolar">Nonpolar</div>
+        </div>
+        <div class="mol-card" onclick="showDipole('CHCl3')">
+          <div class="name">CHCl<sub>3</sub></div>
+          <div class="polarity-tag tag-polar">Polar</div>
+        </div>
+      </div>
+
+      <div class="lewis-canvas" id="dipoleCanvas">
+        <svg id="dipoleSVG" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <text x="200" y="135" fill="#8b90a0" font-family="JetBrains Mono" font-size="13" text-anchor="middle">Select a molecule above</text>
+        </svg>
+      </div>
+
+      <div class="result-box" id="dipoleResult">
+        <span class="text-dim">Click a molecule to see its dipole analysis...</span>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Practice Problems</h3>
+    <div id="s4Practice"></div>
+    <div class="feedback" id="s4Feedback"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SECTION 5 ═══════════════════ -->
+<div class="card" data-section="5">
+  <div class="card-header" onclick="toggleCard(this)">
+    <span class="num">5</span>
+    <span class="title">Quick Quiz</span>
+    <span class="chevron">&#9662;</span>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Test your knowledge across all topics from this lesson. 10 questions covering bond types,
+      Lewis structures, formal charge, and molecular polarity.
+    </p>
+
+    <div class="score-display">
+      Score: <span class="score-num" id="quizScore">0</span> / <span id="quizTotal">10</span>
+    </div>
+
+    <div id="quizContainer"></div>
+
+    <div class="text-center mt-1">
+      <button class="btn" onclick="resetQuiz()" style="padding:.6rem 1.5rem;">Reset Quiz</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+/* ═══════════════════════════════════════════════════
+   DATA
+   ═══════════════════════════════════════════════════ */
+
+const ELEMENTS = {
+  H:  { name:'Hydrogen',  en:2.20, valence:1 },
+  C:  { name:'Carbon',    en:2.55, valence:4 },
+  N:  { name:'Nitrogen',  en:3.04, valence:5 },
+  O:  { name:'Oxygen',    en:3.44, valence:6 },
+  F:  { name:'Fluorine',  en:3.98, valence:7 },
+  Na: { name:'Sodium',    en:0.93, valence:1 },
+  Mg: { name:'Magnesium', en:1.31, valence:2 },
+  Al: { name:'Aluminium', en:1.61, valence:3 },
+  Cl: { name:'Chlorine',  en:3.16, valence:7 },
+  K:  { name:'Potassium', en:0.82, valence:1 },
+  Ca: { name:'Calcium',   en:1.00, valence:2 },
+  Br: { name:'Bromine',   en:2.96, valence:7 },
+  S:  { name:'Sulfur',    en:2.58, valence:6 }
+};
+
+/* ═══════════════════════════════════════════════════
+   CARD TOGGLE & PROGRESS
+   ═══════════════════════════════════════════════════ */
+
+const completedSections = new Set();
+
+function toggleCard(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+function markComplete(sectionNum) {
+  completedSections.add(sectionNum);
+  const card = document.querySelector(`.card[data-section="${sectionNum}"]`);
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = 5;
+  const done = completedSections.size;
+  const pct = (done / total) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = done + ' / ' + total + ' sections';
+}
+
+/* ═══════════════════════════════════════════════════
+   SECTION 1: BOND TYPES
+   ═══════════════════════════════════════════════════ */
+
+let selectedElems = [];
+
+function buildElemGrid() {
+  const grid = document.getElementById('elemGrid1');
+  const order = ['H','C','N','O','F','Na','Mg','Al','Cl','K','Ca','Br'];
+  order.forEach(sym => {
+    const el = ELEMENTS[sym];
+    const btn = document.createElement('button');
+    btn.className = 'elem-btn';
+    btn.innerHTML = `<span class="sym">${sym}</span><span class="en">${el.en.toFixed(2)}</span>`;
+    btn.onclick = () => selectElem(sym, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function selectElem(sym, btn) {
+  if (selectedElems.length >= 2) {
+    selectedElems = [];
+    document.querySelectorAll('#elemGrid1 .elem-btn').forEach(b => b.classList.remove('selected'));
+  }
+  selectedElems.push(sym);
+  btn.classList.add('selected');
+
+  if (selectedElems.length === 2) {
+    showBondResult();
+  }
+}
+
+function classifyBond(diff) {
+  if (diff > 1.7) return { type: 'Ionic', cls: 'bond-ionic' };
+  if (diff > 0.4) return { type: 'Polar Covalent', cls: 'bond-polar' };
+  return { type: 'Nonpolar Covalent', cls: 'bond-nonpolar' };
+}
+
+function showBondResult() {
+  const [a, b] = selectedElems;
+  const diff = Math.abs(ELEMENTS[a].en - ELEMENTS[b].en);
+  const bond = classifyBond(diff);
+  const box = document.getElementById('bondResult1');
+  box.innerHTML = `
+    <span class="label">${a}&ndash;${b} Bond</span><br>
+    <span class="value">&Delta;EN = ${diff.toFixed(2)}</span> &rarr;
+    <span class="bond-type ${bond.cls}">${bond.type}</span>
+  `;
+
+  // Position marker on spectrum
+  const marker = document.getElementById('specMarker1');
+  marker.classList.remove('hidden');
+  const pct = Math.min(diff / 3.2, 1) * 100;
+  marker.style.left = `calc(${pct}% - 8px)`;
+  marker.setAttribute('data-label', diff.toFixed(2));
+}
+
+// Section 1 Practice
+const s1Problems = [
+  { q: 'What type of bond forms between Na and Cl?', opts: ['Nonpolar Covalent','Polar Covalent','Ionic'], ans: 2, explain: 'EN difference: |0.93 - 3.16| = 2.23, which is > 1.7, so it is ionic.' },
+  { q: 'What type of bond forms between C and O?', opts: ['Nonpolar Covalent','Polar Covalent','Ionic'], ans: 1, explain: 'EN difference: |2.55 - 3.44| = 0.89, between 0.4 and 1.7, so polar covalent.' },
+  { q: 'What type of bond forms between C and H?', opts: ['Nonpolar Covalent','Polar Covalent','Ionic'], ans: 0, explain: 'EN difference: |2.55 - 2.20| = 0.35, which is <= 0.4, so nonpolar covalent.' },
+  { q: 'Which bond is most polar: H-F, H-Cl, or H-Br?', opts: ['H-F','H-Cl','H-Br'], ans: 0, explain: 'H-F has the largest EN difference (1.78), making it the most polar.' }
+];
+
+/* ═══════════════════════════════════════════════════
+   SECTION 2: LEWIS STRUCTURES
+   ═══════════════════════════════════════════════════ */
+
+const LEWIS_MOLECULES = {
+  'H2O': {
+    name: 'H\u2082O', atoms: ['O','H','H'], totalVE: 8,
+    steps: [
+      { text: 'Step 1: Count valence electrons. O has 6, each H has 1. Total = 6 + 1 + 1 = 8 e\u207B.', draw: 'h2o_step1' },
+      { text: 'Step 2: Draw skeleton. O is the central atom, bonded to two H atoms (2 single bonds = 4 e\u207B used).', draw: 'h2o_step2' },
+      { text: 'Step 3: Place remaining 4 e\u207B as lone pairs on O. Each H already has 2 e\u207B (duet). O gets 2 lone pairs.', draw: 'h2o_step3' },
+      { text: 'Step 4: Check octets. O has 8 e\u207B (2 bonds + 2 lone pairs). H atoms have 2 each. Done!', draw: 'h2o_final' }
+    ]
+  },
+  'CO2': {
+    name: 'CO\u2082', atoms: ['C','O','O'], totalVE: 16,
+    steps: [
+      { text: 'Step 1: Count valence electrons. C has 4, each O has 6. Total = 4 + 6 + 6 = 16 e\u207B.', draw: 'co2_step1' },
+      { text: 'Step 2: Draw skeleton. C is central, bonded to two O atoms (2 single bonds = 4 e\u207B used, 12 remain).', draw: 'co2_step2' },
+      { text: 'Step 3: Place lone pairs on outer O atoms. Each O gets 3 lone pairs (6 e\u207B each, 12 used). C only has 4 e\u207B — needs more!', draw: 'co2_step3' },
+      { text: 'Step 4: C is short. Convert one lone pair from each O into a bond. Two double bonds. C now has 8 e\u207B.', draw: 'co2_final' }
+    ]
+  },
+  'NH3': {
+    name: 'NH\u2083', atoms: ['N','H','H','H'], totalVE: 8,
+    steps: [
+      { text: 'Step 1: Count valence electrons. N has 5, each H has 1. Total = 5 + 1 + 1 + 1 = 8 e\u207B.', draw: 'nh3_step1' },
+      { text: 'Step 2: Draw skeleton. N is central, bonded to three H atoms (3 bonds = 6 e\u207B used, 2 remain).', draw: 'nh3_step2' },
+      { text: 'Step 3: Place remaining 2 e\u207B as a lone pair on N.', draw: 'nh3_step3' },
+      { text: 'Step 4: Check octets. N has 8 e\u207B (3 bonds + 1 lone pair). Each H has 2. Done!', draw: 'nh3_final' }
+    ]
+  },
+  'CH4': {
+    name: 'CH\u2084', atoms: ['C','H','H','H','H'], totalVE: 8,
+    steps: [
+      { text: 'Step 1: Count valence electrons. C has 4, each H has 1. Total = 4 + 4(1) = 8 e\u207B.', draw: 'ch4_step1' },
+      { text: 'Step 2: Draw skeleton. C is central, bonded to four H atoms (4 bonds = 8 e\u207B used, 0 remain).', draw: 'ch4_step2' },
+      { text: 'Step 3: No electrons left. All e\u207B are in bonds.', draw: 'ch4_step3' },
+      { text: 'Step 4: Check octets. C has 8 e\u207B (4 bonds). Each H has 2. Perfect!', draw: 'ch4_final' }
+    ]
+  },
+  'HCN': {
+    name: 'HCN', atoms: ['H','C','N'], totalVE: 10,
+    steps: [
+      { text: 'Step 1: Count valence electrons. H has 1, C has 4, N has 5. Total = 1 + 4 + 5 = 10 e\u207B.', draw: 'hcn_step1' },
+      { text: 'Step 2: Draw skeleton. C is central. H\u2014C\u2014N (2 single bonds = 4 e\u207B used, 6 remain).', draw: 'hcn_step2' },
+      { text: 'Step 3: Place lone pairs on N (3 pairs = 6 e\u207B). But C only has 4 e\u207B — not enough!', draw: 'hcn_step3' },
+      { text: 'Step 4: Convert 2 lone pairs from N into bonds. Triple bond C\u2261N. N keeps 1 lone pair. All octets satisfied.', draw: 'hcn_final' }
+    ]
+  },
+  'O3': {
+    name: 'O\u2083', atoms: ['O','O','O'], totalVE: 18,
+    steps: [
+      { text: 'Step 1: Count valence electrons. Each O has 6. Total = 6 + 6 + 6 = 18 e\u207B.', draw: 'o3_step1' },
+      { text: 'Step 2: Draw skeleton. Central O bonded to two outer O atoms (2 bonds = 4 e\u207B used, 14 remain).', draw: 'o3_step2' },
+      { text: 'Step 3: Place lone pairs on outer O atoms (3 pairs each = 12 e\u207B). Central O gets 1 pair (2 e\u207B). Total 14 used. Central O has 6 e\u207B.', draw: 'o3_step3' },
+      { text: 'Step 4: Central O needs 2 more e\u207B. Convert 1 lone pair from one outer O into a double bond. Central O now has 8 e\u207B.', draw: 'o3_final' }
+    ]
+  }
+};
+
+let currentLewis = null;
+let lewisStepIdx = 0;
+
+function buildLewisSelect() {
+  const row = document.getElementById('lewisSelect');
+  Object.keys(LEWIS_MOLECULES).forEach(key => {
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.innerHTML = LEWIS_MOLECULES[key].name;
+    btn.onclick = () => startLewis(key, btn);
+    row.appendChild(btn);
+  });
+}
+
+function startLewis(key, btn) {
+  document.querySelectorAll('#lewisSelect .btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentLewis = key;
+  lewisStepIdx = 0;
+  document.getElementById('lewisNext').disabled = false;
+  document.getElementById('lewisPrev').disabled = true;
+  renderLewisStep();
+}
+
+function lewisStep(dir) {
+  if (!currentLewis) return;
+  const mol = LEWIS_MOLECULES[currentLewis];
+  lewisStepIdx = Math.max(0, Math.min(mol.steps.length - 1, lewisStepIdx + dir));
+  document.getElementById('lewisPrev').disabled = lewisStepIdx === 0;
+  document.getElementById('lewisNext').disabled = lewisStepIdx === mol.steps.length - 1;
+  renderLewisStep();
+}
+
+function renderLewisStep() {
+  const mol = LEWIS_MOLECULES[currentLewis];
+  const step = mol.steps[lewisStepIdx];
+
+  // Step bar
+  document.querySelectorAll('#lewisStepBar .step-dot').forEach((dot, i) => {
+    dot.className = 'step-dot';
+    if (i < lewisStepIdx) dot.classList.add('done');
+    if (i === lewisStepIdx) dot.classList.add('active');
+  });
+
+  document.getElementById('lewisStepInfo').textContent = step.text;
+  drawLewis(step.draw);
+}
+
+function drawLewis(drawId) {
+  const svg = document.getElementById('lewisSVG');
+  const cx = 200, cy = 140;
+  let html = '';
+
+  const atomCircle = (x, y, label, color) =>
+    `<circle cx="${x}" cy="${y}" r="22" fill="none" stroke="${color}" stroke-width="1.5" opacity=".3"/>
+     <text x="${x}" y="${y+5}" fill="${color}" font-family="JetBrains Mono" font-size="16" font-weight="700" text-anchor="middle">${label}</text>`;
+
+  const bond = (x1, y1, x2, y2, n) => {
+    let s = '';
+    const dx = y2 - y1, dy = -(x2 - x1);
+    const len = Math.sqrt(dx*dx + dy*dy) || 1;
+    const nx = dx/len * 4, ny = dy/len * 4;
+    for (let i = 0; i < n; i++) {
+      const off = (i - (n-1)/2);
+      s += `<line x1="${x1+nx*off}" y1="${y1+ny*off}" x2="${x2+nx*off}" y2="${y2+ny*off}" stroke="#c9cdd5" stroke-width="2"/>`;
+    }
+    return s;
+  };
+
+  const lonePair = (x, y, angle) => {
+    const r = 30;
+    const ax = x + Math.cos(angle) * r;
+    const ay = y + Math.sin(angle) * r;
+    const d1x = ax + Math.cos(angle + Math.PI/2) * 4;
+    const d1y = ay + Math.sin(angle + Math.PI/2) * 4;
+    const d2x = ax - Math.cos(angle + Math.PI/2) * 4;
+    const d2y = ay - Math.sin(angle + Math.PI/2) * 4;
+    return `<circle cx="${d1x}" cy="${d1y}" r="2.5" fill="#ec4899"/>
+            <circle cx="${d2x}" cy="${d2y}" r="2.5" fill="#ec4899"/>`;
+  };
+
+  switch(drawId) {
+    // ── H2O ──
+    case 'h2o_step1':
+      html = `<text x="200" y="80" fill="#f59e0b" font-family="JetBrains Mono" font-size="14" text-anchor="middle">Total VE = 8</text>`;
+      html += atomCircle(200, 140, 'O', '#ef4444');
+      html += `<text x="120" y="200" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">H (1e\u207B)</text>`;
+      html += `<text x="280" y="200" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">H (1e\u207B)</text>`;
+      html += `<text x="200" y="170" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">O (6e\u207B)</text>`;
+      break;
+    case 'h2o_step2':
+      html += bond(200, 140, 130, 200, 1);
+      html += bond(200, 140, 270, 200, 1);
+      html += atomCircle(200, 140, 'O', '#ef4444');
+      html += atomCircle(130, 200, 'H', '#3b82f6');
+      html += atomCircle(270, 200, 'H', '#3b82f6');
+      html += `<text x="200" y="70" fill="#f59e0b" font-family="JetBrains Mono" font-size="12" text-anchor="middle">4 e\u207B in bonds, 4 remain</text>`;
+      break;
+    case 'h2o_step3':
+      html += bond(200, 140, 130, 200, 1);
+      html += bond(200, 140, 270, 200, 1);
+      html += atomCircle(200, 140, 'O', '#ef4444');
+      html += atomCircle(130, 200, 'H', '#3b82f6');
+      html += atomCircle(270, 200, 'H', '#3b82f6');
+      html += lonePair(200, 140, -Math.PI/2);
+      html += lonePair(200, 140, -Math.PI/2 - 0.7);
+      html += `<text x="200" y="70" fill="#ec4899" font-family="JetBrains Mono" font-size="12" text-anchor="middle">2 lone pairs on O</text>`;
+      break;
+    case 'h2o_final':
+      html += bond(200, 140, 130, 200, 1);
+      html += bond(200, 140, 270, 200, 1);
+      html += atomCircle(200, 140, 'O', '#ef4444');
+      html += atomCircle(130, 200, 'H', '#3b82f6');
+      html += atomCircle(270, 200, 'H', '#3b82f6');
+      html += lonePair(200, 140, -Math.PI/2);
+      html += lonePair(200, 140, -Math.PI/2 - 0.7);
+      html += `<text x="200" y="70" fill="#22c55e" font-family="JetBrains Mono" font-size="13" font-weight="600" text-anchor="middle">Complete! All octets satisfied.</text>`;
+      break;
+
+    // ── CO2 ──
+    case 'co2_step1':
+      html = `<text x="200" y="80" fill="#f59e0b" font-family="JetBrains Mono" font-size="14" text-anchor="middle">Total VE = 16</text>`;
+      html += atomCircle(200, 140, 'C', '#22c55e');
+      html += `<text x="100" y="150" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">O (6e\u207B)</text>`;
+      html += `<text x="300" y="150" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">O (6e\u207B)</text>`;
+      html += `<text x="200" y="170" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">C (4e\u207B)</text>`;
+      break;
+    case 'co2_step2':
+      html += bond(120, 140, 178, 140, 1);
+      html += bond(222, 140, 280, 140, 1);
+      html += atomCircle(100, 140, 'O', '#ef4444');
+      html += atomCircle(200, 140, 'C', '#22c55e');
+      html += atomCircle(300, 140, 'O', '#ef4444');
+      html += `<text x="200" y="80" fill="#f59e0b" font-family="JetBrains Mono" font-size="12" text-anchor="middle">4 e\u207B in bonds, 12 remain</text>`;
+      break;
+    case 'co2_step3':
+      html += bond(120, 140, 178, 140, 1);
+      html += bond(222, 140, 280, 140, 1);
+      html += atomCircle(100, 140, 'O', '#ef4444');
+      html += atomCircle(200, 140, 'C', '#22c55e');
+      html += atomCircle(300, 140, 'O', '#ef4444');
+      html += lonePair(100, 140, Math.PI);
+      html += lonePair(100, 140, Math.PI/2);
+      html += lonePair(100, 140, -Math.PI/2);
+      html += lonePair(300, 140, 0);
+      html += lonePair(300, 140, Math.PI/2);
+      html += lonePair(300, 140, -Math.PI/2);
+      html += `<text x="200" y="80" fill="#ec4899" font-family="JetBrains Mono" font-size="12" text-anchor="middle">C only has 4e\u207B - needs double bonds!</text>`;
+      break;
+    case 'co2_final':
+      html += bond(120, 140, 178, 140, 2);
+      html += bond(222, 140, 280, 140, 2);
+      html += atomCircle(100, 140, 'O', '#ef4444');
+      html += atomCircle(200, 140, 'C', '#22c55e');
+      html += atomCircle(300, 140, 'O', '#ef4444');
+      html += lonePair(100, 140, Math.PI);
+      html += lonePair(100, 140, Math.PI/2);
+      html += lonePair(300, 140, 0);
+      html += lonePair(300, 140, -Math.PI/2);
+      html += `<text x="200" y="80" fill="#22c55e" font-family="JetBrains Mono" font-size="13" font-weight="600" text-anchor="middle">Complete! O=C=O (two double bonds)</text>`;
+      break;
+
+    // ── NH3 ──
+    case 'nh3_step1':
+      html = `<text x="200" y="70" fill="#f59e0b" font-family="JetBrains Mono" font-size="14" text-anchor="middle">Total VE = 8</text>`;
+      html += atomCircle(200, 130, 'N', '#6366f1');
+      html += `<text x="200" y="160" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">N (5e\u207B) + 3 H (1e\u207B each)</text>`;
+      break;
+    case 'nh3_step2':
+      html += bond(200, 130, 120, 210, 1);
+      html += bond(200, 130, 200, 220, 1);
+      html += bond(200, 130, 280, 210, 1);
+      html += atomCircle(200, 130, 'N', '#6366f1');
+      html += atomCircle(120, 210, 'H', '#3b82f6');
+      html += atomCircle(200, 220, 'H', '#3b82f6');
+      html += atomCircle(280, 210, 'H', '#3b82f6');
+      html += `<text x="200" y="70" fill="#f59e0b" font-family="JetBrains Mono" font-size="12" text-anchor="middle">6 e\u207B in bonds, 2 remain</text>`;
+      break;
+    case 'nh3_step3':
+      html += bond(200, 130, 120, 210, 1);
+      html += bond(200, 130, 200, 220, 1);
+      html += bond(200, 130, 280, 210, 1);
+      html += atomCircle(200, 130, 'N', '#6366f1');
+      html += atomCircle(120, 210, 'H', '#3b82f6');
+      html += atomCircle(200, 220, 'H', '#3b82f6');
+      html += atomCircle(280, 210, 'H', '#3b82f6');
+      html += lonePair(200, 130, -Math.PI/2);
+      html += `<text x="200" y="70" fill="#ec4899" font-family="JetBrains Mono" font-size="12" text-anchor="middle">1 lone pair on N</text>`;
+      break;
+    case 'nh3_final':
+      html += bond(200, 130, 120, 210, 1);
+      html += bond(200, 130, 200, 220, 1);
+      html += bond(200, 130, 280, 210, 1);
+      html += atomCircle(200, 130, 'N', '#6366f1');
+      html += atomCircle(120, 210, 'H', '#3b82f6');
+      html += atomCircle(200, 220, 'H', '#3b82f6');
+      html += atomCircle(280, 210, 'H', '#3b82f6');
+      html += lonePair(200, 130, -Math.PI/2);
+      html += `<text x="200" y="70" fill="#22c55e" font-family="JetBrains Mono" font-size="13" font-weight="600" text-anchor="middle">Complete! Trigonal pyramidal shape.</text>`;
+      break;
+
+    // ── CH4 ──
+    case 'ch4_step1':
+      html = `<text x="200" y="60" fill="#f59e0b" font-family="JetBrains Mono" font-size="14" text-anchor="middle">Total VE = 8</text>`;
+      html += atomCircle(200, 140, 'C', '#22c55e');
+      html += `<text x="200" y="170" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">C (4e\u207B) + 4 H (1e\u207B each)</text>`;
+      break;
+    case 'ch4_step2':
+      html += bond(200, 140, 130, 80, 1);
+      html += bond(200, 140, 270, 80, 1);
+      html += bond(200, 140, 130, 210, 1);
+      html += bond(200, 140, 270, 210, 1);
+      html += atomCircle(200, 140, 'C', '#22c55e');
+      html += atomCircle(130, 80, 'H', '#3b82f6');
+      html += atomCircle(270, 80, 'H', '#3b82f6');
+      html += atomCircle(130, 210, 'H', '#3b82f6');
+      html += atomCircle(270, 210, 'H', '#3b82f6');
+      html += `<text x="200" y="260" fill="#f59e0b" font-family="JetBrains Mono" font-size="12" text-anchor="middle">8 e\u207B in bonds, 0 remain</text>`;
+      break;
+    case 'ch4_step3':
+      html += bond(200, 140, 130, 80, 1);
+      html += bond(200, 140, 270, 80, 1);
+      html += bond(200, 140, 130, 210, 1);
+      html += bond(200, 140, 270, 210, 1);
+      html += atomCircle(200, 140, 'C', '#22c55e');
+      html += atomCircle(130, 80, 'H', '#3b82f6');
+      html += atomCircle(270, 80, 'H', '#3b82f6');
+      html += atomCircle(130, 210, 'H', '#3b82f6');
+      html += atomCircle(270, 210, 'H', '#3b82f6');
+      html += `<text x="200" y="260" fill="#8b90a0" font-family="JetBrains Mono" font-size="12" text-anchor="middle">No lone pairs needed.</text>`;
+      break;
+    case 'ch4_final':
+      html += bond(200, 140, 130, 80, 1);
+      html += bond(200, 140, 270, 80, 1);
+      html += bond(200, 140, 130, 210, 1);
+      html += bond(200, 140, 270, 210, 1);
+      html += atomCircle(200, 140, 'C', '#22c55e');
+      html += atomCircle(130, 80, 'H', '#3b82f6');
+      html += atomCircle(270, 80, 'H', '#3b82f6');
+      html += atomCircle(130, 210, 'H', '#3b82f6');
+      html += atomCircle(270, 210, 'H', '#3b82f6');
+      html += `<text x="200" y="260" fill="#22c55e" font-family="JetBrains Mono" font-size="13" font-weight="600" text-anchor="middle">Complete! Tetrahedral geometry.</text>`;
+      break;
+
+    // ── HCN ──
+    case 'hcn_step1':
+      html = `<text x="200" y="80" fill="#f59e0b" font-family="JetBrains Mono" font-size="14" text-anchor="middle">Total VE = 10</text>`;
+      html += `<text x="200" y="160" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">H (1e\u207B) + C (4e\u207B) + N (5e\u207B)</text>`;
+      break;
+    case 'hcn_step2':
+      html += bond(120, 140, 178, 140, 1);
+      html += bond(222, 140, 280, 140, 1);
+      html += atomCircle(100, 140, 'H', '#3b82f6');
+      html += atomCircle(200, 140, 'C', '#22c55e');
+      html += atomCircle(300, 140, 'N', '#6366f1');
+      html += `<text x="200" y="80" fill="#f59e0b" font-family="JetBrains Mono" font-size="12" text-anchor="middle">4 e\u207B in bonds, 6 remain</text>`;
+      break;
+    case 'hcn_step3':
+      html += bond(120, 140, 178, 140, 1);
+      html += bond(222, 140, 280, 140, 1);
+      html += atomCircle(100, 140, 'H', '#3b82f6');
+      html += atomCircle(200, 140, 'C', '#22c55e');
+      html += atomCircle(300, 140, 'N', '#6366f1');
+      html += lonePair(300, 140, 0);
+      html += lonePair(300, 140, Math.PI/2);
+      html += lonePair(300, 140, -Math.PI/2);
+      html += `<text x="200" y="80" fill="#ec4899" font-family="JetBrains Mono" font-size="12" text-anchor="middle">C only has 4e\u207B - needs triple bond!</text>`;
+      break;
+    case 'hcn_final':
+      html += bond(120, 140, 178, 140, 1);
+      html += bond(222, 140, 280, 140, 3);
+      html += atomCircle(100, 140, 'H', '#3b82f6');
+      html += atomCircle(200, 140, 'C', '#22c55e');
+      html += atomCircle(300, 140, 'N', '#6366f1');
+      html += lonePair(300, 140, 0);
+      html += `<text x="200" y="80" fill="#22c55e" font-family="JetBrains Mono" font-size="13" font-weight="600" text-anchor="middle">Complete! H\u2014C\u2261N (triple bond)</text>`;
+      break;
+
+    // ── O3 ──
+    case 'o3_step1':
+      html = `<text x="200" y="80" fill="#f59e0b" font-family="JetBrains Mono" font-size="14" text-anchor="middle">Total VE = 18</text>`;
+      html += atomCircle(200, 140, 'O', '#ef4444');
+      html += `<text x="200" y="170" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">3 \u00d7 O (6e\u207B each)</text>`;
+      break;
+    case 'o3_step2':
+      html += bond(120, 160, 178, 140, 1);
+      html += bond(222, 140, 280, 160, 1);
+      html += atomCircle(100, 165, 'O', '#ef4444');
+      html += atomCircle(200, 135, 'O', '#ef4444');
+      html += atomCircle(300, 165, 'O', '#ef4444');
+      html += `<text x="200" y="80" fill="#f59e0b" font-family="JetBrains Mono" font-size="12" text-anchor="middle">4 e\u207B in bonds, 14 remain</text>`;
+      break;
+    case 'o3_step3':
+      html += bond(120, 160, 178, 140, 1);
+      html += bond(222, 140, 280, 160, 1);
+      html += atomCircle(100, 165, 'O', '#ef4444');
+      html += atomCircle(200, 135, 'O', '#ef4444');
+      html += atomCircle(300, 165, 'O', '#ef4444');
+      html += lonePair(100, 165, Math.PI);
+      html += lonePair(100, 165, Math.PI/2);
+      html += lonePair(100, 165, -Math.PI/2);
+      html += lonePair(300, 165, 0);
+      html += lonePair(300, 165, Math.PI/2);
+      html += lonePair(300, 165, -Math.PI/2);
+      html += lonePair(200, 135, -Math.PI/2);
+      html += `<text x="200" y="80" fill="#ec4899" font-family="JetBrains Mono" font-size="11" text-anchor="middle">Central O has 6e\u207B, needs double bond!</text>`;
+      break;
+    case 'o3_final':
+      html += bond(120, 160, 178, 140, 1);
+      html += bond(222, 140, 280, 160, 2);
+      html += atomCircle(100, 165, 'O', '#ef4444');
+      html += atomCircle(200, 135, 'O', '#ef4444');
+      html += atomCircle(300, 165, 'O', '#ef4444');
+      html += lonePair(100, 165, Math.PI);
+      html += lonePair(100, 165, Math.PI/2);
+      html += lonePair(100, 165, -Math.PI/2);
+      html += lonePair(300, 165, 0);
+      html += lonePair(300, 165, -Math.PI/2);
+      html += lonePair(200, 135, -Math.PI/2);
+      html += `<text x="200" y="80" fill="#22c55e" font-family="JetBrains Mono" font-size="13" font-weight="600" text-anchor="middle">Complete! Resonance structure of O\u2083</text>`;
+      break;
+
+    default:
+      html = `<text x="200" y="145" fill="#8b90a0" font-family="JetBrains Mono" font-size="13" text-anchor="middle">Select a molecule</text>`;
+  }
+
+  svg.innerHTML = html;
+}
+
+// Section 2 Practice
+const s2Problems = [
+  { q: 'How many valence electrons does CO\u2082 have in total?', opts: ['12','14','16','18'], ans: 2, explain: 'C has 4 + two O at 6 each = 4 + 12 = 16 total.' },
+  { q: 'How many lone pairs are on the oxygen in H\u2082O?', opts: ['0','1','2','3'], ans: 2, explain: 'O has 6 VE, uses 2 in bonds, leaving 4 as 2 lone pairs.' },
+  { q: 'What bond order is found in CO\u2082 (C-O bonds)?', opts: ['Single','Double','Triple'], ans: 1, explain: 'CO\u2082 has two C=O double bonds.' },
+  { q: 'HCN has what kind of bond between C and N?', opts: ['Single','Double','Triple'], ans: 2, explain: 'H\u2014C\u2261N has a triple bond to satisfy both octets.' },
+  { q: 'How many lone pairs on the N in NH\u2083?', opts: ['0','1','2','3'], ans: 1, explain: 'N has 5 VE, uses 3 in bonds, 2 remain = 1 lone pair.' }
+];
+
+/* ═══════════════════════════════════════════════════
+   SECTION 3: FORMAL CHARGE
+   ═══════════════════════════════════════════════════ */
+
+const SCN_DATA = [
+  // Structure A: S=C=N  (two double bonds)
+  { label: 'A: S=C=N\u207B', fc_s: 0, fc_c: 0, fc_n: -1, bonds_sc: 2, bonds_cn: 2, lp_s: 2, lp_n: 2, lp_c: 0 },
+  // Structure B: S-C≡N  (single + triple)
+  { label: 'B: S\u2014C\u2261N', fc_s: -1, fc_c: 0, fc_n: 0, bonds_sc: 1, bonds_cn: 3, lp_s: 3, lp_n: 1, lp_c: 0 },
+  // Structure C: S≡C-N  (triple + single)
+  { label: 'C: S\u2261C\u2014N', fc_s: +1, fc_c: 0, fc_n: -2, bonds_sc: 3, bonds_cn: 1, lp_s: 1, lp_n: 3, lp_c: 0 }
+];
+
+function buildSCNTable() {
+  const body = document.getElementById('scnBody');
+  body.innerHTML = SCN_DATA.map((d, i) => {
+    const sumAbs = Math.abs(d.fc_s) + Math.abs(d.fc_c) + Math.abs(d.fc_n);
+    const best = i === 1 ? ' class="best"' : '';
+    return `<tr>
+      <td${best}>${d.label}</td>
+      <td${best}>${d.fc_s >= 0 ? (d.fc_s > 0 ? '+' : '') : ''}${d.fc_s}</td>
+      <td${best}>${d.fc_c}</td>
+      <td${best}>${d.fc_n >= 0 ? (d.fc_n > 0 ? '+' : '') : ''}${d.fc_n}</td>
+      <td${best}>${sumAbs}</td>
+    </tr>`;
+  }).join('');
+}
+
+function showSCN(idx) {
+  const svg = document.getElementById('scnSVG');
+  const d = SCN_DATA[idx];
+  let html = '';
+
+  document.querySelectorAll('#scnSelect .btn').forEach((b,i) => {
+    b.classList.toggle('active', i === idx);
+    if (i === 1) b.classList.toggle('correct', i === idx);
+  });
+
+  const atomCircle = (x, y, label, color, fc) => {
+    let s = `<circle cx="${x}" cy="${y}" r="24" fill="none" stroke="${color}" stroke-width="1.5" opacity=".4"/>
+     <text x="${x}" y="${y+5}" fill="${color}" font-family="JetBrains Mono" font-size="17" font-weight="700" text-anchor="middle">${label}</text>`;
+    if (fc !== 0) {
+      const fcStr = fc > 0 ? '+' + fc : '' + fc;
+      const fcColor = fc < 0 ? '#ec4899' : '#f59e0b';
+      s += `<circle cx="${x+20}" cy="${y-20}" r="12" fill="${fcColor}" opacity=".2"/>
+            <text x="${x+20}" y="${y-16}" fill="${fcColor}" font-family="JetBrains Mono" font-size="11" font-weight="700" text-anchor="middle">${fcStr}</text>`;
+    }
+    return s;
+  };
+
+  const bond = (x1, y1, x2, y2, n) => {
+    let s = '';
+    const dx = y2 - y1, dy = -(x2 - x1);
+    const len = Math.sqrt(dx*dx + dy*dy) || 1;
+    const nx = dx/len * 4, ny = dy/len * 4;
+    for (let i = 0; i < n; i++) {
+      const off = (i - (n-1)/2);
+      s += `<line x1="${x1+nx*off}" y1="${y1+ny*off}" x2="${x2+nx*off}" y2="${y2+ny*off}" stroke="#c9cdd5" stroke-width="2"/>`;
+    }
+    return s;
+  };
+
+  const lonePair = (x, y, angle) => {
+    const r = 32;
+    const ax = x + Math.cos(angle) * r;
+    const ay = y + Math.sin(angle) * r;
+    const d1x = ax + Math.cos(angle + Math.PI/2) * 4;
+    const d1y = ay + Math.sin(angle + Math.PI/2) * 4;
+    const d2x = ax - Math.cos(angle + Math.PI/2) * 4;
+    const d2y = ay - Math.sin(angle + Math.PI/2) * 4;
+    return `<circle cx="${d1x}" cy="${d1y}" r="2.5" fill="#ec4899"/>
+            <circle cx="${d2x}" cy="${d2y}" r="2.5" fill="#ec4899"/>`;
+  };
+
+  // Draw bonds
+  html += bond(120, 100, 178, 100, d.bonds_sc);
+  html += bond(222, 100, 280, 100, d.bonds_cn);
+
+  // Draw atoms
+  html += atomCircle(100, 100, 'S', '#f59e0b', d.fc_s);
+  html += atomCircle(200, 100, 'C', '#22c55e', d.fc_c);
+  html += atomCircle(300, 100, 'N', '#6366f1', d.fc_n);
+
+  // Lone pairs
+  const lpAngles = [Math.PI, Math.PI/2, -Math.PI/2];
+  for (let i = 0; i < d.lp_s; i++) html += lonePair(100, 100, lpAngles[i]);
+  const rpAngles = [0, Math.PI/2, -Math.PI/2];
+  for (let i = 0; i < d.lp_n; i++) html += lonePair(300, 100, rpAngles[i]);
+
+  // Best label
+  if (idx === 1) {
+    html += `<text x="200" y="170" fill="#22c55e" font-family="JetBrains Mono" font-size="12" font-weight="600" text-anchor="middle">BEST: Negative FC on most electronegative atom (N)</text>`;
+  } else {
+    const sumAbs = Math.abs(d.fc_s) + Math.abs(d.fc_c) + Math.abs(d.fc_n);
+    html += `<text x="200" y="170" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">Sum |FC| = ${sumAbs}${idx === 2 ? ' (negative FC on less EN atom \u2014 bad)' : ''}</text>`;
+  }
+
+  // Bracket for charge
+  html += `<text x="345" y="105" fill="#ec4899" font-family="JetBrains Mono" font-size="14" font-weight="700">\u207B</text>`;
+
+  svg.innerHTML = html;
+}
+
+function calcFC() {
+  const v = parseInt(document.getElementById('fcValence').value);
+  const l = parseInt(document.getElementById('fcLone').value);
+  const b = parseInt(document.getElementById('fcBond').value);
+  const box = document.getElementById('fcResult');
+  if (isNaN(v) || isNaN(l) || isNaN(b)) {
+    box.innerHTML = '<span style="color:var(--pink)">Please fill in all three fields.</span>';
+    return;
+  }
+  const fc = v - (l + b / 2);
+  const sign = fc > 0 ? '+' : (fc < 0 ? '' : '');
+  const color = fc === 0 ? 'var(--green)' : (Math.abs(fc) <= 1 ? 'var(--amber)' : 'var(--pink)');
+  box.innerHTML = `<span class="label">Formal Charge</span><br>
+    <span class="value" style="color:${color}">FC = ${v} - (${l} + ${b}/2) = ${v} - ${l + b/2} = <strong>${sign}${fc}</strong></span>`;
+}
+
+// Section 3 Practice
+const s3Problems = [
+  { q: 'In the best Lewis structure of SCN\u207B, what is the formal charge on S?', opts: ['+1','0','-1','-2'], ans: 2, explain: 'Best structure is S\u2014C\u2261N. S: 6 - (6 + 2/2) = 6 - 7 = -1.' },
+  { q: 'What is the formal charge on C in CO\u2082 (O=C=O)?', opts: ['+1','0','-1','+2'], ans: 1, explain: 'C: 4 - (0 + 8/2) = 4 - 4 = 0.' },
+  { q: 'A structure where the sum of |FC| is smallest is generally...', opts: ['Least stable','Most stable','Has no lone pairs'], ans: 1, explain: 'Minimizing formal charges gives the most stable Lewis structure.' }
+];
+
+/* ═══════════════════════════════════════════════════
+   SECTION 4: POLARITY
+   ═══════════════════════════════════════════════════ */
+
+function showDipole(mol) {
+  const svg = document.getElementById('dipoleSVG');
+  const result = document.getElementById('dipoleResult');
+  let html = '';
+
+  // Highlight selected card
+  document.querySelectorAll('.mol-card').forEach(c => c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+
+  const arrow = (x1, y1, x2, y2, color) => {
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const headLen = 10;
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/>
+      <polygon points="${x2},${y2} ${x2 - headLen * Math.cos(angle - 0.4)},${y2 - headLen * Math.sin(angle - 0.4)} ${x2 - headLen * Math.cos(angle + 0.4)},${y2 - headLen * Math.sin(angle + 0.4)}" fill="${color}"/>`;
+  };
+
+  const atomLabel = (x, y, label, color) =>
+    `<text x="${x}" y="${y+5}" fill="${color}" font-family="JetBrains Mono" font-size="16" font-weight="700" text-anchor="middle">${label}</text>`;
+
+  const bondLine = (x1, y1, x2, y2) =>
+    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#555" stroke-width="2"/>`;
+
+  switch(mol) {
+    case 'CO2':
+      // Linear: O=C=O
+      html += bondLine(100, 130, 200, 130);
+      html += bondLine(200, 130, 300, 130);
+      html += atomLabel(100, 130, 'O', '#ef4444');
+      html += atomLabel(200, 130, 'C', '#22c55e');
+      html += atomLabel(300, 130, 'O', '#ef4444');
+      // Dipole arrows
+      html += arrow(175, 90, 125, 90, '#f59e0b');
+      html += arrow(225, 90, 275, 90, '#f59e0b');
+      html += `<text x="150" y="82" fill="#f59e0b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">\u03B4+  \u2190  \u03B4-</text>`;
+      html += `<text x="250" y="82" fill="#f59e0b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">\u03B4-  \u2192  \u03B4+</text>`;
+      // Cancel
+      html += `<text x="200" y="185" fill="#06b6d4" font-family="JetBrains Mono" font-size="13" font-weight="600" text-anchor="middle">Dipoles CANCEL \u2192 Nonpolar molecule</text>`;
+      html += `<text x="200" y="210" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">Linear geometry, 180\u00B0 \u2014 symmetric</text>`;
+      result.innerHTML = '<strong style="color:#06b6d4">CO\u2082: Nonpolar</strong> &mdash; Linear geometry (180\u00B0). Equal and opposite bond dipoles cancel each other perfectly.';
+      break;
+
+    case 'H2O':
+      // Bent: H-O-H
+      const ox = 200, oy = 120;
+      const h1x = 130, h1y = 190;
+      const h2x = 270, h2y = 190;
+      html += bondLine(ox, oy, h1x, h1y);
+      html += bondLine(ox, oy, h2x, h2y);
+      html += atomLabel(ox, oy, 'O', '#ef4444');
+      html += atomLabel(h1x, h1y, 'H', '#3b82f6');
+      html += atomLabel(h2x, h2y, 'H', '#3b82f6');
+      // Bond dipoles toward O
+      html += arrow(h1x + 15, h1y - 15, ox - 12, oy + 15, '#f59e0b');
+      html += arrow(h2x - 15, h2y - 15, ox + 12, oy + 15, '#f59e0b');
+      // Net dipole
+      html += arrow(200, 140, 200, 70, '#ec4899');
+      html += `<text x="220" y="75" fill="#ec4899" font-family="JetBrains Mono" font-size="10" font-weight="600">net \u03BC</text>`;
+      html += `<text x="200" y="235" fill="#f59e0b" font-family="JetBrains Mono" font-size="13" font-weight="600" text-anchor="middle">Dipoles DO NOT cancel \u2192 Polar molecule</text>`;
+      html += `<text x="200" y="255" fill="#8b90a0" font-family="JetBrains Mono" font-size="11" text-anchor="middle">Bent geometry, 104.5\u00B0 \u2014 asymmetric</text>`;
+      result.innerHTML = '<strong style="color:#f59e0b">H\u2082O: Polar</strong> &mdash; Bent geometry (104.5\u00B0). Bond dipoles point toward O and do not cancel due to the asymmetric shape.';
+      break;
+
+    case 'CCl4':
+      // Tetrahedral
+      const cx4 = 200, cy4 = 130;
+      const cl = [[200,60],[130,190],[270,190],[200,210]];
+      const labels4 = ['Cl','Cl','Cl','Cl'];
+      cl.forEach(([x,y]) => { html += bondLine(cx4, cy4, x, y); });
+      html += atomLabel(cx4, cy4, 'C', '#22c55e');
+      cl.forEach(([x,y], i) => { html += atomLabel(x, y, labels4[i], '#f59e0b'); });
+      // Dipole arrows all toward Cl
+      cl.forEach(([x,y]) => {
+        const dx = x - cx4, dy = y - cy4;
+        const len = Math.sqrt(dx*dx + dy*dy);
+        const mx = cx4 + dx * 0.3, my = cy4 + dy * 0.3;
+        const ex = cx4 + dx * 0.7, ey = cy4 + dy * 0.7;
+        html += arrow(mx, my, ex, ey, 'rgba(245,158,11,.5)');
+      });
+      html += `<text x="200" y="248" fill="#06b6d4" font-family="JetBrains Mono" font-size="13" font-weight="600" text-anchor="middle">Dipoles CANCEL \u2192 Nonpolar molecule</text>`;
+      result.innerHTML = '<strong style="color:#06b6d4">CCl\u2084: Nonpolar</strong> &mdash; Tetrahedral geometry. Four equal C\u2014Cl dipoles are perfectly symmetric and cancel to zero net dipole.';
+      break;
+
+    case 'CHCl3':
+      // Tetrahedral but asymmetric
+      const cx5 = 200, cy5 = 130;
+      const pos5 = [[200,60],[130,190],[270,190],[200,215]];
+      const lab5 = ['H','Cl','Cl','Cl'];
+      const col5 = ['#3b82f6','#f59e0b','#f59e0b','#f59e0b'];
+      pos5.forEach(([x,y]) => { html += bondLine(cx5, cy5, x, y); });
+      html += atomLabel(cx5, cy5, 'C', '#22c55e');
+      pos5.forEach(([x,y], i) => { html += atomLabel(x, y, lab5[i], col5[i]); });
+      // Dipoles toward Cl (3 of them), away from H
+      for (let i = 1; i < 4; i++) {
+        const [x,y] = pos5[i];
+        const dx = x - cx5, dy = y - cy5;
+        const mx = cx5 + dx * 0.3, my = cy5 + dy * 0.3;
+        const ex = cx5 + dx * 0.7, ey = cy5 + dy * 0.7;
+        html += arrow(mx, my, ex, ey, '#f59e0b');
+      }
+      // Net dipole downward
+      html += arrow(200, 145, 200, 205, '#ec4899');
+      html += `<text x="225" y="195" fill="#ec4899" font-family="JetBrains Mono" font-size="10" font-weight="600">net \u03BC</text>`;
+      html += `<text x="200" y="248" fill="#f59e0b" font-family="JetBrains Mono" font-size="13" font-weight="600" text-anchor="middle">Dipoles DO NOT cancel \u2192 Polar molecule</text>`;
+      result.innerHTML = '<strong style="color:#f59e0b">CHCl\u2083: Polar</strong> &mdash; Tetrahedral but asymmetric. The three C\u2014Cl dipoles do not cancel the one C\u2014H dipole, resulting in a net dipole moment.';
+      break;
+  }
+
+  svg.innerHTML = html;
+}
+
+// Section 4 Practice
+const s4Problems = [
+  { q: 'Which molecule is polar: CO\u2082 or H\u2082O?', opts: ['CO\u2082','H\u2082O','Both','Neither'], ans: 1, explain: 'H\u2082O is bent (asymmetric), so its dipoles do not cancel. CO\u2082 is linear and symmetric.' },
+  { q: 'Why is CCl\u2084 nonpolar despite having polar bonds?', opts: ['Cl is not electronegative','Dipoles cancel due to symmetry','C-Cl bonds are too weak','It is ionic'], ans: 1, explain: 'Tetrahedral symmetry means all four dipoles cancel perfectly.' },
+  { q: 'In a polar molecule, bond dipoles...', opts: ['Cancel out','Do not cancel','Are always equal','Point away from each other'], ans: 1, explain: 'If dipoles do not cancel, the molecule has a net dipole moment and is polar.' },
+  { q: 'What is the geometry of CO\u2082?', opts: ['Bent','Tetrahedral','Linear','Trigonal planar'], ans: 2, explain: 'CO\u2082 is linear with a 180\u00B0 bond angle.' }
+];
+
+/* ═══════════════════════════════════════════════════
+   SECTION 5: QUIZ
+   ═══════════════════════════════════════════════════ */
+
+const quizQuestions = [
+  { q: 'What type of bond forms between K and Br?', opts: ['Nonpolar Covalent','Polar Covalent','Ionic'], ans: 2, explain: '|0.82 - 2.96| = 2.14, ionic.' },
+  { q: 'The EN difference between H and Cl is 0.96. What bond type?', opts: ['Nonpolar Covalent','Polar Covalent','Ionic'], ans: 1, explain: '0.4 < 0.96 \u2264 1.7, polar covalent.' },
+  { q: 'How many total valence electrons does NH\u2083 have?', opts: ['6','8','10','12'], ans: 1, explain: 'N(5) + 3H(1) = 8.' },
+  { q: 'What is the formal charge on N in NH\u2084\u207A?', opts: ['-1','0','+1','+2'], ans: 2, explain: 'FC = 5 - (0 + 8/2) = 5 - 4 = +1.' },
+  { q: 'Which molecule has a triple bond?', opts: ['H\u2082O','CO\u2082','HCN','CH\u2084'], ans: 2, explain: 'HCN has H-C\u2261N.' },
+  { q: 'BF\u2083 has 3 B-F polar bonds. Is BF\u2083 polar or nonpolar?', opts: ['Polar','Nonpolar'], ans: 1, explain: 'Trigonal planar geometry \u2014 dipoles cancel. Nonpolar.' },
+  { q: 'In the best Lewis structure, negative FC should be on the atom with...', opts: ['Lowest EN','Highest EN','Most bonds','Fewest bonds'], ans: 1, explain: 'Negative formal charge should reside on the most electronegative atom.' },
+  { q: 'How many lone pairs on each O in CO\u2082?', opts: ['1','2','3','0'], ans: 1, explain: 'Each O has 2 lone pairs and one double bond in O=C=O.' },
+  { q: 'What type of bond has equal electron sharing?', opts: ['Ionic','Polar Covalent','Nonpolar Covalent'], ans: 2, explain: 'Nonpolar covalent bonds share electrons equally (\u0394EN \u2264 0.4).' },
+  { q: 'Is CHCl\u2083 polar or nonpolar?', opts: ['Polar','Nonpolar'], ans: 0, explain: 'Asymmetric distribution of atoms \u2014 dipoles do not cancel.' }
+];
+
+let quizAnswered = new Set();
+let quizCorrect = 0;
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = quizQuestions.map((q, i) => {
+    const opts = q.opts.map((o, j) =>
+      `<button class="btn" onclick="answerQuiz(${i},${j},this)">${o}</button>`
+    ).join('');
+    return `<div class="practice-problem" id="quiz-q${i}">
+      <div class="q-num">Question ${i + 1} / 10</div>
+      <div class="q-text">${q.q}</div>
+      <div class="btn-row">${opts}</div>
+      <div class="feedback" id="quiz-fb${i}"></div>
+    </div>`;
+  }).join('');
+}
+
+function answerQuiz(qi, ai, btn) {
+  if (quizAnswered.has(qi)) return;
+  quizAnswered.add(qi);
+  const q = quizQuestions[qi];
+  const fb = document.getElementById(`quiz-fb${qi}`);
+  const btns = btn.parentElement.querySelectorAll('.btn');
+
+  if (ai === q.ans) {
+    btn.classList.add('correct');
+    fb.className = 'feedback show correct-fb';
+    fb.textContent = 'Correct! ' + q.explain;
+    quizCorrect++;
+  } else {
+    btn.classList.add('incorrect');
+    btns[q.ans].classList.add('correct');
+    fb.className = 'feedback show incorrect-fb';
+    fb.textContent = 'Incorrect. ' + q.explain;
+  }
+
+  document.getElementById('quizScore').textContent = quizCorrect;
+  btns.forEach(b => b.style.pointerEvents = 'none');
+
+  if (quizAnswered.size === quizQuestions.length) {
+    markComplete(5);
+  }
+}
+
+function resetQuiz() {
+  quizAnswered = new Set();
+  quizCorrect = 0;
+  document.getElementById('quizScore').textContent = '0';
+  buildQuiz();
+  completedSections.delete(5);
+  const card = document.querySelector('.card[data-section="5"]');
+  if (card) card.classList.remove('completed');
+  updateProgress();
+}
+
+/* ═══════════════════════════════════════════════════
+   PRACTICE PROBLEM BUILDER
+   ═══════════════════════════════════════════════════ */
+
+function buildPractice(containerId, feedbackId, problems, sectionNum) {
+  const container = document.getElementById(containerId);
+  const answered = new Set();
+  let correct = 0;
+
+  container.innerHTML = problems.map((p, i) => {
+    const opts = p.opts.map((o, j) =>
+      `<button class="btn" onclick="answerPractice('${containerId}',${sectionNum},${i},${j},this)">${o}</button>`
+    ).join('');
+    return `<div class="practice-problem" id="${containerId}-q${i}">
+      <div class="q-num">Problem ${i + 1} / ${problems.length}</div>
+      <div class="q-text">${p.q}</div>
+      <div class="btn-row">${opts}</div>
+      <div class="feedback" id="${containerId}-fb${i}"></div>
+    </div>`;
+  }).join('');
+
+  // Store on container
+  container._problems = problems;
+  container._answered = answered;
+  container._correct = 0;
+  container._sectionNum = sectionNum;
+}
+
+function answerPractice(containerId, sectionNum, qi, ai, btn) {
+  const container = document.getElementById(containerId);
+  if (container._answered.has(qi)) return;
+  container._answered.add(qi);
+
+  const p = container._problems[qi];
+  const fb = document.getElementById(`${containerId}-fb${qi}`);
+  const btns = btn.parentElement.querySelectorAll('.btn');
+
+  if (ai === p.ans) {
+    btn.classList.add('correct');
+    fb.className = 'feedback show correct-fb';
+    fb.textContent = 'Correct! ' + p.explain;
+    container._correct++;
+  } else {
+    btn.classList.add('incorrect');
+    btns[p.ans].classList.add('correct');
+    fb.className = 'feedback show incorrect-fb';
+    fb.textContent = 'Incorrect. ' + p.explain;
+  }
+
+  btns.forEach(b => b.style.pointerEvents = 'none');
+
+  if (container._answered.size === container._problems.length) {
+    markComplete(sectionNum);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════ */
+
+document.addEventListener('DOMContentLoaded', () => {
+  buildElemGrid();
+  buildLewisSelect();
+  buildSCNTable();
+  buildPractice('s1Practice', 's1Feedback', s1Problems, 1);
+  buildPractice('s2Practice', 's2Feedback', s2Problems, 2);
+  buildPractice('s3Practice', 's3Feedback', s3Problems, 3);
+  buildPractice('s4Practice', 's4Feedback', s4Problems, 4);
+  buildQuiz();
+});
+</script>
+</body>
+</html>

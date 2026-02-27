@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 01 -- The Number Line</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #272d38;
+    --border: #333a48;
+    --text: #d4cfc4;
+    --text-dim: #8a8678;
+    --indigo: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --font: 'JetBrains Mono', monospace;
+  }
+
+  html { font-size: 15px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    line-height: 1.65;
+    padding: 1.5rem;
+    max-width: 960px;
+    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--indigo);
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* --- Progress Bar --- */
+  .progress-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 2rem;
+    padding: 0.75rem 1rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    align-items: center;
+  }
+
+  .progress-bar .label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-right: 0.5rem;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .progress-segment {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .progress-segment.filled {
+    background: var(--green);
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+  }
+
+  .progress-count {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-left: 0.5rem;
+    white-space: nowrap;
+  }
+
+  /* --- Cards --- */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+    transition: border-color 0.3s ease;
+  }
+
+  details[open] {
+    border-color: var(--indigo);
+  }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+    transition: background 0.2s ease;
+  }
+
+  summary:hover {
+    background: rgba(99, 102, 241, 0.06);
+  }
+
+  summary::-webkit-details-marker { display: none; }
+
+  summary .chevron {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  details[open] summary .chevron {
+    transform: rotate(90deg);
+  }
+
+  summary .section-num {
+    font-size: 0.7rem;
+    background: var(--indigo);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  summary .check {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--green);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  summary .check.visible {
+    opacity: 1;
+  }
+
+  .card-body {
+    padding: 0.5rem 1.25rem 1.5rem 1.25rem;
+  }
+
+  .insight {
+    margin-top: 1.25rem;
+    padding: 0.85rem 1rem;
+    background: rgba(99, 102, 241, 0.08);
+    border-left: 3px solid var(--indigo);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .insight strong {
+    color: var(--indigo);
+  }
+
+  /* --- SVG common --- */
+  svg { display: block; }
+
+  svg text {
+    font-family: var(--font);
+    fill: var(--text);
+  }
+
+  .instruction {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+    font-style: italic;
+  }
+
+  /* --- Section 2 controls --- */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .slider-row label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .slider-row input[type="range"] {
+    flex: 1;
+    min-width: 150px;
+    accent-color: var(--indigo);
+    height: 6px;
+    cursor: pointer;
+  }
+
+  .slider-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--orange);
+    min-width: 20px;
+    text-align: center;
+  }
+
+  /* --- Section 3 practice --- */
+  .practice-grid {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+  }
+
+  .practice-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .practice-row .problem {
+    min-width: 180px;
+    color: var(--text);
+  }
+
+  .practice-row input[type="text"] {
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 0.85rem;
+    padding: 0.35rem 0.6rem;
+    width: 80px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .practice-row input[type="text"]:focus {
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  }
+
+  .practice-row input.correct {
+    border-color: var(--green) !important;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.25) !important;
+  }
+
+  .practice-row input.incorrect {
+    border-color: var(--pink) !important;
+    box-shadow: 0 0 8px rgba(236, 72, 153, 0.25) !important;
+  }
+
+  .practice-feedback {
+    font-size: 0.75rem;
+    min-width: 40px;
+  }
+
+  .feedback-correct { color: var(--green); }
+  .feedback-incorrect { color: var(--pink); }
+
+  /* --- Pulse animation for glow ring --- */
+  @keyframes pulse {
+    0%, 100% { opacity: 0.25; }
+    50% { opacity: 0.55; }
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 600px) {
+    html { font-size: 13px; }
+    body { padding: 1rem; }
+    .practice-row { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Lesson 01 -- The Number Line</h1>
+<p class="subtitle">Week 1 / Number Foundations / VPT Prep</p>
+
+<!-- Progress Bar -->
+<div class="progress-bar">
+  <span class="label">Progress</span>
+  <div class="progress-segment" id="prog-1"></div>
+  <div class="progress-segment" id="prog-2"></div>
+  <div class="progress-segment" id="prog-3"></div>
+  <span class="progress-count" id="prog-count">0 / 3</span>
+</div>
+
+<!-- ========================== SECTION 1 ========================== -->
+<details id="section-1">
+  <summary>
+    <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="5,2 11,8 5,14"/></svg>
+    <span class="section-num">01</span>
+    The Number Line
+    <span class="check" id="check-1">completed</span>
+  </summary>
+  <div class="card-body">
+    <p class="instruction">Click anywhere on the number line to place a point and see its value.</p>
+
+    <svg id="svg-line-1" width="100%" height="120" viewBox="0 0 900 120" preserveAspectRatio="xMidYMid meet" style="cursor:crosshair;">
+    </svg>
+
+    <div class="insight">
+      <strong>Insight:</strong> Every number has a home on this line. Integers are the houses; decimals and fractions live in the yards between them.
+    </div>
+  </div>
+</details>
+
+<!-- ========================== SECTION 2 ========================== -->
+<details id="section-2">
+  <summary>
+    <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="5,2 11,8 5,14"/></svg>
+    <span class="section-num">02</span>
+    Zooming In -- What Lives Between Integers
+    <span class="check" id="check-2">completed</span>
+  </summary>
+  <div class="card-body">
+    <p class="instruction">The segment from 0 to 1, expanded. Key fractions are marked below. Use the slider to explore any denominator.</p>
+
+    <svg id="svg-zoom" width="100%" height="230" viewBox="0 0 900 230" preserveAspectRatio="xMidYMid meet">
+    </svg>
+
+    <div class="slider-row">
+      <label for="denom-slider">Denominator:</label>
+      <input type="range" id="denom-slider" min="2" max="12" value="4" step="1">
+      <span class="slider-value" id="denom-display">4</span>
+    </div>
+
+    <div class="insight">
+      <strong>Insight:</strong> Between any two numbers, there are infinitely more numbers. This is what makes the real number line continuous.
+    </div>
+  </div>
+</details>
+
+<!-- ========================== SECTION 3 ========================== -->
+<details id="section-3">
+  <summary>
+    <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="5,2 11,8 5,14"/></svg>
+    <span class="section-num">03</span>
+    Distance = Always Positive
+    <span class="check" id="check-3">completed</span>
+  </summary>
+  <div class="card-body">
+    <p class="instruction">Drag the two markers on the number line to see distance computed in real time.</p>
+
+    <svg id="svg-distance" width="100%" height="140" viewBox="0 0 900 140" preserveAspectRatio="xMidYMid meet" style="cursor:default;">
+    </svg>
+
+    <div id="distance-readout" style="text-align:center; font-size:0.95rem; margin-top:0.5rem; color:var(--text-dim);"></div>
+
+    <h3 style="font-size:0.85rem; margin-top:1.5rem; margin-bottom:0.6rem; color:var(--orange);">Practice Problems</h3>
+    <div class="practice-grid" id="practice-grid">
+    </div>
+
+    <div class="insight" style="margin-top:1.25rem;">
+      <strong>Insight:</strong> Distance is always positive because it measures how far, not which direction. This is what absolute value means: |x| = distance from 0.
+    </div>
+  </div>
+</details>
+
+<script>
+(function() {
+  "use strict";
+
+  /* ======================================================
+     SVG helper -- creates namespaced SVG elements
+     ====================================================== */
+  function svgEl(tag, attrs) {
+    var el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    if (attrs) {
+      var keys = Object.keys(attrs);
+      for (var i = 0; i < keys.length; i++) {
+        el.setAttribute(keys[i], attrs[keys[i]]);
+      }
+    }
+    return el;
+  }
+
+  /* ======================================================
+     PROGRESS TRACKING
+     ====================================================== */
+  var touched = { 1: false, 2: false, 3: false };
+
+  function markProgress(section) {
+    if (touched[section]) return;
+    touched[section] = true;
+    document.getElementById("prog-" + section).classList.add("filled");
+    document.getElementById("check-" + section).classList.add("visible");
+    var count = 0;
+    for (var k in touched) { if (touched[k]) count++; }
+    document.getElementById("prog-count").textContent = count + " / 3";
+  }
+
+  /* ======================================================
+     SECTION 1 -- The Number Line (-10 to 10)
+     ====================================================== */
+  (function() {
+    var svg = document.getElementById("svg-line-1");
+    var W = 900;
+    var pad = 50;
+    var lineY = 55;
+    var minVal = -10, maxVal = 10;
+
+    function xForVal(v) {
+      return pad + ((v - minVal) / (maxVal - minVal)) * (W - 2 * pad);
+    }
+
+    // Axis line
+    svg.appendChild(svgEl("line", {
+      x1: pad, y1: lineY, x2: W - pad, y2: lineY,
+      stroke: "#555e6e", "stroke-width": 2
+    }));
+
+    // Arrowheads
+    svg.appendChild(svgEl("polygon", {
+      points: (pad - 8) + "," + lineY + " " + (pad + 4) + "," + (lineY - 5) + " " + (pad + 4) + "," + (lineY + 5),
+      fill: "#555e6e"
+    }));
+    svg.appendChild(svgEl("polygon", {
+      points: (W - pad + 8) + "," + lineY + " " + (W - pad - 4) + "," + (lineY - 5) + " " + (W - pad - 4) + "," + (lineY + 5),
+      fill: "#555e6e"
+    }));
+
+    // Ticks and labels
+    for (var i = minVal; i <= maxVal; i++) {
+      var x = xForVal(i);
+      svg.appendChild(svgEl("line", {
+        x1: x, y1: lineY - 8, x2: x, y2: lineY + 8,
+        stroke: "#555e6e", "stroke-width": (i === 0 ? 2.5 : 1.5)
+      }));
+      var lbl = svgEl("text", {
+        x: x, y: lineY + 26, "text-anchor": "middle",
+        "font-size": (i === 0 ? 13 : 11),
+        fill: (i === 0 ? "#6366f1" : "#8a8678"),
+        "font-weight": (i === 0 ? 700 : 400)
+      });
+      lbl.textContent = i;
+      svg.appendChild(lbl);
+    }
+
+    // Clickable dot + tooltip (hidden until first click)
+    var glow = svgEl("circle", { cx: -100, cy: lineY, r: 15, fill: "none", stroke: "#6366f1", "stroke-width": 2, opacity: 0 });
+    glow.style.animation = "pulse 1.4s ease-in-out infinite";
+    var dot = svgEl("circle", { cx: -100, cy: lineY, r: 7, fill: "#6366f1", opacity: 0 });
+    var tipRect = svgEl("rect", { x: -100, y: lineY - 50, width: 56, height: 24, rx: 5, fill: "#6366f1", opacity: 0 });
+    var tipText = svgEl("text", { x: -100, y: lineY - 33, "text-anchor": "middle", "font-size": 12, fill: "#fff", "font-weight": 600, opacity: 0 });
+
+    svg.appendChild(glow);
+    svg.appendChild(dot);
+    svg.appendChild(tipRect);
+    svg.appendChild(tipText);
+
+    svg.addEventListener("click", function(e) {
+      var rect = svg.getBoundingClientRect();
+      var scaleX = W / rect.width;
+      var localX = (e.clientX - rect.left) * scaleX;
+      var val = minVal + ((localX - pad) / (W - 2 * pad)) * (maxVal - minVal);
+      var clamped = Math.max(minVal, Math.min(maxVal, val));
+      var rounded = Math.round(clamped * 10) / 10;
+      var cx = xForVal(rounded);
+
+      dot.setAttribute("cx", cx);
+      dot.setAttribute("opacity", 1);
+      glow.setAttribute("cx", cx);
+      glow.setAttribute("opacity", 1);
+      tipRect.setAttribute("x", cx - 28);
+      tipRect.setAttribute("opacity", 1);
+      tipText.setAttribute("x", cx);
+      tipText.textContent = rounded;
+      tipText.setAttribute("opacity", 1);
+
+      markProgress(1);
+    });
+  })();
+
+  /* ======================================================
+     SECTION 2 -- Zooming In: 0 to 1
+     ====================================================== */
+  (function() {
+    var svg = document.getElementById("svg-zoom");
+    var W = 900;
+    var pad = 60;
+    var lineY = 45;
+    var barTop = 80;
+
+    function xForVal(v) {
+      return pad + v * (W - 2 * pad);
+    }
+
+    // Main axis 0 to 1
+    svg.appendChild(svgEl("line", {
+      x1: pad, y1: lineY, x2: W - pad, y2: lineY,
+      stroke: "#555e6e", "stroke-width": 2
+    }));
+
+    // Tenth ticks
+    for (var i = 0; i <= 10; i++) {
+      var v = i / 10;
+      var x = xForVal(v);
+      var big = (i === 0 || i === 5 || i === 10);
+      svg.appendChild(svgEl("line", {
+        x1: x, y1: lineY - (big ? 10 : 5), x2: x, y2: lineY + (big ? 10 : 5),
+        stroke: "#555e6e", "stroke-width": (big ? 2 : 1)
+      }));
+      if (big || i % 2 === 0) {
+        var lbl = svgEl("text", {
+          x: x, y: lineY - 16, "text-anchor": "middle",
+          "font-size": 11, fill: "#8a8678"
+        });
+        lbl.textContent = (i / 10).toFixed(1);
+        svg.appendChild(lbl);
+      }
+    }
+
+    // Key fractions with colored proportion bars
+    var keyFractions = [
+      { num: 1, den: 4, label: "1/4", color: "#6366f1" },
+      { num: 1, den: 3, label: "1/3", color: "#ec4899" },
+      { num: 1, den: 2, label: "1/2", color: "#22c55e" },
+      { num: 2, den: 3, label: "2/3", color: "#f59e0b" },
+      { num: 3, den: 4, label: "3/4", color: "#6366f1" }
+    ];
+
+    var x0 = xForVal(0);
+    var fullW = xForVal(1) - x0;
+
+    for (var fi = 0; fi < keyFractions.length; fi++) {
+      var f = keyFractions[fi];
+      var val = f.num / f.den;
+      var x1 = xForVal(val);
+      var barY = barTop + fi * 26;
+      var barH = 16;
+
+      // Background (full unit)
+      svg.appendChild(svgEl("rect", {
+        x: x0, y: barY, width: fullW, height: barH, rx: 3,
+        fill: "#1e2128", stroke: "#333a48", "stroke-width": 1
+      }));
+      // Filled portion
+      svg.appendChild(svgEl("rect", {
+        x: x0, y: barY, width: x1 - x0, height: barH, rx: 3,
+        fill: f.color, opacity: 0.45
+      }));
+      // Right edge marker
+      svg.appendChild(svgEl("line", {
+        x1: x1, y1: barY, x2: x1, y2: barY + barH,
+        stroke: f.color, "stroke-width": 2
+      }));
+      // Fraction label (left)
+      var fracLbl = svgEl("text", {
+        x: x0 - 12, y: barY + 12, "text-anchor": "end",
+        "font-size": 12, fill: f.color, "font-weight": 600
+      });
+      fracLbl.textContent = f.label;
+      svg.appendChild(fracLbl);
+      // Decimal label (above filled edge)
+      var decLbl = svgEl("text", {
+        x: x1, y: barY - 4, "text-anchor": "middle",
+        "font-size": 9, fill: "#8a8678"
+      });
+      // Show trailing ... for repeating decimals
+      if (f.den === 3) {
+        decLbl.textContent = val.toFixed(3) + "...";
+      } else {
+        decLbl.textContent = val.toFixed(2);
+      }
+      svg.appendChild(decLbl);
+      // Dot on main axis
+      svg.appendChild(svgEl("circle", { cx: xForVal(val), cy: lineY, r: 4.5, fill: f.color }));
+    }
+
+    // Dynamic denominator fractions (slider-driven)
+    var sliderGroup = svgEl("g", {});
+    svg.appendChild(sliderGroup);
+
+    var slider = document.getElementById("denom-slider");
+    var denomDisplay = document.getElementById("denom-display");
+    var userInteracted = false;
+
+    function renderSliderFractions() {
+      var d = parseInt(slider.value, 10);
+      denomDisplay.textContent = d;
+
+      // Clear previous
+      while (sliderGroup.firstChild) sliderGroup.removeChild(sliderGroup.firstChild);
+
+      var sliderY = 210;
+
+      // Dashed axis
+      sliderGroup.appendChild(svgEl("line", {
+        x1: pad, y1: sliderY, x2: W - pad, y2: sliderY,
+        stroke: "#444c5e", "stroke-width": 1.5, "stroke-dasharray": "4,4"
+      }));
+
+      // Denominator label on left
+      var dLbl = svgEl("text", {
+        x: pad - 12, y: sliderY + 5, "text-anchor": "end",
+        "font-size": 10, fill: "#8a8678"
+      });
+      dLbl.textContent = "n/" + d;
+      sliderGroup.appendChild(dLbl);
+
+      for (var n = 0; n <= d; n++) {
+        var fval = n / d;
+        var fx = xForVal(fval);
+
+        sliderGroup.appendChild(svgEl("line", {
+          x1: fx, y1: sliderY - 6, x2: fx, y2: sliderY + 6,
+          stroke: "#f59e0b", "stroke-width": 1.5
+        }));
+        sliderGroup.appendChild(svgEl("circle", {
+          cx: fx, cy: sliderY, r: 3.5, fill: "#f59e0b"
+        }));
+
+        var txt = svgEl("text", {
+          x: fx, y: sliderY - 10, "text-anchor": "middle",
+          "font-size": (d <= 6 ? 10 : 8), fill: "#f59e0b"
+        });
+        txt.textContent = n + "/" + d;
+        sliderGroup.appendChild(txt);
+      }
+    }
+
+    slider.addEventListener("input", function() {
+      renderSliderFractions();
+      if (!userInteracted) {
+        userInteracted = true;
+        markProgress(2);
+      }
+    });
+
+    // Initial render (does NOT mark progress)
+    renderSliderFractions();
+  })();
+
+  /* ======================================================
+     SECTION 3 -- Distance (draggable markers + practice)
+     ====================================================== */
+  (function() {
+    var svg = document.getElementById("svg-distance");
+    var W = 900;
+    var pad = 50;
+    var lineY = 90;
+    var minVal = -10, maxVal = 10;
+
+    function xForVal(v) { return pad + ((v - minVal) / (maxVal - minVal)) * (W - 2 * pad); }
+    function valForX(x) { return minVal + ((x - pad) / (W - 2 * pad)) * (maxVal - minVal); }
+    function clamp(v) { return Math.max(minVal, Math.min(maxVal, v)); }
+    function snap(v) { return Math.round(v * 2) / 2; }
+
+    function formatVal(v) {
+      return v === Math.round(v) ? String(v) : v.toFixed(1);
+    }
+
+    // Axis
+    svg.appendChild(svgEl("line", {
+      x1: pad, y1: lineY, x2: W - pad, y2: lineY,
+      stroke: "#555e6e", "stroke-width": 2
+    }));
+
+    for (var i = minVal; i <= maxVal; i++) {
+      var x = xForVal(i);
+      svg.appendChild(svgEl("line", {
+        x1: x, y1: lineY - 7, x2: x, y2: lineY + 7,
+        stroke: "#555e6e", "stroke-width": (i === 0 ? 2.5 : 1.5)
+      }));
+      var lbl = svgEl("text", {
+        x: x, y: lineY + 24, "text-anchor": "middle",
+        "font-size": (i === 0 ? 12 : 10),
+        fill: (i === 0 ? "#6366f1" : "#8a8678")
+      });
+      lbl.textContent = i;
+      svg.appendChild(lbl);
+    }
+
+    // Colored line segment between markers
+    var distLine = svgEl("line", {
+      x1: 0, y1: lineY, x2: 0, y2: lineY,
+      stroke: "#22c55e", "stroke-width": 4, opacity: 0.35,
+      "stroke-linecap": "round"
+    });
+    svg.appendChild(distLine);
+
+    // Arc bracket
+    var bracketPath = svgEl("path", {
+      d: "", fill: "none", stroke: "#22c55e",
+      "stroke-width": 2, "stroke-linecap": "round"
+    });
+    svg.appendChild(bracketPath);
+
+    // Distance label on arc
+    var distLabel = svgEl("text", {
+      x: 0, y: 0, "text-anchor": "middle",
+      "font-size": 13, fill: "#22c55e", "font-weight": 700
+    });
+    svg.appendChild(distLabel);
+
+    // Create draggable marker
+    function createMarker(color, letter) {
+      var g = svgEl("g", { style: "cursor:grab" });
+      var shadow = svgEl("circle", { r: 16, fill: color, opacity: 0.12 });
+      var circle = svgEl("circle", { r: 10, fill: color, stroke: "#1e2128", "stroke-width": 2 });
+      var txt = svgEl("text", { y: 4.5, "text-anchor": "middle", "font-size": 11, fill: "#fff", "font-weight": 700 });
+      txt.textContent = letter;
+      var valLbl = svgEl("text", { y: -20, "text-anchor": "middle", "font-size": 11, fill: color, "font-weight": 600 });
+      g.appendChild(shadow);
+      g.appendChild(circle);
+      g.appendChild(txt);
+      g.appendChild(valLbl);
+      return { group: g, circle: circle, valLabel: valLbl };
+    }
+
+    var valA = -3, valB = 5;
+    var markerA = createMarker("#ec4899", "A");
+    var markerB = createMarker("#f59e0b", "B");
+    svg.appendChild(markerA.group);
+    svg.appendChild(markerB.group);
+
+    function updatePositions() {
+      var xa = xForVal(valA), xb = xForVal(valB);
+      markerA.group.setAttribute("transform", "translate(" + xa + "," + lineY + ")");
+      markerB.group.setAttribute("transform", "translate(" + xb + "," + lineY + ")");
+      markerA.valLabel.textContent = formatVal(valA);
+      markerB.valLabel.textContent = formatVal(valB);
+
+      var dist = Math.abs(valA - valB);
+      var left = Math.min(xa, xb);
+      var right = Math.max(xa, xb);
+      var midX = (xa + xb) / 2;
+
+      // Green highlight line
+      distLine.setAttribute("x1", left);
+      distLine.setAttribute("x2", right);
+
+      // Arc bracket
+      if (dist > 0.01) {
+        var arcPeak = lineY - 38 - Math.min(dist * 2, 25);
+        bracketPath.setAttribute("d",
+          "M " + left + " " + (lineY - 12) +
+          " Q " + midX + " " + arcPeak +
+          " " + right + " " + (lineY - 12)
+        );
+        bracketPath.setAttribute("opacity", 1);
+        distLabel.setAttribute("x", midX);
+        distLabel.setAttribute("y", arcPeak - 6);
+        distLabel.textContent = "|" + formatVal(valA) + " - " + formatVal(valB) + "| = " + formatVal(dist);
+        distLabel.setAttribute("opacity", 1);
+      } else {
+        bracketPath.setAttribute("opacity", 0);
+        distLabel.setAttribute("opacity", 0);
+      }
+
+      // Readout below SVG
+      document.getElementById("distance-readout").innerHTML =
+        '<span style="color:#ec4899">A = ' + formatVal(valA) + '</span>' +
+        '&nbsp;&nbsp;&nbsp;&nbsp;' +
+        '<span style="color:#f59e0b">B = ' + formatVal(valB) + '</span>' +
+        '&nbsp;&nbsp;&nbsp;&nbsp;' +
+        '<span style="color:#22c55e">distance = ' + formatVal(dist) + '</span>';
+    }
+
+    updatePositions();
+
+    // --- Drag handling ---
+    var dragging = null;
+
+    function getSvgX(e) {
+      var rect = svg.getBoundingClientRect();
+      var scaleX = W / rect.width;
+      var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      return (clientX - rect.left) * scaleX;
+    }
+
+    function startDrag(marker) {
+      return function(e) {
+        e.preventDefault();
+        dragging = marker;
+        marker.group.style.cursor = "grabbing";
+        markProgress(3);
+      };
+    }
+
+    markerA.group.addEventListener("mousedown", startDrag(markerA));
+    markerA.group.addEventListener("touchstart", startDrag(markerA), { passive: false });
+    markerB.group.addEventListener("mousedown", startDrag(markerB));
+    markerB.group.addEventListener("touchstart", startDrag(markerB), { passive: false });
+
+    function onMove(e) {
+      if (!dragging) return;
+      e.preventDefault();
+      var svgX = getSvgX(e);
+      var raw = valForX(svgX);
+      var snapped = snap(clamp(raw));
+      if (dragging === markerA) valA = snapped;
+      else valB = snapped;
+      updatePositions();
+    }
+
+    function onUp() {
+      if (dragging) dragging.group.style.cursor = "grab";
+      dragging = null;
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+    document.addEventListener("touchmove", onMove, { passive: false });
+    document.addEventListener("touchend", onUp);
+
+    // --- Practice Problems ---
+    var problems = [
+      { a: 3, b: 7 },
+      { a: -4, b: 2 },
+      { a: -6, b: -1 },
+      { a: 0, b: -8 },
+      { a: -3, b: 9 }
+    ];
+
+    var grid = document.getElementById("practice-grid");
+
+    for (var pi = 0; pi < problems.length; pi++) {
+      (function(p) {
+        var answer = Math.abs(p.a - p.b);
+        var row = document.createElement("div");
+        row.className = "practice-row";
+
+        var prob = document.createElement("span");
+        prob.className = "problem";
+        prob.textContent = "|" + p.a + " - (" + p.b + ")| = ";
+
+        var input = document.createElement("input");
+        input.type = "text";
+        input.setAttribute("autocomplete", "off");
+        input.setAttribute("inputmode", "numeric");
+        input.setAttribute("aria-label", "Distance from " + p.a + " to " + p.b);
+
+        var feedback = document.createElement("span");
+        feedback.className = "practice-feedback";
+
+        input.addEventListener("input", function() {
+          var val = parseFloat(input.value.trim());
+          input.classList.remove("correct", "incorrect");
+          feedback.textContent = "";
+          feedback.className = "practice-feedback";
+
+          if (input.value.trim() === "") return;
+
+          if (!isNaN(val) && Math.abs(val - answer) < 0.01) {
+            input.classList.add("correct");
+            feedback.textContent = "Correct";
+            feedback.classList.add("feedback-correct");
+          } else if (!isNaN(val)) {
+            input.classList.add("incorrect");
+            feedback.textContent = "= " + answer;
+            feedback.classList.add("feedback-incorrect");
+          }
+          markProgress(3);
+        });
+
+        row.appendChild(prob);
+        row.appendChild(input);
+        row.appendChild(feedback);
+        grid.appendChild(row);
+      })(problems[pi]);
+    }
+  })();
+
+})();
+</script>
+
+</body>
+</html>

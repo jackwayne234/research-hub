@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 16 -- Exponential &amp; Logarithmic Functions</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #262a33;
+    --border: #363b47;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* -- Progress Bar -- */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* -- Header -- */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* -- Collapsible Cards -- */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details[open] { border-color: var(--accent); }
+  details.completed { border-color: var(--green); }
+  details.completed summary::after {
+    content: 'Done';
+    font-size: 0.65rem;
+    background: rgba(34,197,94,0.15);
+    color: var(--green);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    margin-left: auto;
+    font-weight: 600;
+  }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s var(--spring);
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .card-body { padding: 1.25rem; }
+  .card-body p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+  .card-body h3 {
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  /* -- Equation display -- */
+  .eq {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--orange);
+    text-align: center;
+    margin: 0.75rem 0;
+    padding: 0.5rem;
+    background: rgba(245,158,11,0.06);
+    border-radius: var(--radius);
+  }
+
+  /* -- Info boxes -- */
+  .info-box {
+    background: rgba(99,102,241,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+  }
+  .info-box.green {
+    background: rgba(34,197,94,0.08);
+    border-color: var(--green);
+  }
+  .info-box.pink {
+    background: rgba(236,72,153,0.08);
+    border-color: var(--pink);
+  }
+  .info-box.amber {
+    background: rgba(245,158,11,0.08);
+    border-color: var(--orange);
+  }
+
+  /* -- Buttons -- */
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn.green { background: var(--green); }
+  .btn.pink { background: var(--pink); }
+  .btn.orange { background: var(--orange); color: #1e2128; }
+  .btn.outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0.75rem 0;
+  }
+
+  /* -- Rule Cards -- */
+  .rule-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .rule-card {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .rule-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .rule-card .rule-name {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  .rule-card .rule-formula {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .rule-card .rule-example {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .rule-card .rule-example strong { color: var(--green); }
+
+  /* -- Practice Problems -- */
+  .problem-set {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    transition: border-color 0.3s, transform 0.15s;
+  }
+  .problem.correct { border-color: var(--green); }
+  .problem.incorrect { border-color: var(--pink); }
+  .problem .prompt {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    min-width: 200px;
+  }
+  .problem input[type="text"] {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .problem input:focus { border-color: var(--accent); }
+  .problem .feedback {
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 60px;
+  }
+  .problem .feedback.correct { color: var(--green); }
+  .problem .feedback.incorrect { color: var(--pink); }
+
+  /* -- Quiz -- */
+  .quiz-score {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    background: rgba(99,102,241,0.08);
+    border-radius: var(--radius);
+  }
+  .quiz-score span { color: var(--green); }
+
+  .quiz-problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.75rem 0;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem.correct { border-color: var(--green); }
+  .quiz-problem.incorrect { border-color: var(--pink); }
+  .quiz-problem .q-num {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  .quiz-problem .q-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .quiz-problem input[type="text"] {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem input:focus { border-color: var(--accent); }
+  .quiz-problem .q-feedback {
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    min-height: 1.2em;
+  }
+  .quiz-problem .q-feedback.correct { color: var(--green); }
+  .quiz-problem .q-feedback.incorrect { color: var(--pink); }
+
+  /* -- Animations -- */
+  @keyframes popIn {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* -- Graph Canvas -- */
+  .graph-container {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 1rem 0;
+    text-align: center;
+  }
+  .graph-container canvas {
+    max-width: 100%;
+    border-radius: 4px;
+  }
+  .graph-controls {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+  }
+  .graph-controls label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--text-dim);
+  }
+  .graph-controls input[type="range"] {
+    width: 100px;
+    accent-color: var(--accent);
+  }
+  .graph-controls .val {
+    color: var(--orange);
+    font-weight: 600;
+    min-width: 2.5em;
+  }
+
+  /* -- Mobile -- */
+  @media (max-width: 640px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.2rem; }
+    .rule-cards { grid-template-columns: 1fr; }
+    .problem .prompt { min-width: 100%; }
+    .problem input[type="text"] { min-width: 100%; }
+    .eq { font-size: 0.95rem; }
+    .graph-controls { font-size: 0.75rem; }
+    .graph-controls input[type="range"] { width: 80px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar">
+  <div class="seg"></div>
+  <div class="seg"></div>
+  <div class="seg"></div>
+  <div class="seg"></div>
+  <div class="seg"></div>
+  <div class="seg"></div>
+</div>
+
+<h1>Lesson 16 -- Exponential &amp; Logarithmic Functions</h1>
+<p class="subtitle">Growth, decay, inverses, and the power of logarithms</p>
+
+<!-- ===================== SECTION 1: Exponential Functions ===================== -->
+<details id="sec0">
+  <summary>1. Exponential Functions</summary>
+  <div class="card-body">
+    <p>An <strong>exponential function</strong> has the variable in the exponent. The general form is:</p>
+
+    <div class="eq">y = a &middot; b<sup>x</sup></div>
+
+    <p>where <strong>a</strong> is the initial value (y-intercept when x = 0) and <strong>b</strong> is the base (growth/decay factor).</p>
+
+    <div class="info-box">
+      <strong>Key rule:</strong> If b &gt; 1, the function shows <strong>exponential growth</strong>. If 0 &lt; b &lt; 1, the function shows <strong>exponential decay</strong>. The base b must always be positive and not equal to 1.
+    </div>
+
+    <h3>Growth vs Decay</h3>
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Exponential Growth</div>
+        <div class="rule-formula">y = a &middot; b<sup>x</sup>, b &gt; 1</div>
+        <div class="rule-example">y = 3 &middot; 2<sup>x</sup> &rarr; doubles each step<br>Population growth, compound interest</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Exponential Decay</div>
+        <div class="rule-formula">y = a &middot; b<sup>x</sup>, 0 &lt; b &lt; 1</div>
+        <div class="rule-example">y = 100 &middot; (0.5)<sup>x</sup> &rarr; halves each step<br>Radioactive decay, depreciation</div>
+      </div>
+    </div>
+
+    <h3>The Natural Base e</h3>
+    <p>The number <strong>e &approx; 2.71828...</strong> is a special irrational number that arises naturally in continuous growth/decay. The function y = e<sup>x</sup> is called the <strong>natural exponential function</strong>.</p>
+
+    <div class="info-box green">
+      <strong>Why e matters:</strong> Continuously compounded interest uses A = Pe<sup>rt</sup>. Populations, radioactive decay, and Newton's law of cooling all involve e. It is the base where the derivative of b<sup>x</sup> equals itself.
+    </div>
+
+    <h3>Interactive Graph: y = a &middot; b<sup>x</sup></h3>
+    <div class="graph-container">
+      <canvas id="expCanvas" width="460" height="300"></canvas>
+      <div class="graph-controls">
+        <label>a = <input type="range" id="expA" min="0.5" max="5" step="0.5" value="1"><span class="val" id="expAVal">1</span></label>
+        <label>b = <input type="range" id="expB" min="0.2" max="3" step="0.1" value="2"><span class="val" id="expBVal">2</span></label>
+      </div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="expProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkExpProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showExpAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 2: Properties of Exponents ===================== -->
+<details id="sec1">
+  <summary>2. Properties of Exponents</summary>
+  <div class="card-body">
+    <p>Before diving deeper, let's review the <strong>exponent rules</strong> that make exponential and logarithmic algebra possible.</p>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Product Rule</div>
+        <div class="rule-formula">a<sup>m</sup> &middot; a<sup>n</sup> = a<sup>m+n</sup></div>
+        <div class="rule-example">2<sup>3</sup> &middot; 2<sup>4</sup> = 2<sup>7</sup> = <strong>128</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Quotient Rule</div>
+        <div class="rule-formula">a<sup>m</sup> / a<sup>n</sup> = a<sup>m-n</sup></div>
+        <div class="rule-example">5<sup>6</sup> / 5<sup>2</sup> = 5<sup>4</sup> = <strong>625</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Power Rule</div>
+        <div class="rule-formula">(a<sup>m</sup>)<sup>n</sup> = a<sup>mn</sup></div>
+        <div class="rule-example">(3<sup>2</sup>)<sup>4</sup> = 3<sup>8</sup> = <strong>6561</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Zero Exponent</div>
+        <div class="rule-formula">a<sup>0</sup> = 1 (a &ne; 0)</div>
+        <div class="rule-example">7<sup>0</sup> = <strong>1</strong>, &nbsp; (-3)<sup>0</sup> = <strong>1</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Negative Exponent</div>
+        <div class="rule-formula">a<sup>-n</sup> = 1 / a<sup>n</sup></div>
+        <div class="rule-example">2<sup>-3</sup> = 1/2<sup>3</sup> = <strong>1/8</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Product to Power</div>
+        <div class="rule-formula">(ab)<sup>n</sup> = a<sup>n</sup> &middot; b<sup>n</sup></div>
+        <div class="rule-example">(2x)<sup>3</sup> = 8x<sup>3</sup></div>
+      </div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="info-box amber">
+      <strong>How to type:</strong> Use ^ for exponents. Examples: x^7, 2^5, 1/x^3. Use * for multiplication if needed.
+    </div>
+    <div class="problem-set" id="propProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkPropProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showPropAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 3: Logarithms ===================== -->
+<details id="sec2">
+  <summary>3. Logarithms</summary>
+  <div class="card-body">
+    <p>A <strong>logarithm</strong> is the inverse of an exponential function. It answers the question: "What exponent do I need?"</p>
+
+    <div class="eq">log<sub>b</sub>(x) = y &nbsp;&nbsp;&hArr;&nbsp;&nbsp; b<sup>y</sup> = x</div>
+
+    <div class="info-box">
+      <strong>Read it as:</strong> "log base b of x equals y" means "b raised to the y power equals x." The logarithm <em>finds the exponent</em>.
+    </div>
+
+    <h3>Common Logarithms</h3>
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Common Log (base 10)</div>
+        <div class="rule-formula">log(x) = log<sub>10</sub>(x)</div>
+        <div class="rule-example">log(1000) = 3 because 10<sup>3</sup> = <strong>1000</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Natural Log (base e)</div>
+        <div class="rule-formula">ln(x) = log<sub>e</sub>(x)</div>
+        <div class="rule-example">ln(e<sup>5</sup>) = <strong>5</strong>, &nbsp; ln(1) = <strong>0</strong></div>
+      </div>
+    </div>
+
+    <h3>Converting Between Forms</h3>
+    <p>Every logarithmic equation can be rewritten as an exponential equation and vice versa:</p>
+
+    <div class="rule-cards" style="grid-template-columns: 1fr 1fr;">
+      <div class="rule-card">
+        <div class="rule-name">Log Form &rarr; Exponential</div>
+        <div class="rule-formula">log<sub>2</sub>(8) = 3</div>
+        <div class="rule-example">becomes: 2<sup>3</sup> = <strong>8</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Exponential &rarr; Log Form</div>
+        <div class="rule-formula">5<sup>3</sup> = 125</div>
+        <div class="rule-example">becomes: log<sub>5</sub>(125) = <strong>3</strong></div>
+      </div>
+    </div>
+
+    <div class="info-box green">
+      <strong>Key values to memorize:</strong><br>
+      log<sub>b</sub>(1) = 0 for any base (because b<sup>0</sup> = 1)<br>
+      log<sub>b</sub>(b) = 1 for any base (because b<sup>1</sup> = b)<br>
+      log<sub>b</sub>(b<sup>n</sup>) = n (log and exponent cancel)
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="info-box amber">
+      <strong>How to type:</strong> Just type the numeric answer. For example, if log<sub>2</sub>(16) = ?, type 4.
+    </div>
+    <div class="problem-set" id="logProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkLogProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showLogAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 4: Logarithm Properties ===================== -->
+<details id="sec3">
+  <summary>4. Logarithm Properties</summary>
+  <div class="card-body">
+    <p>Logarithms transform multiplication into addition, division into subtraction, and powers into multiplication. These properties are essential for simplifying and solving.</p>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Product Rule</div>
+        <div class="rule-formula">log<sub>b</sub>(MN) = log<sub>b</sub>(M) + log<sub>b</sub>(N)</div>
+        <div class="rule-example">log(6) = log(2) + log(3)</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Quotient Rule</div>
+        <div class="rule-formula">log<sub>b</sub>(M/N) = log<sub>b</sub>(M) - log<sub>b</sub>(N)</div>
+        <div class="rule-example">log(5/3) = log(5) - log(3)</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Power Rule</div>
+        <div class="rule-formula">log<sub>b</sub>(M<sup>n</sup>) = n &middot; log<sub>b</sub>(M)</div>
+        <div class="rule-example">log(x<sup>4</sup>) = 4 log(x)</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Change of Base</div>
+        <div class="rule-formula">log<sub>b</sub>(x) = log(x) / log(b)</div>
+        <div class="rule-example">log<sub>3</sub>(7) = log(7) / log(3) &approx; <strong>1.771</strong></div>
+      </div>
+    </div>
+
+    <h3>Expanding Logarithms</h3>
+    <p>Use the properties to break a single log into a sum/difference of simpler logs:</p>
+
+    <div class="eq">log(x<sup>2</sup>y / z) = 2log(x) + log(y) - log(z)</div>
+
+    <div class="info-box">
+      <strong>Step by step:</strong><br>
+      1. Quotient rule: log(x<sup>2</sup>y) - log(z)<br>
+      2. Product rule: log(x<sup>2</sup>) + log(y) - log(z)<br>
+      3. Power rule: 2log(x) + log(y) - log(z)
+    </div>
+
+    <h3>Condensing Logarithms</h3>
+    <p>The reverse process -- combine multiple logs into one:</p>
+
+    <div class="eq">3log(x) - log(y) + log(z) = log(x<sup>3</sup>z / y)</div>
+
+    <h3>Practice Problems</h3>
+    <div class="info-box amber">
+      <strong>How to type:</strong> For expanding/condensing, type expressions like: 2log(x)+log(y)-log(z). Use log() for common log and ln() for natural log. Spaces are ignored.
+    </div>
+    <div class="problem-set" id="logPropProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkLogPropProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showLogPropAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 5: Solving Equations ===================== -->
+<details id="sec4">
+  <summary>5. Solving Exponential &amp; Log Equations</summary>
+  <div class="card-body">
+    <p>The key insight: <strong>exponentials and logarithms undo each other</strong>. Use one to solve the other.</p>
+
+    <h3>Solving Exponential Equations</h3>
+    <div class="info-box">
+      <strong>Strategy:</strong> Isolate the exponential term, then take the logarithm of both sides.
+    </div>
+
+    <p><strong>Example:</strong> Solve 3<sup>x</sup> = 81</p>
+    <div class="eq">3<sup>x</sup> = 81 &nbsp;&rarr;&nbsp; 3<sup>x</sup> = 3<sup>4</sup> &nbsp;&rarr;&nbsp; x = 4</div>
+
+    <p><strong>Example:</strong> Solve 5<sup>x</sup> = 20</p>
+    <div class="eq">log(5<sup>x</sup>) = log(20) &nbsp;&rarr;&nbsp; x &middot; log(5) = log(20) &nbsp;&rarr;&nbsp; x = log(20)/log(5) &approx; 1.861</div>
+
+    <h3>Solving Logarithmic Equations</h3>
+    <div class="info-box">
+      <strong>Strategy:</strong> Isolate the log term, then rewrite in exponential form (exponentiate both sides).
+    </div>
+
+    <p><strong>Example:</strong> Solve log<sub>2</sub>(x) = 5</p>
+    <div class="eq">log<sub>2</sub>(x) = 5 &nbsp;&rarr;&nbsp; x = 2<sup>5</sup> &nbsp;&rarr;&nbsp; x = 32</div>
+
+    <h3>Applications</h3>
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Compound Interest</div>
+        <div class="rule-formula">A = P(1 + r/n)<sup>nt</sup></div>
+        <div class="rule-example">P = principal, r = rate, n = compounds/year, t = years<br>$1000 at 5% compounded monthly for 10 years:<br>A = 1000(1 + 0.05/12)<sup>120</sup> &approx; <strong>$1647.01</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Continuous Compounding</div>
+        <div class="rule-formula">A = Pe<sup>rt</sup></div>
+        <div class="rule-example">$1000 at 5% continuously for 10 years:<br>A = 1000e<sup>0.5</sup> &approx; <strong>$1648.72</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Half-Life</div>
+        <div class="rule-formula">A = A<sub>0</sub>(1/2)<sup>t/h</sup></div>
+        <div class="rule-example">A<sub>0</sub> = initial amount, h = half-life, t = time<br>100g with half-life 5 years, after 15 years:<br>A = 100(0.5)<sup>3</sup> = <strong>12.5g</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Doubling Time</div>
+        <div class="rule-formula">t = ln(2) / r</div>
+        <div class="rule-example">At 7% continuous growth:<br>t = ln(2)/0.07 &approx; <strong>9.9 years</strong><br>(Rule of 72: 72/7 &approx; 10.3 years)</div>
+      </div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="info-box amber">
+      <strong>How to type:</strong> Give numeric answers. Round to 2 decimal places when needed. For exact answers, give the whole number.
+    </div>
+    <div class="problem-set" id="solveProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkSolveProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showSolveAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 6: Quick Quiz ===================== -->
+<details id="sec5">
+  <summary>6. Quick Quiz</summary>
+  <div class="card-body">
+    <p>10 mixed problems covering all sections. Submit when ready.</p>
+
+    <div class="quiz-score" id="quizScore">Score: <span>-- / 10</span></div>
+
+    <div id="quizProblems"></div>
+
+    <div class="btn-row" style="margin-top:1rem;">
+      <button class="btn green" onclick="gradeQuiz()">Submit Quiz</button>
+      <button class="btn outline" onclick="showQuizAnswers()">Show All Answers</button>
+      <button class="btn pink" onclick="resetQuiz()">Reset</button>
+    </div>
+  </div>
+</details>
+
+<script>
+// ====== UTILITIES ======
+const $ = id => document.getElementById(id);
+const sections = 6;
+const completed = new Array(sections).fill(false);
+
+function updateProgress() {
+  const segs = document.querySelectorAll('.progress-bar .seg');
+  segs.forEach((seg, i) => {
+    if (completed[i]) seg.classList.add('done');
+    else seg.classList.remove('done');
+  });
+}
+
+function markComplete(idx) {
+  completed[idx] = true;
+  updateProgress();
+  const sec = $('sec' + idx);
+  sec.classList.add('completed');
+}
+
+function normalize(s) {
+  return s.replace(/\s+/g, '')
+           .replace(/\u2212/g, '-')
+           .replace(/\u00d7/g, '*')
+           .replace(/\u00b7/g, '*')
+           .toLowerCase()
+           .replace(/\*\*/g, '^');
+}
+
+function checkNum(input, answer, tolerance) {
+  tolerance = tolerance || 0.01;
+  const val = parseFloat(input);
+  if (isNaN(val)) return false;
+  return Math.abs(val - answer) <= tolerance;
+}
+
+function springPop(el) {
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = 'popIn 0.35s var(--spring)';
+}
+
+function shakeEl(el) {
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = 'shake 0.4s ease';
+}
+
+// Enter key listener
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  const t = e.target;
+  if (!t || t.tagName !== 'INPUT') return;
+  const card = t.closest('details');
+  if (!card) return;
+  const id = card.id;
+  if (id === 'sec0') checkExpProblems();
+  else if (id === 'sec1') checkPropProblems();
+  else if (id === 'sec2') checkLogProblems();
+  else if (id === 'sec3') checkLogPropProblems();
+  else if (id === 'sec4') checkSolveProblems();
+  else if (id === 'sec5') gradeQuiz();
+});
+
+// ====== SECTION 1: Exponential Functions ======
+
+// Interactive graph
+function drawExpGraph() {
+  const canvas = $('expCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const a = parseFloat($('expA').value);
+  const b = parseFloat($('expB').value);
+  $('expAVal').textContent = a;
+  $('expBVal').textContent = b;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid
+  const cx = W / 2, cy = H * 0.75;
+  const scaleX = 40, scaleY = 30;
+
+  ctx.strokeStyle = '#2a2e38';
+  ctx.lineWidth = 1;
+  for (let x = -6; x <= 6; x++) {
+    const px = cx + x * scaleX;
+    ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, H); ctx.stroke();
+  }
+  for (let y = -2; y <= 8; y++) {
+    const py = cy - y * scaleY;
+    ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(W, py); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = '#4a4e58';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+
+  // Labels
+  ctx.fillStyle = '#8a8578';
+  ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  for (let x = -5; x <= 5; x++) {
+    if (x === 0) continue;
+    ctx.fillText(x, cx + x * scaleX, cy + 15);
+  }
+  ctx.textAlign = 'right';
+  for (let y = 1; y <= 7; y++) {
+    ctx.fillText(y, cx - 6, cy - y * scaleY + 4);
+  }
+
+  // Curve
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  let started = false;
+  for (let px = 0; px < W; px++) {
+    const x = (px - cx) / scaleX;
+    const y = a * Math.pow(b, x);
+    const py = cy - y * scaleY;
+    if (py < -50 || py > H + 50) { started = false; continue; }
+    if (!started) { ctx.moveTo(px, py); started = true; }
+    else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Asymptote label
+  ctx.fillStyle = '#ec4899';
+  ctx.font = '10px JetBrains Mono';
+  ctx.textAlign = 'left';
+  ctx.fillText('y = 0 (asymptote)', 10, cy - 5);
+
+  // Equation label
+  ctx.fillStyle = '#f59e0b';
+  ctx.font = '12px JetBrains Mono';
+  ctx.textAlign = 'right';
+  const label = b >= 1
+    ? `y = ${a === 1 ? '' : a + '·'}${b}^x`
+    : `y = ${a === 1 ? '' : a + '·'}${b}^x`;
+  ctx.fillText(label.replace('·', '\u00B7'), W - 10, 20);
+
+  // Growth/decay indicator
+  ctx.fillStyle = b > 1 ? '#22c55e' : b < 1 ? '#ec4899' : '#8a8578';
+  ctx.font = '10px JetBrains Mono';
+  const type = b > 1 ? 'GROWTH' : b < 1 ? 'DECAY' : 'CONSTANT';
+  ctx.fillText(type, W - 10, 36);
+}
+
+$('expA').addEventListener('input', drawExpGraph);
+$('expB').addEventListener('input', drawExpGraph);
+
+const expProbData = [
+  { prompt: 'Evaluate: 2<sup>5</sup>', answer: '32', numeric: true, numAns: 32 },
+  { prompt: 'Evaluate: 3 &middot; 2<sup>4</sup>', answer: '48', numeric: true, numAns: 48 },
+  { prompt: 'If f(x) = 5<sup>x</sup>, find f(3)', answer: '125', numeric: true, numAns: 125 },
+  { prompt: 'Growth or decay? y = 4(0.7)<sup>x</sup>', answer: 'decay', numeric: false },
+  { prompt: 'Growth or decay? y = 2(3)<sup>x</sup>', answer: 'growth', numeric: false },
+];
+
+function buildExpProblems() {
+  const cont = $('expProblems');
+  cont.innerHTML = '';
+  expProbData.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = 'ep' + i;
+    div.innerHTML = `<span class="prompt">${p.prompt}</span>
+      <input type="text" id="epIn${i}" placeholder="Answer">
+      <span class="feedback" id="epFb${i}"></span>`;
+    cont.appendChild(div);
+  });
+}
+
+function checkExpProblems() {
+  let allCorrect = true;
+  expProbData.forEach((p, i) => {
+    const val = $('epIn' + i).value.trim();
+    const fb = $('epFb' + i);
+    const el = $('ep' + i);
+    let correct;
+    if (p.numeric) {
+      correct = checkNum(val, p.numAns, 0.1);
+    } else {
+      correct = normalize(val) === normalize(p.answer);
+    }
+    if (correct) {
+      fb.textContent = 'Correct!';
+      fb.className = 'feedback correct';
+      el.className = 'problem correct';
+      springPop(el);
+    } else {
+      fb.textContent = 'Try again';
+      fb.className = 'feedback incorrect';
+      el.className = 'problem incorrect';
+      shakeEl(el);
+      allCorrect = false;
+    }
+  });
+  if (allCorrect) markComplete(0);
+}
+
+function showExpAnswers() {
+  expProbData.forEach((p, i) => {
+    $('epIn' + i).value = p.answer;
+    $('epFb' + i).textContent = 'Answer shown';
+    $('epFb' + i).className = 'feedback correct';
+    $('ep' + i).className = 'problem correct';
+  });
+  markComplete(0);
+}
+
+// ====== SECTION 2: Properties of Exponents ======
+const propProbData = [
+  { prompt: 'Simplify: x<sup>3</sup> &middot; x<sup>5</sup>', answer: 'x^8' },
+  { prompt: 'Simplify: y<sup>10</sup> / y<sup>4</sup>', answer: 'y^6' },
+  { prompt: 'Simplify: (z<sup>3</sup>)<sup>4</sup>', answer: 'z^12' },
+  { prompt: 'Evaluate: 4<sup>-2</sup> (as fraction)', answer: '1/16' },
+  { prompt: 'Evaluate: 7<sup>0</sup>', answer: '1' },
+];
+
+function buildPropProblems() {
+  const cont = $('propProblems');
+  cont.innerHTML = '';
+  propProbData.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = 'pp' + i;
+    div.innerHTML = `<span class="prompt">${p.prompt}</span>
+      <input type="text" id="ppIn${i}" placeholder="Answer">
+      <span class="feedback" id="ppFb${i}"></span>`;
+    cont.appendChild(div);
+  });
+}
+
+function checkPropProblems() {
+  let allCorrect = true;
+  propProbData.forEach((p, i) => {
+    const val = $('ppIn' + i).value.trim();
+    const fb = $('ppFb' + i);
+    const el = $('pp' + i);
+    const correct = normalize(val) === normalize(p.answer);
+    if (correct) {
+      fb.textContent = 'Correct!';
+      fb.className = 'feedback correct';
+      el.className = 'problem correct';
+      springPop(el);
+    } else {
+      fb.textContent = 'Try again';
+      fb.className = 'feedback incorrect';
+      el.className = 'problem incorrect';
+      shakeEl(el);
+      allCorrect = false;
+    }
+  });
+  if (allCorrect) markComplete(1);
+}
+
+function showPropAnswers() {
+  propProbData.forEach((p, i) => {
+    $('ppIn' + i).value = p.answer;
+    $('ppFb' + i).textContent = 'Answer shown';
+    $('ppFb' + i).className = 'feedback correct';
+    $('pp' + i).className = 'problem correct';
+  });
+  markComplete(1);
+}
+
+// ====== SECTION 3: Logarithms ======
+const logProbData = [
+  { prompt: 'log<sub>2</sub>(16) = ?', answer: 4 },
+  { prompt: 'log<sub>3</sub>(81) = ?', answer: 4 },
+  { prompt: 'log<sub>5</sub>(125) = ?', answer: 3 },
+  { prompt: 'log<sub>10</sub>(10000) = ?', answer: 4 },
+  { prompt: 'log<sub>4</sub>(1) = ?', answer: 0 },
+  { prompt: 'ln(e<sup>7</sup>) = ?', answer: 7 },
+];
+
+function buildLogProblems() {
+  const cont = $('logProblems');
+  cont.innerHTML = '';
+  logProbData.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = 'lp' + i;
+    div.innerHTML = `<span class="prompt">${p.prompt}</span>
+      <input type="text" id="lpIn${i}" placeholder="Answer">
+      <span class="feedback" id="lpFb${i}"></span>`;
+    cont.appendChild(div);
+  });
+}
+
+function checkLogProblems() {
+  let allCorrect = true;
+  logProbData.forEach((p, i) => {
+    const val = $('lpIn' + i).value.trim();
+    const fb = $('lpFb' + i);
+    const el = $('lp' + i);
+    const correct = checkNum(val, p.answer, 0.01);
+    if (correct) {
+      fb.textContent = 'Correct!';
+      fb.className = 'feedback correct';
+      el.className = 'problem correct';
+      springPop(el);
+    } else {
+      fb.textContent = 'Try again';
+      fb.className = 'feedback incorrect';
+      el.className = 'problem incorrect';
+      shakeEl(el);
+      allCorrect = false;
+    }
+  });
+  if (allCorrect) markComplete(2);
+}
+
+function showLogAnswers() {
+  logProbData.forEach((p, i) => {
+    $('lpIn' + i).value = p.answer;
+    $('lpFb' + i).textContent = 'Answer shown';
+    $('lpFb' + i).className = 'feedback correct';
+    $('lp' + i).className = 'problem correct';
+  });
+  markComplete(2);
+}
+
+// ====== SECTION 4: Logarithm Properties ======
+const logPropProbData = [
+  { prompt: 'Expand: log(xy)', answer: 'log(x)+log(y)' },
+  { prompt: 'Expand: log(x/y)', answer: 'log(x)-log(y)' },
+  { prompt: 'Expand: log(x<sup>5</sup>)', answer: '5log(x)' },
+  { prompt: 'Expand: log(x<sup>2</sup>y/z)', answer: '2log(x)+log(y)-log(z)' },
+  { prompt: 'Condense: log(a) + log(b)', answer: 'log(ab)' },
+];
+
+function buildLogPropProblems() {
+  const cont = $('logPropProblems');
+  cont.innerHTML = '';
+  logPropProbData.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = 'lpp' + i;
+    div.innerHTML = `<span class="prompt">${p.prompt}</span>
+      <input type="text" id="lppIn${i}" placeholder="Answer">
+      <span class="feedback" id="lppFb${i}"></span>`;
+    cont.appendChild(div);
+  });
+}
+
+function checkLogPropProblems() {
+  let allCorrect = true;
+  logPropProbData.forEach((p, i) => {
+    const val = $('lppIn' + i).value.trim();
+    const fb = $('lppFb' + i);
+    const el = $('lpp' + i);
+    const correct = normalize(val) === normalize(p.answer);
+    if (correct) {
+      fb.textContent = 'Correct!';
+      fb.className = 'feedback correct';
+      el.className = 'problem correct';
+      springPop(el);
+    } else {
+      fb.textContent = 'Try again';
+      fb.className = 'feedback incorrect';
+      el.className = 'problem incorrect';
+      shakeEl(el);
+      allCorrect = false;
+    }
+  });
+  if (allCorrect) markComplete(3);
+}
+
+function showLogPropAnswers() {
+  logPropProbData.forEach((p, i) => {
+    $('lppIn' + i).value = p.answer;
+    $('lppFb' + i).textContent = 'Answer shown';
+    $('lppFb' + i).className = 'feedback correct';
+    $('lpp' + i).className = 'problem correct';
+  });
+  markComplete(3);
+}
+
+// ====== SECTION 5: Solving Equations ======
+const solveProbData = [
+  { prompt: 'Solve: 2<sup>x</sup> = 32', answer: 5, tol: 0.01 },
+  { prompt: 'Solve: 3<sup>x</sup> = 243', answer: 5, tol: 0.01 },
+  { prompt: 'Solve: log<sub>2</sub>(x) = 6', answer: 64, tol: 0.01 },
+  { prompt: 'Solve: 5<sup>x</sup> = 200 (round to 2 decimals)', answer: 3.29, tol: 0.02 },
+  { prompt: 'Half-life: 200g substance, half-life 4 years. Amount after 12 years?', answer: 25, tol: 0.5 },
+  { prompt: 'Compound interest: $5000 at 6% compounded annually for 10 years. Find A (round to nearest dollar)', answer: 8954, tol: 5 },
+];
+
+function buildSolveProblems() {
+  const cont = $('solveProblems');
+  cont.innerHTML = '';
+  solveProbData.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = 'sp' + i;
+    div.innerHTML = `<span class="prompt">${p.prompt}</span>
+      <input type="text" id="spIn${i}" placeholder="Answer">
+      <span class="feedback" id="spFb${i}"></span>`;
+    cont.appendChild(div);
+  });
+}
+
+function checkSolveProblems() {
+  let allCorrect = true;
+  solveProbData.forEach((p, i) => {
+    const val = $('spIn' + i).value.trim();
+    const fb = $('spFb' + i);
+    const el = $('sp' + i);
+    const correct = checkNum(val, p.answer, p.tol);
+    if (correct) {
+      fb.textContent = 'Correct!';
+      fb.className = 'feedback correct';
+      el.className = 'problem correct';
+      springPop(el);
+    } else {
+      fb.textContent = 'Try again';
+      fb.className = 'feedback incorrect';
+      el.className = 'problem incorrect';
+      shakeEl(el);
+      allCorrect = false;
+    }
+  });
+  if (allCorrect) markComplete(4);
+}
+
+function showSolveAnswers() {
+  solveProbData.forEach((p, i) => {
+    $('spIn' + i).value = p.answer;
+    $('spFb' + i).textContent = 'Answer shown';
+    $('spFb' + i).className = 'feedback correct';
+    $('sp' + i).className = 'problem correct';
+  });
+  markComplete(4);
+}
+
+// ====== SECTION 6: Quick Quiz ======
+const quizData = [
+  { q: 'Evaluate: 4<sup>3</sup>', a: 64, tol: 0.01 },
+  { q: 'Solve: 2<sup>x</sup> = 64', a: 6, tol: 0.01 },
+  { q: 'log<sub>3</sub>(81) = ?', a: 4, tol: 0.01 },
+  { q: 'log<sub>5</sub>(1) = ?', a: 0, tol: 0.01 },
+  { q: 'ln(e<sup>3</sup>) = ?', a: 3, tol: 0.01 },
+  { q: 'Solve: log<sub>2</sub>(x) = 8', a: 256, tol: 0.01 },
+  { q: 'Simplify: x<sup>4</sup> &middot; x<sup>-2</sup> (give exponent of x)', a: 2, tol: 0.01 },
+  { q: 'Half-life: 80g, half-life = 3 years. Amount after 9 years?', a: 10, tol: 0.5 },
+  { q: '$2000 at 4% compounded annually for 5 years. Find A (nearest dollar)', a: 2433, tol: 5 },
+  { q: 'log<sub>2</sub>(32) + log<sub>2</sub>(4) = ?', a: 7, tol: 0.01 },
+];
+
+function buildQuiz() {
+  const cont = $('quizProblems');
+  cont.innerHTML = '';
+  quizData.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-problem';
+    div.id = 'qp' + i;
+    div.innerHTML = `<div class="q-num">Question ${i + 1}</div>
+      <div class="q-text">${q.q}</div>
+      <input type="text" id="qIn${i}" placeholder="Your answer">
+      <div class="q-feedback" id="qFb${i}"></div>`;
+    cont.appendChild(div);
+  });
+}
+
+function gradeQuiz() {
+  let score = 0;
+  quizData.forEach((q, i) => {
+    const val = $('qIn' + i).value.trim();
+    const fb = $('qFb' + i);
+    const el = $('qp' + i);
+    const correct = checkNum(val, q.a, q.tol);
+    if (correct) {
+      score++;
+      fb.textContent = 'Correct!';
+      fb.className = 'q-feedback correct';
+      el.className = 'quiz-problem correct';
+      springPop(el);
+    } else {
+      fb.textContent = `Incorrect. Answer: ${q.a}`;
+      fb.className = 'q-feedback incorrect';
+      el.className = 'quiz-problem incorrect';
+      shakeEl(el);
+    }
+  });
+  $('quizScore').innerHTML = `Score: <span>${score} / 10</span>`;
+  if (score >= 7) markComplete(5);
+}
+
+function showQuizAnswers() {
+  quizData.forEach((q, i) => {
+    $('qIn' + i).value = q.a;
+    $('qFb' + i).textContent = 'Answer: ' + q.a;
+    $('qFb' + i).className = 'q-feedback correct';
+    $('qp' + i).className = 'quiz-problem correct';
+  });
+  $('quizScore').innerHTML = `Score: <span>10 / 10</span>`;
+  markComplete(5);
+}
+
+function resetQuiz() {
+  quizData.forEach((q, i) => {
+    $('qIn' + i).value = '';
+    $('qFb' + i).textContent = '';
+    $('qFb' + i).className = 'q-feedback';
+    $('qp' + i).className = 'quiz-problem';
+  });
+  $('quizScore').innerHTML = `Score: <span>-- / 10</span>`;
+}
+
+// ====== INIT ======
+buildExpProblems();
+buildPropProblems();
+buildLogProblems();
+buildLogPropProblems();
+buildSolveProblems();
+buildQuiz();
+drawExpGraph();
+</script>
+</body>
+</html>

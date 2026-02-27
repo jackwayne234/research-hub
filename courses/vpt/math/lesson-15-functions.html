@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 15 -- Functions</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #262a33;
+    --border: #363b47;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* -- Progress Bar -- */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* -- Header -- */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* -- Collapsible Cards -- */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details[open] { border-color: var(--accent); }
+  details.completed { border-color: var(--green); }
+  details.completed summary::after {
+    content: 'Done';
+    font-size: 0.65rem;
+    background: rgba(34,197,94,0.15);
+    color: var(--green);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    margin-left: auto;
+    font-weight: 600;
+  }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s var(--spring);
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .card-body { padding: 1.25rem; }
+  .card-body p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+  .card-body h3 {
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  /* -- Equation display -- */
+  .eq {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--orange);
+    text-align: center;
+    margin: 0.75rem 0;
+    padding: 0.5rem;
+    background: rgba(245,158,11,0.06);
+    border-radius: var(--radius);
+  }
+
+  /* -- Info boxes -- */
+  .info-box {
+    background: rgba(99,102,241,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+  }
+  .info-box.green {
+    background: rgba(34,197,94,0.08);
+    border-color: var(--green);
+  }
+  .info-box.pink {
+    background: rgba(236,72,153,0.08);
+    border-color: var(--pink);
+  }
+  .info-box.amber {
+    background: rgba(245,158,11,0.08);
+    border-color: var(--orange);
+  }
+
+  /* -- Buttons -- */
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn.green { background: var(--green); }
+  .btn.pink { background: var(--pink); }
+  .btn.orange { background: var(--orange); color: #1e2128; }
+  .btn.outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0.75rem 0;
+  }
+
+  /* -- Rule Cards -- */
+  .rule-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .rule-card {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .rule-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .rule-card .rule-name {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  .rule-card .rule-formula {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .rule-card .rule-example {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .rule-card .rule-example strong { color: var(--green); }
+
+  /* -- Practice Problems -- */
+  .problem-set {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    transition: border-color 0.3s, transform 0.15s;
+  }
+  .problem.correct { border-color: var(--green); }
+  .problem.incorrect { border-color: var(--pink); }
+  .problem .prompt {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    min-width: 200px;
+  }
+  .problem input[type="text"] {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .problem input:focus { border-color: var(--accent); }
+  .problem .feedback {
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 60px;
+  }
+  .problem .feedback.correct { color: var(--green); }
+  .problem .feedback.incorrect { color: var(--pink); }
+
+  /* -- Quiz -- */
+  .quiz-score {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    background: rgba(99,102,241,0.08);
+    border-radius: var(--radius);
+  }
+  .quiz-score span { color: var(--green); }
+
+  .quiz-problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.75rem 0;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem.correct { border-color: var(--green); }
+  .quiz-problem.incorrect { border-color: var(--pink); }
+  .quiz-problem .q-num {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  .quiz-problem .q-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .quiz-problem input[type="text"] {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem input:focus { border-color: var(--accent); }
+  .quiz-problem .q-feedback {
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    min-height: 1.2em;
+  }
+  .quiz-problem .q-feedback.correct { color: var(--green); }
+  .quiz-problem .q-feedback.incorrect { color: var(--pink); }
+
+  /* -- Feature tags -- */
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+  }
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .tag.indigo { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .tag.green { background: rgba(34,197,94,0.15); color: var(--green); }
+  .tag.pink { background: rgba(236,72,153,0.15); color: var(--pink); }
+  .tag.amber { background: rgba(245,158,11,0.15); color: var(--orange); }
+
+  /* -- Animations -- */
+  @keyframes popIn {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* -- Responsive -- */
+  @media (max-width: 640px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.2rem; }
+    summary { font-size: 0.9rem; padding: 0.75rem 1rem; }
+    .card-body { padding: 1rem; }
+    .rule-cards { grid-template-columns: 1fr; }
+    .problem { flex-direction: column; align-items: stretch; }
+    .problem .prompt { min-width: unset; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar">
+  <div class="seg"></div>
+  <div class="seg"></div>
+  <div class="seg"></div>
+  <div class="seg"></div>
+  <div class="seg"></div>
+  <div class="seg"></div>
+</div>
+
+<h1>Lesson 15 -- Functions</h1>
+<p class="subtitle">Domain, range, function notation, composition, and inverses</p>
+
+<!-- ====== SECTION 0: What Is a Function? ====== -->
+<details id="sec0" open>
+  <summary>1. What Is a Function?</summary>
+  <div class="card-body">
+    <p>A <strong>function</strong> is a rule that assigns each input exactly one output. Think of it as a machine: you feed in a number, the machine does something to it, and exactly one result comes out.</p>
+
+    <div class="info-box">
+      <strong>Key idea:</strong> Every input (x) maps to exactly one output (y). If a single x-value produces two different y-values, it is NOT a function.
+    </div>
+
+    <h3>Function Notation</h3>
+    <p>Instead of writing y = 2x + 3, we write:</p>
+    <div class="eq">f(x) = 2x + 3</div>
+    <p>Here, <strong>f</strong> is the name of the function and <strong>x</strong> is the input variable. f(x) is read "f of x" and represents the output.</p>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Function notation</div>
+        <div class="rule-formula">f(x) = expression</div>
+        <div class="rule-example">f(x) = x^2 + 1 means "square x, then add 1"</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Evaluating</div>
+        <div class="rule-formula">f(a) = plug in a for x</div>
+        <div class="rule-example">If f(x) = 3x - 1, then <strong>f(4) = 11</strong></div>
+      </div>
+    </div>
+
+    <h3>The Vertical Line Test</h3>
+    <p>A graph represents a function if and only if every vertical line crosses the graph at most once. If any vertical line hits the curve in two or more places, the relation is <em>not</em> a function.</p>
+
+    <div class="info-box green">
+      <strong>Passes VLT:</strong> Lines, parabolas (y = x^2), absolute value (y = |x|), cubic curves.<br>
+      <strong>Fails VLT:</strong> Circles (x^2 + y^2 = r^2), sideways parabolas (x = y^2).
+    </div>
+
+    <h3>Domain and Range (Intro)</h3>
+    <p><strong>Domain</strong> = the set of all valid inputs (x-values).<br>
+    <strong>Range</strong> = the set of all possible outputs (y-values).</p>
+
+    <div class="eq">f(x) = x^2 --> Domain: all reals, Range: [0, infinity)</div>
+
+    <h3>Practice</h3>
+    <div class="problem-set" id="s0Problems"></div>
+    <div class="btn-row">
+      <button class="btn green" onclick="checkS0()">Check Answers</button>
+      <button class="btn outline" onclick="showS0()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ====== SECTION 1: Domain & Range ====== -->
+<details id="sec1">
+  <summary>2. Domain & Range</summary>
+  <div class="card-body">
+    <p>Finding the domain means identifying all x-values for which the function is defined. Three main restrictions to watch for:</p>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Rational functions</div>
+        <div class="rule-formula">Denominator != 0</div>
+        <div class="rule-example">f(x) = 1/(x-3) --> domain: <strong>x != 3</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Radical functions</div>
+        <div class="rule-formula">Radicand >= 0</div>
+        <div class="rule-example">f(x) = sqrt(x-2) --> domain: <strong>x >= 2</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Polynomials</div>
+        <div class="rule-formula">Domain = all reals</div>
+        <div class="rule-example">f(x) = x^3 + 2x - 5 --> <strong>(-inf, inf)</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Combined restrictions</div>
+        <div class="rule-formula">Check all rules</div>
+        <div class="rule-example">f(x) = sqrt(x)/(x-4) --> <strong>x >= 0 and x != 4</strong></div>
+      </div>
+    </div>
+
+    <h3>Interval Notation</h3>
+    <div class="info-box amber">
+      <strong>Brackets:</strong> [ ] means the endpoint IS included (closed).<br>
+      <strong>Parentheses:</strong> ( ) means the endpoint is NOT included (open).<br>
+      <strong>Examples:</strong> [2, 5) means 2 <= x < 5. (-inf, inf) means all reals.
+    </div>
+
+    <div class="eq">[a, b] = a <= x <= b&emsp;&emsp;(a, b) = a < x < b</div>
+
+    <h3>Finding Range</h3>
+    <p>The range depends on the function type. For y = x^2, the smallest output is 0 (range: [0, inf)). For y = sqrt(x), outputs start at 0 and grow (range: [0, inf)). For rational functions, look for horizontal asymptotes and excluded values.</p>
+
+    <div class="info-box">
+      <strong>Strategy:</strong> To find range algebraically, solve x = f^(-1)(y) and see which y-values produce valid x-values.
+    </div>
+
+    <h3>Practice</h3>
+    <div class="problem-set" id="s1Problems"></div>
+    <div class="btn-row">
+      <button class="btn green" onclick="checkS1()">Check Answers</button>
+      <button class="btn outline" onclick="showS1()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ====== SECTION 2: Evaluating & Composing ====== -->
+<details id="sec2">
+  <summary>3. Evaluating & Composing Functions</summary>
+  <div class="card-body">
+    <h3>Evaluating Functions</h3>
+    <p>To evaluate f(a), replace every x in the formula with a, then simplify.</p>
+    <div class="eq">f(x) = 2x^2 - 3x + 1&emsp;-->&emsp;f(4) = 2(16) - 12 + 1 = 21</div>
+
+    <div class="info-box">
+      <strong>Careful with negatives:</strong> f(-2) means substitute -2 for x. If f(x) = x^2, then f(-2) = (-2)^2 = 4, not -4.
+    </div>
+
+    <h3>Composition of Functions</h3>
+    <p>The composition (f o g)(x) means "apply g first, then apply f to the result." It is written as f(g(x)).</p>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Composition</div>
+        <div class="rule-formula">(f o g)(x) = f(g(x))</div>
+        <div class="rule-example">Apply g first, then f to the result</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Order matters</div>
+        <div class="rule-formula">f(g(x)) != g(f(x))</div>
+        <div class="rule-example">Composition is NOT commutative in general</div>
+      </div>
+    </div>
+
+    <p><strong>Example:</strong> Let f(x) = 2x + 1 and g(x) = x^2.</p>
+    <div class="eq">f(g(3)) = f(9) = 2(9) + 1 = 19</div>
+    <div class="eq">g(f(3)) = g(7) = 7^2 = 49</div>
+
+    <div class="info-box green">
+      <strong>To compose algebraically:</strong> Replace the x in the outer function with the entire inner function expression.<br>
+      f(g(x)) = 2(x^2) + 1 = 2x^2 + 1<br>
+      g(f(x)) = (2x + 1)^2 = 4x^2 + 4x + 1
+    </div>
+
+    <h3>Practice</h3>
+    <div class="problem-set" id="s2Problems"></div>
+    <div class="btn-row">
+      <button class="btn green" onclick="checkS2()">Check Answers</button>
+      <button class="btn outline" onclick="showS2()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ====== SECTION 3: Inverse Functions ====== -->
+<details id="sec3">
+  <summary>4. Inverse Functions</summary>
+  <div class="card-body">
+    <p>An <strong>inverse function</strong> undoes what the original function does. If f takes a to b, then f^(-1) takes b back to a.</p>
+
+    <div class="eq">f(f^(-1)(x)) = x&emsp;and&emsp;f^(-1)(f(x)) = x</div>
+
+    <div class="info-box">
+      <strong>Not all functions have inverses.</strong> A function must be <em>one-to-one</em> (each output comes from exactly one input) to have an inverse. Use the <strong>Horizontal Line Test</strong>: if any horizontal line crosses the graph more than once, the function does NOT have an inverse.
+    </div>
+
+    <h3>Finding Inverses Algebraically</h3>
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Step 1</div>
+        <div class="rule-formula">Replace f(x) with y</div>
+        <div class="rule-example">f(x) = 2x + 3 becomes <strong>y = 2x + 3</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Step 2</div>
+        <div class="rule-formula">Swap x and y</div>
+        <div class="rule-example"><strong>x = 2y + 3</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Step 3</div>
+        <div class="rule-formula">Solve for y</div>
+        <div class="rule-example">y = (x - 3)/2</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Step 4</div>
+        <div class="rule-formula">Rename y as f^(-1)(x)</div>
+        <div class="rule-example"><strong>f^(-1)(x) = (x - 3)/2</strong></div>
+      </div>
+    </div>
+
+    <div class="info-box amber">
+      <strong>Important:</strong> f^(-1)(x) does NOT mean 1/f(x). The superscript -1 denotes the inverse function, not a negative exponent.
+    </div>
+
+    <p><strong>Verification:</strong> Check that f(f^(-1)(x)) = x.</p>
+    <div class="eq">f((x-3)/2) = 2 * (x-3)/2 + 3 = (x-3) + 3 = x&emsp;Verified!</div>
+
+    <div class="info-box green">
+      <strong>Graphically:</strong> The graph of f^(-1) is the reflection of f across the line y = x.
+    </div>
+
+    <h3>Practice</h3>
+    <div class="problem-set" id="s3Problems"></div>
+    <div class="btn-row">
+      <button class="btn green" onclick="checkS3()">Check Answers</button>
+      <button class="btn outline" onclick="showS3()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ====== SECTION 4: Transformations ====== -->
+<details id="sec4">
+  <summary>5. Transformations</summary>
+  <div class="card-body">
+    <p>Transformations modify the graph of a parent function by shifting, reflecting, stretching, or compressing it.</p>
+
+    <h3>Parent Functions</h3>
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Linear</div>
+        <div class="rule-formula">f(x) = x</div>
+        <div class="rule-example">Straight line through the origin</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Quadratic</div>
+        <div class="rule-formula">f(x) = x^2</div>
+        <div class="rule-example">U-shaped parabola, vertex at origin</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Absolute value</div>
+        <div class="rule-formula">f(x) = |x|</div>
+        <div class="rule-example">V-shape, vertex at origin</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Square root</div>
+        <div class="rule-formula">f(x) = sqrt(x)</div>
+        <div class="rule-example">Half-parabola, starts at origin</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Cubic</div>
+        <div class="rule-formula">f(x) = x^3</div>
+        <div class="rule-example">S-shaped curve through origin</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Reciprocal</div>
+        <div class="rule-formula">f(x) = 1/x</div>
+        <div class="rule-example">Two branches, asymptotes at axes</div>
+      </div>
+    </div>
+
+    <h3>Transformation Rules</h3>
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Vertical shift up</div>
+        <div class="rule-formula">f(x) + k</div>
+        <div class="rule-example">x^2 + 3 shifts the parabola <strong>up 3</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Vertical shift down</div>
+        <div class="rule-formula">f(x) - k</div>
+        <div class="rule-example">x^2 - 2 shifts the parabola <strong>down 2</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Horizontal shift right</div>
+        <div class="rule-formula">f(x - h)</div>
+        <div class="rule-example">(x - 4)^2 shifts <strong>right 4</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Horizontal shift left</div>
+        <div class="rule-formula">f(x + h)</div>
+        <div class="rule-example">(x + 2)^2 shifts <strong>left 2</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Reflect over x-axis</div>
+        <div class="rule-formula">-f(x)</div>
+        <div class="rule-example">-x^2 flips the parabola <strong>upside down</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Reflect over y-axis</div>
+        <div class="rule-formula">f(-x)</div>
+        <div class="rule-example">(-x)^3 = -x^3 mirrors left/right</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Vertical stretch</div>
+        <div class="rule-formula">a * f(x), a > 1</div>
+        <div class="rule-example">3x^2 is <strong>narrower</strong> (steeper)</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Vertical compress</div>
+        <div class="rule-formula">a * f(x), 0 < a < 1</div>
+        <div class="rule-example">(1/2)x^2 is <strong>wider</strong> (flatter)</div>
+      </div>
+    </div>
+
+    <div class="info-box pink">
+      <strong>Remember:</strong> Horizontal transformations work "opposite" to what you might expect. f(x - 3) shifts RIGHT (not left), and f(2x) compresses horizontally (not stretches).
+    </div>
+
+    <h3>Practice</h3>
+    <div class="problem-set" id="s4Problems"></div>
+    <div class="btn-row">
+      <button class="btn green" onclick="checkS4()">Check Answers</button>
+      <button class="btn outline" onclick="showS4()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ====== SECTION 5: Quick Quiz ====== -->
+<details id="sec5">
+  <summary>6. Quick Quiz</summary>
+  <div class="card-body">
+    <p>Test your understanding of all function topics. Score 7 or more to complete this section.</p>
+
+    <div class="quiz-score" id="quizScore">Score: <span>-- / 10</span></div>
+    <div id="quizProblems"></div>
+    <div class="btn-row">
+      <button class="btn green" onclick="gradeQuiz()">Grade Quiz</button>
+      <button class="btn orange" onclick="showQuizAnswers()">Show Answers</button>
+      <button class="btn pink" onclick="resetQuiz()">Reset</button>
+    </div>
+  </div>
+</details>
+
+<script>
+// ====== UTILITIES ======
+const $ = id => document.getElementById(id);
+const normalize = s => s.toString().trim().toLowerCase().replace(/\s+/g, ' ');
+const completed = Array(6).fill(false);
+
+function markComplete(idx) {
+  completed[idx] = true;
+  const sec = $('sec' + idx);
+  sec.classList.add('completed');
+  updateProgress();
+}
+
+function updateProgress() {
+  document.querySelectorAll('.progress-bar .seg').forEach((s, i) => {
+    s.classList.toggle('done', completed[i]);
+  });
+}
+
+function springPop(el) {
+  el.style.transform = 'scale(1.03)';
+  setTimeout(() => el.style.transform = 'scale(1)', 300);
+}
+
+function shakeEl(el) {
+  el.style.animation = 'shake 0.4s';
+  setTimeout(() => el.style.animation = '', 400);
+}
+
+// ====== GENERIC PROBLEM BUILDER ======
+function buildProblems(data, containerId, prefix) {
+  const cont = $(containerId);
+  cont.innerHTML = '';
+  data.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = prefix + i;
+    div.innerHTML = `
+      <span class="prompt">${p.prompt}</span>
+      <input type="text" id="${prefix}In${i}" placeholder="your answer">
+      <span class="feedback" id="${prefix}Fb${i}"></span>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function checkProblems(data, prefix, secIdx) {
+  let allCorrect = true;
+  data.forEach((p, i) => {
+    const input = normalize($(prefix + 'In' + i).value);
+    const answers = [p.answer, ...(p.alts || [])].map(normalize);
+    const prob = $(prefix + i);
+    const fb = $(prefix + 'Fb' + i);
+
+    if (answers.includes(input)) {
+      prob.className = 'problem correct';
+      fb.textContent = 'Correct!';
+      fb.className = 'feedback correct';
+      springPop(prob);
+    } else {
+      allCorrect = false;
+      prob.className = 'problem incorrect';
+      fb.textContent = p.display || ('Answer: ' + p.answer);
+      fb.className = 'feedback incorrect';
+      shakeEl(prob);
+    }
+  });
+  if (allCorrect) markComplete(secIdx);
+}
+
+function showAnswers(data, prefix, secIdx) {
+  data.forEach((p, i) => {
+    $(prefix + 'In' + i).value = p.answer;
+    $(prefix + i).className = 'problem correct';
+    const fb = $(prefix + 'Fb' + i);
+    fb.textContent = p.display || p.answer;
+    fb.className = 'feedback correct';
+  });
+  markComplete(secIdx);
+}
+
+// ====== SECTION 0: What Is a Function? ======
+const s0Data = [
+  { prompt: 'f(x) = 3x + 5. Find f(2).', answer: '11', alts: ['11.0'], display: 'f(2) = 3(2) + 5 = 11' },
+  { prompt: 'f(x) = x^2 - 4. Find f(-3).', answer: '5', alts: ['5.0'], display: 'f(-3) = 9 - 4 = 5' },
+  { prompt: 'Is x^2 + y^2 = 25 a function? (yes/no)', answer: 'no', alts: [], display: 'No -- circle fails vertical line test' },
+  { prompt: 'Is y = 2x - 7 a function? (yes/no)', answer: 'yes', alts: [], display: 'Yes -- linear, passes VLT' },
+];
+buildProblems(s0Data, 's0Problems', 's0p');
+function checkS0() { checkProblems(s0Data, 's0p', 0); }
+function showS0() { showAnswers(s0Data, 's0p', 0); }
+
+// ====== SECTION 1: Domain & Range ======
+const s1Data = [
+  { prompt: 'Domain of f(x) = 1/(x-5)?', answer: 'x != 5', alts: ['x!=5','x /= 5','all reals except 5','(-inf,5)u(5,inf)','(-inf, 5) u (5, inf)'], display: 'x != 5 (denominator cannot be 0)' },
+  { prompt: 'Domain of f(x) = sqrt(x + 3)?', answer: 'x >= -3', alts: ['x>=-3','[-3, inf)','[-3,inf)','[-3, infinity)'], display: 'x >= -3 (radicand must be >= 0)' },
+  { prompt: 'Domain of f(x) = x^2 + 4x?', answer: 'all reals', alts: ['all real numbers','(-inf, inf)','(-inf,inf)','all'], display: 'All reals (polynomial -- no restrictions)' },
+  { prompt: 'Range of f(x) = x^2?', answer: '[0, inf)', alts: ['[0,inf)','[0, infinity)','y >= 0','y>=0','[0,infinity)'], display: '[0, inf) -- smallest output is 0' },
+];
+buildProblems(s1Data, 's1Problems', 's1p');
+function checkS1() { checkProblems(s1Data, 's1p', 1); }
+function showS1() { showAnswers(s1Data, 's1p', 1); }
+
+// ====== SECTION 2: Evaluating & Composing ======
+const s2Data = [
+  { prompt: 'f(x)=2x+1, g(x)=x^2. Find f(g(2)).', answer: '9', alts: ['9.0'], display: 'g(2)=4, f(4)=2(4)+1=9' },
+  { prompt: 'f(x)=2x+1, g(x)=x^2. Find g(f(2)).', answer: '25', alts: ['25.0'], display: 'f(2)=5, g(5)=25' },
+  { prompt: 'f(x)=x-3, g(x)=4x. Find (f o g)(5).', answer: '17', alts: ['17.0'], display: 'g(5)=20, f(20)=17' },
+  { prompt: 'f(x)=x+1, g(x)=x^2. What is f(g(x))?', answer: 'x^2+1', alts: ['x^2 + 1','x^2+1','x^2 +1','x^2+ 1'], display: 'f(g(x)) = (x^2) + 1 = x^2 + 1' },
+];
+buildProblems(s2Data, 's2Problems', 's2p');
+function checkS2() { checkProblems(s2Data, 's2p', 2); }
+function showS2() { showAnswers(s2Data, 's2p', 2); }
+
+// ====== SECTION 3: Inverse Functions ======
+const s3Data = [
+  { prompt: 'Find the inverse of f(x) = 3x + 6.', answer: '(x-6)/3', alts: ['(x - 6)/3','(x-6) / 3','x/3-2','x/3 - 2'], display: 'f^(-1)(x) = (x - 6)/3' },
+  { prompt: 'Find the inverse of f(x) = (x-1)/2.', answer: '2x+1', alts: ['2x + 1','2x +1','2x+ 1'], display: 'f^(-1)(x) = 2x + 1' },
+  { prompt: 'Does f(x) = x^2 have an inverse? (yes/no)', answer: 'no', alts: [], display: 'No -- not one-to-one (fails HLT)' },
+  { prompt: 'f(x)=5x-10. What is f^(-1)(15)?', answer: '5', alts: ['5.0'], display: 'f^(-1)(x)=(x+10)/5, so f^(-1)(15)=25/5=5' },
+];
+buildProblems(s3Data, 's3Problems', 's3p');
+function checkS3() { checkProblems(s3Data, 's3p', 3); }
+function showS3() { showAnswers(s3Data, 's3p', 3); }
+
+// ====== SECTION 4: Transformations ======
+const s4Data = [
+  { prompt: 'y = x^2 + 5 shifts the parabola how?', answer: 'up 5', alts: ['up five','5 up','up by 5','vertically up 5'], display: 'Up 5 units (+5 outside the function)' },
+  { prompt: 'y = (x - 3)^2 shifts how?', answer: 'right 3', alts: ['right three','3 right','right by 3'], display: 'Right 3 units (x - 3 inside)' },
+  { prompt: 'y = -x^2 does what to the parabola?', answer: 'reflects over x-axis', alts: ['reflect over x-axis','reflection over x axis','flip over x-axis','reflects over the x-axis','flips over x-axis','reflect over x axis','reflects across x-axis'], display: 'Reflects over the x-axis (opens downward)' },
+  { prompt: 'y = 3|x| is a vertical ___ of |x|.', answer: 'stretch', alts: ['vertical stretch','stretch by 3'], display: 'Vertical stretch by factor of 3 (narrower)' },
+];
+buildProblems(s4Data, 's4Problems', 's4p');
+function checkS4() { checkProblems(s4Data, 's4p', 4); }
+function showS4() { showAnswers(s4Data, 's4p', 4); }
+
+// ====== SECTION 5: Quick Quiz ======
+const quizData = [
+  { q: 'f(x) = 4x - 7. Find f(3).', answer: '5', alts: ['5.0'], explanation: 'f(3) = 4(3) - 7 = 12 - 7 = 5.' },
+  { q: 'What is the domain of f(x) = sqrt(2x - 8)?', answer: 'x >= 4', alts: ['x>=4','[4, inf)','[4,inf)','[4, infinity)','[4,infinity)'], explanation: '2x - 8 >= 0 --> x >= 4.' },
+  { q: 'f(x) = x + 2, g(x) = 3x. Find f(g(4)).', answer: '14', alts: ['14.0'], explanation: 'g(4) = 12, f(12) = 14.' },
+  { q: 'Find the inverse of f(x) = (x + 4)/2.', answer: '2x-4', alts: ['2x - 4','2x -4','2x- 4','2(x-2)'], explanation: 'Swap and solve: x = (y+4)/2, 2x = y+4, y = 2x - 4.' },
+  { q: 'Is y = |x| a function? (yes/no)', answer: 'yes', alts: [], explanation: 'Yes -- passes the vertical line test.' },
+  { q: 'y = (x + 6)^2 shifts y = x^2 in which direction?', answer: 'left 6', alts: ['left six','6 left','left by 6'], explanation: '(x + 6) shifts left by 6 units.' },
+  { q: 'f(x) = x^2, g(x) = x - 1. What is g(f(x))?', answer: 'x^2-1', alts: ['x^2 - 1','x^2 -1','x^2- 1'], explanation: 'g(f(x)) = f(x) - 1 = x^2 - 1.' },
+  { q: 'Domain of f(x) = 1/(x^2 - 9)? (excluded values)', answer: 'x != 3 and x != -3', alts: ['x!=3 and x!=-3','x != 3, x != -3','x!=3, x!=-3','3 and -3','3, -3','-3, 3','-3 and 3'], explanation: 'x^2 - 9 = 0 when x = 3 or x = -3.' },
+  { q: 'f(x) = 2x + 5. What is f^(-1)(11)?', answer: '3', alts: ['3.0'], explanation: 'f^(-1)(x) = (x-5)/2. f^(-1)(11) = 6/2 = 3.' },
+  { q: 'y = -(x - 2)^2 + 3 -- what is the vertex?', answer: '(2, 3)', alts: ['(2,3)','2, 3','2,3'], explanation: 'Vertex form a(x-h)^2+k gives vertex (h,k) = (2,3).' },
+];
+
+function buildQuiz() {
+  const cont = $('quizProblems');
+  cont.innerHTML = '';
+  quizData.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-problem';
+    div.id = 'qp' + i;
+    div.innerHTML = `
+      <div class="q-num">Question ${i + 1}</div>
+      <div class="q-text">${q.q}</div>
+      <input type="text" id="qIn${i}" placeholder="your answer">
+      <div class="q-feedback" id="qFb${i}"></div>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function gradeQuiz() {
+  let score = 0;
+  quizData.forEach((q, i) => {
+    const input = normalize($('qIn' + i).value);
+    const answers = [q.answer, ...q.alts].map(normalize);
+    const isRight = answers.includes(input);
+
+    if (isRight) {
+      score++;
+      $('qp' + i).className = 'quiz-problem correct';
+      $('qFb' + i).textContent = 'Correct!';
+      $('qFb' + i).className = 'q-feedback correct';
+      springPop($('qp' + i));
+    } else {
+      $('qp' + i).className = 'quiz-problem incorrect';
+      $('qFb' + i).innerHTML = `Incorrect. Answer: ${q.answer}. ${q.explanation}`;
+      $('qFb' + i).className = 'q-feedback incorrect';
+      shakeEl($('qp' + i));
+    }
+  });
+
+  $('quizScore').innerHTML = `Score: <span>${score} / 10</span>`;
+  if (score >= 7) markComplete(5);
+}
+
+function showQuizAnswers() {
+  quizData.forEach((q, i) => {
+    $('qIn' + i).value = q.answer;
+    $('qp' + i).className = 'quiz-problem correct';
+    $('qFb' + i).innerHTML = q.explanation;
+    $('qFb' + i).className = 'q-feedback correct';
+  });
+  $('quizScore').innerHTML = `Score: <span>10 / 10</span>`;
+  markComplete(5);
+}
+
+function resetQuiz() {
+  quizData.forEach((q, i) => {
+    $('qIn' + i).value = '';
+    $('qp' + i).className = 'quiz-problem';
+    $('qFb' + i).textContent = '';
+    $('qFb' + i).className = 'q-feedback';
+  });
+  $('quizScore').innerHTML = `Score: <span>-- / 10</span>`;
+  completed[5] = false;
+  $('sec5').classList.remove('completed');
+  updateProgress();
+}
+
+buildQuiz();
+
+</script>
+</body>
+</html>

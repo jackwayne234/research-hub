@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 18 -- Sequences &amp; Series</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #262a33;
+    --border: #363b47;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* -- Progress Bar -- */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* -- Header -- */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* -- Collapsible Cards -- */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details[open] { border-color: var(--accent); }
+  details.completed { border-color: var(--green); }
+  details.completed summary::after {
+    content: 'Done';
+    font-size: 0.65rem;
+    background: rgba(34,197,94,0.15);
+    color: var(--green);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    margin-left: auto;
+    font-weight: 600;
+  }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s var(--spring);
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .card-body { padding: 1.25rem; }
+  .card-body p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+  .card-body h3 {
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  /* -- Equation display -- */
+  .eq {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--orange);
+    text-align: center;
+    margin: 0.75rem 0;
+    padding: 0.5rem;
+    background: rgba(245,158,11,0.06);
+    border-radius: var(--radius);
+  }
+
+  /* -- Info boxes -- */
+  .info-box {
+    background: rgba(99,102,241,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+  }
+  .info-box.green {
+    background: rgba(34,197,94,0.08);
+    border-color: var(--green);
+  }
+  .info-box.pink {
+    background: rgba(236,72,153,0.08);
+    border-color: var(--pink);
+  }
+  .info-box.amber {
+    background: rgba(245,158,11,0.08);
+    border-color: var(--orange);
+  }
+
+  /* -- Buttons -- */
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn.green { background: var(--green); }
+  .btn.pink { background: var(--pink); }
+  .btn.orange { background: var(--orange); color: #1e2128; }
+  .btn.outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0.75rem 0;
+  }
+
+  /* -- Rule Cards -- */
+  .rule-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .rule-card {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .rule-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .rule-card .rule-name {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  .rule-card .rule-formula {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .rule-card .rule-example {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .rule-card .rule-example strong { color: var(--green); }
+
+  /* -- Practice Problems -- */
+  .problem-set {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    transition: border-color 0.3s, transform 0.15s;
+  }
+  .problem.correct { border-color: var(--green); }
+  .problem.incorrect { border-color: var(--pink); }
+  .problem .prompt {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    min-width: 200px;
+  }
+  .problem input[type="text"] {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .problem input:focus { border-color: var(--accent); }
+  .problem .feedback {
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 60px;
+  }
+  .problem .feedback.correct { color: var(--green); }
+  .problem .feedback.incorrect { color: var(--pink); }
+
+  /* -- Visualizer -- */
+  .viz-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0.75rem 0;
+    align-items: center;
+  }
+  .viz-controls label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .viz-controls input[type="number"],
+  .viz-controls select {
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    width: 90px;
+    transition: border-color 0.3s;
+  }
+  .viz-controls input:focus,
+  .viz-controls select:focus { border-color: var(--accent); }
+
+  .graph-wrap {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .graph-wrap svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* -- Features / Tags -- */
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+  }
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .tag.indigo { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .tag.green { background: rgba(34,197,94,0.15); color: var(--green); }
+  .tag.pink { background: rgba(236,72,153,0.15); color: var(--pink); }
+  .tag.amber { background: rgba(245,158,11,0.15); color: var(--orange); }
+
+  /* -- Quiz -- */
+  .quiz-score {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    background: rgba(99,102,241,0.08);
+    border-radius: var(--radius);
+  }
+  .quiz-score span { color: var(--green); }
+
+  .quiz-problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.75rem 0;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem.correct { border-color: var(--green); }
+  .quiz-problem.incorrect { border-color: var(--pink); }
+  .quiz-problem .q-num {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  .quiz-problem .q-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .quiz-problem input[type="text"] {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem input:focus { border-color: var(--accent); }
+  .quiz-problem .q-feedback {
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    min-height: 1.2em;
+  }
+  .quiz-problem .q-feedback.correct { color: var(--green); }
+  .quiz-problem .q-feedback.incorrect { color: var(--pink); }
+
+  /* -- Animations -- */
+  @keyframes popIn {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* -- Responsive -- */
+  @media (max-width: 640px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.2rem; }
+    summary { font-size: 0.9rem; padding: 0.75rem 1rem; }
+    .card-body { padding: 1rem; }
+    .rule-cards { grid-template-columns: 1fr; }
+    .problem { flex-direction: column; align-items: stretch; }
+    .problem .prompt { min-width: unset; }
+    .viz-controls { flex-direction: column; align-items: stretch; }
+    .viz-controls input[type="number"],
+    .viz-controls select { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar">
+  <div class="seg" data-section="0"></div>
+  <div class="seg" data-section="1"></div>
+  <div class="seg" data-section="2"></div>
+  <div class="seg" data-section="3"></div>
+  <div class="seg" data-section="4"></div>
+  <div class="seg" data-section="5"></div>
+</div>
+
+<h1>Sequences &amp; Series</h1>
+<p class="subtitle">Arithmetic, geometric, sigma notation &amp; applications // Lesson 18 of VPT Prep</p>
+
+<!-- ===================== SECTION 1: Arithmetic Sequences ===================== -->
+<details id="sec0" open>
+  <summary>1. Arithmetic Sequences</summary>
+  <div class="card-body">
+    <p>An <strong>arithmetic sequence</strong> is a list of numbers where each term is obtained by adding a fixed value called the <strong>common difference (d)</strong> to the previous term.</p>
+
+    <div class="info-box">
+      <strong>Key idea:</strong> In an arithmetic sequence, the difference between any two consecutive terms is always the same constant d. If d &gt; 0 the sequence increases; if d &lt; 0 it decreases.
+    </div>
+
+    <div class="eq">a&#x2099; = a&#x2081; + (n - 1)d</div>
+
+    <p>where <strong>a&#x2099;</strong> is the nth term, <strong>a&#x2081;</strong> is the first term, <strong>n</strong> is the term number, and <strong>d</strong> is the common difference.</p>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Common Difference</div>
+        <div class="rule-formula">d = a&#x2082; - a&#x2081;</div>
+        <div class="rule-example">Sequence 3, 7, 11, 15 ... <strong>d = 4</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">nth Term</div>
+        <div class="rule-formula">a&#x2099; = a&#x2081; + (n-1)d</div>
+        <div class="rule-example">20th term of 3, 7, 11 ... <strong>a&#x2082;&#x2080; = 3 + 19(4) = 79</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Finding d</div>
+        <div class="rule-formula">d = (a&#x2099; - a&#x2081;) / (n - 1)</div>
+        <div class="rule-example">a&#x2081; = 5, a&#x2081;&#x2080; = 32 <strong>d = 27/9 = 3</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Arithmetic Mean</div>
+        <div class="rule-formula">b = (a + c) / 2</div>
+        <div class="rule-example">Mean of 4 and 10 is <strong>7</strong></div>
+      </div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="arithSeqProblems">
+      <div class="problem" id="as1">
+        <span class="prompt">Find the 20th term of: 3, 7, 11, 15 ...</span>
+        <input type="text" id="as1_ans" placeholder="a&#x2082;&#x2080; = ?">
+        <span class="feedback" id="as1_fb"></span>
+      </div>
+      <div class="problem" id="as2">
+        <span class="prompt">Find d if a&#x2081; = 10 and a&#x2081;&#x2085; = 52</span>
+        <input type="text" id="as2_ans" placeholder="d = ?">
+        <span class="feedback" id="as2_fb"></span>
+      </div>
+      <div class="problem" id="as3">
+        <span class="prompt">Find a&#x2081; if a&#x2088; = 31 and d = 4</span>
+        <input type="text" id="as3_ans" placeholder="a&#x2081; = ?">
+        <span class="feedback" id="as3_fb"></span>
+      </div>
+      <div class="problem" id="as4">
+        <span class="prompt">Which term of 5, 9, 13 ... is 61?</span>
+        <input type="text" id="as4_ans" placeholder="n = ?">
+        <span class="feedback" id="as4_fb"></span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkSection(0)">Check Answers</button>
+      <button class="btn outline" onclick="showAnswers(0)">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 2: Arithmetic Series ===================== -->
+<details id="sec1">
+  <summary>2. Arithmetic Series</summary>
+  <div class="card-body">
+    <p>An <strong>arithmetic series</strong> is the sum of the terms in an arithmetic sequence. There are two equivalent formulas for computing the sum of the first n terms.</p>
+
+    <div class="eq">S&#x2099; = n/2 (a&#x2081; + a&#x2099;)</div>
+    <div class="eq">S&#x2099; = n/2 [2a&#x2081; + (n - 1)d]</div>
+
+    <div class="info-box green">
+      <strong>Gauss's insight:</strong> The sum of the first 100 positive integers: pair 1+100, 2+99, 3+98 ... giving 50 pairs of 101 = 5050. This is exactly S&#x2099; = n/2(a&#x2081; + a&#x2099;).
+    </div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Form 1 (know last term)</div>
+        <div class="rule-formula">S&#x2099; = n/2 (a&#x2081; + a&#x2099;)</div>
+        <div class="rule-example">Sum 1 to 50: S = 50/2(1+50) = <strong>1275</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Form 2 (know d)</div>
+        <div class="rule-formula">S&#x2099; = n/2 [2a&#x2081; + (n-1)d]</div>
+        <div class="rule-example">Sum of first 10 terms, a&#x2081;=3, d=5: <strong>S = 255</strong></div>
+      </div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="arithSerProblems">
+      <div class="problem" id="asr1">
+        <span class="prompt">Sum of first 50 positive integers</span>
+        <input type="text" id="asr1_ans" placeholder="S&#x2085;&#x2080; = ?">
+        <span class="feedback" id="asr1_fb"></span>
+      </div>
+      <div class="problem" id="asr2">
+        <span class="prompt">Sum of first 20 terms: 2, 5, 8, 11 ...</span>
+        <input type="text" id="asr2_ans" placeholder="S&#x2082;&#x2080; = ?">
+        <span class="feedback" id="asr2_fb"></span>
+      </div>
+      <div class="problem" id="asr3">
+        <span class="prompt">Sum of 10 + 15 + 20 + ... + 100</span>
+        <input type="text" id="asr3_ans" placeholder="S = ?">
+        <span class="feedback" id="asr3_fb"></span>
+      </div>
+      <div class="problem" id="asr4">
+        <span class="prompt">How many terms if S&#x2099; = 180, a&#x2081; = 3, d = 3?</span>
+        <input type="text" id="asr4_ans" placeholder="n = ?">
+        <span class="feedback" id="asr4_fb"></span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkSection(1)">Check Answers</button>
+      <button class="btn outline" onclick="showAnswers(1)">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 3: Geometric Sequences ===================== -->
+<details id="sec2">
+  <summary>3. Geometric Sequences</summary>
+  <div class="card-body">
+    <p>A <strong>geometric sequence</strong> is a list of numbers where each term is obtained by multiplying the previous term by a fixed value called the <strong>common ratio (r)</strong>.</p>
+
+    <div class="eq">a&#x2099; = a&#x2081; &middot; r&#x207F;&#x207B;&#xB9;</div>
+
+    <div class="info-box">
+      <strong>Key idea:</strong> The ratio between consecutive terms is constant: r = a&#x2082;/a&#x2081; = a&#x2083;/a&#x2082;. If |r| &gt; 1 the terms grow; if |r| &lt; 1 they shrink toward zero.
+    </div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Common Ratio</div>
+        <div class="rule-formula">r = a&#x2082; / a&#x2081;</div>
+        <div class="rule-example">Sequence 2, 6, 18, 54 ... <strong>r = 3</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">nth Term</div>
+        <div class="rule-formula">a&#x2099; = a&#x2081; &middot; r&#x207F;&#x207B;&#xB9;</div>
+        <div class="rule-example">6th term of 2, 6, 18 ... <strong>a&#x2086; = 2(3)&#x2075; = 486</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Geometric Mean</div>
+        <div class="rule-formula">b = sqrt(a &middot; c)</div>
+        <div class="rule-example">Mean of 4 and 16 is <strong>8</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Growth vs Decay</div>
+        <div class="rule-formula">|r| &gt; 1: growth, |r| &lt; 1: decay</div>
+        <div class="rule-example">r = 0.5: <strong>halving each time</strong></div>
+      </div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="geoSeqProblems">
+      <div class="problem" id="gs1">
+        <span class="prompt">Find the 6th term of 2, 6, 18, 54 ...</span>
+        <input type="text" id="gs1_ans" placeholder="a&#x2086; = ?">
+        <span class="feedback" id="gs1_fb"></span>
+      </div>
+      <div class="problem" id="gs2">
+        <span class="prompt">Find r if a&#x2081; = 5 and a&#x2084; = 40</span>
+        <input type="text" id="gs2_ans" placeholder="r = ?">
+        <span class="feedback" id="gs2_fb"></span>
+      </div>
+      <div class="problem" id="gs3">
+        <span class="prompt">Find a&#x2081; if a&#x2085; = 162 and r = 3</span>
+        <input type="text" id="gs3_ans" placeholder="a&#x2081; = ?">
+        <span class="feedback" id="gs3_fb"></span>
+      </div>
+      <div class="problem" id="gs4">
+        <span class="prompt">8th term of 1, -2, 4, -8 ...</span>
+        <input type="text" id="gs4_ans" placeholder="a&#x2088; = ?">
+        <span class="feedback" id="gs4_fb"></span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkSection(2)">Check Answers</button>
+      <button class="btn outline" onclick="showAnswers(2)">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 4: Geometric Series ===================== -->
+<details id="sec3">
+  <summary>4. Geometric Series</summary>
+  <div class="card-body">
+    <p>A <strong>geometric series</strong> is the sum of terms in a geometric sequence. We have formulas for both finite and infinite sums.</p>
+
+    <div class="eq">Finite: S&#x2099; = a&#x2081;(1 - r&#x207F;) / (1 - r), &nbsp; r &ne; 1</div>
+    <div class="eq">Infinite: S&#x221E; = a&#x2081; / (1 - r), &nbsp; |r| &lt; 1</div>
+
+    <div class="info-box pink">
+      <strong>Convergence:</strong> An infinite geometric series converges (has a finite sum) only when |r| &lt; 1. If |r| &ge; 1, the series diverges -- the partial sums grow without bound.
+    </div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Finite Sum</div>
+        <div class="rule-formula">S&#x2099; = a&#x2081;(1-r&#x207F;)/(1-r)</div>
+        <div class="rule-example">Sum 6 terms, a&#x2081;=2, r=3: <strong>S = 728</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Infinite Sum</div>
+        <div class="rule-formula">S&#x221E; = a&#x2081;/(1-r)</div>
+        <div class="rule-example">1 + 1/2 + 1/4 + ... = <strong>2</strong></div>
+      </div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="geoSerProblems">
+      <div class="problem" id="gsr1">
+        <span class="prompt">Sum of first 6 terms: 2, 6, 18, 54 ...</span>
+        <input type="text" id="gsr1_ans" placeholder="S&#x2086; = ?">
+        <span class="feedback" id="gsr1_fb"></span>
+      </div>
+      <div class="problem" id="gsr2">
+        <span class="prompt">Infinite sum: 1 + 1/2 + 1/4 + 1/8 + ...</span>
+        <input type="text" id="gsr2_ans" placeholder="S = ?">
+        <span class="feedback" id="gsr2_fb"></span>
+      </div>
+      <div class="problem" id="gsr3">
+        <span class="prompt">Infinite sum: 12 + 4 + 4/3 + 4/9 + ...</span>
+        <input type="text" id="gsr3_ans" placeholder="S = ?">
+        <span class="feedback" id="gsr3_fb"></span>
+      </div>
+      <div class="problem" id="gsr4">
+        <span class="prompt">Does 3 + 6 + 12 + 24 + ... converge?</span>
+        <input type="text" id="gsr4_ans" placeholder="yes or no">
+        <span class="feedback" id="gsr4_fb"></span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkSection(3)">Check Answers</button>
+      <button class="btn outline" onclick="showAnswers(3)">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 5: Sigma Notation & Applications ===================== -->
+<details id="sec4">
+  <summary>5. Sigma Notation &amp; Applications</summary>
+  <div class="card-body">
+    <p><strong>Sigma notation</strong> provides a compact way to write sums using the Greek letter sigma.</p>
+
+    <div class="eq">&Sigma; (from k = start to end) of expression</div>
+
+    <div class="info-box">
+      <strong>How to read it:</strong> The variable below sigma is the index (usually k or i). Substitute each integer value from start to end, evaluate the expression, and add all results.
+    </div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Example</div>
+        <div class="rule-formula">&Sigma;(k=1 to 5) 2k</div>
+        <div class="rule-example">= 2+4+6+8+10 = <strong>30</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Useful Identity</div>
+        <div class="rule-formula">&Sigma;(k=1 to n) k = n(n+1)/2</div>
+        <div class="rule-example">Sum 1 to 100 = <strong>5050</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Constant Multiple</div>
+        <div class="rule-formula">&Sigma; c &middot; f(k) = c &middot; &Sigma; f(k)</div>
+        <div class="rule-example">Constants pull out of the sum</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Sum of Sums</div>
+        <div class="rule-formula">&Sigma;[f(k)+g(k)] = &Sigma;f(k)+&Sigma;g(k)</div>
+        <div class="rule-example">Split into separate sums</div>
+      </div>
+    </div>
+
+    <h3>Real-World Applications</h3>
+    <div class="info-box amber">
+      <strong>Savings plan:</strong> Deposit $200/month with $25 increase each month. After 12 months, total saved = S&#x2081;&#x2082; = 12/2(2&middot;200 + 11&middot;25) = 12/2(675) = $4050 (arithmetic series).
+    </div>
+    <div class="info-box green">
+      <strong>Population growth:</strong> A colony starts at 100 and triples each generation. After 5 generations: a&#x2085; = 100(3)&#x2074; = 8100. Total population across generations: S&#x2085; = 100(1-3&#x2075;)/(1-3) = 12,100 (geometric series).
+    </div>
+    <div class="info-box pink">
+      <strong>Bouncing ball:</strong> A ball dropped from 10m rebounds to 60% of its height each bounce. Total distance = 10 + 2(10)(0.6)/(1-0.6) = 10 + 30 = 40m (infinite geometric series for the rebounds).
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="sigmaProblems">
+      <div class="problem" id="sig1">
+        <span class="prompt">Evaluate: &Sigma;(k=1 to 5) 2k</span>
+        <input type="text" id="sig1_ans" placeholder="= ?">
+        <span class="feedback" id="sig1_fb"></span>
+      </div>
+      <div class="problem" id="sig2">
+        <span class="prompt">Evaluate: &Sigma;(k=1 to 4) k&#xB2;</span>
+        <input type="text" id="sig2_ans" placeholder="= ?">
+        <span class="feedback" id="sig2_fb"></span>
+      </div>
+      <div class="problem" id="sig3">
+        <span class="prompt">Evaluate: &Sigma;(k=0 to 3) 3&#x1D4F;</span>
+        <input type="text" id="sig3_ans" placeholder="= ?">
+        <span class="feedback" id="sig3_fb"></span>
+      </div>
+      <div class="problem" id="sig4">
+        <span class="prompt">Write 5+10+15+20+25 in sigma: &Sigma;(k=1 to ?) __k</span>
+        <input type="text" id="sig4_ans" placeholder="5k, k=1 to ?">
+        <span class="feedback" id="sig4_fb"></span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkSection(4)">Check Answers</button>
+      <button class="btn outline" onclick="showAnswers(4)">Show Answers</button>
+    </div>
+
+    <!-- INTERACTIVE SEQUENCE VISUALIZER -->
+    <h3>Interactive Sequence Visualizer</h3>
+    <div class="viz-controls">
+      <label>Type:</label>
+      <select id="vizType" onchange="updateViz()">
+        <option value="arith">Arithmetic</option>
+        <option value="geo">Geometric</option>
+      </select>
+      <label>a&#x2081;:</label>
+      <input type="number" id="vizA1" value="2" onchange="updateViz()" oninput="updateViz()">
+      <label id="vizParamLabel">d:</label>
+      <input type="number" id="vizParam" value="3" step="0.5" onchange="updateViz()" oninput="updateViz()">
+      <button class="btn" onclick="updateViz()">Update</button>
+    </div>
+    <div class="features" id="vizTags"></div>
+    <div class="graph-wrap">
+      <svg id="vizSvg" width="820" height="320" viewBox="0 0 820 320"></svg>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 6: Quick Quiz ===================== -->
+<details id="sec5">
+  <summary>6. Quick Quiz</summary>
+  <div class="card-body">
+    <p>Test your knowledge across all topics. Answer all 10 questions, then click Grade Quiz.</p>
+
+    <div class="quiz-score" id="quizScore" style="display:none;"></div>
+
+    <div id="quizContainer">
+      <div class="quiz-problem" id="qp0">
+        <div class="q-num">Question 1</div>
+        <div class="q-text">Find the 15th term of the arithmetic sequence: 7, 11, 15, 19 ...</div>
+        <input type="text" id="q0_ans" placeholder="Your answer">
+        <div class="q-feedback" id="q0_fb"></div>
+      </div>
+      <div class="quiz-problem" id="qp1">
+        <div class="q-num">Question 2</div>
+        <div class="q-text">Find the common difference if a&#x2081; = -3 and a&#x2081;&#x2080; = 24</div>
+        <input type="text" id="q1_ans" placeholder="Your answer">
+        <div class="q-feedback" id="q1_fb"></div>
+      </div>
+      <div class="quiz-problem" id="qp2">
+        <div class="q-num">Question 3</div>
+        <div class="q-text">Sum of the first 50 positive integers</div>
+        <input type="text" id="q2_ans" placeholder="Your answer">
+        <div class="q-feedback" id="q2_fb"></div>
+      </div>
+      <div class="quiz-problem" id="qp3">
+        <div class="q-num">Question 4</div>
+        <div class="q-text">Sum of first 20 terms of: 4, 7, 10, 13 ...</div>
+        <input type="text" id="q3_ans" placeholder="Your answer">
+        <div class="q-feedback" id="q3_fb"></div>
+      </div>
+      <div class="quiz-problem" id="qp4">
+        <div class="q-num">Question 5</div>
+        <div class="q-text">Find the 6th term of the geometric sequence: 2, 6, 18 ...</div>
+        <input type="text" id="q4_ans" placeholder="Your answer">
+        <div class="q-feedback" id="q4_fb"></div>
+      </div>
+      <div class="quiz-problem" id="qp5">
+        <div class="q-num">Question 6</div>
+        <div class="q-text">Find the common ratio if a&#x2081; = 4 and a&#x2083; = 36</div>
+        <input type="text" id="q5_ans" placeholder="Your answer">
+        <div class="q-feedback" id="q5_fb"></div>
+      </div>
+      <div class="quiz-problem" id="qp6">
+        <div class="q-num">Question 7</div>
+        <div class="q-text">Infinite sum: 1 + 1/2 + 1/4 + 1/8 + ...</div>
+        <input type="text" id="q6_ans" placeholder="Your answer">
+        <div class="q-feedback" id="q6_fb"></div>
+      </div>
+      <div class="quiz-problem" id="qp7">
+        <div class="q-num">Question 8</div>
+        <div class="q-text">Evaluate: &Sigma;(k=1 to 5) 2k</div>
+        <input type="text" id="q7_ans" placeholder="Your answer">
+        <div class="q-feedback" id="q7_fb"></div>
+      </div>
+      <div class="quiz-problem" id="qp8">
+        <div class="q-num">Question 9</div>
+        <div class="q-text">Does the series 5 + 5/3 + 5/9 + 5/27 + ... converge? (yes/no)</div>
+        <input type="text" id="q8_ans" placeholder="Your answer">
+        <div class="q-feedback" id="q8_fb"></div>
+      </div>
+      <div class="quiz-problem" id="qp9">
+        <div class="q-num">Question 10</div>
+        <div class="q-text">If it converges, find the infinite sum of 5 + 5/3 + 5/9 + 5/27 + ...</div>
+        <input type="text" id="q9_ans" placeholder="Your answer">
+        <div class="q-feedback" id="q9_fb"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn green" onclick="gradeQuiz()">Grade Quiz</button>
+      <button class="btn outline" onclick="showQuizAnswers()">Show Answers</button>
+      <button class="btn pink" onclick="resetQuiz()">Reset</button>
+    </div>
+  </div>
+</details>
+
+<script>
+/* ======================== CORE UTILITIES ======================== */
+const $ = id => document.getElementById(id);
+const normalize = s => s.toString().trim().toLowerCase().replace(/\s+/g, ' ');
+const completed = Array(6).fill(false);
+
+function markComplete(idx) {
+  completed[idx] = true;
+  $('sec'+idx).classList.add('completed');
+  updateProgress();
+}
+
+function updateProgress() {
+  document.querySelectorAll('.progress-bar .seg').forEach((s,i) => {
+    s.classList.toggle('done', completed[i]);
+  });
+}
+
+function springPop(el) {
+  el.style.transform = 'scale(1.03)';
+  setTimeout(() => el.style.transform = 'scale(1)', 300);
+}
+
+function shakeEl(el) {
+  el.style.animation = 'shake 0.4s';
+  setTimeout(() => el.style.animation = '', 400);
+}
+
+function checkNum(userVal, correctVal, tolerance) {
+  tolerance = tolerance || 0.01;
+  const n = parseFloat(userVal);
+  if (isNaN(n)) return false;
+  return Math.abs(n - correctVal) <= tolerance;
+}
+
+function checkText(userVal, correctVal) {
+  return normalize(userVal) === normalize(correctVal);
+}
+
+/* ======================== SECTION ANSWERS ======================== */
+const sectionData = [
+  // Section 0: Arithmetic Sequences
+  [
+    { id: 'as1', answer: 79, type: 'num' },
+    { id: 'as2', answer: 3, type: 'num' },
+    { id: 'as3', answer: 3, type: 'num' },
+    { id: 'as4', answer: 15, type: 'num' }
+  ],
+  // Section 1: Arithmetic Series
+  [
+    { id: 'asr1', answer: 1275, type: 'num' },
+    { id: 'asr2', answer: 610, type: 'num' },
+    { id: 'asr3', answer: 1045, type: 'num' },
+    { id: 'asr4', answer: 10, type: 'num' }
+  ],
+  // Section 2: Geometric Sequences
+  [
+    { id: 'gs1', answer: 486, type: 'num' },
+    { id: 'gs2', answer: 2, type: 'num' },
+    { id: 'gs3', answer: 2, type: 'num' },
+    { id: 'gs4', answer: -128, type: 'num' }
+  ],
+  // Section 3: Geometric Series
+  [
+    { id: 'gsr1', answer: 728, type: 'num' },
+    { id: 'gsr2', answer: 2, type: 'num' },
+    { id: 'gsr3', answer: 18, type: 'num' },
+    { id: 'gsr4', answer: 'no', type: 'text' }
+  ],
+  // Section 4: Sigma Notation
+  [
+    { id: 'sig1', answer: 30, type: 'num' },
+    { id: 'sig2', answer: 30, type: 'num' },
+    { id: 'sig3', answer: 40, type: 'num' },
+    { id: 'sig4', answer: '5', type: 'text' }
+  ]
+];
+
+function checkSection(secIdx) {
+  const problems = sectionData[secIdx];
+  let allCorrect = true;
+
+  problems.forEach(p => {
+    const input = $(p.id + '_ans');
+    const fb = $(p.id + '_fb');
+    const el = $(p.id);
+    const val = input.value.trim();
+
+    if (!val) {
+      fb.textContent = '';
+      fb.className = 'feedback';
+      el.classList.remove('correct', 'incorrect');
+      allCorrect = false;
+      return;
+    }
+
+    let correct = false;
+    if (p.type === 'num') {
+      correct = checkNum(val, p.answer, 0.1);
+    } else {
+      correct = checkText(val, p.answer);
+    }
+
+    if (correct) {
+      fb.textContent = 'Correct';
+      fb.className = 'feedback correct';
+      el.classList.add('correct');
+      el.classList.remove('incorrect');
+      springPop(el);
+    } else {
+      fb.textContent = 'Try again';
+      fb.className = 'feedback incorrect';
+      el.classList.add('incorrect');
+      el.classList.remove('correct');
+      shakeEl(el);
+      allCorrect = false;
+    }
+  });
+
+  if (allCorrect) markComplete(secIdx);
+}
+
+function showAnswers(secIdx) {
+  const problems = sectionData[secIdx];
+  problems.forEach(p => {
+    const input = $(p.id + '_ans');
+    const fb = $(p.id + '_fb');
+    input.value = p.answer;
+    fb.textContent = 'Answer shown';
+    fb.className = 'feedback correct';
+    $(p.id).classList.add('correct');
+    $(p.id).classList.remove('incorrect');
+  });
+  markComplete(secIdx);
+}
+
+/* ======================== QUIZ ======================== */
+const quizAnswers = [
+  { answer: 63, type: 'num' },   // Q1: a15 = 7 + 14*4 = 63
+  { answer: 3, type: 'num' },    // Q2: d = (24-(-3))/9 = 27/9 = 3
+  { answer: 1275, type: 'num' }, // Q3: 50*51/2 = 1275
+  { answer: 650, type: 'num' },  // Q4: S20 = 20/2(2*4+19*3) = 10(8+57) = 650
+  { answer: 486, type: 'num' },  // Q5: 2*3^5 = 486
+  { answer: 3, type: 'num' },    // Q6: r^2 = 36/4 = 9, r = 3
+  { answer: 2, type: 'num' },    // Q7: 1/(1-0.5) = 2
+  { answer: 30, type: 'num' },   // Q8: 2+4+6+8+10 = 30
+  { answer: 'yes', type: 'text' }, // Q9: |1/3| < 1, converges
+  { answer: 7.5, type: 'num' }   // Q10: 5/(1-1/3) = 5/(2/3) = 7.5
+];
+
+function gradeQuiz() {
+  let score = 0;
+  quizAnswers.forEach((q, i) => {
+    const input = $('q'+i+'_ans');
+    const fb = $('q'+i+'_fb');
+    const el = $('qp'+i);
+    const val = input.value.trim();
+
+    let correct = false;
+    if (q.type === 'num') {
+      correct = checkNum(val, q.answer, 0.1);
+    } else {
+      correct = checkText(val, q.answer);
+    }
+
+    if (correct) {
+      fb.textContent = 'Correct';
+      fb.className = 'q-feedback correct';
+      el.classList.add('correct');
+      el.classList.remove('incorrect');
+      score++;
+    } else {
+      fb.textContent = 'Incorrect -- answer: ' + q.answer;
+      fb.className = 'q-feedback incorrect';
+      el.classList.add('incorrect');
+      el.classList.remove('correct');
+    }
+  });
+
+  const scoreEl = $('quizScore');
+  scoreEl.style.display = 'block';
+  scoreEl.innerHTML = 'Score: <span>' + score + ' / 10</span>';
+
+  if (score >= 7) markComplete(5);
+}
+
+function showQuizAnswers() {
+  quizAnswers.forEach((q, i) => {
+    const input = $('q'+i+'_ans');
+    const fb = $('q'+i+'_fb');
+    input.value = q.answer;
+    fb.textContent = 'Answer shown';
+    fb.className = 'q-feedback correct';
+    $('qp'+i).classList.add('correct');
+    $('qp'+i).classList.remove('incorrect');
+  });
+  const scoreEl = $('quizScore');
+  scoreEl.style.display = 'block';
+  scoreEl.innerHTML = 'Score: <span>10 / 10</span>';
+  markComplete(5);
+}
+
+function resetQuiz() {
+  quizAnswers.forEach((q, i) => {
+    $('q'+i+'_ans').value = '';
+    $('q'+i+'_fb').textContent = '';
+    $('q'+i+'_fb').className = 'q-feedback';
+    $('qp'+i).classList.remove('correct', 'incorrect');
+  });
+  $('quizScore').style.display = 'none';
+  completed[5] = false;
+  $('sec5').classList.remove('completed');
+  updateProgress();
+}
+
+/* ======================== SEQUENCE VISUALIZER ======================== */
+function updateViz() {
+  const type = $('vizType').value;
+  const a1 = parseFloat($('vizA1').value) || 1;
+  const param = parseFloat($('vizParam').value) || (type === 'arith' ? 1 : 2);
+
+  // Update label
+  $('vizParamLabel').textContent = type === 'arith' ? 'd:' : 'r:';
+
+  // Generate 10 terms
+  const terms = [];
+  const partialSums = [];
+  let sum = 0;
+  for (let i = 0; i < 10; i++) {
+    let val;
+    if (type === 'arith') {
+      val = a1 + i * param;
+    } else {
+      val = a1 * Math.pow(param, i);
+    }
+    // Clamp extremely large values for display
+    if (Math.abs(val) > 1e9) val = val > 0 ? 1e9 : -1e9;
+    terms.push(val);
+    sum += val;
+    partialSums.push(sum);
+  }
+
+  // Update tags
+  const tagsEl = $('vizTags');
+  tagsEl.innerHTML = '';
+  terms.slice(0, 5).forEach((t, i) => {
+    const tag = document.createElement('span');
+    tag.className = 'tag amber';
+    tag.textContent = 'a' + (i+1) + ' = ' + (Number.isInteger(t) ? t : t.toFixed(2));
+    tagsEl.appendChild(tag);
+  });
+  const sumTag = document.createElement('span');
+  sumTag.className = 'tag green';
+  sumTag.textContent = 'S\u2081\u2080 = ' + (Number.isInteger(partialSums[9]) ? partialSums[9] : partialSums[9].toFixed(2));
+  tagsEl.appendChild(sumTag);
+
+  // Draw SVG bar chart
+  const svg = $('vizSvg');
+  const W = 820, H = 320;
+  const pad = { top: 30, right: 20, bottom: 50, left: 60 };
+  const plotW = W - pad.left - pad.right;
+  const plotH = H - pad.top - pad.bottom;
+
+  const maxVal = Math.max(...terms.map(Math.abs), 0.001);
+  const minVal = Math.min(...terms, 0);
+  const hasNeg = minVal < 0;
+  const rangeTop = Math.max(...terms, 0);
+  const rangeBot = Math.min(...terms, 0);
+  const range = (rangeTop - rangeBot) || 1;
+
+  const barW = plotW / 10 * 0.6;
+  const gap = plotW / 10;
+
+  let html = '';
+
+  // Axis lines
+  const zeroY = pad.top + plotH * (rangeTop / range);
+  html += `<line x1="${pad.left}" y1="${zeroY}" x2="${W - pad.right}" y2="${zeroY}" stroke="#555" stroke-width="1"/>`;
+  html += `<line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${H - pad.bottom}" stroke="#555" stroke-width="1"/>`;
+
+  // Y-axis labels
+  const steps = 5;
+  for (let i = 0; i <= steps; i++) {
+    const v = rangeBot + (range * i / steps);
+    const y = pad.top + plotH - (plotH * i / steps);
+    html += `<text x="${pad.left - 8}" y="${y + 4}" fill="#8a8578" font-size="10" text-anchor="end" font-family="JetBrains Mono">${Number.isInteger(v) ? v : v.toFixed(1)}</text>`;
+    html += `<line x1="${pad.left}" y1="${y}" x2="${W - pad.right}" y2="${y}" stroke="#363b47" stroke-width="0.5"/>`;
+  }
+
+  // Bars
+  terms.forEach((val, i) => {
+    const x = pad.left + i * gap + (gap - barW) / 2;
+    const barH = Math.abs(val) / range * plotH;
+    let y;
+    if (val >= 0) {
+      y = zeroY - barH;
+    } else {
+      y = zeroY;
+    }
+    const color = val >= 0 ? '#6366f1' : '#ec4899';
+    html += `<rect x="${x}" y="${y}" width="${barW}" height="${Math.max(barH, 1)}" rx="3" fill="${color}" opacity="0.85">
+      <animate attributeName="height" from="0" to="${Math.max(barH, 1)}" dur="0.4s" fill="freeze"/>
+      <animate attributeName="y" from="${val >= 0 ? zeroY : zeroY}" to="${y}" dur="0.4s" fill="freeze"/>
+    </rect>`;
+
+    // Value label on bar
+    const labelY = val >= 0 ? y - 6 : y + barH + 14;
+    const displayVal = Number.isInteger(val) ? val : val.toFixed(1);
+    html += `<text x="${x + barW/2}" y="${labelY}" fill="${color}" font-size="10" text-anchor="middle" font-family="JetBrains Mono" font-weight="600">${displayVal}</text>`;
+
+    // X-axis label
+    html += `<text x="${x + barW/2}" y="${H - pad.bottom + 18}" fill="#8a8578" font-size="10" text-anchor="middle" font-family="JetBrains Mono">a${i+1}</text>`;
+  });
+
+  // Partial sum line
+  const sumMax = Math.max(...partialSums.map(Math.abs), 0.001);
+  const sumMin = Math.min(...partialSums, 0);
+  const sumRange = (Math.max(...partialSums, 0) - sumMin) || 1;
+
+  let linePts = [];
+  partialSums.forEach((s, i) => {
+    const x = pad.left + i * gap + gap / 2;
+    const y = pad.top + plotH - ((s - sumMin) / sumRange) * plotH;
+    linePts.push(x + ',' + y);
+  });
+  html += `<polyline points="${linePts.join(' ')}" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="4,3" opacity="0.7"/>`;
+  partialSums.forEach((s, i) => {
+    const x = pad.left + i * gap + gap / 2;
+    const y = pad.top + plotH - ((s - sumMin) / sumRange) * plotH;
+    html += `<circle cx="${x}" cy="${y}" r="3" fill="#22c55e"/>`;
+  });
+
+  // Legend
+  html += `<rect x="${W - 180}" y="${pad.top}" width="12" height="12" rx="2" fill="#6366f1" opacity="0.85"/>`;
+  html += `<text x="${W - 163}" y="${pad.top + 10}" fill="#d4cfc4" font-size="10" font-family="JetBrains Mono">Terms</text>`;
+  html += `<line x1="${W - 180}" y1="${pad.top + 24}" x2="${W - 168}" y2="${pad.top + 24}" stroke="#22c55e" stroke-width="2" stroke-dasharray="4,3"/>`;
+  html += `<text x="${W - 163}" y="${pad.top + 28}" fill="#d4cfc4" font-size="10" font-family="JetBrains Mono">Partial Sums</text>`;
+
+  svg.innerHTML = html;
+}
+
+/* ======================== INIT ======================== */
+updateViz();
+</script>
+</body>
+</html>

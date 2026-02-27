@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 5: Applications of Newton's Laws</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:var(--transition)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform var(--transition);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.toggle-row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.toggle-switch{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:12px;transition:var(--transition)}
+.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:var(--text-bright);border-radius:50%;transition:var(--transition)}
+.toggle-switch input:checked+.toggle-slider{background:var(--indigo)}
+.toggle-switch input:checked+.toggle-slider::before{transform:translateX(20px)}
+.toggle-label{font-size:.72rem;color:var(--text-dim)}
+.graph-container{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.graph-container{grid-template-columns:1fr}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>05</span> Applications of Newton's Laws</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: CIRCULAR MOTION -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Circular Motion &amp; Centripetal Force</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      An object moving in a circle at constant speed is still <strong>accelerating</strong> because its velocity direction changes continuously. This acceleration always points <strong>toward the center</strong> and is called <strong>centripetal acceleration</strong>. The force causing it is the <strong>centripetal force</strong> -- not a new force type, but whatever real force (tension, gravity, friction, normal) keeps the object on the circular path.
+    </p>
+    <div class="formula-box large">a_c = v&#xB2;/r &nbsp;&nbsp;&nbsp; F_c = mv&#xB2;/r</div>
+    <div class="key-point">Centripetal means "center-seeking." If the string breaks, the object flies off tangentially -- not outward. There is no outward "centrifugal force" in an inertial frame.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Ball on a String</div>
+      <svg id="circSvg" width="100%" viewBox="0 0 800 400" style="display:block">
+        <defs>
+          <marker id="arrGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#22c55e"/></marker>
+          <marker id="arrAmber" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#f59e0b"/></marker>
+          <marker id="arrPink" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker>
+          <marker id="arrIndigo" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#6366f1"/></marker>
+        </defs>
+      </svg>
+      <div class="slider-row">
+        <label>Speed v</label>
+        <input type="range" id="circSpeed" min="1" max="10" value="4" step="0.5" oninput="updateCircReadout()">
+        <span class="slider-val" id="circSpeedVal">4.0 m/s</span>
+      </div>
+      <div class="slider-row">
+        <label>Radius r</label>
+        <input type="range" id="circRadius" min="0.5" max="5" value="2" step="0.25" oninput="updateCircReadout()">
+        <span class="slider-val" id="circRadiusVal">2.00 m</span>
+      </div>
+      <div class="slider-row">
+        <label>Mass m</label>
+        <input type="range" id="circMass" min="0.5" max="10" value="2" step="0.5" oninput="updateCircReadout()">
+        <span class="slider-val" id="circMassVal">2.0 kg</span>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" onclick="circBreakString()">Break String</button>
+        <button class="btn" onclick="circReset()">Reset</button>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Speed v</span><br><span class="value indigo" id="circV">4.0 m/s</span></div>
+        <div class="readout-item"><span class="label">Radius r</span><br><span class="value indigo" id="circR">2.00 m</span></div>
+        <div class="readout-item"><span class="label">a_c = v^2/r</span><br><span class="value green" id="circAc">8.0 m/s^2</span></div>
+        <div class="readout-item"><span class="label">F_c = mv^2/r</span><br><span class="value amber" id="circFc">16.0 N</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> A helicopter rotor blade tip moves in uniform circular motion -- tension in the blade provides centripetal force. When a destroyer makes a hard turn, friction between your boots and the deck keeps you on the circular path. If friction is insufficient, you slide tangentially.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 0.5 kg ball on a 1.2 m string moves at 3 m/s in a horizontal circle. What is the centripetal acceleration?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1" step="0.1" placeholder="a_c = ?" onkeydown="if(event.key==='Enter')checkNum('s1p1',7.5,0.2)">
+          <span class="unit-label">m/s^2</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p1',7.5,0.2)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> What centripetal force (string tension) acts on the ball above?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2" step="0.1" placeholder="F_c = ?" onkeydown="if(event.key==='Enter')checkNum('s1p2',3.75,0.15)">
+          <span class="unit-label">N</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p2',3.75,0.15)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+      <div class="problem" id="s1p3">
+        <p><strong>3.</strong> A car rounds a flat curve of radius 50 m at 20 m/s. What provides the centripetal force?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">The engine's thrust pushing the car inward</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','correct')">Static friction between tires and road</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">The normal force from the road surface</button>
+        </div>
+        <div class="feedback" id="s1p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: DRAG FORCES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Drag Forces &amp; Terminal Velocity</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When an object moves through a fluid, it experiences a <strong>drag force</strong> opposing its motion. For the linear model: <strong>F_drag = bv</strong>. As a falling object speeds up, drag increases until it equals gravity. At that point, net force is zero and the object reaches <strong>terminal velocity</strong>: v_t = mg/b.
+    </p>
+    <div class="formula-box large">At terminal velocity: mg = bv_t &nbsp;&rarr;&nbsp; v_t = mg/b, &nbsp; a = 0</div>
+    <div class="key-point">Terminal velocity is not a maximum possible speed -- it is the speed at which drag exactly balances gravity. More massive objects (same drag) have higher terminal velocities.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Terminal Velocity Simulator</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px">
+          <div class="sub-label">Free Body Diagram</div>
+          <svg id="dragFBD" width="100%" viewBox="0 0 200 320" style="display:block"></svg>
+        </div>
+        <div style="flex:2;min-width:260px">
+          <div class="sub-label">Velocity vs Time</div>
+          <svg id="dragGraph" width="100%" viewBox="0 0 450 260" style="display:block"></svg>
+        </div>
+      </div>
+      <div class="slider-row">
+        <label>Mass (kg)</label>
+        <input type="range" id="dragMass" min="1" max="20" value="5" step="1" oninput="resetDrag()">
+        <span class="slider-val" id="dragMassVal">5 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Drag coeff b</label>
+        <input type="range" id="dragB" min="0.5" max="10" value="2" step="0.5" oninput="resetDrag()">
+        <span class="slider-val" id="dragBVal">2.0</span>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" onclick="startDrag()">Drop Object</button>
+        <button class="btn" onclick="resetDrag()">Reset</button>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Current v</span><br><span class="value indigo" id="dragVel">0.0 m/s</span></div>
+        <div class="readout-item"><span class="label">v_t = mg/b</span><br><span class="value green" id="dragVt">24.5 m/s</span></div>
+        <div class="readout-item"><span class="label">Weight mg</span><br><span class="value pink" id="dragW">49.0 N</span></div>
+        <div class="readout-item"><span class="label">Drag bv</span><br><span class="value amber" id="dragFd">0.0 N</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> A submarine diving experiences drag from seawater -- much denser than air, so terminal velocity is reached quickly. Parachute deployment dramatically increases the drag coefficient, cutting terminal velocity from ~55 m/s to ~5 m/s. Torpedo designers minimize drag coefficient for maximum range.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 4 kg object falls with linear drag b = 0.8 kg/s. What is its terminal velocity? (g = 9.8)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1" step="0.1" placeholder="v_t = ?" onkeydown="if(event.key==='Enter')checkNum('s2p1',49.0,1.0)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p1',49.0,1.0)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem" id="s2p2">
+        <p><strong>2.</strong> As a falling object approaches terminal velocity, what happens to its acceleration?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">Acceleration remains constant at g</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','correct')">Acceleration decreases from g toward zero</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">Acceleration increases until terminal velocity</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: SPRINGS & HOOKE'S LAW -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Springs &amp; Hooke's Law</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Hooke's Law</strong>: the restoring force of a spring is proportional to displacement from equilibrium: <strong>F = -kx</strong>. The negative sign means the force always opposes the displacement. The <strong>spring constant k</strong> (N/m) measures stiffness. Elastic potential energy stored: <strong>U = (1/2)kx^2</strong>.
+    </p>
+    <div class="formula-box large">F = -kx &nbsp;&nbsp;&nbsp; U = (1/2)kx&#xB2;</div>
+    <div class="key-point">F vs x is a straight line through the origin with slope -k. The energy U = (1/2)kx^2 is the area under the |F| vs x curve (a triangle).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Drag the mass to stretch or compress</div>
+      <svg id="springSvg" width="100%" viewBox="0 0 800 220" style="display:block;cursor:ew-resize"></svg>
+      <div class="slider-row">
+        <label>Spring k (N/m)</label>
+        <input type="range" id="springK" min="10" max="200" value="50" step="10" oninput="updateSpringK()">
+        <span class="slider-val" id="springKVal">50 N/m</span>
+      </div>
+      <div class="graph-container">
+        <div>
+          <div class="sub-label">F vs x</div>
+          <svg id="springFGraph" width="100%" viewBox="0 0 380 200" style="display:block"></svg>
+        </div>
+        <div>
+          <div class="sub-label">U vs x</div>
+          <svg id="springUGraph" width="100%" viewBox="0 0 380 200" style="display:block"></svg>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Displacement x</span><br><span class="value indigo" id="springX">0.00 m</span></div>
+        <div class="readout-item"><span class="label">F = -kx</span><br><span class="value green" id="springF">0.0 N</span></div>
+        <div class="readout-item"><span class="label">U = (1/2)kx^2</span><br><span class="value amber" id="springU">0.00 J</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Aircraft carrier catapults launch jets from 0 to 170 mph in 2 seconds using steam pistons modeled as springs. Arresting gear uses spring-damper systems to catch jets at 150 mph. Every shock mount protecting sensitive shipboard equipment follows Hooke's Law.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A spring with k = 200 N/m is compressed 0.15 m. What force magnitude does it exert?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="0.1" placeholder="|F| = ?" onkeydown="if(event.key==='Enter')checkNum('s3p1',30,1)">
+          <span class="unit-label">N</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p1',30,1)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> How much elastic PE is stored in that spring?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2" step="0.01" placeholder="U = ?" onkeydown="if(event.key==='Enter')checkNum('s3p2',2.25,0.1)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p2',2.25,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: ATWOOD MACHINES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Atwood Machines</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      An <strong>Atwood machine</strong> is two masses connected by a string over a frictionless, massless pulley. Both masses share the same acceleration magnitude. Applying Newton's 2nd Law to each mass separately and solving:
+    </p>
+    <div class="formula-box large">a = |m1 - m2|g / (m1 + m2) &nbsp;&nbsp;&nbsp; T = 2m1*m2*g / (m1 + m2)</div>
+    <div class="key-point">When m1 = m2, a = 0 and T = mg. The larger the mass difference, the closer a approaches g. This device effectively "dilutes" gravity for measurement.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Atwood Machine</div>
+      <svg id="atwoodSvg" width="100%" viewBox="0 0 500 350" style="display:block"></svg>
+      <div class="slider-row">
+        <label>Mass m1 (left)</label>
+        <input type="range" id="atwoodM1" min="1" max="20" value="8" step="1" oninput="updateAtwood()">
+        <span class="slider-val" id="atwoodM1Val">8 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Mass m2 (right)</label>
+        <input type="range" id="atwoodM2" min="1" max="20" value="4" step="1" oninput="updateAtwood()">
+        <span class="slider-val" id="atwoodM2Val">4 kg</span>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" onclick="animateAtwood()">Release</button>
+        <button class="btn" onclick="resetAtwood()">Reset</button>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Acceleration</span><br><span class="value green" id="atwoodA">3.27 m/s^2</span></div>
+        <div class="readout-item"><span class="label">Tension</span><br><span class="value amber" id="atwoodT">52.3 N</span></div>
+        <div class="readout-item"><span class="label">Heavier side</span><br><span class="value pink" id="atwoodHeavier">Left (m1)</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Cranes on Navy ships use pulley systems following the same principles. Counterweight systems on watertight doors use Atwood-like mechanics -- the counterweight nearly balances the heavy hatch so a sailor can open it with minimal force.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> Atwood machine: m1 = 10 kg, m2 = 6 kg. What is the acceleration? (g = 9.8)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="0.01" placeholder="a = ?" onkeydown="if(event.key==='Enter')checkNum('s4p1',2.45,0.15)">
+          <span class="unit-label">m/s^2</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p1',2.45,0.15)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> What is the string tension for that system?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2" step="0.1" placeholder="T = ?" onkeydown="if(event.key==='Enter')checkNum('s4p2',73.5,1.5)">
+          <span class="unit-label">N</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p2',73.5,1.5)">Check</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: PULLEYS & INCLINED PLANES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Pulleys &amp; Inclined Planes</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Classic system: mass on an <strong>inclined plane</strong> connected via string over a pulley to a <strong>hanging mass</strong>. Resolve the plane mass's weight into components parallel and perpendicular to the surface. The string constrains both objects to the same acceleration magnitude.
+    </p>
+    <div class="formula-box">Frictionless: a = (m2*g - m1*g*sin&theta;) / (m1 + m2)</div>
+    <div class="formula-box amber">With friction: a = (m2*g - m1*g*sin&theta; - &mu;_k * m1*g*cos&theta;) / (m1 + m2)</div>
+    <div class="key-point">Equilibrium when m2*g = m1*g*sin(&theta;). Adding friction requires a larger hanging mass to start motion. Always verify: does the system accelerate in your assumed direction?</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Inclined Plane + Pulley</div>
+      <svg id="rampSvg" width="100%" viewBox="0 0 800 380" style="display:block"></svg>
+      <div class="slider-row">
+        <label>Angle &theta;</label>
+        <input type="range" id="rampAngle" min="10" max="70" value="30" step="1" oninput="updateRamp()">
+        <span class="slider-val" id="rampAngleVal">30 deg</span>
+      </div>
+      <div class="slider-row">
+        <label>Plane mass m1</label>
+        <input type="range" id="rampM1" min="1" max="20" value="5" step="1" oninput="updateRamp()">
+        <span class="slider-val" id="rampM1Val">5 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Hanging mass m2</label>
+        <input type="range" id="rampM2" min="1" max="20" value="4" step="1" oninput="updateRamp()">
+        <span class="slider-val" id="rampM2Val">4 kg</span>
+      </div>
+      <div class="toggle-row">
+        <label class="toggle-switch"><input type="checkbox" id="rampFriction" onchange="updateRamp()"><span class="toggle-slider"></span></label>
+        <span class="toggle-label">Friction &mu;_k = 0.2</span>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" onclick="animateRamp()">Release</button>
+        <button class="btn" onclick="resetRamp()">Reset</button>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">m1*g*sin&theta;</span><br><span class="value indigo" id="rampParallel">24.5 N</span></div>
+        <div class="readout-item"><span class="label">m2*g</span><br><span class="value green" id="rampHangW">39.2 N</span></div>
+        <div class="readout-item"><span class="label">Friction</span><br><span class="value pink" id="rampFric">0.0 N</span></div>
+        <div class="readout-item"><span class="label">Acceleration</span><br><span class="value amber" id="rampAccel">1.63 m/s^2</span></div>
+        <div class="readout-item"><span class="label">Direction</span><br><span class="value" id="rampDir">m2 falls</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Loading munitions via ramp and pulley on a ship uses this exact setup. Understanding inclined planes helps with damage control -- wedging shoring against a bulkhead at the right angle maximizes bracing force perpendicular to the hull.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 6 kg block on a 30-degree frictionless incline connects to a 4 kg hanging mass. What is the system acceleration? (g = 9.8)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1" step="0.01" placeholder="a = ?" onkeydown="if(event.key==='Enter')checkNum('s5p1',0.98,0.15)">
+          <span class="unit-label">m/s^2</span>
+          <button class="btn btn-sm" onclick="checkNum('s5p1',0.98,0.15)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> Which direction does the system above move? (m1gsin30 = 29.4 N vs m2g = 39.2 N)</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">Block slides down the incline (m1gsin30 > m2g)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','correct')">Hanging mass falls, block slides up (m2g > m1gsin30)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">The system is in equilibrium</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUICK QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quick Quiz &mdash; Applications of Newton's Laws</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 8</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Circular Motion</div>
+      <p class="q-text">A 1200 kg car travels at 25 m/s around a flat curve of radius 100 m. What centripetal force is required? (F = mv^2/r)</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">3000 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">7500 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">12000 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">300 N</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Circular Motion (Vertical)</div>
+      <p class="q-text">A ball on a string moves in a vertical circle. At the very top, which force(s) point toward the center (downward)?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">Only tension</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">Both tension and gravity</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">Only gravity -- tension points outward at the top</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">Neither -- centripetal force is a separate force</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Terminal Velocity</div>
+      <p class="q-text">Two skydivers with the same body position: A (100 kg) and B (60 kg). Who has a lower terminal velocity?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">Diver A -- heavier means more drag</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">Diver B -- less weight means drag balances sooner at a lower speed</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">Same terminal velocity -- mass cancels out</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">Cannot determine without drag coefficient</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Hooke's Law</div>
+      <p class="q-text">A spring (k = 300 N/m) is stretched 0.2 m from equilibrium. What elastic PE is stored?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">30 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">12 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">6 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">60 J</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Atwood Machine</div>
+      <p class="q-text">An Atwood machine: m1 = 12 kg, m2 = 8 kg. What is the acceleration? (g = 9.8)</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">1.96 m/s^2</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">4.90 m/s^2</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">3.27 m/s^2</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">0.98 m/s^2</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Atwood Tension</div>
+      <p class="q-text">Same Atwood (m1=12, m2=8). What is the tension? T = 2*m1*m2*g/(m1+m2)</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">78.4 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">94.1 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">117.6 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">49.0 N</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Inclined Plane</div>
+      <p class="q-text">A 10 kg block on a frictionless 45-degree incline. What is the acceleration down the plane? (a = g*sin45)</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">9.80 m/s^2</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">6.93 m/s^2</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">4.90 m/s^2</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">3.46 m/s^2</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Combined System</div>
+      <p class="q-text">A 5 kg block on a 30-degree frictionless incline connects to a 3 kg hanging mass. m1gsin30 = 24.5 N, m2g = 29.4 N. What is the system acceleration?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">3.68 m/s^2 -- block slides up</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">0.61 m/s^2 -- hanging mass falls (29.4 - 24.5)/(5+3)</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">2.45 m/s^2 -- block slides down</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">0 -- system is in equilibrium</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+const G = 9.8;
+
+/* ==================== PROGRESS & SECTIONS ==================== */
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var openCount = document.querySelectorAll('.section-card.open').length;
+  var pct = (openCount / cards.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = openCount + ' / ' + cards.length + ' sections';
+}
+function toggleSection(header) {
+  header.parentElement.classList.toggle('open');
+  updateProgress();
+}
+
+/* ==================== SECTION 1: CIRCULAR MOTION ==================== */
+var circAngle = 0, circAnimId = null, circBroken = false;
+var circBrkX = 0, circBrkY = 0, circBrkVx = 0, circBrkVy = 0, circBrkT = 0;
+
+function updateCircReadout() {
+  var v = +document.getElementById('circSpeed').value;
+  var r = +document.getElementById('circRadius').value;
+  var m = +document.getElementById('circMass').value;
+  document.getElementById('circSpeedVal').textContent = v.toFixed(1) + ' m/s';
+  document.getElementById('circRadiusVal').textContent = r.toFixed(2) + ' m';
+  document.getElementById('circMassVal').textContent = m.toFixed(1) + ' kg';
+  var ac = v * v / r, fc = m * ac;
+  document.getElementById('circV').textContent = v.toFixed(1) + ' m/s';
+  document.getElementById('circR').textContent = r.toFixed(2) + ' m';
+  document.getElementById('circAc').textContent = ac.toFixed(1) + ' m/s^2';
+  document.getElementById('circFc').textContent = fc.toFixed(1) + ' N';
+}
+
+function drawCirc() {
+  var svg = document.getElementById('circSvg');
+  var cx = 300, cy = 200;
+  var v = +document.getElementById('circSpeed').value;
+  var rS = +document.getElementById('circRadius').value;
+  var rPx = rS * 30 + 40;
+  var m = +document.getElementById('circMass').value;
+  var ac = v * v / rS;
+  var h = '';
+  // dashed orbit
+  h += '<circle cx="'+cx+'" cy="'+cy+'" r="'+rPx+'" fill="none" stroke="#363b47" stroke-width="1" stroke-dasharray="6,4"/>';
+  h += '<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#9ca3af"/>';
+  h += '<text x="'+cx+'" y="'+(cy+16)+'" text-anchor="middle" fill="#9ca3af" font-size="10">center</text>';
+
+  if (!circBroken) {
+    var bx = cx + rPx * Math.cos(circAngle);
+    var by = cy + rPx * Math.sin(circAngle);
+    // string
+    h += '<line x1="'+cx+'" y1="'+cy+'" x2="'+bx+'" y2="'+by+'" stroke="#9ca3af" stroke-width="1.5"/>';
+    // ball
+    var br = 8 + m;
+    h += '<circle cx="'+bx+'" cy="'+by+'" r="'+br+'" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+    h += '<text x="'+bx+'" y="'+(by+4)+'" text-anchor="middle" fill="#fff" font-size="9" font-weight="600">'+m+'kg</text>';
+    // a_c arrow toward center
+    var acLen = Math.min(ac * 4, rPx - br - 12);
+    if (acLen > 8) {
+      var dx = (cx - bx) / rPx, dy = (cy - by) / rPx;
+      h += '<line x1="'+bx+'" y1="'+by+'" x2="'+(bx+dx*acLen)+'" y2="'+(by+dy*acLen)+'" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrGreen)"/>';
+      h += '<text x="'+(bx+dx*acLen*0.5+12*dy)+'" y="'+(by+dy*acLen*0.5-12*dx)+'" fill="#22c55e" font-size="9" font-weight="600">a_c</text>';
+    }
+    // v arrow tangential
+    var tx = -Math.sin(circAngle), ty = Math.cos(circAngle);
+    var vLen = v * 8;
+    h += '<line x1="'+bx+'" y1="'+by+'" x2="'+(bx+tx*vLen)+'" y2="'+(by+ty*vLen)+'" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#arrAmber)"/>';
+    h += '<text x="'+(bx+tx*vLen+8)+'" y="'+(by+ty*vLen-4)+'" fill="#f59e0b" font-size="9" font-weight="600">v</text>';
+  } else {
+    // broken: tangential flight
+    var bx2 = circBrkX + circBrkVx * circBrkT;
+    var by2 = circBrkY + circBrkVy * circBrkT;
+    var br2 = 8 + m;
+    h += '<circle cx="'+bx2+'" cy="'+by2+'" r="'+br2+'" fill="#ec4899" stroke="#f472b6" stroke-width="2" opacity="0.9"/>';
+    h += '<text x="'+bx2+'" y="'+(by2+4)+'" text-anchor="middle" fill="#fff" font-size="9">'+m+'kg</text>';
+    // tangent line
+    h += '<line x1="'+circBrkX+'" y1="'+circBrkY+'" x2="'+(circBrkX+circBrkVx*6)+'" y2="'+(circBrkY+circBrkVy*6)+'" stroke="#ec4899" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>';
+    h += '<text x="'+((circBrkX+bx2)/2+12)+'" y="'+((circBrkY+by2)/2-10)+'" fill="#ec4899" font-size="9">tangential path</text>';
+    h += '<circle cx="'+circBrkX+'" cy="'+circBrkY+'" r="4" fill="#ec4899" opacity="0.4"/>';
+  }
+  // legend
+  h += '<text x="590" y="30" fill="#9ca3af" font-size="10">Legend:</text>';
+  h += '<line x1="590" y1="48" x2="620" y2="48" stroke="#22c55e" stroke-width="2.5"/>';
+  h += '<text x="628" y="52" fill="#22c55e" font-size="10">a_c (centripetal)</text>';
+  h += '<line x1="590" y1="68" x2="620" y2="68" stroke="#f59e0b" stroke-width="2.5"/>';
+  h += '<text x="628" y="72" fill="#f59e0b" font-size="10">v (tangential)</text>';
+  svg.innerHTML = h;
+}
+
+function circLoop() {
+  var v = +document.getElementById('circSpeed').value;
+  var rS = +document.getElementById('circRadius').value;
+  var rPx = rS * 30 + 40;
+  if (!circBroken) {
+    circAngle += (v * 30 / rPx) * 0.016;
+  } else {
+    circBrkT += 0.35;
+    if (circBrkT > 10) { circReset(); return; }
+  }
+  drawCirc();
+  circAnimId = requestAnimationFrame(circLoop);
+}
+
+function circBreakString() {
+  if (circBroken) return;
+  var v = +document.getElementById('circSpeed').value;
+  var rS = +document.getElementById('circRadius').value;
+  var rPx = rS * 30 + 40;
+  circBrkX = 300 + rPx * Math.cos(circAngle);
+  circBrkY = 200 + rPx * Math.sin(circAngle);
+  circBrkVx = -Math.sin(circAngle) * v * 2.5;
+  circBrkVy = Math.cos(circAngle) * v * 2.5;
+  circBrkT = 0;
+  circBroken = true;
+}
+
+function circReset() {
+  circBroken = false; circBrkT = 0; circAngle = 0;
+}
+
+/* ==================== SECTION 2: DRAG FORCES ==================== */
+var dragAnimId = null, dragV = 0, dragT = 0, dragData = [], dragRunning = false;
+
+function resetDrag() {
+  if (dragAnimId) cancelAnimationFrame(dragAnimId);
+  dragAnimId = null; dragV = 0; dragT = 0; dragData = []; dragRunning = false;
+  var m = +document.getElementById('dragMass').value;
+  var b = +document.getElementById('dragB').value;
+  document.getElementById('dragMassVal').textContent = m + ' kg';
+  document.getElementById('dragBVal').textContent = b.toFixed(1);
+  var vt = m * G / b;
+  document.getElementById('dragVel').textContent = '0.0 m/s';
+  document.getElementById('dragVt').textContent = vt.toFixed(1) + ' m/s';
+  document.getElementById('dragW').textContent = (m * G).toFixed(1) + ' N';
+  document.getElementById('dragFd').textContent = '0.0 N';
+  drawDragFBD(0, m, b);
+  drawDragGraph([]);
+}
+
+function drawDragFBD(v, m, b) {
+  var svg = document.getElementById('dragFBD');
+  var cx = 100, cy = 160;
+  var W = m * G, Fd = b * v;
+  var maxA = 110;
+  var wLen = Math.min(W / 200 * maxA, maxA);
+  var dLen = Math.min(Fd / 200 * maxA, maxA);
+  var h = '<defs><marker id="adG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker>';
+  h += '<marker id="adA" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#f59e0b"/></marker></defs>';
+  h += '<rect x="'+(cx-25)+'" y="'+(cy-25)+'" width="50" height="50" rx="8" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+  h += '<text x="'+cx+'" y="'+(cy+4)+'" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">'+m+'kg</text>';
+  if (wLen > 3) {
+    h += '<line x1="'+cx+'" y1="'+(cy+25)+'" x2="'+cx+'" y2="'+(cy+25+wLen)+'" stroke="#ec4899" stroke-width="3" marker-end="url(#adG)"/>';
+    h += '<text x="'+(cx+15)+'" y="'+(cy+35+wLen/2)+'" fill="#ec4899" font-size="10">mg</text>';
+  }
+  if (dLen > 3) {
+    h += '<line x1="'+cx+'" y1="'+(cy-25)+'" x2="'+cx+'" y2="'+(cy-25-dLen)+'" stroke="#f59e0b" stroke-width="3" marker-end="url(#adA)"/>';
+    h += '<text x="'+(cx+15)+'" y="'+(cy-30-dLen/2)+'" fill="#f59e0b" font-size="10">bv</text>';
+  }
+  svg.innerHTML = h;
+}
+
+function drawDragGraph(data) {
+  var svg = document.getElementById('dragGraph');
+  var m = +document.getElementById('dragMass').value;
+  var b = +document.getElementById('dragB').value;
+  var vt = m * G / b;
+  var ox = 50, oy = 15, gw = 370, gh = 210;
+  var h = '<rect x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="#1a1d24" stroke="#363b47" rx="4"/>';
+  h += '<line x1="'+ox+'" y1="'+(oy+gh)+'" x2="'+(ox+gw)+'" y2="'+(oy+gh)+'" stroke="#9ca3af" stroke-width="1"/>';
+  h += '<line x1="'+ox+'" y1="'+oy+'" x2="'+ox+'" y2="'+(oy+gh)+'" stroke="#9ca3af" stroke-width="1"/>';
+  h += '<text x="'+(ox+gw/2)+'" y="'+(oy+gh+20)+'" text-anchor="middle" fill="#9ca3af" font-size="10">Time (s)</text>';
+  h += '<text x="12" y="'+(oy+gh/2)+'" fill="#9ca3af" font-size="10" transform="rotate(-90,12,'+(oy+gh/2)+')">v (m/s)</text>';
+  var maxV = vt * 1.2;
+  var vtY = oy + gh - (vt / maxV) * gh;
+  h += '<line x1="'+ox+'" y1="'+vtY+'" x2="'+(ox+gw)+'" y2="'+vtY+'" stroke="#22c55e" stroke-width="1" stroke-dasharray="6,4"/>';
+  h += '<text x="'+(ox+gw-5)+'" y="'+(vtY-5)+'" text-anchor="end" fill="#22c55e" font-size="9">v_t = '+vt.toFixed(1)+'</text>';
+  if (data.length > 1) {
+    var maxT = Math.max(data[data.length-1][0], 5);
+    var pts = '';
+    for (var i = 0; i < data.length; i++) {
+      var px = ox + (data[i][0] / maxT) * gw;
+      var py = oy + gh - (data[i][1] / maxV) * gh;
+      pts += (i === 0 ? 'M' : 'L') + px.toFixed(1) + ',' + py.toFixed(1) + ' ';
+    }
+    h += '<path d="'+pts+'" fill="none" stroke="#6366f1" stroke-width="2.5"/>';
+  }
+  svg.innerHTML = h;
+}
+
+function startDrag() {
+  if (dragRunning) return;
+  dragRunning = true; dragV = 0; dragT = 0; dragData = [[0,0]];
+  var m = +document.getElementById('dragMass').value;
+  var b = +document.getElementById('dragB').value;
+  var vt = m * G / b;
+  function step() {
+    var a = (m * G - b * dragV) / m;
+    dragV += a * 0.05;
+    if (dragV < 0) dragV = 0;
+    dragT += 0.05;
+    dragData.push([dragT, dragV]);
+    document.getElementById('dragVel').textContent = dragV.toFixed(1) + ' m/s';
+    document.getElementById('dragFd').textContent = (b * dragV).toFixed(1) + ' N';
+    drawDragFBD(dragV, m, b);
+    drawDragGraph(dragData);
+    if (dragT < 15 && Math.abs(dragV - vt) > 0.05) {
+      dragAnimId = requestAnimationFrame(step);
+    } else { dragRunning = false; }
+  }
+  dragAnimId = requestAnimationFrame(step);
+}
+
+/* ==================== SECTION 3: SPRINGS ==================== */
+var springDisp = 0, springDragging = false;
+
+function drawSpring() {
+  var svg = document.getElementById('springSvg');
+  var k = +document.getElementById('springK').value;
+  var eqX = 400, massX = eqX + springDisp * 200, wallX = 80;
+  var h = '';
+  h += '<rect x="60" y="60" width="20" height="100" fill="#363b47" rx="3"/>';
+  h += '<line x1="60" y1="60" x2="60" y2="160" stroke="#9ca3af" stroke-width="2"/>';
+  h += '<line x1="60" y1="160" x2="760" y2="160" stroke="#363b47" stroke-width="2"/>';
+  // spring zigzag
+  var sx = wallX, ex = Math.max(massX - 30, sx + 20);
+  var nc = 12, cw = (ex - sx) / nc;
+  var sp = 'M' + sx + ',110 ';
+  for (var i = 0; i < nc; i++) {
+    sp += 'L' + (sx + cw * i + cw * 0.25) + ',90 L' + (sx + cw * i + cw * 0.75) + ',130 ';
+  }
+  sp += 'L' + ex + ',110';
+  h += '<path d="'+sp+'" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+  // mass
+  h += '<rect x="'+(massX-30)+'" y="80" width="60" height="60" rx="8" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+  h += '<text x="'+massX+'" y="115" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">m</text>';
+  // eq marker
+  h += '<line x1="'+eqX+'" y1="160" x2="'+eqX+'" y2="175" stroke="#9ca3af" stroke-width="1.5"/>';
+  h += '<text x="'+eqX+'" y="190" text-anchor="middle" fill="#9ca3af" font-size="9">x=0</text>';
+  // displacement arrow
+  if (Math.abs(springDisp) > 0.02) {
+    h += '<line x1="'+eqX+'" y1="65" x2="'+massX+'" y2="65" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrAmber)"/>';
+    h += '<text x="'+((eqX+massX)/2)+'" y="58" text-anchor="middle" fill="#f59e0b" font-size="10">x='+(springDisp>0?'+':'')+springDisp.toFixed(2)+'</text>';
+  }
+  // force arrow
+  var F = -k * springDisp;
+  if (Math.abs(F) > 2) {
+    var fLen = Math.min(Math.abs(F) * 0.7, 100) * Math.sign(F);
+    h += '<line x1="'+massX+'" y1="110" x2="'+(massX+fLen)+'" y2="110" stroke="#22c55e" stroke-width="3" marker-end="url(#arrGreen)"/>';
+    h += '<text x="'+(massX+fLen+(F>0?10:-28))+'" y="105" fill="#22c55e" font-size="10">F</text>';
+  }
+  svg.innerHTML = h;
+  document.getElementById('springX').textContent = springDisp.toFixed(2) + ' m';
+  document.getElementById('springF').textContent = F.toFixed(1) + ' N';
+  document.getElementById('springU').textContent = (0.5 * k * springDisp * springDisp).toFixed(2) + ' J';
+  drawSpringGraphs(k);
+}
+
+function drawSpringGraphs(k) {
+  var ox = 50, oy = 10, gw = 300, gh = 170, maxX = 1.0;
+  // F vs x
+  var fs = document.getElementById('springFGraph');
+  var hf = '<rect x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="#1a1d24" stroke="#363b47" rx="4"/>';
+  hf += '<line x1="'+ox+'" y1="'+(oy+gh/2)+'" x2="'+(ox+gw)+'" y2="'+(oy+gh/2)+'" stroke="#9ca3af" stroke-width="1"/>';
+  hf += '<line x1="'+(ox+gw/2)+'" y1="'+oy+'" x2="'+(ox+gw/2)+'" y2="'+(oy+gh)+'" stroke="#9ca3af" stroke-width="1"/>';
+  hf += '<text x="'+(ox+gw/2)+'" y="'+(oy+gh+16)+'" text-anchor="middle" fill="#9ca3af" font-size="9">x</text>';
+  hf += '<text x="'+(ox-5)+'" y="'+(oy+8)+'" text-anchor="end" fill="#9ca3af" font-size="9">F</text>';
+  var scX = gw / (2 * maxX), maxF = k * maxX, scF = gh / (2 * maxF);
+  // F = -kx line
+  var lx1 = ox, ly1 = oy + gh/2 - (-k*(-maxX))*scF;
+  var lx2 = ox + gw, ly2 = oy + gh/2 - (-k*maxX)*scF;
+  hf += '<line x1="'+lx1+'" y1="'+ly1+'" x2="'+lx2+'" y2="'+ly2+'" stroke="#6366f1" stroke-width="2"/>';
+  var cpx = ox + gw/2 + springDisp * scX;
+  var cpy = oy + gh/2 - (-k * springDisp) * scF;
+  hf += '<circle cx="'+cpx+'" cy="'+cpy+'" r="5" fill="#22c55e"/>';
+  hf += '<text x="'+(ox+gw-8)+'" y="'+(oy+16)+'" text-anchor="end" fill="#6366f1" font-size="9">F=-kx</text>';
+  fs.innerHTML = hf;
+
+  // U vs x
+  var us = document.getElementById('springUGraph');
+  var hu = '<rect x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="#1a1d24" stroke="#363b47" rx="4"/>';
+  hu += '<line x1="'+ox+'" y1="'+(oy+gh)+'" x2="'+(ox+gw)+'" y2="'+(oy+gh)+'" stroke="#9ca3af" stroke-width="1"/>';
+  hu += '<line x1="'+(ox+gw/2)+'" y1="'+oy+'" x2="'+(ox+gw/2)+'" y2="'+(oy+gh)+'" stroke="#9ca3af" stroke-width="1"/>';
+  hu += '<text x="'+(ox+gw/2)+'" y="'+(oy+gh+16)+'" text-anchor="middle" fill="#9ca3af" font-size="9">x</text>';
+  hu += '<text x="'+(ox-5)+'" y="'+(oy+8)+'" text-anchor="end" fill="#9ca3af" font-size="9">U</text>';
+  var maxU = 0.5 * k * maxX * maxX, scU = gh / (maxU * 1.15);
+  var up = '';
+  for (var i = 0; i <= 60; i++) {
+    var xv = -maxX + 2 * maxX * i / 60;
+    var uv = 0.5 * k * xv * xv;
+    up += (i===0?'M':'L') + (ox+gw/2+xv*scX).toFixed(1) + ',' + (oy+gh-uv*scU).toFixed(1) + ' ';
+  }
+  hu += '<path d="'+up+'" fill="none" stroke="#f59e0b" stroke-width="2"/>';
+  var curU = 0.5 * k * springDisp * springDisp;
+  hu += '<circle cx="'+(ox+gw/2+springDisp*scX)+'" cy="'+(oy+gh-curU*scU)+'" r="5" fill="#22c55e"/>';
+  hu += '<text x="'+(ox+gw-8)+'" y="'+(oy+16)+'" text-anchor="end" fill="#f59e0b" font-size="9">U=(1/2)kx^2</text>';
+  us.innerHTML = hu;
+}
+
+function updateSpringK() {
+  document.getElementById('springKVal').textContent = document.getElementById('springK').value + ' N/m';
+  drawSpring();
+}
+
+(function() {
+  var svg = document.getElementById('springSvg');
+  function gx(e) {
+    var r = svg.getBoundingClientRect();
+    var cx = e.touches ? e.touches[0].clientX : e.clientX;
+    return ((cx - r.left) / r.width * 800 - 400) / 200;
+  }
+  function clamp(v) { return Math.max(-1, Math.min(1, v)); }
+  svg.addEventListener('mousedown', function(e) { springDragging = true; springDisp = clamp(gx(e)); drawSpring(); });
+  svg.addEventListener('touchstart', function(e) { e.preventDefault(); springDragging = true; springDisp = clamp(gx(e)); drawSpring(); }, {passive:false});
+  window.addEventListener('mousemove', function(e) { if (springDragging) { springDisp = clamp(gx(e)); drawSpring(); } });
+  window.addEventListener('touchmove', function(e) { if (springDragging) { springDisp = clamp(gx(e)); drawSpring(); } }, {passive:false});
+  window.addEventListener('mouseup', function() { springDragging = false; });
+  window.addEventListener('touchend', function() { springDragging = false; });
+})();
+
+/* ==================== SECTION 4: ATWOOD ==================== */
+var atwoodAnimId = null, atwoodOff = 0;
+
+function updateAtwood() {
+  var m1 = +document.getElementById('atwoodM1').value;
+  var m2 = +document.getElementById('atwoodM2').value;
+  document.getElementById('atwoodM1Val').textContent = m1 + ' kg';
+  document.getElementById('atwoodM2Val').textContent = m2 + ' kg';
+  var a = Math.abs(m1-m2) * G / (m1+m2);
+  var T = 2*m1*m2*G / (m1+m2);
+  document.getElementById('atwoodA').textContent = a.toFixed(2) + ' m/s^2';
+  document.getElementById('atwoodT').textContent = T.toFixed(1) + ' N';
+  document.getElementById('atwoodHeavier').textContent = m1>m2?'Left (m1)':m2>m1?'Right (m2)':'Equal';
+  atwoodOff = 0;
+  drawAtw(m1, m2, 0);
+}
+
+function drawAtw(m1, m2, off) {
+  var svg = document.getElementById('atwoodSvg');
+  var pcx = 250, pcy = 50, pr = 25;
+  var dir = m1>m2?1:m2>m1?-1:0;
+  var oL = dir*off, oR = -dir*off;
+  var h = '<defs><marker id="awD" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker>';
+  h += '<marker id="awU" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6Z" fill="#f59e0b"/></marker></defs>';
+  h += '<rect x="'+(pcx-40)+'" y="5" width="80" height="8" rx="2" fill="#363b47"/>';
+  h += '<line x1="'+pcx+'" y1="13" x2="'+pcx+'" y2="'+(pcy-pr)+'" stroke="#363b47" stroke-width="2"/>';
+  h += '<circle cx="'+pcx+'" cy="'+pcy+'" r="'+pr+'" fill="none" stroke="#9ca3af" stroke-width="3"/>';
+  h += '<circle cx="'+pcx+'" cy="'+pcy+'" r="4" fill="#9ca3af"/>';
+  // left
+  var lx = pcx-pr, ly = 150+oL;
+  h += '<line x1="'+lx+'" y1="'+pcy+'" x2="'+lx+'" y2="'+ly+'" stroke="#9ca3af" stroke-width="1.5"/>';
+  h += '<rect x="'+(lx-25)+'" y="'+ly+'" width="50" height="40" rx="6" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+  h += '<text x="'+lx+'" y="'+(ly+25)+'" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">'+m1+'kg</text>';
+  h += '<text x="'+lx+'" y="'+(ly-6)+'" text-anchor="middle" fill="#9ca3af" font-size="10">m1</text>';
+  h += '<line x1="'+lx+'" y1="'+(ly+40)+'" x2="'+lx+'" y2="'+(ly+70)+'" stroke="#ec4899" stroke-width="2" marker-end="url(#awD)"/>';
+  h += '<text x="'+(lx+10)+'" y="'+(ly+62)+'" fill="#ec4899" font-size="9">m1g</text>';
+  h += '<line x1="'+lx+'" y1="'+ly+'" x2="'+lx+'" y2="'+(ly-28)+'" stroke="#f59e0b" stroke-width="2" marker-end="url(#awU)"/>';
+  h += '<text x="'+(lx+10)+'" y="'+(ly-18)+'" fill="#f59e0b" font-size="9">T</text>';
+  // right
+  var rx = pcx+pr, ry = 150+oR;
+  h += '<line x1="'+rx+'" y1="'+pcy+'" x2="'+rx+'" y2="'+ry+'" stroke="#9ca3af" stroke-width="1.5"/>';
+  h += '<rect x="'+(rx-25)+'" y="'+ry+'" width="50" height="40" rx="6" fill="#22c55e" stroke="#4ade80" stroke-width="2"/>';
+  h += '<text x="'+rx+'" y="'+(ry+25)+'" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">'+m2+'kg</text>';
+  h += '<text x="'+rx+'" y="'+(ry-6)+'" text-anchor="middle" fill="#9ca3af" font-size="10">m2</text>';
+  h += '<line x1="'+rx+'" y1="'+(ry+40)+'" x2="'+rx+'" y2="'+(ry+70)+'" stroke="#ec4899" stroke-width="2" marker-end="url(#awD)"/>';
+  h += '<text x="'+(rx+10)+'" y="'+(ry+62)+'" fill="#ec4899" font-size="9">m2g</text>';
+  h += '<line x1="'+rx+'" y1="'+ry+'" x2="'+rx+'" y2="'+(ry-28)+'" stroke="#f59e0b" stroke-width="2" marker-end="url(#awU)"/>';
+  h += '<text x="'+(rx+10)+'" y="'+(ry-18)+'" fill="#f59e0b" font-size="9">T</text>';
+  svg.innerHTML = h;
+}
+
+function animateAtwood() {
+  if (atwoodAnimId) cancelAnimationFrame(atwoodAnimId);
+  atwoodOff = 0;
+  var m1 = +document.getElementById('atwoodM1').value;
+  var m2 = +document.getElementById('atwoodM2').value;
+  if (m1===m2) return;
+  var v = 0, a = Math.abs(m1-m2)*G/(m1+m2);
+  function step() {
+    v += a * 0.016; atwoodOff += v * 0.5;
+    if (atwoodOff > 80) { atwoodOff = 80; drawAtw(m1,m2,atwoodOff); return; }
+    drawAtw(m1,m2,atwoodOff);
+    atwoodAnimId = requestAnimationFrame(step);
+  }
+  atwoodAnimId = requestAnimationFrame(step);
+}
+
+function resetAtwood() {
+  if (atwoodAnimId) cancelAnimationFrame(atwoodAnimId);
+  atwoodAnimId = null; atwoodOff = 0; updateAtwood();
+}
+
+/* ==================== SECTION 5: RAMP + PULLEY ==================== */
+var rampAnimId = null, rampOff = 0;
+
+function updateRamp() {
+  var ang = +document.getElementById('rampAngle').value;
+  var m1 = +document.getElementById('rampM1').value;
+  var m2 = +document.getElementById('rampM2').value;
+  var hasFr = document.getElementById('rampFriction').checked;
+  var mu = hasFr ? 0.2 : 0;
+  document.getElementById('rampAngleVal').textContent = ang + ' deg';
+  document.getElementById('rampM1Val').textContent = m1 + ' kg';
+  document.getElementById('rampM2Val').textContent = m2 + ' kg';
+  var rad = ang * Math.PI / 180;
+  var par = m1*G*Math.sin(rad), hw = m2*G, fr = mu*m1*G*Math.cos(rad);
+  var netM2 = hw - par - fr, netBlk = par - hw - fr;
+  var a, dir;
+  if (netM2 > 0) { a = netM2/(m1+m2); dir = 'm2 falls, block up'; }
+  else if (netBlk > 0) { a = netBlk/(m1+m2); dir = 'block slides down'; }
+  else { a = 0; dir = 'static equilibrium'; }
+  document.getElementById('rampParallel').textContent = par.toFixed(1)+' N';
+  document.getElementById('rampHangW').textContent = hw.toFixed(1)+' N';
+  document.getElementById('rampFric').textContent = fr.toFixed(1)+' N';
+  document.getElementById('rampAccel').textContent = a.toFixed(2)+' m/s^2';
+  document.getElementById('rampDir').textContent = dir;
+  rampOff = 0;
+  drawRamp(ang, m1, m2, hasFr, 0);
+}
+
+function drawRamp(ang, m1, m2, hasFr, off) {
+  var svg = document.getElementById('rampSvg');
+  var rad = ang * Math.PI/180;
+  var h = '<defs><marker id="rpA" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#22c55e"/></marker>';
+  h += '<marker id="rpB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker>';
+  h += '<marker id="rpC" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#f59e0b"/></marker>';
+  h += '<marker id="rpD" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#6366f1"/></marker></defs>';
+  var bx = 80, by = 330, rL = 300;
+  var tx = bx + rL*Math.cos(rad), ty = by - rL*Math.sin(rad);
+  h += '<polygon points="'+bx+','+by+' '+tx+','+ty+' '+tx+','+by+'" fill="#262a33" stroke="#363b47" stroke-width="2"/>';
+  // angle arc
+  var ar = 35;
+  h += '<path d="M'+(bx+ar)+','+by+' A'+ar+','+ar+' 0 0 0 '+(bx+ar*Math.cos(rad))+','+(by-ar*Math.sin(rad))+'" fill="none" stroke="#9ca3af" stroke-width="1"/>';
+  h += '<text x="'+(bx+ar+8)+'" y="'+(by-6)+'" fill="#9ca3af" font-size="10">'+ang+'</text>';
+  // block on ramp
+  var bDist = rL*0.45 + off*0.5;
+  var bcx = bx+bDist*Math.cos(rad), bcy = by-bDist*Math.sin(rad);
+  var rotD = -ang;
+  h += '<g transform="translate('+bcx.toFixed(1)+','+bcy.toFixed(1)+') rotate('+rotD+')">';
+  h += '<rect x="-20" y="-25" width="40" height="25" rx="4" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+  h += '<text x="0" y="-9" text-anchor="middle" fill="#fff" font-size="9" font-weight="600">'+m1+'kg</text>';
+  // parallel weight
+  var wP = m1*G*Math.sin(rad), wpL = Math.min(wP*1.1, 70);
+  h += '<line x1="0" y1="0" x2="'+wpL+'" y2="0" stroke="#ec4899" stroke-width="2" marker-end="url(#rpB)"/>';
+  h += '<text x="'+(wpL+4)+'" y="-4" fill="#ec4899" font-size="8">mgsin'+ang+'</text>';
+  // normal
+  var N = m1*G*Math.cos(rad), nL = Math.min(N*0.9, 60);
+  h += '<line x1="0" y1="-25" x2="0" y2="'+(-25-nL)+'" stroke="#22c55e" stroke-width="2" marker-end="url(#rpA)"/>';
+  h += '<text x="5" y="'+(-28-nL)+'" fill="#22c55e" font-size="8">N</text>';
+  if (hasFr) {
+    var fL = Math.min(0.2*N*1.1, 50);
+    h += '<line x1="0" y1="0" x2="'+(-fL)+'" y2="0" stroke="#f59e0b" stroke-width="2" marker-end="url(#rpC)"/>';
+    h += '<text x="'+(-fL-4)+'" y="-4" fill="#f59e0b" font-size="8" text-anchor="end">f_k</text>';
+  }
+  h += '</g>';
+  // pulley
+  var px = tx+15, py = ty-15;
+  h += '<circle cx="'+px+'" cy="'+py+'" r="12" fill="none" stroke="#9ca3af" stroke-width="2"/>';
+  h += '<circle cx="'+px+'" cy="'+py+'" r="3" fill="#9ca3af"/>';
+  h += '<line x1="'+bcx.toFixed(1)+'" y1="'+bcy.toFixed(1)+'" x2="'+px+'" y2="'+(py+12)+'" stroke="#9ca3af" stroke-width="1.5"/>';
+  // hanging mass
+  var hx = px+30, hy = py+40-off*0.5;
+  h += '<line x1="'+(px+12)+'" y1="'+py+'" x2="'+hx+'" y2="'+hy+'" stroke="#9ca3af" stroke-width="1.5"/>';
+  h += '<rect x="'+(hx-20)+'" y="'+hy+'" width="40" height="35" rx="6" fill="#22c55e" stroke="#4ade80" stroke-width="2"/>';
+  h += '<text x="'+hx+'" y="'+(hy+22)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">'+m2+'kg</text>';
+  h += '<text x="'+hx+'" y="'+(hy-5)+'" text-anchor="middle" fill="#9ca3af" font-size="9">m2</text>';
+  h += '<line x1="'+hx+'" y1="'+(hy+35)+'" x2="'+hx+'" y2="'+(hy+60)+'" stroke="#ec4899" stroke-width="2" marker-end="url(#rpB)"/>';
+  h += '<text x="'+(hx+12)+'" y="'+(hy+52)+'" fill="#ec4899" font-size="8">m2g</text>';
+  svg.innerHTML = h;
+}
+
+function animateRamp() {
+  if (rampAnimId) cancelAnimationFrame(rampAnimId);
+  rampOff = 0;
+  var ang = +document.getElementById('rampAngle').value;
+  var m1 = +document.getElementById('rampM1').value;
+  var m2 = +document.getElementById('rampM2').value;
+  var hasFr = document.getElementById('rampFriction').checked;
+  var mu = hasFr?0.2:0, rad = ang*Math.PI/180;
+  var netM2 = m2*G - m1*G*Math.sin(rad) - mu*m1*G*Math.cos(rad);
+  var netBlk = m1*G*Math.sin(rad) - m2*G - mu*m1*G*Math.cos(rad);
+  var a = 0, d = 0;
+  if (netM2>0) { a=netM2/(m1+m2); d=1; }
+  else if (netBlk>0) { a=netBlk/(m1+m2); d=-1; }
+  if (a===0) return;
+  var v = 0;
+  function step() {
+    v += a*0.016; rampOff += v*d*0.5;
+    if (Math.abs(rampOff)>60) { rampOff=60*Math.sign(rampOff); drawRamp(ang,m1,m2,hasFr,rampOff); return; }
+    drawRamp(ang,m1,m2,hasFr,rampOff);
+    rampAnimId = requestAnimationFrame(step);
+  }
+  rampAnimId = requestAnimationFrame(step);
+}
+
+function resetRamp() {
+  if (rampAnimId) cancelAnimationFrame(rampAnimId);
+  rampAnimId = null; rampOff = 0; updateRamp();
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id+'-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className='feedback incorrect'; fb.textContent='Enter a number.'; return; }
+  if (Math.abs(val-answer) <= tol) {
+    fb.className='feedback correct'; fb.textContent='Correct! The answer is '+answer+'.';
+  } else {
+    fb.className='feedback incorrect'; fb.textContent='Not quite. Try again. (Hint: near '+answer.toFixed(1)+')';
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id+'-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result==='correct') {
+    btn.classList.add('correct');
+    fb.className='feedback correct'; fb.textContent='Correct!';
+  } else {
+    btn.classList.add('wrong');
+    fb.className='feedback incorrect'; fb.textContent='Not quite. Review the concept above.';
+  }
+}
+
+/* ==================== INIT ==================== */
+updateProgress();
+updateCircReadout();
+circAnimId = requestAnimationFrame(circLoop);
+resetDrag();
+drawSpring();
+updateAtwood();
+updateRamp();
+</script>
+</body>
+</html>

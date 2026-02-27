@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 6: Work, Energy &amp; Power</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.section-card.completed .section-num{background:var(--green-dim);color:var(--green)}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.toggle-row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.toggle-switch{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:12px;transition:var(--transition)}
+.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:var(--text-bright);border-radius:50%;transition:var(--transition)}
+.toggle-switch input:checked+.toggle-slider{background:var(--indigo)}
+.toggle-switch input:checked+.toggle-slider::before{transform:translateX(20px)}
+.toggle-label{font-size:.72rem;color:var(--text-dim)}
+.graph-container{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.quiz-q .explanation{font-size:.72rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none;line-height:1.7}
+.quiz-q .explanation.show-correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.quiz-q .explanation.show-wrong{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.unit-label{font-size:.72rem;color:var(--text-dim)}
+.energy-bar-group{display:flex;gap:8px;align-items:flex-end;justify-content:center;height:120px;margin:12px 0}
+.energy-bar{width:50px;border-radius:4px 4px 0 0;transition:height .3s ease;position:relative;min-height:2px}
+.energy-bar .bar-label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:.6rem;color:var(--text-dim);white-space:nowrap}
+.energy-bar .bar-value{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:.6rem;font-weight:600;white-space:nowrap}
+@keyframes popCorrect{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.pop-correct{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake-wrong{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.graph-container{grid-template-columns:1fr}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.energy-bar-group{height:90px}.energy-bar{width:36px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>06</span> Work, Energy &amp; Power</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: WORK DONE BY A FORCE -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Work Done by a Force</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Work</strong> is energy transferred to or from an object by a force acting through a displacement. Only the component of force <strong>parallel to the displacement</strong> does work. If you push at an angle, the perpendicular component does nothing -- it just presses the object into the surface.
+    </p>
+    <div class="formula-box large">W = F d cos(&theta;)</div>
+    <p class="concept-text">
+      Where <strong>F</strong> is the force magnitude, <strong>d</strong> is the displacement magnitude, and <strong>&theta;</strong> is the angle between the force and displacement vectors. Work is a <strong>scalar</strong> measured in Joules (J = N&middot;m).
+    </p>
+    <div class="key-point">When &theta; = 0, W = Fd (maximum). When &theta; = 90, W = 0 (carrying a box horizontally -- your upward force is perpendicular to the horizontal displacement). When &theta; > 90, W is negative (force opposes motion, like friction).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Push a Munitions Cart</div>
+      <svg id="workSvg" width="100%" viewBox="0 0 800 300" style="display:block">
+        <defs>
+          <marker id="arrGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#22c55e"/></marker>
+          <marker id="arrAmber" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#f59e0b"/></marker>
+          <marker id="arrPink" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker>
+          <marker id="arrIndigo" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#6366f1"/></marker>
+        </defs>
+      </svg>
+      <div class="slider-row">
+        <label>Force F (N)</label>
+        <input type="range" id="workF" min="10" max="200" value="100" step="5" oninput="updateWork()">
+        <span class="slider-val" id="workFVal">100 N</span>
+      </div>
+      <div class="slider-row">
+        <label>Angle &theta;</label>
+        <input type="range" id="workTheta" min="0" max="90" value="30" step="1" oninput="updateWork()">
+        <span class="slider-val" id="workThetaVal">30&deg;</span>
+      </div>
+      <div class="slider-row">
+        <label>Displacement d (m)</label>
+        <input type="range" id="workD" min="1" max="20" value="8" step="0.5" oninput="updateWork()">
+        <span class="slider-val" id="workDVal">8.0 m</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">F cos(&theta;) -- parallel</span><br><span class="value green" id="workFpar">86.6 N</span></div>
+        <div class="readout-item"><span class="label">F sin(&theta;) -- perpendicular</span><br><span class="value pink" id="workFperp">50.0 N</span></div>
+        <div class="readout-item"><span class="label">W = Fd cos(&theta;)</span><br><span class="value amber" id="workW">692.8 J</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> On a weapons handling deck, sailors push heavy munitions carts along the deck. The push handle is angled -- only the horizontal component moves the cart. Pushing at too steep an angle wastes effort pressing the cart into the deck. Optimal push angle minimizes wasted perpendicular force.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A sailor pushes a 500 N munitions cart with 120 N at 25&deg; below horizontal for 15 m. How much work does the sailor do?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1" step="1" placeholder="W = ?" onkeydown="if(event.key==='Enter')checkNum('s1p1',1631,40)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p1',1631,40)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A sailor carries a 200 N toolbox horizontally across the flight deck for 50 m. The carrying force is straight up. How much work does the sailor do on the toolbox?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2" step="1" placeholder="W = ?" onkeydown="if(event.key==='Enter')checkNum('s1p2',0,0.5)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p2',0,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+      <div class="problem" id="s1p3">
+        <p><strong>3.</strong> Friction exerts 80 N opposite to a box sliding 6 m along the deck. What work does friction do? (Hint: &theta; = 180&deg;, cos 180 = -1)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p3i" step="1" placeholder="W = ?" onkeydown="if(event.key==='Enter')checkNum('s1p3i',-480,10)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p3i',-480,10)">Check</button>
+        </div>
+        <div class="feedback" id="s1p3i-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: KINETIC ENERGY & WORK-ENERGY THEOREM -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Kinetic Energy &amp; Work-Energy Theorem</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Kinetic energy</strong> is the energy an object has due to its motion: <strong>KE = (1/2)mv&sup2;</strong>. The <strong>Work-Energy Theorem</strong> states that the net work done on an object equals its change in kinetic energy. This is not a new law -- it follows directly from Newton's 2nd law.
+    </p>
+    <div class="formula-box large">KE = (1/2)mv&sup2; &nbsp;&nbsp;&nbsp; W_net = &Delta;KE = (1/2)mv_f&sup2; - (1/2)mv_i&sup2;</div>
+    <div class="key-point">Positive net work speeds things up (&Delta;KE > 0). Negative net work slows things down (&Delta;KE &lt; 0). If W_net = 0, speed does not change. KE depends on v&sup2;, so doubling speed quadruples kinetic energy.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Apply Force to Accelerate a Ball</div>
+      <svg id="keSvg" width="100%" viewBox="0 0 800 200" style="display:block"></svg>
+      <div class="slider-row">
+        <label>Mass m (kg)</label>
+        <input type="range" id="keMass" min="1" max="20" value="5" step="1" oninput="updateKE()">
+        <span class="slider-val" id="keMassVal">5 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Applied Force (N)</label>
+        <input type="range" id="keForce" min="10" max="200" value="50" step="5" oninput="updateKE()">
+        <span class="slider-val" id="keForceVal">50 N</span>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" onclick="startKE()">Apply Force</button>
+        <button class="btn" onclick="resetKE()">Reset</button>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Velocity</span><br><span class="value indigo" id="keVel">0.0 m/s</span></div>
+        <div class="readout-item"><span class="label">KE = (1/2)mv&sup2;</span><br><span class="value green" id="keKE">0.0 J</span></div>
+        <div class="readout-item"><span class="label">Distance</span><br><span class="value amber" id="keDist">0.0 m</span></div>
+        <div class="readout-item"><span class="label">W_net = Fd</span><br><span class="value pink" id="keWork">0.0 J</span></div>
+      </div>
+    </div>
+
+    <p class="concept-text" style="margin-top:16px">
+      <strong>Work-Energy Calculator:</strong> Enter mass, initial velocity, and final velocity to compute the net work required.
+    </p>
+    <div class="interactive-area">
+      <div class="interactive-label">Calculator: W_net = (1/2)m(v_f&sup2; - v_i&sup2;)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+        <div><span class="sub-label">Mass (kg)</span><input type="number" id="weCalcM" value="10" step="1" style="width:80px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem"></div>
+        <div><span class="sub-label">v_i (m/s)</span><input type="number" id="weCalcVi" value="0" step="1" style="width:80px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem"></div>
+        <div><span class="sub-label">v_f (m/s)</span><input type="number" id="weCalcVf" value="20" step="1" style="width:80px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem"></div>
+        <button class="btn btn-primary btn-sm" onclick="calcWE()">Compute</button>
+      </div>
+      <div class="readout" id="weCalcResult" style="display:none"></div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> An aircraft catapult on a carrier accelerates a 22,000 kg F/A-18 from 0 to 75 m/s (150 knots) in about 95 m. Using the work-energy theorem: W = (1/2)(22000)(75&sup2;) = 61.9 MJ. That is an enormous amount of work done in under 3 seconds.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 1500 kg car accelerates from 10 m/s to 30 m/s. What net work was done on it?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1" step="1000" placeholder="W = ?" onkeydown="if(event.key==='Enter')checkNum('s2p1',600000,15000)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p1',600000,15000)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A catapult does 62 MJ of work on a 22,000 kg aircraft starting from rest. What is the final speed? (v = sqrt(2W/m))</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" step="1" placeholder="v_f = ?" onkeydown="if(event.key==='Enter')checkNum('s2p2',75.1,2)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p2',75.1,2)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem" id="s2p3mc">
+        <p><strong>3.</strong> If you double the speed of an object, what happens to its kinetic energy?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p3mc','wrong')">It doubles</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3mc','correct')">It quadruples (4x) because KE depends on v&sup2;</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3mc','wrong')">It stays the same</button>
+        </div>
+        <div class="feedback" id="s2p3mc-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: POTENTIAL ENERGY -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Potential Energy</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Potential energy (PE)</strong> is stored energy due to position or configuration. Two key types:
+    </p>
+    <div class="formula-box large">Gravitational: PE_g = mgh &nbsp;&nbsp;&nbsp; Spring: PE_s = (1/2)kx&sup2;</div>
+    <p class="concept-text">
+      <strong>Gravitational PE</strong> depends on height <em>h</em> above a chosen reference point. <strong>Spring PE</strong> depends on compression/extension <em>x</em> from equilibrium. Both are forms of <strong>stored work</strong> -- energy that can be converted back to kinetic energy.
+    </p>
+    <div class="key-point">PE is relative -- you choose where h = 0. What matters is the change in PE (&Delta;PE), not the absolute value. For springs, x = 0 is the natural (unstretched) length.</div>
+
+    <div class="graph-container">
+      <div>
+        <div class="interactive-area">
+          <div class="interactive-label">Gravitational PE: Drag the Object Up/Down</div>
+          <svg id="gravSvg" width="100%" viewBox="0 0 380 340" style="display:block;cursor:ns-resize"></svg>
+          <div class="slider-row">
+            <label>Mass (kg)</label>
+            <input type="range" id="gravMass" min="1" max="50" value="10" step="1" oninput="updateGrav()">
+            <span class="slider-val" id="gravMassVal">10 kg</span>
+          </div>
+          <div class="readout">
+            <div class="readout-item"><span class="label">Height h</span><br><span class="value indigo" id="gravH">5.0 m</span></div>
+            <div class="readout-item"><span class="label">PE = mgh</span><br><span class="value green" id="gravPE">490 J</span></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="interactive-area">
+          <div class="interactive-label">Spring PE: Drag to Compress/Extend</div>
+          <svg id="sprPESvg" width="100%" viewBox="0 0 380 340" style="display:block;cursor:ew-resize"></svg>
+          <div class="slider-row">
+            <label>Spring k (N/m)</label>
+            <input type="range" id="sprPEK" min="50" max="500" value="200" step="10" oninput="updateSprPE()">
+            <span class="slider-val" id="sprPEKVal">200 N/m</span>
+          </div>
+          <div class="readout">
+            <div class="readout-item"><span class="label">Displacement x</span><br><span class="value indigo" id="sprPEX">0.00 m</span></div>
+            <div class="readout-item"><span class="label">PE = (1/2)kx&sup2;</span><br><span class="value amber" id="sprPEVal">0.0 J</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Aircraft on an elevator deck gain gravitational PE as the elevator lifts them from the hangar bay to the flight deck (~20 m). A 25,000 kg aircraft gains PE = (25000)(9.8)(20) = 4.9 MJ of gravitational PE. Arresting gear uses heavy springs (k ~ 100,000 N/m) that store enormous spring PE when a jet's tailhook catches the wire.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 25,000 kg aircraft is lifted 20 m by a deck elevator. What gravitational PE does it gain? (g = 9.8)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="100000" placeholder="PE = ?" onkeydown="if(event.key==='Enter')checkNum('s3p1',4900000,100000)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p1',4900000,100000)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> An arresting cable spring (k = 100,000 N/m) is stretched 3 m. How much PE is stored?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2" step="10000" placeholder="PE = ?" onkeydown="if(event.key==='Enter')checkNum('s3p2',450000,15000)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p2',450000,15000)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+      <div class="problem" id="s3p3mc">
+        <p><strong>3.</strong> If you triple the height of an object, its gravitational PE ___. If you triple the spring compression, its spring PE ___.</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p3mc','wrong')">Triples; triples</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p3mc','correct')">Triples; increases by 9x (because PE_s ~ x&sup2;)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p3mc','wrong')">Increases by 9x; triples</button>
+        </div>
+        <div class="feedback" id="s3p3mc-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: CONSERVATION OF ENERGY -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Conservation of Energy</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The total mechanical energy <strong>E = KE + PE</strong> of an isolated system is <strong>conserved</strong> when only conservative forces (gravity, springs) act. As an object falls, PE converts to KE -- but the total stays the same. If non-conservative forces (friction, air drag) act, mechanical energy decreases: the "lost" energy becomes <strong>thermal energy</strong>.
+    </p>
+    <div class="formula-box large">KE_i + PE_i = KE_f + PE_f &nbsp; (no friction)</div>
+    <div class="formula-box amber">KE_i + PE_i = KE_f + PE_f + E_thermal &nbsp; (with friction)</div>
+    <div class="key-point">Conservation of energy is one of the most powerful problem-solving tools in physics. Instead of tracking forces and accelerations, you just compare energy at two points. This is especially useful for curved paths where forces change direction.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Ball on a Ramp -- Energy Conservation</div>
+      <svg id="coeSvg" width="100%" viewBox="0 0 800 360" style="display:block"></svg>
+      <div class="slider-row">
+        <label>Release Height (m)</label>
+        <input type="range" id="coeHeight" min="1" max="10" value="6" step="0.5" oninput="updateCOE()">
+        <span class="slider-val" id="coeHeightVal">6.0 m</span>
+      </div>
+      <div class="toggle-row">
+        <label class="toggle-switch"><input type="checkbox" id="coeFriction" onchange="resetCOE()"><span class="toggle-slider"></span></label>
+        <span class="toggle-label">Friction (energy leaks to thermal)</span>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" onclick="startCOE()">Release Ball</button>
+        <button class="btn" onclick="resetCOE()">Reset</button>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Height</span><br><span class="value indigo" id="coeHVal">6.0 m</span></div>
+        <div class="readout-item"><span class="label">Speed</span><br><span class="value indigo" id="coeVVal">0.0 m/s</span></div>
+        <div class="readout-item"><span class="label">KE</span><br><span class="value green" id="coeKEVal">0.0 J</span></div>
+        <div class="readout-item"><span class="label">PE</span><br><span class="value amber" id="coePEVal">294.0 J</span></div>
+        <div class="readout-item"><span class="label">Thermal</span><br><span class="value pink" id="coeThVal">0.0 J</span></div>
+        <div class="readout-item"><span class="label">Total E</span><br><span class="value" id="coeTotVal">294.0 J</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> During an UNREP (underway replenishment) highline transfer, cargo is sent between ships via a tensioned cable. The cargo trolley starts high on the sending ship, converts PE to KE as it slides down the catenary, then the kinetic energy is absorbed by the receiving ship's braking system. Energy conservation governs the whole transfer.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 2 kg ball is dropped from 10 m. What is its speed just before hitting the ground? (Use energy: mgh = (1/2)mv&sup2;, v = sqrt(2gh))</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="0.1" placeholder="v = ?" onkeydown="if(event.key==='Enter')checkNum('s4p1',14.0,0.5)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p1',14.0,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A 5 kg block slides down a frictionless ramp from height 4 m. What is its speed at the bottom?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2" step="0.1" placeholder="v = ?" onkeydown="if(event.key==='Enter')checkNum('s4p2',8.85,0.3)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p2',8.85,0.3)">Check</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> Same block (5 kg, starting from 4 m), but now friction removes 50 J of energy. What is the speed at the bottom?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p3" step="0.1" placeholder="v = ?" onkeydown="if(event.key==='Enter')checkNum('s4p3',8.29,0.3)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p3',8.29,0.3)">Check</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+      <div class="problem" id="s4p4mc">
+        <p><strong>4.</strong> Two identical balls slide from the same height: one on a straight ramp, one on a curvy ramp. Both frictionless. Which reaches the bottom with more speed?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p4mc','wrong')">The straight ramp -- shorter path means less energy lost</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p4mc','wrong')">The curvy ramp -- it picks up more speed on the steep sections</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p4mc','correct')">Same speed -- energy conservation depends only on height, not path (no friction)</button>
+        </div>
+        <div class="feedback" id="s4p4mc-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: POWER -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Power</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Power</strong> is the <strong>rate</strong> at which work is done (or energy is transferred). Two objects can do the same work, but the one that does it faster has more power. Measured in <strong>Watts</strong> (W = J/s). 1 horsepower = 746 W.
+    </p>
+    <div class="formula-box large">P = W/t = F v</div>
+    <p class="concept-text">
+      The instantaneous power delivered by a force moving at velocity v is <strong>P = Fv</strong>. This is extremely useful: if you know force and speed, you know power directly without tracking work and time separately.
+    </p>
+    <div class="key-point">Same work, less time = more power. A catapult launching a jet in 2 seconds requires far more power than a tugboat doing the same work over 10 minutes. Power is what distinguishes a sports car from an economy car -- both can reach 100 km/h, but the sports car does it faster (more power).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Engine Power Simulator</div>
+      <svg id="powerSvg" width="100%" viewBox="0 0 800 280" style="display:block"></svg>
+      <div class="slider-row">
+        <label>Force F (N)</label>
+        <input type="range" id="powF" min="100" max="5000" value="1000" step="100" oninput="updatePower()">
+        <span class="slider-val" id="powFVal">1000 N</span>
+      </div>
+      <div class="slider-row">
+        <label>Velocity v (m/s)</label>
+        <input type="range" id="powV" min="1" max="50" value="10" step="1" oninput="updatePower()">
+        <span class="slider-val" id="powVVal">10 m/s</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">P = Fv</span><br><span class="value green" id="powP">10,000 W</span></div>
+        <div class="readout-item"><span class="label">Horsepower</span><br><span class="value amber" id="powHP">13.4 hp</span></div>
+        <div class="readout-item"><span class="label">Work in 10 s</span><br><span class="value indigo" id="powW10">100,000 J</span></div>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Comparison: Same Work, Different Power</div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin:12px 0">
+        <div style="text-align:center">
+          <svg width="160" height="120" viewBox="0 0 160 120">
+            <rect x="10" y="30" width="140" height="60" rx="6" fill="var(--indigo-dim)" stroke="var(--indigo)" stroke-width="1.5"/>
+            <text x="80" y="55" text-anchor="middle" fill="var(--indigo)" font-size="10" font-weight="600">CATAPULT</text>
+            <text x="80" y="72" text-anchor="middle" fill="var(--text-dim)" font-size="8">62 MJ in 2.5 s</text>
+            <text x="80" y="105" text-anchor="middle" fill="var(--amber)" font-size="12" font-weight="700">24.8 MW</text>
+          </svg>
+        </div>
+        <div style="text-align:center">
+          <svg width="160" height="120" viewBox="0 0 160 120">
+            <rect x="10" y="30" width="140" height="60" rx="6" fill="var(--green-dim)" stroke="var(--green)" stroke-width="1.5"/>
+            <text x="80" y="55" text-anchor="middle" fill="var(--green)" font-size="10" font-weight="600">TUGBOAT</text>
+            <text x="80" y="72" text-anchor="middle" fill="var(--text-dim)" font-size="8">62 MJ in 600 s</text>
+            <text x="80" y="105" text-anchor="middle" fill="var(--amber)" font-size="12" font-weight="700">103 kW</text>
+          </svg>
+        </div>
+      </div>
+      <p class="concept-text" style="text-align:center;font-size:.74rem;color:var(--text-dim);margin:0">Same total work (62 MJ), but the catapult delivers ~240x more power because it does it 240x faster.</p>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> A steam catapult on a Nimitz-class carrier produces ~25 MW of power during a launch stroke. Compare to the ship's four propulsion turbines at ~100 MW each for sustained cruising. The catapult needs extreme power for seconds; propulsion needs moderate power for months.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A crane lifts a 2000 kg crate 15 m in 30 seconds. What power does it deliver? (W = mgh, P = W/t)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1" step="100" placeholder="P = ?" onkeydown="if(event.key==='Enter')checkNum('s5p1',9800,300)">
+          <span class="unit-label">W</span>
+          <button class="btn btn-sm" onclick="checkNum('s5p1',9800,300)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A tugboat applies 50,000 N of force while moving at 4 m/s. What is its power output?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p2" step="10000" placeholder="P = ?" onkeydown="if(event.key==='Enter')checkNum('s5p2',200000,5000)">
+          <span class="unit-label">W</span>
+          <button class="btn btn-sm" onclick="checkNum('s5p2',200000,5000)">Check</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> How many horsepower is that tugboat? (1 hp = 746 W)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p3" step="10" placeholder="hp = ?" onkeydown="if(event.key==='Enter')checkNum('s5p3',268,10)">
+          <span class="unit-label">hp</span>
+          <button class="btn btn-sm" onclick="checkNum('s5p3',268,10)">Check</button>
+        </div>
+        <div class="feedback" id="s5p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUICK QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quick Quiz &mdash; Work, Energy &amp; Power</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Work</div>
+      <p class="q-text">A 150 N force is applied at 60&deg; to the displacement over 10 m. What work is done? (W = Fd cos&theta;)</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false,'W = 150*10*cos60 = 1500*0.5 = 750 J')">1500 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true,'W = 150*10*cos60 = 1500*0.5 = 750 J')">750 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false,'W = 150*10*cos60 = 1500*0.5 = 750 J')">1299 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false,'W = 150*10*cos60 = 1500*0.5 = 750 J')">0 J</button>
+      </div>
+      <div class="explanation" id="q1-expl"></div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Zero Work</div>
+      <p class="q-text">A satellite orbits Earth in a perfect circle at constant speed. How much work does gravity do per orbit?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true,'Gravity is always perpendicular to velocity in circular orbit, so &theta; = 90 and W = 0 for every segment. Speed stays constant.')">Zero -- gravity is perpendicular to displacement</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false,'Gravity is always perpendicular to velocity in circular orbit, so &theta; = 90 and W = 0 for every segment.')">Positive -- gravity pulls the satellite</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false,'Gravity is always perpendicular to velocity in circular orbit, so &theta; = 90 and W = 0 for every segment.')">Negative -- gravity opposes the orbit</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false,'Gravity is always perpendicular to velocity in circular orbit, so &theta; = 90 and W = 0 for every segment.')">Cannot determine without orbit radius</button>
+      </div>
+      <div class="explanation" id="q2-expl"></div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Kinetic Energy</div>
+      <p class="q-text">A 3 kg object moves at 8 m/s. What is its kinetic energy?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false,'KE = (1/2)(3)(8^2) = (1/2)(3)(64) = 96 J')">192 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true,'KE = (1/2)(3)(8^2) = (1/2)(3)(64) = 96 J')">96 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false,'KE = (1/2)(3)(8^2) = (1/2)(3)(64) = 96 J')">24 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false,'KE = (1/2)(3)(8^2) = (1/2)(3)(64) = 96 J')">48 J</button>
+      </div>
+      <div class="explanation" id="q3-expl"></div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Work-Energy Theorem</div>
+      <p class="q-text">A 2000 kg car brakes from 25 m/s to rest. How much work do the brakes do?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false,'W = &Delta;KE = 0 - (1/2)(2000)(625) = -625,000 J. Negative because brakes remove KE.')">625,000 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true,'W = &Delta;KE = 0 - (1/2)(2000)(625) = -625,000 J. Negative because brakes remove KE.')">-625,000 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false,'W = &Delta;KE = 0 - (1/2)(2000)(625) = -625,000 J. Negative because brakes remove KE.')">-50,000 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false,'W = &Delta;KE = 0 - (1/2)(2000)(625) = -625,000 J. Negative because brakes remove KE.')">-312,500 J</button>
+      </div>
+      <div class="explanation" id="q4-expl"></div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Gravitational PE</div>
+      <p class="q-text">A 70 kg sailor climbs a 12 m ladder on the ship's island. How much gravitational PE does the sailor gain?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false,'PE = mgh = 70 * 9.8 * 12 = 8232 J')">840 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false,'PE = mgh = 70 * 9.8 * 12 = 8232 J')">4116 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true,'PE = mgh = 70 * 9.8 * 12 = 8232 J')">8232 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false,'PE = mgh = 70 * 9.8 * 12 = 8232 J')">16464 J</button>
+      </div>
+      <div class="explanation" id="q5-expl"></div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Spring PE</div>
+      <p class="q-text">A spring (k = 400 N/m) is compressed 0.5 m. How much PE is stored?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false,'PE = (1/2)(400)(0.5^2) = (1/2)(400)(0.25) = 50 J')">200 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false,'PE = (1/2)(400)(0.5^2) = (1/2)(400)(0.25) = 50 J')">100 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true,'PE = (1/2)(400)(0.5^2) = (1/2)(400)(0.25) = 50 J')">50 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false,'PE = (1/2)(400)(0.5^2) = (1/2)(400)(0.25) = 50 J')">25 J</button>
+      </div>
+      <div class="explanation" id="q6-expl"></div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Conservation</div>
+      <p class="q-text">A 0.5 kg ball is thrown straight up with v = 14 m/s. Using energy conservation (no air resistance), what maximum height does it reach?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true,'(1/2)mv^2 = mgh, so h = v^2/(2g) = 196/19.6 = 10 m')">10 m</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false,'(1/2)mv^2 = mgh, so h = v^2/(2g) = 196/19.6 = 10 m')">14 m</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false,'(1/2)mv^2 = mgh, so h = v^2/(2g) = 196/19.6 = 10 m')">7 m</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false,'(1/2)mv^2 = mgh, so h = v^2/(2g) = 196/19.6 = 10 m')">20 m</button>
+      </div>
+      <div class="explanation" id="q7-expl"></div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Energy with Friction</div>
+      <p class="q-text">A 4 kg block slides from a 3 m high ramp. Friction removes 30 J. What is the speed at the bottom?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false,'mgh - E_fric = (1/2)mv^2. v = sqrt(2(mgh - 30)/m) = sqrt(2(117.6-30)/4) = sqrt(43.8) = 6.62 m/s')">7.67 m/s (ignoring friction)</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true,'mgh - E_fric = (1/2)mv^2. v = sqrt(2(mgh - 30)/m) = sqrt(2(117.6-30)/4) = sqrt(43.8) = 6.62 m/s')">6.62 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false,'mgh - E_fric = (1/2)mv^2. v = sqrt(2(mgh - 30)/m) = sqrt(2(117.6-30)/4) = sqrt(43.8) = 6.62 m/s')">5.42 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false,'mgh - E_fric = (1/2)mv^2. v = sqrt(2(mgh - 30)/m) = sqrt(2(117.6-30)/4) = sqrt(43.8) = 6.62 m/s')">3.87 m/s</button>
+      </div>
+      <div class="explanation" id="q8-expl"></div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Power</div>
+      <p class="q-text">An engine does 240,000 J of work in 60 seconds. What is the power output?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true,'P = W/t = 240000/60 = 4000 W = 4 kW')">4000 W</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false,'P = W/t = 240000/60 = 4000 W = 4 kW')">14,400 kW</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false,'P = W/t = 240000/60 = 4000 W = 4 kW')">240 W</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false,'P = W/t = 240000/60 = 4000 W = 4 kW')">400 W</button>
+      </div>
+      <div class="explanation" id="q9-expl"></div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Power = Fv</div>
+      <p class="q-text">A destroyer's propulsion exerts 800,000 N of thrust at 15 m/s (about 30 knots). What is the power output?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false,'P = Fv = 800000 * 15 = 12,000,000 W = 12 MW')">800 kW</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false,'P = Fv = 800000 * 15 = 12,000,000 W = 12 MW')">1.2 MW</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true,'P = Fv = 800000 * 15 = 12,000,000 W = 12 MW')">12 MW</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false,'P = Fv = 800000 * 15 = 12,000,000 W = 12 MW')">120 MW</button>
+      </div>
+      <div class="explanation" id="q10-expl"></div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+var G = 9.8;
+
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  var wasOpen = card.classList.contains('open');
+  card.classList.toggle('open');
+  if (wasOpen) {
+    var sn = card.getAttribute('data-section');
+    completedSections.add(sn);
+    card.classList.add('completed');
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.classList.add('shake-wrong'); setTimeout(function(){inp.classList.remove('shake-wrong')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.classList.add('pop-correct'); setTimeout(function(){inp.classList.remove('pop-correct')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(1) + ')';
+    inp.classList.add('shake-wrong'); setTimeout(function(){inp.classList.remove('shake-wrong')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.classList.add('pop-correct'); setTimeout(function(){btn.classList.remove('pop-correct')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.classList.add('shake-wrong'); setTimeout(function(){btn.classList.remove('shake-wrong')},400);
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf("'correct'") !== -1) b.classList.add('correct');
+    });
+  }
+}
+
+/* ==================== SECTION 1: WORK ==================== */
+function updateWork() {
+  var F = +document.getElementById('workF').value;
+  var theta = +document.getElementById('workTheta').value;
+  var d = +document.getElementById('workD').value;
+  document.getElementById('workFVal').textContent = F + ' N';
+  document.getElementById('workThetaVal').innerHTML = theta + '&deg;';
+  document.getElementById('workDVal').textContent = d.toFixed(1) + ' m';
+  var rad = theta * Math.PI / 180;
+  var Fpar = F * Math.cos(rad);
+  var Fperp = F * Math.sin(rad);
+  var W = F * d * Math.cos(rad);
+  document.getElementById('workFpar').textContent = Fpar.toFixed(1) + ' N';
+  document.getElementById('workFperp').textContent = Fperp.toFixed(1) + ' N';
+  document.getElementById('workW').textContent = W.toFixed(1) + ' J';
+  drawWork(F, theta, d);
+}
+
+function drawWork(F, theta, d) {
+  var svg = document.getElementById('workSvg');
+  var rad = theta * Math.PI / 180;
+  var h = '';
+  // ground
+  h += '<line x1="50" y1="220" x2="750" y2="220" stroke="#363b47" stroke-width="2"/>';
+  // hash marks for ground
+  for (var i = 50; i < 750; i += 25) {
+    h += '<line x1="'+i+'" y1="220" x2="'+(i-8)+'" y2="228" stroke="#363b47" stroke-width="1"/>';
+  }
+  // cart body
+  var cartX = 200, cartY = 185;
+  h += '<rect x="'+(cartX-50)+'" y="'+(cartY-35)+'" width="100" height="35" rx="4" fill="#363b47" stroke="#9ca3af" stroke-width="1.5"/>';
+  h += '<text x="'+cartX+'" y="'+(cartY-14)+'" text-anchor="middle" fill="var(--text-dim)" font-size="9">MUNITIONS</text>';
+  // wheels
+  h += '<circle cx="'+(cartX-30)+'" cy="'+(cartY+5)+'" r="14" fill="#262a33" stroke="#9ca3af" stroke-width="2"/>';
+  h += '<circle cx="'+(cartX+30)+'" cy="'+(cartY+5)+'" r="14" fill="#262a33" stroke="#9ca3af" stroke-width="2"/>';
+  h += '<circle cx="'+(cartX-30)+'" cy="'+(cartY+5)+'" r="3" fill="#9ca3af"/>';
+  h += '<circle cx="'+(cartX+30)+'" cy="'+(cartY+5)+'" r="3" fill="#9ca3af"/>';
+  // displacement arrow
+  var dPx = Math.min(d * 25, 350);
+  h += '<line x1="'+(cartX+55)+'" y1="240" x2="'+(cartX+55+dPx)+'" y2="240" stroke="var(--indigo)" stroke-width="2.5" marker-end="url(#arrIndigo)"/>';
+  h += '<text x="'+(cartX+55+dPx/2)+'" y="258" text-anchor="middle" fill="var(--indigo)" font-size="10" font-weight="600">d = '+d.toFixed(1)+' m</text>';
+  // force vector from push point
+  var px = cartX + 50, py = cartY - 18;
+  var fLen = Math.min(F * 0.8, 200);
+  var fx = px + fLen * Math.cos(rad);
+  var fy = py - fLen * Math.sin(rad);
+  h += '<line x1="'+px+'" y1="'+py+'" x2="'+fx+'" y2="'+fy+'" stroke="var(--amber)" stroke-width="3" marker-end="url(#arrAmber)"/>';
+  h += '<text x="'+(fx+8)+'" y="'+(fy-4)+'" fill="var(--amber)" font-size="10" font-weight="600">F = '+F+' N</text>';
+  // angle arc
+  if (theta > 2) {
+    var ar = 40;
+    var arcX = px + ar;
+    var arcY1 = py;
+    var arcX2 = px + ar * Math.cos(rad);
+    var arcY2 = py - ar * Math.sin(rad);
+    h += '<path d="M'+arcX+','+arcY1+' A'+ar+','+ar+' 0 0 0 '+arcX2+','+arcY2+'" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>';
+    var labelR = ar + 12;
+    h += '<text x="'+(px + labelR * Math.cos(rad/2))+'" y="'+(py - labelR * Math.sin(rad/2) + 4)+'" fill="var(--text-dim)" font-size="9">&theta;='+theta+'&deg;</text>';
+  }
+  // F parallel (dashed, horizontal)
+  var fParLen = fLen * Math.cos(rad);
+  if (fParLen > 5) {
+    h += '<line x1="'+px+'" y1="'+py+'" x2="'+(px+fParLen)+'" y2="'+py+'" stroke="var(--green)" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrGreen)"/>';
+    h += '<text x="'+(px+fParLen/2)+'" y="'+(py+16)+'" text-anchor="middle" fill="var(--green)" font-size="9">F cos&theta;</text>';
+  }
+  // F perpendicular (dashed, vertical)
+  var fPerpLen = fLen * Math.sin(rad);
+  if (fPerpLen > 5) {
+    h += '<line x1="'+(px+fParLen)+'" y1="'+py+'" x2="'+(px+fParLen)+'" y2="'+(py-fPerpLen)+'" stroke="var(--pink)" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrPink)"/>';
+    h += '<text x="'+(px+fParLen+12)+'" y="'+(py-fPerpLen/2)+'" fill="var(--pink)" font-size="9">F sin&theta;</text>';
+  }
+  // W = 0 callout at 90
+  if (theta >= 88) {
+    h += '<text x="400" y="60" text-anchor="middle" fill="var(--pink)" font-size="14" font-weight="700">W = 0 (force perpendicular to displacement!)</text>';
+  }
+  // legend
+  h += '<text x="600" y="30" fill="var(--text-dim)" font-size="9">Legend:</text>';
+  h += '<line x1="600" y1="44" x2="625" y2="44" stroke="var(--amber)" stroke-width="2.5"/>';
+  h += '<text x="630" y="48" fill="var(--amber)" font-size="9">Force F</text>';
+  h += '<line x1="600" y1="60" x2="625" y2="60" stroke="var(--green)" stroke-width="2" stroke-dasharray="5,3"/>';
+  h += '<text x="630" y="64" fill="var(--green)" font-size="9">F cos&theta; (does work)</text>';
+  h += '<line x1="600" y1="76" x2="625" y2="76" stroke="var(--pink)" stroke-width="2" stroke-dasharray="5,3"/>';
+  h += '<text x="630" y="80" fill="var(--pink)" font-size="9">F sin&theta; (no work)</text>';
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 2: KINETIC ENERGY ==================== */
+var keAnimId = null, keVel = 0, keDist = 0, keRunning = false, kePos = 0;
+
+function updateKE() {
+  document.getElementById('keMassVal').textContent = document.getElementById('keMass').value + ' kg';
+  document.getElementById('keForceVal').textContent = document.getElementById('keForce').value + ' N';
+  if (!keRunning) drawKEScene(0, 0, 0);
+}
+
+function drawKEScene(pos, vel, dist) {
+  var svg = document.getElementById('keSvg');
+  var m = +document.getElementById('keMass').value;
+  var F = +document.getElementById('keForce').value;
+  var ke = 0.5 * m * vel * vel;
+  var work = F * dist;
+  var h = '';
+  // ground
+  h += '<line x1="30" y1="150" x2="770" y2="150" stroke="#363b47" stroke-width="2"/>';
+  // ball
+  var bx = 80 + pos;
+  if (bx > 720) bx = 720;
+  var br = 12 + m * 0.5;
+  h += '<circle cx="'+bx+'" cy="'+(150-br)+'" r="'+br+'" fill="var(--indigo)" stroke="#818cf8" stroke-width="2"/>';
+  h += '<text x="'+bx+'" y="'+(150-br+4)+'" text-anchor="middle" fill="#fff" font-size="9" font-weight="600">'+m+'kg</text>';
+  // force arrow if running
+  if (keRunning) {
+    var fLen = Math.min(F * 0.3, 80);
+    h += '<line x1="'+(bx-br-2)+'" y1="'+(150-br)+'" x2="'+(bx-br-2-fLen)+'" y2="'+(150-br)+'" stroke="var(--amber)" stroke-width="3"/>';
+    h += '<text x="'+(bx-br-fLen/2-4)+'" y="'+(150-br-8)+'" text-anchor="middle" fill="var(--amber)" font-size="9">F='+F+'N</text>';
+  }
+  // KE bar
+  var maxBarH = 100;
+  var keH = Math.min(ke / 2000 * maxBarH, maxBarH);
+  h += '<rect x="700" y="'+(140-keH)+'" width="40" height="'+keH+'" rx="3" fill="var(--green)" opacity="0.7"/>';
+  h += '<text x="720" y="'+(130-keH)+'" text-anchor="middle" fill="var(--green)" font-size="8" font-weight="600">KE</text>';
+  h += '<text x="720" y="'+(145-keH)+'" text-anchor="middle" fill="#fff" font-size="7">'+ke.toFixed(0)+'J</text>';
+  // velocity text
+  h += '<text x="'+bx+'" y="'+(150-br-br-8)+'" text-anchor="middle" fill="var(--indigo)" font-size="10" font-weight="600">v = '+vel.toFixed(1)+' m/s</text>';
+  svg.innerHTML = h;
+  document.getElementById('keVel').textContent = vel.toFixed(1) + ' m/s';
+  document.getElementById('keKE').textContent = ke.toFixed(1) + ' J';
+  document.getElementById('keDist').textContent = dist.toFixed(1) + ' m';
+  document.getElementById('keWork').textContent = work.toFixed(1) + ' J';
+}
+
+function startKE() {
+  if (keRunning) return;
+  keRunning = true;
+  var m = +document.getElementById('keMass').value;
+  var F = +document.getElementById('keForce').value;
+  var a = F / m;
+  keVel = 0; keDist = 0; kePos = 0;
+  function step() {
+    keVel += a * 0.02;
+    keDist += keVel * 0.02;
+    kePos += keVel * 1.5;
+    drawKEScene(kePos, keVel, keDist);
+    if (kePos < 600) {
+      keAnimId = requestAnimationFrame(step);
+    } else { keRunning = false; }
+  }
+  keAnimId = requestAnimationFrame(step);
+}
+
+function resetKE() {
+  if (keAnimId) cancelAnimationFrame(keAnimId);
+  keAnimId = null; keRunning = false; keVel = 0; keDist = 0; kePos = 0;
+  drawKEScene(0, 0, 0);
+}
+
+function calcWE() {
+  var m = +document.getElementById('weCalcM').value;
+  var vi = +document.getElementById('weCalcVi').value;
+  var vf = +document.getElementById('weCalcVf').value;
+  var kei = 0.5 * m * vi * vi;
+  var kef = 0.5 * m * vf * vf;
+  var W = kef - kei;
+  var res = document.getElementById('weCalcResult');
+  res.style.display = 'flex';
+  res.innerHTML = '<div class="readout-item"><span class="label">KE_i = (1/2)mv_i^2</span><br><span class="value indigo">'+kei.toFixed(1)+' J</span></div>' +
+    '<div class="readout-item"><span class="label">KE_f = (1/2)mv_f^2</span><br><span class="value green">'+kef.toFixed(1)+' J</span></div>' +
+    '<div class="readout-item"><span class="label">W_net = &Delta;KE</span><br><span class="value amber">'+W.toFixed(1)+' J</span></div>';
+}
+
+/* ==================== SECTION 3: POTENTIAL ENERGY ==================== */
+var gravHeight = 5, gravDragging = false;
+var sprPEDisp = 0, sprPEDragging = false;
+
+function updateGrav() {
+  document.getElementById('gravMassVal').textContent = document.getElementById('gravMass').value + ' kg';
+  drawGrav();
+}
+
+function drawGrav() {
+  var svg = document.getElementById('gravSvg');
+  var m = +document.getElementById('gravMass').value;
+  var maxH = 10;
+  var pe = m * G * gravHeight;
+  var ox = 40, oy = 20, gw = 200, gh = 250;
+  var h = '';
+  // vertical axis (height)
+  h += '<line x1="'+ox+'" y1="'+oy+'" x2="'+ox+'" y2="'+(oy+gh)+'" stroke="var(--text-dim)" stroke-width="1"/>';
+  h += '<line x1="'+ox+'" y1="'+(oy+gh)+'" x2="'+(ox+gw)+'" y2="'+(oy+gh)+'" stroke="var(--text-dim)" stroke-width="1"/>';
+  h += '<text x="'+(ox-8)+'" y="'+(oy+4)+'" text-anchor="end" fill="var(--text-dim)" font-size="8">10m</text>';
+  h += '<text x="'+(ox-8)+'" y="'+(oy+gh+4)+'" text-anchor="end" fill="var(--text-dim)" font-size="8">0m</text>';
+  h += '<text x="'+(ox+gw/2)+'" y="'+(oy+gh+18)+'" text-anchor="middle" fill="var(--text-dim)" font-size="8">h = 0 (reference)</text>';
+  // building/structure lines
+  for (var i = 0; i <= 10; i++) {
+    var ly = oy + gh - (i / maxH) * gh;
+    h += '<line x1="'+(ox-3)+'" y1="'+ly+'" x2="'+(ox+3)+'" y2="'+ly+'" stroke="var(--text-dim)" stroke-width="1"/>';
+    if (i % 5 === 0 && i > 0) {
+      h += '<text x="'+(ox-8)+'" y="'+(ly+4)+'" text-anchor="end" fill="var(--text-dim)" font-size="7">'+i+'</text>';
+    }
+  }
+  // object at height
+  var objY = oy + gh - (gravHeight / maxH) * gh;
+  var objX = ox + 80;
+  h += '<rect x="'+(objX-18)+'" y="'+(objY-18)+'" width="36" height="36" rx="6" fill="var(--indigo)" stroke="#818cf8" stroke-width="2"/>';
+  h += '<text x="'+objX+'" y="'+(objY+4)+'" text-anchor="middle" fill="#fff" font-size="9" font-weight="600">'+m+'kg</text>';
+  // height line
+  h += '<line x1="'+(objX+25)+'" y1="'+(oy+gh)+'" x2="'+(objX+25)+'" y2="'+objY+'" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="4,3"/>';
+  h += '<text x="'+(objX+36)+'" y="'+((oy+gh+objY)/2+4)+'" fill="var(--amber)" font-size="9" font-weight="600">h='+gravHeight.toFixed(1)+'m</text>';
+  // PE bar
+  var maxPE = 50 * G * maxH;
+  var barH = Math.min(pe / maxPE * gh, gh);
+  h += '<rect x="'+(ox+gw-35)+'" y="'+(oy+gh-barH)+'" width="28" height="'+barH+'" rx="3" fill="var(--green)" opacity="0.7"/>';
+  h += '<text x="'+(ox+gw-21)+'" y="'+(oy+gh-barH-6)+'" text-anchor="middle" fill="var(--green)" font-size="7" font-weight="600">PE</text>';
+  h += '<text x="'+(ox+gw-21)+'" y="'+(oy+gh-barH+12)+'" text-anchor="middle" fill="#fff" font-size="6">'+pe.toFixed(0)+'J</text>';
+  svg.innerHTML = h;
+  document.getElementById('gravH').textContent = gravHeight.toFixed(1) + ' m';
+  document.getElementById('gravPE').textContent = pe.toFixed(0) + ' J';
+}
+
+(function() {
+  var svg = document.getElementById('gravSvg');
+  function getH(e) {
+    var r = svg.getBoundingClientRect();
+    var cy = e.touches ? e.touches[0].clientY : e.clientY;
+    var frac = 1 - ((cy - r.top) / r.height - 0.06) / 0.74;
+    return Math.max(0, Math.min(10, frac * 10));
+  }
+  svg.addEventListener('mousedown', function(e) { gravDragging = true; gravHeight = getH(e); drawGrav(); });
+  svg.addEventListener('touchstart', function(e) { e.preventDefault(); gravDragging = true; gravHeight = getH(e); drawGrav(); }, {passive:false});
+  window.addEventListener('mousemove', function(e) { if (gravDragging) { gravHeight = getH(e); drawGrav(); } });
+  window.addEventListener('touchmove', function(e) { if (gravDragging) { gravHeight = getH(e); drawGrav(); } }, {passive:false});
+  window.addEventListener('mouseup', function() { gravDragging = false; });
+  window.addEventListener('touchend', function() { gravDragging = false; });
+})();
+
+function updateSprPE() {
+  document.getElementById('sprPEKVal').textContent = document.getElementById('sprPEK').value + ' N/m';
+  drawSprPE();
+}
+
+function drawSprPE() {
+  var svg = document.getElementById('sprPESvg');
+  var k = +document.getElementById('sprPEK').value;
+  var maxX = 0.5;
+  var pe = 0.5 * k * sprPEDisp * sprPEDisp;
+  var h = '';
+  var cx = 190, wallX = 40, baseY = 200;
+  // wall
+  h += '<rect x="20" y="80" width="20" height="140" fill="#363b47" rx="3"/>';
+  h += '<line x1="20" y1="80" x2="20" y2="220" stroke="var(--text-dim)" stroke-width="2"/>';
+  // floor
+  h += '<line x1="20" y1="220" x2="360" y2="220" stroke="#363b47" stroke-width="2"/>';
+  // spring zigzag
+  var eqX = cx;
+  var massX = eqX + sprPEDisp * 280;
+  var sx = wallX, ex = Math.max(massX - 20, sx + 20);
+  var nc = 10, cw = (ex - sx) / nc;
+  var sp = 'M' + sx + ',160 ';
+  for (var i = 0; i < nc; i++) {
+    sp += 'L' + (sx + cw * i + cw * 0.25) + ',140 L' + (sx + cw * i + cw * 0.75) + ',180 ';
+  }
+  sp += 'L' + ex + ',160';
+  h += '<path d="' + sp + '" fill="none" stroke="var(--indigo)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+  // mass block
+  h += '<rect x="'+(massX-20)+'" y="130" width="40" height="60" rx="6" fill="var(--indigo)" stroke="#818cf8" stroke-width="2"/>';
+  h += '<text x="'+massX+'" y="165" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">m</text>';
+  // equilibrium marker
+  h += '<line x1="'+eqX+'" y1="220" x2="'+eqX+'" y2="232" stroke="var(--text-dim)" stroke-width="1.5"/>';
+  h += '<text x="'+eqX+'" y="244" text-anchor="middle" fill="var(--text-dim)" font-size="8">x=0</text>';
+  // displacement arrow
+  if (Math.abs(sprPEDisp) > 0.02) {
+    h += '<line x1="'+eqX+'" y1="120" x2="'+massX+'" y2="120" stroke="var(--amber)" stroke-width="2" marker-end="url(#arrAmber)"/>';
+    h += '<text x="'+((eqX+massX)/2)+'" y="112" text-anchor="middle" fill="var(--amber)" font-size="9">x='+(sprPEDisp>0?'+':'')+sprPEDisp.toFixed(2)+'m</text>';
+  }
+  // PE bar
+  var maxPE = 0.5 * k * maxX * maxX;
+  var barH = maxPE > 0 ? Math.min(pe / maxPE * 120, 120) : 0;
+  h += '<rect x="320" y="'+(220-barH)+'" width="28" height="'+barH+'" rx="3" fill="var(--amber)" opacity="0.7"/>';
+  h += '<text x="334" y="'+(212-barH)+'" text-anchor="middle" fill="var(--amber)" font-size="7" font-weight="600">PE_s</text>';
+  if (barH > 14) h += '<text x="334" y="'+(225-barH+12)+'" text-anchor="middle" fill="#fff" font-size="6">'+pe.toFixed(1)+'J</text>';
+  svg.innerHTML = h;
+  document.getElementById('sprPEX').textContent = sprPEDisp.toFixed(2) + ' m';
+  document.getElementById('sprPEVal').textContent = pe.toFixed(1) + ' J';
+}
+
+(function() {
+  var svg = document.getElementById('sprPESvg');
+  function getX(e) {
+    var r = svg.getBoundingClientRect();
+    var cx = e.touches ? e.touches[0].clientX : e.clientX;
+    return ((cx - r.left) / r.width * 380 - 190) / 280;
+  }
+  svg.addEventListener('mousedown', function(e) { sprPEDragging = true; sprPEDisp = Math.max(-0.5, Math.min(0.5, getX(e))); drawSprPE(); });
+  svg.addEventListener('touchstart', function(e) { e.preventDefault(); sprPEDragging = true; sprPEDisp = Math.max(-0.5, Math.min(0.5, getX(e))); drawSprPE(); }, {passive:false});
+  window.addEventListener('mousemove', function(e) { if (sprPEDragging) { sprPEDisp = Math.max(-0.5, Math.min(0.5, getX(e))); drawSprPE(); } });
+  window.addEventListener('touchmove', function(e) { if (sprPEDragging) { sprPEDisp = Math.max(-0.5, Math.min(0.5, getX(e))); drawSprPE(); } }, {passive:false});
+  window.addEventListener('mouseup', function() { sprPEDragging = false; });
+  window.addEventListener('touchend', function() { sprPEDragging = false; });
+})();
+
+/* ==================== SECTION 4: CONSERVATION OF ENERGY ==================== */
+var coeAnimId = null, coeRunning = false;
+var coeBallT = 0, coeMass = 5;
+
+function updateCOE() {
+  document.getElementById('coeHeightVal').textContent = (+document.getElementById('coeHeight').value).toFixed(1) + ' m';
+  if (!coeRunning) resetCOE();
+}
+
+function resetCOE() {
+  if (coeAnimId) cancelAnimationFrame(coeAnimId);
+  coeAnimId = null; coeRunning = false; coeBallT = 0;
+  var h0 = +document.getElementById('coeHeight').value;
+  var pe = coeMass * G * h0;
+  document.getElementById('coeHeightVal').textContent = h0.toFixed(1) + ' m';
+  document.getElementById('coeHVal').textContent = h0.toFixed(1) + ' m';
+  document.getElementById('coeVVal').textContent = '0.0 m/s';
+  document.getElementById('coeKEVal').textContent = '0.0 J';
+  document.getElementById('coePEVal').textContent = pe.toFixed(1) + ' J';
+  document.getElementById('coeThVal').textContent = '0.0 J';
+  document.getElementById('coeTotVal').textContent = pe.toFixed(1) + ' J';
+  drawCOE(0, h0, 0, 0, 0, pe);
+}
+
+function getRampProfile(t) {
+  // Parametric ramp: starts at height h0 on left, curves down to ground on right
+  // t goes from 0 to 1
+  // Returns {x, y, h} in normalized coords (x: 0-1, h: fraction of h0)
+  // Smooth cosine curve
+  var x = t;
+  var hFrac = 0.5 * (1 + Math.cos(Math.PI * t)); // 1 at t=0, 0 at t=1
+  return {x: x, hFrac: hFrac};
+}
+
+function drawCOE(t, h0, curH, curV, thermal, initialPE) {
+  var svg = document.getElementById('coeSvg');
+  var hasFr = document.getElementById('coeFriction').checked;
+  var m = coeMass;
+  var ke = 0.5 * m * curV * curV;
+  var pe = m * G * curH;
+  var totalE = initialPE;
+  var ox = 60, oy = 30, gw = 680, gh = 200;
+  var hStr = '';
+  // ramp outline
+  var rampPts = '';
+  for (var i = 0; i <= 50; i++) {
+    var tt = i / 50;
+    var rp = getRampProfile(tt);
+    var px = ox + rp.x * gw;
+    var py = oy + gh - rp.hFrac * gh;
+    rampPts += (i === 0 ? 'M' : 'L') + px.toFixed(1) + ',' + py.toFixed(1) + ' ';
+  }
+  rampPts += 'L' + (ox + gw) + ',' + (oy + gh) + ' L' + ox + ',' + (oy + gh) + ' Z';
+  hStr += '<path d="' + rampPts + '" fill="#262a33" stroke="var(--border)" stroke-width="2"/>';
+  // ground
+  hStr += '<line x1="40" y1="'+(oy+gh)+'" x2="'+(ox+gw+20)+'" y2="'+(oy+gh)+'" stroke="#363b47" stroke-width="2"/>';
+  // height markers
+  for (var j = 0; j <= Math.ceil(h0); j += 2) {
+    var my = oy + gh - (j / h0) * gh;
+    if (j <= h0) {
+      hStr += '<line x1="'+(ox-5)+'" y1="'+my+'" x2="'+(ox+5)+'" y2="'+my+'" stroke="var(--text-dim)" stroke-width="1"/>';
+      hStr += '<text x="'+(ox-10)+'" y="'+(my+4)+'" text-anchor="end" fill="var(--text-dim)" font-size="7">'+j+'m</text>';
+    }
+  }
+  // ball on ramp
+  var rp = getRampProfile(t);
+  var bx = ox + rp.x * gw;
+  var by = oy + gh - rp.hFrac * gh - 12;
+  hStr += '<circle cx="'+bx+'" cy="'+by+'" r="12" fill="var(--indigo)" stroke="#818cf8" stroke-width="2"/>';
+  hStr += '<text x="'+bx+'" y="'+(by+4)+'" text-anchor="middle" fill="#fff" font-size="8" font-weight="600">'+m+'kg</text>';
+  // friction indicator
+  if (hasFr && coeRunning) {
+    hStr += '<text x="'+(bx+16)+'" y="'+(by-14)+'" fill="var(--pink)" font-size="8">friction!</text>';
+  }
+  // Energy bar chart at bottom
+  var barOx = ox + 50, barOy = oy + gh + 30, barMaxH = 80;
+  var barW = 55;
+  if (totalE > 0) {
+    var keBarH = ke / totalE * barMaxH;
+    var peBarH = pe / totalE * barMaxH;
+    var thBarH = thermal / totalE * barMaxH;
+    var totBarH = (ke + pe + thermal) / totalE * barMaxH;
+    // KE bar
+    hStr += '<rect x="'+barOx+'" y="'+(barOy+barMaxH-keBarH)+'" width="'+barW+'" height="'+keBarH+'" rx="3" fill="var(--green)" opacity="0.8"/>';
+    hStr += '<text x="'+(barOx+barW/2)+'" y="'+(barOy+barMaxH+14)+'" text-anchor="middle" fill="var(--green)" font-size="8">KE</text>';
+    if (keBarH > 10) hStr += '<text x="'+(barOx+barW/2)+'" y="'+(barOy+barMaxH-keBarH+12)+'" text-anchor="middle" fill="#fff" font-size="7">'+ke.toFixed(0)+'J</text>';
+    // PE bar
+    var peX = barOx + barW + 20;
+    hStr += '<rect x="'+peX+'" y="'+(barOy+barMaxH-peBarH)+'" width="'+barW+'" height="'+peBarH+'" rx="3" fill="var(--amber)" opacity="0.8"/>';
+    hStr += '<text x="'+(peX+barW/2)+'" y="'+(barOy+barMaxH+14)+'" text-anchor="middle" fill="var(--amber)" font-size="8">PE</text>';
+    if (peBarH > 10) hStr += '<text x="'+(peX+barW/2)+'" y="'+(barOy+barMaxH-peBarH+12)+'" text-anchor="middle" fill="#fff" font-size="7">'+pe.toFixed(0)+'J</text>';
+    // Thermal bar
+    if (hasFr) {
+      var thX = peX + barW + 20;
+      hStr += '<rect x="'+thX+'" y="'+(barOy+barMaxH-thBarH)+'" width="'+barW+'" height="'+thBarH+'" rx="3" fill="var(--pink)" opacity="0.8"/>';
+      hStr += '<text x="'+(thX+barW/2)+'" y="'+(barOy+barMaxH+14)+'" text-anchor="middle" fill="var(--pink)" font-size="8">Therm</text>';
+      if (thBarH > 10) hStr += '<text x="'+(thX+barW/2)+'" y="'+(barOy+barMaxH-thBarH+12)+'" text-anchor="middle" fill="#fff" font-size="7">'+thermal.toFixed(0)+'J</text>';
+    }
+    // Total bar
+    var totX = (hasFr ? peX + barW + 20 : peX) + barW + 30;
+    hStr += '<rect x="'+totX+'" y="'+(barOy+barMaxH-totBarH)+'" width="'+barW+'" height="'+totBarH+'" rx="3" fill="var(--text-dim)" opacity="0.4"/>';
+    hStr += '<text x="'+(totX+barW/2)+'" y="'+(barOy+barMaxH+14)+'" text-anchor="middle" fill="var(--text-dim)" font-size="8">Total</text>';
+    if (totBarH > 10) hStr += '<text x="'+(totX+barW/2)+'" y="'+(barOy+barMaxH-totBarH+12)+'" text-anchor="middle" fill="#fff" font-size="7">'+(ke+pe+thermal).toFixed(0)+'J</text>';
+    // conservation line
+    hStr += '<line x1="'+barOx+'" y1="'+(barOy)+'" x2="'+(totX+barW)+'" y2="'+(barOy)+'" stroke="var(--text-dim)" stroke-width="1" stroke-dasharray="4,3"/>';
+    hStr += '<text x="'+(totX+barW+8)+'" y="'+(barOy+4)+'" fill="var(--text-dim)" font-size="7">E_total</text>';
+  }
+  svg.innerHTML = hStr;
+  document.getElementById('coeHVal').textContent = curH.toFixed(1) + ' m';
+  document.getElementById('coeVVal').textContent = curV.toFixed(1) + ' m/s';
+  document.getElementById('coeKEVal').textContent = ke.toFixed(1) + ' J';
+  document.getElementById('coePEVal').textContent = pe.toFixed(1) + ' J';
+  document.getElementById('coeThVal').textContent = thermal.toFixed(1) + ' J';
+  document.getElementById('coeTotVal').textContent = (ke + pe + thermal).toFixed(1) + ' J';
+}
+
+function startCOE() {
+  if (coeRunning) return;
+  coeRunning = true;
+  coeBallT = 0;
+  var h0 = +document.getElementById('coeHeight').value;
+  var hasFr = document.getElementById('coeFriction').checked;
+  var m = coeMass;
+  var initialPE = m * G * h0;
+  var frictionRate = hasFr ? 0.12 : 0;
+  var thermal = 0;
+  function step() {
+    coeBallT += 0.004;
+    if (coeBallT > 1) coeBallT = 1;
+    var rp = getRampProfile(coeBallT);
+    var curH = rp.hFrac * h0;
+    thermal = frictionRate * initialPE * coeBallT;
+    var availKE = initialPE - m * G * curH - thermal;
+    if (availKE < 0) availKE = 0;
+    var curV = Math.sqrt(2 * availKE / m);
+    drawCOE(coeBallT, h0, curH, curV, thermal, initialPE);
+    if (coeBallT < 1) {
+      coeAnimId = requestAnimationFrame(step);
+    } else { coeRunning = false; }
+  }
+  coeAnimId = requestAnimationFrame(step);
+}
+
+/* ==================== SECTION 5: POWER ==================== */
+function updatePower() {
+  var F = +document.getElementById('powF').value;
+  var v = +document.getElementById('powV').value;
+  document.getElementById('powFVal').textContent = F.toLocaleString() + ' N';
+  document.getElementById('powVVal').textContent = v + ' m/s';
+  var P = F * v;
+  var hp = P / 746;
+  var W10 = P * 10;
+  document.getElementById('powP').textContent = P.toLocaleString() + ' W';
+  document.getElementById('powHP').textContent = hp.toFixed(1) + ' hp';
+  document.getElementById('powW10').textContent = W10.toLocaleString() + ' J';
+  drawPower(F, v, P);
+}
+
+function drawPower(F, v, P) {
+  var svg = document.getElementById('powerSvg');
+  var h = '';
+  // engine block
+  h += '<rect x="80" y="80" width="120" height="80" rx="8" fill="var(--bg-card)" stroke="var(--border)" stroke-width="2"/>';
+  h += '<text x="140" y="115" text-anchor="middle" fill="var(--text-bright)" font-size="11" font-weight="600">ENGINE</text>';
+  h += '<text x="140" y="135" text-anchor="middle" fill="var(--text-dim)" font-size="9">F = '+F.toLocaleString()+' N</text>';
+  // object being pushed
+  h += '<rect x="260" y="95" width="60" height="50" rx="6" fill="var(--indigo)" stroke="#818cf8" stroke-width="2"/>';
+  h += '<text x="290" y="125" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">load</text>';
+  // force arrow
+  h += '<line x1="200" y1="120" x2="258" y2="120" stroke="var(--amber)" stroke-width="3" marker-end="url(#arrAmber)"/>';
+  // velocity arrow
+  var vLen = Math.min(v * 4, 200);
+  h += '<line x1="322" y1="120" x2="'+(322+vLen)+'" y2="120" stroke="var(--green)" stroke-width="3" marker-end="url(#arrGreen)"/>';
+  h += '<text x="'+(322+vLen/2)+'" y="108" text-anchor="middle" fill="var(--green)" font-size="10" font-weight="600">v = '+v+' m/s</text>';
+  // power gauge
+  var gaugeX = 550, gaugeY = 120, gaugeR = 70;
+  h += '<circle cx="'+gaugeX+'" cy="'+gaugeY+'" r="'+gaugeR+'" fill="var(--bg-input)" stroke="var(--border)" stroke-width="2"/>';
+  // gauge arc
+  var maxP = 250000;
+  var frac = Math.min(P / maxP, 1);
+  var startAngle = Math.PI * 0.8;
+  var endAngle = Math.PI * 0.8 + frac * Math.PI * 1.4;
+  var arcX1 = gaugeX + (gaugeR - 10) * Math.cos(startAngle);
+  var arcY1 = gaugeY + (gaugeR - 10) * Math.sin(startAngle);
+  var arcX2 = gaugeX + (gaugeR - 10) * Math.cos(endAngle);
+  var arcY2 = gaugeY + (gaugeR - 10) * Math.sin(endAngle);
+  var large = frac > 0.5 ? 1 : 0;
+  h += '<path d="M'+arcX1+','+arcY1+' A'+(gaugeR-10)+','+(gaugeR-10)+' 0 '+large+' 1 '+arcX2+','+arcY2+'" fill="none" stroke="var(--green)" stroke-width="8" stroke-linecap="round"/>';
+  // needle
+  var needleAngle = startAngle + frac * Math.PI * 1.4;
+  var nx = gaugeX + (gaugeR - 25) * Math.cos(needleAngle);
+  var ny = gaugeY + (gaugeR - 25) * Math.sin(needleAngle);
+  h += '<line x1="'+gaugeX+'" y1="'+gaugeY+'" x2="'+nx+'" y2="'+ny+'" stroke="var(--amber)" stroke-width="2.5"/>';
+  h += '<circle cx="'+gaugeX+'" cy="'+gaugeY+'" r="5" fill="var(--amber)"/>';
+  // power reading
+  var pDisp = P >= 1000000 ? (P/1000000).toFixed(1) + ' MW' : P >= 1000 ? (P/1000).toFixed(1) + ' kW' : P + ' W';
+  h += '<text x="'+gaugeX+'" y="'+(gaugeY+30)+'" text-anchor="middle" fill="var(--green)" font-size="13" font-weight="700">'+pDisp+'</text>';
+  h += '<text x="'+gaugeX+'" y="'+(gaugeY+45)+'" text-anchor="middle" fill="var(--text-dim)" font-size="9">POWER</text>';
+  // floor
+  h += '<line x1="50" y1="175" x2="450" y2="175" stroke="#363b47" stroke-width="2"/>';
+  svg.innerHTML = h;
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct, explanation) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  var expl = document.getElementById(qn + '-expl');
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.classList.add('pop-correct'); setTimeout(function(){btn.classList.remove('pop-correct')},350);
+    if (expl) { expl.className = 'explanation show-correct'; expl.textContent = 'Correct! ' + explanation; }
+  } else {
+    btn.classList.add('selected-wrong');
+    btn.classList.add('shake-wrong'); setTimeout(function(){btn.classList.remove('shake-wrong')},400);
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf(',true,') !== -1) b.classList.add('reveal-correct');
+    });
+    if (expl) { expl.className = 'explanation show-wrong'; expl.textContent = 'Incorrect. ' + explanation; }
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+  document.querySelectorAll('.quiz-q .explanation').forEach(function(e) { e.className = 'explanation'; e.textContent = ''; });
+}
+
+/* ==================== INIT ==================== */
+updateProgress();
+updateWork();
+updateKE();
+drawKEScene(0, 0, 0);
+drawGrav();
+drawSprPE();
+resetCOE();
+updatePower();
+</script>
+</body>
+</html>

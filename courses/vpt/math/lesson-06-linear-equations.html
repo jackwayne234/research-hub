@@ -1,0 +1,2130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 06 -- Linear Equations</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #262a33;
+    --border: #333a48;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── Progress Bar ── */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* ── Header ── */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── Collapsible Cards ── */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details[open] { border-color: var(--accent); }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .section-body {
+    padding: 1.25rem;
+  }
+
+  /* ── Typography ── */
+  h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent); }
+  h3 { font-size: 0.95rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: var(--text); }
+  p { margin-bottom: 0.75rem; font-size: 0.85rem; }
+  .dim { color: var(--text-dim); }
+  .accent { color: var(--accent); }
+  .green { color: var(--green); }
+  .pink { color: var(--pink); }
+  .orange { color: var(--orange); }
+
+  /* ── Balance Scale ── */
+  .scale-container {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    height: 240px;
+    margin: 1.5rem auto;
+  }
+  .scale-base {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 20px;
+    background: var(--text-dim);
+    border-radius: 4px 4px 0 0;
+  }
+  .scale-post {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 100px;
+    background: var(--text-dim);
+    border-radius: 3px;
+  }
+  .scale-beam {
+    position: absolute;
+    bottom: 116px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 340px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 3px;
+    transform-origin: center center;
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .scale-pan {
+    position: absolute;
+    bottom: -70px;
+    width: 120px;
+    height: 30px;
+    background: rgba(99, 102, 241, 0.15);
+    border: 2px solid var(--accent);
+    border-radius: 0 0 12px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--accent);
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .scale-pan.left { left: -57px; }
+  .scale-pan.right { right: -57px; }
+  .scale-string {
+    position: absolute;
+    width: 2px;
+    height: 40px;
+    background: var(--accent);
+    opacity: 0.5;
+  }
+  .scale-string.left-str { left: 57px; bottom: -40px; }
+  .scale-string.right-str { right: 57px; bottom: -40px; }
+  .scale-label {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 0.5rem;
+  }
+  .scale-equal-sign {
+    position: absolute;
+    bottom: 130px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dim);
+  }
+
+  /* ── Interactive Scale Widget ── */
+  .scale-widget {
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+  .scale-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+  .scale-btn {
+    padding: 0.4rem 0.8rem;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .scale-btn:hover { background: var(--accent); color: #fff; }
+  .scale-btn.active { background: var(--accent); color: #fff; }
+
+  /* ── Equation Display ── */
+  .equation-display {
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    padding: 1rem;
+    margin: 1rem 0;
+    background: rgba(99, 102, 241, 0.08);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+  .equation-display .highlight-op { color: var(--orange); }
+  .equation-display .highlight-var { color: var(--accent); }
+  .equation-display .highlight-result { color: var(--green); }
+  .equation-display .strikethrough {
+    text-decoration: line-through;
+    opacity: 0.4;
+  }
+
+  /* ── Step-by-step solver ── */
+  .step-solver {
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.5s ease;
+  }
+  .step.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-num.green-step { background: var(--green); }
+  .step-num.orange-step { background: var(--orange); }
+  .step-num.pink-step { background: var(--pink); }
+  .step-content {
+    flex: 1;
+  }
+  .step-equation {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .step-explanation {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  /* ── Practice Problems ── */
+  .practice-set {
+    margin: 1rem 0;
+  }
+  .practice-problem {
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin: 0.75rem 0;
+    transition: border-color 0.3s;
+  }
+  .practice-problem.correct { border-color: var(--green); }
+  .practice-problem.incorrect { border-color: var(--pink); }
+  .practice-problem .problem-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  .practice-problem .input-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .practice-problem input[type="text"],
+  .practice-problem input[type="number"] {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    width: 100px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .practice-problem input:focus { border-color: var(--accent); }
+  .check-btn {
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .check-btn:hover { filter: brightness(1.15); }
+  .check-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .feedback {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-height: 1.4em;
+  }
+  .feedback.correct-fb { color: var(--green); }
+  .feedback.incorrect-fb { color: var(--pink); }
+
+  /* ── Yes/No Buttons ── */
+  .yesno-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  .yn-btn {
+    padding: 0.45rem 1.2rem;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid;
+    transition: all 0.2s;
+  }
+  .yn-btn.yes-btn {
+    background: transparent;
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .yn-btn.yes-btn:hover, .yn-btn.yes-btn.selected { background: var(--green); color: #fff; }
+  .yn-btn.no-btn {
+    background: transparent;
+    border-color: var(--pink);
+    color: var(--pink);
+  }
+  .yn-btn.no-btn:hover, .yn-btn.no-btn.selected { background: var(--pink); color: #fff; }
+  .yn-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── Show Steps Button ── */
+  .show-steps-btn {
+    padding: 0.45rem 1rem;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid var(--orange);
+    border-radius: var(--radius);
+    color: var(--orange);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+  }
+  .show-steps-btn:hover { background: var(--orange); color: #fff; }
+  .steps-reveal {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+  }
+  .steps-reveal.open {
+    max-height: 600px;
+  }
+
+  /* ── Keyword Map ── */
+  .keyword-map {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .keyword-card {
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    text-align: center;
+    transition: border-color 0.3s;
+  }
+  .keyword-card:hover { border-color: var(--accent); }
+  .keyword-english {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .keyword-math {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* ── Word Problem Builder ── */
+  .word-problem-builder {
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+  .word-problem-text {
+    font-size: 0.9rem;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+  .word-problem-text .wp-highlight {
+    background: rgba(99, 102, 241, 0.2);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .equation-builder {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 1rem 0;
+    min-height: 50px;
+    padding: 0.75rem;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.3s;
+  }
+  .equation-builder.builder-correct { border-color: var(--green); }
+  .equation-builder.builder-incorrect { border-color: var(--pink); }
+  .eq-piece {
+    padding: 0.4rem 0.7rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .eq-piece:hover { border-color: var(--accent); color: var(--accent); }
+  .eq-piece.placed { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .eq-piece.in-builder {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .piece-bank {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0.75rem 0;
+  }
+
+  /* ── Quiz Section ── */
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .quiz-score {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .quiz-score .score-val { color: var(--green); }
+  .quiz-progress-text {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .quiz-problem {
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin: 0.75rem 0;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem.q-correct { border-color: var(--green); }
+  .quiz-problem.q-incorrect { border-color: var(--pink); }
+  .quiz-problem .q-text {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  .quiz-final {
+    text-align: center;
+    padding: 2rem;
+  }
+  .quiz-final .final-score {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .quiz-final .final-msg {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+  .retry-btn {
+    padding: 0.6rem 1.5rem;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s;
+  }
+  .retry-btn:hover { filter: brightness(1.15); }
+
+  /* ── Interactive Scale Animation ── */
+  .anim-scale-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    height: 210px;
+    margin: 1rem auto;
+  }
+  .anim-fulcrum {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-bottom: 30px solid var(--text-dim);
+  }
+  .anim-beam {
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    width: 360px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 3px;
+    transform-origin: center center;
+    transform: translateX(-50%) rotate(0deg);
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .anim-pan-group {
+    position: absolute;
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .anim-pan-group.left-group {
+    left: calc(50% - 180px);
+    bottom: 34px;
+    transform: translateY(0px);
+  }
+  .anim-pan-group.right-group {
+    right: calc(50% - 180px);
+    bottom: 34px;
+    transform: translateY(0px);
+    text-align: right;
+  }
+  .anim-string {
+    width: 2px;
+    height: 30px;
+    background: var(--accent);
+    opacity: 0.5;
+    margin: 0 auto;
+  }
+  .anim-pan {
+    width: 110px;
+    height: 28px;
+    background: rgba(99, 102, 241, 0.12);
+    border: 2px solid var(--accent);
+    border-radius: 0 0 10px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--accent);
+  }
+  .anim-status {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    min-height: 1.4em;
+    transition: color 0.3s;
+  }
+
+  /* ── Misc ── */
+  .concept-box {
+    background: rgba(99, 102, 241, 0.08);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+  }
+  .concept-box strong { color: var(--accent); }
+  .inline-code {
+    background: rgba(99, 102, 241, 0.12);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .next-step-btn {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s;
+    margin-top: 0.5rem;
+  }
+  .next-step-btn:hover { filter: brightness(1.15); }
+
+  .solver-demo {
+    margin: 1.25rem 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .solver-demo-header {
+    background: rgba(99, 102, 241, 0.1);
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .solver-demo-body {
+    padding: 1rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.2rem; }
+    .equation-display { font-size: 1.1rem; }
+    .anim-beam { width: 280px; }
+    .anim-pan-group.left-group { left: calc(50% - 140px); }
+    .anim-pan-group.right-group { right: calc(50% - 140px); }
+    .anim-pan { width: 90px; font-size: 0.7rem; }
+    .keyword-map { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar">
+  <div class="seg" data-section="0"></div>
+  <div class="seg" data-section="1"></div>
+  <div class="seg" data-section="2"></div>
+  <div class="seg" data-section="3"></div>
+  <div class="seg" data-section="4"></div>
+  <div class="seg" data-section="5"></div>
+</div>
+
+<h1>Lesson 06 -- Linear Equations</h1>
+<p class="subtitle">Week 3 -- Solving equations from one-step to multi-step, plus word problems</p>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 1: What Is an Equation? -->
+<!-- ═══════════════════════════════════════════════ -->
+<details id="section0" open>
+  <summary>1. What Is an Equation?</summary>
+  <div class="section-body">
+
+    <h2>The Balance Scale</h2>
+    <p>An equation says: <strong class="accent">"the left side equals the right side."</strong> Think of it as a balance scale -- both sides must weigh the same to stay level.</p>
+
+    <div class="concept-box">
+      <strong>The Golden Rule:</strong> Whatever you do to one side, you must do to the other side. Add 3 to the left? Add 3 to the right. The scale stays balanced.
+    </div>
+
+    <!-- Animated Balance Scale -->
+    <div class="scale-widget">
+      <p class="dim" style="text-align:center; margin-bottom:0.5rem;">Click the buttons to add or remove weight from each side.</p>
+      <div class="anim-scale-wrap" id="scaleDemo1">
+        <div class="anim-beam" id="beam1"></div>
+        <div class="anim-pan-group left-group" id="leftGroup1">
+          <div class="anim-string"></div>
+          <div class="anim-pan" id="leftPan1">5</div>
+        </div>
+        <div class="anim-pan-group right-group" id="rightGroup1">
+          <div class="anim-string"></div>
+          <div class="anim-pan" id="rightPan1">5</div>
+        </div>
+        <div class="anim-fulcrum"></div>
+      </div>
+      <div class="anim-status" id="scaleStatus1" style="color: var(--green);">Balanced!</div>
+      <div class="scale-controls">
+        <button class="scale-btn" onclick="adjustScale(1, 'left', 1)">+1 Left</button>
+        <button class="scale-btn" onclick="adjustScale(1, 'left', -1)">-1 Left</button>
+        <button class="scale-btn" onclick="adjustScale(1, 'right', 1)">+1 Right</button>
+        <button class="scale-btn" onclick="adjustScale(1, 'right', -1)">-1 Right</button>
+        <button class="scale-btn" onclick="adjustScale(1, 'both', 1)">+1 Both</button>
+        <button class="scale-btn" onclick="adjustScale(1, 'both', -1)">-1 Both</button>
+        <button class="scale-btn" onclick="resetScale(1)" style="border-color: var(--orange); color: var(--orange);">Reset</button>
+      </div>
+    </div>
+
+    <h3>Practice: Is This a Solution?</h3>
+    <p class="dim">For each equation, decide if the given value makes the equation true.</p>
+
+    <!-- YesNo Problem 1 -->
+    <div class="practice-problem" id="yn1">
+      <div class="problem-text">Is <span class="inline-code">x = 3</span> a solution to <span class="inline-code">2x + 1 = 7</span>?</div>
+      <div class="yesno-row">
+        <button class="yn-btn yes-btn" onclick="checkYesNo('yn1', true, true)">Yes</button>
+        <button class="yn-btn no-btn" onclick="checkYesNo('yn1', false, true)">No</button>
+      </div>
+      <div class="feedback" id="yn1-fb"></div>
+    </div>
+
+    <!-- YesNo Problem 2 -->
+    <div class="practice-problem" id="yn2">
+      <div class="problem-text">Is <span class="inline-code">x = 4</span> a solution to <span class="inline-code">3x - 5 = 10</span>?</div>
+      <div class="yesno-row">
+        <button class="yn-btn yes-btn" onclick="checkYesNo('yn2', true, false)">Yes</button>
+        <button class="yn-btn no-btn" onclick="checkYesNo('yn2', false, false)">No</button>
+      </div>
+      <div class="feedback" id="yn2-fb"></div>
+    </div>
+
+    <!-- YesNo Problem 3 -->
+    <div class="practice-problem" id="yn3">
+      <div class="problem-text">Is <span class="inline-code">x = 2</span> a solution to <span class="inline-code">5x + 3 = 13</span>?</div>
+      <div class="yesno-row">
+        <button class="yn-btn yes-btn" onclick="checkYesNo('yn3', true, true)">Yes</button>
+        <button class="yn-btn no-btn" onclick="checkYesNo('yn3', false, true)">No</button>
+      </div>
+      <div class="feedback" id="yn3-fb"></div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 2: One-Step Equations -->
+<!-- ═══════════════════════════════════════════════ -->
+<details id="section1">
+  <summary>2. One-Step Equations</summary>
+  <div class="section-body">
+
+    <h2>Undo the Operation</h2>
+    <p>A one-step equation needs exactly <strong class="accent">one inverse operation</strong> to isolate x. The four types are:</p>
+
+    <!-- Demo 1: x + 5 = 12 -->
+    <div class="solver-demo" id="oneStep1">
+      <div class="solver-demo-header">
+        <span>x + 5 = 12</span>
+        <button class="next-step-btn" onclick="animateOneStep('oneStep1', 0)">Solve</button>
+      </div>
+      <div class="solver-demo-body">
+        <div class="step visible">
+          <div class="step-num">0</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-var">x</span> + 5 = 12</div>
+            <div class="step-explanation">We need to get x alone. The 5 is added, so we subtract 5 from both sides.</div>
+          </div>
+        </div>
+        <div class="step" id="oneStep1-s1">
+          <div class="step-num orange-step">1</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-var">x</span> + 5 <span class="highlight-op">- 5</span> = 12 <span class="highlight-op">- 5</span></div>
+            <div class="step-explanation">Subtract 5 from both sides.</div>
+          </div>
+        </div>
+        <div class="step" id="oneStep1-s2">
+          <div class="step-num green-step">2</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-var highlight-result">x = 7</span></div>
+            <div class="step-explanation">Done! x equals 7.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo 2: x - 3 = 8 -->
+    <div class="solver-demo" id="oneStep2">
+      <div class="solver-demo-header">
+        <span>x - 3 = 8</span>
+        <button class="next-step-btn" onclick="animateOneStep('oneStep2', 0)">Solve</button>
+      </div>
+      <div class="solver-demo-body">
+        <div class="step visible">
+          <div class="step-num">0</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-var">x</span> - 3 = 8</div>
+            <div class="step-explanation">The 3 is subtracted, so we add 3 to both sides.</div>
+          </div>
+        </div>
+        <div class="step" id="oneStep2-s1">
+          <div class="step-num orange-step">1</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-var">x</span> - 3 <span class="highlight-op">+ 3</span> = 8 <span class="highlight-op">+ 3</span></div>
+            <div class="step-explanation">Add 3 to both sides.</div>
+          </div>
+        </div>
+        <div class="step" id="oneStep2-s2">
+          <div class="step-num green-step">2</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-var highlight-result">x = 11</span></div>
+            <div class="step-explanation">Done! x equals 11.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo 3: 4x = 20 -->
+    <div class="solver-demo" id="oneStep3">
+      <div class="solver-demo-header">
+        <span>4x = 20</span>
+        <button class="next-step-btn" onclick="animateOneStep('oneStep3', 0)">Solve</button>
+      </div>
+      <div class="solver-demo-body">
+        <div class="step visible">
+          <div class="step-num">0</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-op">4</span><span class="highlight-var">x</span> = 20</div>
+            <div class="step-explanation">x is multiplied by 4, so we divide both sides by 4.</div>
+          </div>
+        </div>
+        <div class="step" id="oneStep3-s1">
+          <div class="step-num orange-step">1</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-op">4</span><span class="highlight-var">x</span> <span class="highlight-op">/ 4</span> = 20 <span class="highlight-op">/ 4</span></div>
+            <div class="step-explanation">Divide both sides by 4.</div>
+          </div>
+        </div>
+        <div class="step" id="oneStep3-s2">
+          <div class="step-num green-step">2</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-var highlight-result">x = 5</span></div>
+            <div class="step-explanation">Done! x equals 5.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo 4: x/3 = 7 -->
+    <div class="solver-demo" id="oneStep4">
+      <div class="solver-demo-header">
+        <span>x / 3 = 7</span>
+        <button class="next-step-btn" onclick="animateOneStep('oneStep4', 0)">Solve</button>
+      </div>
+      <div class="solver-demo-body">
+        <div class="step visible">
+          <div class="step-num">0</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-var">x</span> / <span class="highlight-op">3</span> = 7</div>
+            <div class="step-explanation">x is divided by 3, so we multiply both sides by 3.</div>
+          </div>
+        </div>
+        <div class="step" id="oneStep4-s1">
+          <div class="step-num orange-step">1</div>
+          <div class="step-content">
+            <div class="step-equation">(<span class="highlight-var">x</span> / 3) <span class="highlight-op">* 3</span> = 7 <span class="highlight-op">* 3</span></div>
+            <div class="step-explanation">Multiply both sides by 3.</div>
+          </div>
+        </div>
+        <div class="step" id="oneStep4-s2">
+          <div class="step-num green-step">2</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-var highlight-result">x = 21</span></div>
+            <div class="step-explanation">Done! x equals 21.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Practice: One-Step Equations</h3>
+    <p class="dim">Solve for x. Type your answer and click Check.</p>
+
+    <div class="practice-set" id="oneStepPractice">
+      <div class="practice-problem" data-answer="9">
+        <div class="problem-text">x + 6 = 15</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+      <div class="practice-problem" data-answer="12">
+        <div class="problem-text">x - 4 = 8</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+      <div class="practice-problem" data-answer="6">
+        <div class="problem-text">7x = 42</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+      <div class="practice-problem" data-answer="40">
+        <div class="problem-text">x / 5 = 8</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+      <div class="practice-problem" data-answer="15">
+        <div class="problem-text">x - 9 = 6</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 3: Two-Step Equations -->
+<!-- ═══════════════════════════════════════════════ -->
+<details id="section2">
+  <summary>3. Two-Step Equations</summary>
+  <div class="section-body">
+
+    <h2>Unwinding in Reverse</h2>
+    <p>Two-step equations need two operations. The trick: <strong class="accent">undo addition/subtraction first</strong>, then undo multiplication/division. Think of it as peeling off layers, outermost first.</p>
+
+    <div class="concept-box">
+      <strong>The Order:</strong> Step 1 -- Undo any addition or subtraction (move the constant).
+      Step 2 -- Undo any multiplication or division (isolate x).
+    </div>
+
+    <!-- Walkthrough: 3x + 5 = 20 -->
+    <div class="solver-demo" id="twoStep1">
+      <div class="solver-demo-header">
+        <span>3x + 5 = 20</span>
+        <button class="next-step-btn" onclick="animateTwoStep('twoStep1', 0)">Solve Step-by-Step</button>
+      </div>
+      <div class="solver-demo-body">
+        <div class="step visible">
+          <div class="step-num">0</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-op">3</span><span class="highlight-var">x</span> + 5 = 20</div>
+            <div class="step-explanation">Start. We need to isolate x. First, deal with the +5.</div>
+          </div>
+        </div>
+        <div class="step" id="twoStep1-s1">
+          <div class="step-num orange-step">1</div>
+          <div class="step-content">
+            <div class="step-equation">3x + 5 <span class="highlight-op">- 5</span> = 20 <span class="highlight-op">- 5</span></div>
+            <div class="step-explanation">Subtract 5 from both sides to remove the constant.</div>
+          </div>
+        </div>
+        <div class="step" id="twoStep1-s2">
+          <div class="step-num">&#8594;</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-op">3</span><span class="highlight-var">x</span> = 15</div>
+            <div class="step-explanation">Simplified. Now handle the multiplication by 3.</div>
+          </div>
+        </div>
+        <div class="step" id="twoStep1-s3">
+          <div class="step-num pink-step">2</div>
+          <div class="step-content">
+            <div class="step-equation">3x <span class="highlight-op">/ 3</span> = 15 <span class="highlight-op">/ 3</span></div>
+            <div class="step-explanation">Divide both sides by 3.</div>
+          </div>
+        </div>
+        <div class="step" id="twoStep1-s4">
+          <div class="step-num green-step">&#10003;</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-result"><span class="highlight-var">x</span> = 5</span></div>
+            <div class="step-explanation">Done! Check: 3(5) + 5 = 15 + 5 = 20. Correct!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Walkthrough: 2x - 7 = 9 -->
+    <div class="solver-demo" id="twoStep2">
+      <div class="solver-demo-header">
+        <span>2x - 7 = 9</span>
+        <button class="next-step-btn" onclick="animateTwoStep('twoStep2', 0)">Solve Step-by-Step</button>
+      </div>
+      <div class="solver-demo-body">
+        <div class="step visible">
+          <div class="step-num">0</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-op">2</span><span class="highlight-var">x</span> - 7 = 9</div>
+            <div class="step-explanation">Start. First, undo the -7.</div>
+          </div>
+        </div>
+        <div class="step" id="twoStep2-s1">
+          <div class="step-num orange-step">1</div>
+          <div class="step-content">
+            <div class="step-equation">2x - 7 <span class="highlight-op">+ 7</span> = 9 <span class="highlight-op">+ 7</span></div>
+            <div class="step-explanation">Add 7 to both sides.</div>
+          </div>
+        </div>
+        <div class="step" id="twoStep2-s2">
+          <div class="step-num">&#8594;</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-op">2</span><span class="highlight-var">x</span> = 16</div>
+            <div class="step-explanation">Now divide both sides by 2.</div>
+          </div>
+        </div>
+        <div class="step" id="twoStep2-s3">
+          <div class="step-num pink-step">2</div>
+          <div class="step-content">
+            <div class="step-equation">2x <span class="highlight-op">/ 2</span> = 16 <span class="highlight-op">/ 2</span></div>
+            <div class="step-explanation">Divide both sides by 2.</div>
+          </div>
+        </div>
+        <div class="step" id="twoStep2-s4">
+          <div class="step-num green-step">&#10003;</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-result"><span class="highlight-var">x</span> = 8</span></div>
+            <div class="step-explanation">Done! Check: 2(8) - 7 = 16 - 7 = 9. Correct!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Practice: Two-Step Equations</h3>
+    <p class="dim">Solve for x.</p>
+
+    <div class="practice-set" id="twoStepPractice">
+      <div class="practice-problem" data-answer="4">
+        <div class="problem-text">5x + 3 = 23</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+      <div class="practice-problem" data-answer="7">
+        <div class="problem-text">4x - 10 = 18</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+      <div class="practice-problem" data-answer="3">
+        <div class="problem-text">6x + 2 = 20</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+      <div class="practice-problem" data-answer="9">
+        <div class="problem-text">x/3 + 1 = 4</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+      <div class="practice-problem" data-answer="5">
+        <div class="problem-text">2x + 8 = 18</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 4: Multi-Step Equations -->
+<!-- ═══════════════════════════════════════════════ -->
+<details id="section3">
+  <summary>4. Multi-Step Equations</summary>
+  <div class="section-body">
+
+    <h2>The Full Process</h2>
+    <p>Multi-step equations may require:</p>
+    <p><span class="inline-code">1. Distribute</span> -- multiply through parentheses</p>
+    <p><span class="inline-code">2. Combine like terms</span> -- simplify each side</p>
+    <p><span class="inline-code">3. Move variables</span> -- get all x-terms on one side</p>
+    <p><span class="inline-code">4. Solve</span> -- use two-step methods</p>
+
+    <div class="concept-box">
+      <strong>Variables on Both Sides:</strong> When x appears on both sides, move all x-terms to one side and all constants to the other. The goal is always the same: isolate x.
+    </div>
+
+    <!-- Walkthrough: 2(x + 3) = 4x - 2 -->
+    <div class="solver-demo" id="multiStep1">
+      <div class="solver-demo-header">
+        <span>2(x + 3) = 4x - 2</span>
+        <button class="next-step-btn" onclick="animateMultiStep('multiStep1', 0)">Solve Step-by-Step</button>
+      </div>
+      <div class="solver-demo-body">
+        <div class="step visible">
+          <div class="step-num">0</div>
+          <div class="step-content">
+            <div class="step-equation">2(<span class="highlight-var">x</span> + 3) = 4<span class="highlight-var">x</span> - 2</div>
+            <div class="step-explanation">Start. We have parentheses and variables on both sides.</div>
+          </div>
+        </div>
+        <div class="step" id="multiStep1-s1">
+          <div class="step-num orange-step">1</div>
+          <div class="step-content">
+            <div class="step-equation">2<span class="highlight-var">x</span> + <span class="highlight-op">6</span> = 4<span class="highlight-var">x</span> - 2</div>
+            <div class="step-explanation">Distribute the 2: 2 * x = 2x, 2 * 3 = 6.</div>
+          </div>
+        </div>
+        <div class="step" id="multiStep1-s2">
+          <div class="step-num pink-step">2</div>
+          <div class="step-content">
+            <div class="step-equation">2x <span class="highlight-op">- 2x</span> + 6 = 4x <span class="highlight-op">- 2x</span> - 2</div>
+            <div class="step-explanation">Subtract 2x from both sides to group variables.</div>
+          </div>
+        </div>
+        <div class="step" id="multiStep1-s3">
+          <div class="step-num">&#8594;</div>
+          <div class="step-content">
+            <div class="step-equation">6 = 2<span class="highlight-var">x</span> - 2</div>
+            <div class="step-explanation">Simplified. Now solve the two-step equation.</div>
+          </div>
+        </div>
+        <div class="step" id="multiStep1-s4">
+          <div class="step-num orange-step">3</div>
+          <div class="step-content">
+            <div class="step-equation">6 <span class="highlight-op">+ 2</span> = 2x - 2 <span class="highlight-op">+ 2</span></div>
+            <div class="step-explanation">Add 2 to both sides.</div>
+          </div>
+        </div>
+        <div class="step" id="multiStep1-s5">
+          <div class="step-num">&#8594;</div>
+          <div class="step-content">
+            <div class="step-equation">8 = 2<span class="highlight-var">x</span></div>
+            <div class="step-explanation">Almost there. Divide both sides by 2.</div>
+          </div>
+        </div>
+        <div class="step" id="multiStep1-s6">
+          <div class="step-num green-step">&#10003;</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-result"><span class="highlight-var">x</span> = 4</span></div>
+            <div class="step-explanation">Done! Check: 2(4+3) = 2(7) = 14. And 4(4)-2 = 16-2 = 14. Both sides match!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Walkthrough: 3(2x - 1) + 4 = 5x + 6 -->
+    <div class="solver-demo" id="multiStep2">
+      <div class="solver-demo-header">
+        <span>3(2x - 1) + 4 = 5x + 6</span>
+        <button class="next-step-btn" onclick="animateMultiStep('multiStep2', 0)">Solve Step-by-Step</button>
+      </div>
+      <div class="solver-demo-body">
+        <div class="step visible">
+          <div class="step-num">0</div>
+          <div class="step-content">
+            <div class="step-equation">3(2<span class="highlight-var">x</span> - 1) + 4 = 5<span class="highlight-var">x</span> + 6</div>
+            <div class="step-explanation">Start. Distribute first, then combine like terms.</div>
+          </div>
+        </div>
+        <div class="step" id="multiStep2-s1">
+          <div class="step-num orange-step">1</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-op">6x - 3</span> + 4 = 5x + 6</div>
+            <div class="step-explanation">Distribute: 3 * 2x = 6x, 3 * (-1) = -3.</div>
+          </div>
+        </div>
+        <div class="step" id="multiStep2-s2">
+          <div class="step-num orange-step">2</div>
+          <div class="step-content">
+            <div class="step-equation">6<span class="highlight-var">x</span> + <span class="highlight-op">1</span> = 5<span class="highlight-var">x</span> + 6</div>
+            <div class="step-explanation">Combine like terms on the left: -3 + 4 = 1.</div>
+          </div>
+        </div>
+        <div class="step" id="multiStep2-s3">
+          <div class="step-num pink-step">3</div>
+          <div class="step-content">
+            <div class="step-equation">6x <span class="highlight-op">- 5x</span> + 1 = 5x <span class="highlight-op">- 5x</span> + 6</div>
+            <div class="step-explanation">Subtract 5x from both sides to group variables.</div>
+          </div>
+        </div>
+        <div class="step" id="multiStep2-s4">
+          <div class="step-num">&#8594;</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-var">x</span> + 1 = 6</div>
+            <div class="step-explanation">Simplified. One more step.</div>
+          </div>
+        </div>
+        <div class="step" id="multiStep2-s5">
+          <div class="step-num green-step">&#10003;</div>
+          <div class="step-content">
+            <div class="step-equation"><span class="highlight-result"><span class="highlight-var">x</span> = 5</span></div>
+            <div class="step-explanation">Subtract 1 from both sides. Check: 3(2*5-1)+4 = 3(9)+4 = 31. And 5(5)+6 = 31. Correct!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Practice: Multi-Step Equations</h3>
+    <p class="dim">Solve for x. Use the "Show Steps" button if you get stuck.</p>
+
+    <div class="practice-set" id="multiStepPractice">
+      <div class="practice-problem" data-answer="3">
+        <div class="problem-text">4(x + 2) = 20</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+        <button class="show-steps-btn" onclick="toggleSteps(this)">Show Steps</button>
+        <div class="steps-reveal">
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num orange-step">1</div>
+            <div class="step-content">
+              <div class="step-equation">4x + 8 = 20</div>
+              <div class="step-explanation">Distribute: 4 * x = 4x, 4 * 2 = 8</div>
+            </div>
+          </div>
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num pink-step">2</div>
+            <div class="step-content">
+              <div class="step-equation">4x = 12</div>
+              <div class="step-explanation">Subtract 8 from both sides</div>
+            </div>
+          </div>
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num green-step">3</div>
+            <div class="step-content">
+              <div class="step-equation">x = 3</div>
+              <div class="step-explanation">Divide both sides by 4</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="practice-problem" data-answer="5">
+        <div class="problem-text">3x + 2 = 2x + 7</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+        <button class="show-steps-btn" onclick="toggleSteps(this)">Show Steps</button>
+        <div class="steps-reveal">
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num orange-step">1</div>
+            <div class="step-content">
+              <div class="step-equation">3x - 2x + 2 = 7</div>
+              <div class="step-explanation">Subtract 2x from both sides</div>
+            </div>
+          </div>
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num green-step">2</div>
+            <div class="step-content">
+              <div class="step-equation">x = 5</div>
+              <div class="step-explanation">Subtract 2 from both sides</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="practice-problem" data-answer="2">
+        <div class="problem-text">5(x - 1) = 2x + 1</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+        <button class="show-steps-btn" onclick="toggleSteps(this)">Show Steps</button>
+        <div class="steps-reveal">
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num orange-step">1</div>
+            <div class="step-content">
+              <div class="step-equation">5x - 5 = 2x + 1</div>
+              <div class="step-explanation">Distribute: 5(x) - 5(1)</div>
+            </div>
+          </div>
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num pink-step">2</div>
+            <div class="step-content">
+              <div class="step-equation">3x - 5 = 1</div>
+              <div class="step-explanation">Subtract 2x from both sides</div>
+            </div>
+          </div>
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num pink-step">3</div>
+            <div class="step-content">
+              <div class="step-equation">3x = 6</div>
+              <div class="step-explanation">Add 5 to both sides</div>
+            </div>
+          </div>
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num green-step">4</div>
+            <div class="step-content">
+              <div class="step-equation">x = 2</div>
+              <div class="step-explanation">Divide both sides by 3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="practice-problem" data-answer="3">
+        <div class="problem-text">2(3x + 1) = x + 17</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+        <button class="show-steps-btn" onclick="toggleSteps(this)">Show Steps</button>
+        <div class="steps-reveal">
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num orange-step">1</div>
+            <div class="step-content">
+              <div class="step-equation">6x + 2 = x + 17</div>
+              <div class="step-explanation">Distribute: 2(3x) + 2(1)</div>
+            </div>
+          </div>
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num pink-step">2</div>
+            <div class="step-content">
+              <div class="step-equation">5x + 2 = 17</div>
+              <div class="step-explanation">Subtract x from both sides</div>
+            </div>
+          </div>
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num pink-step">3</div>
+            <div class="step-content">
+              <div class="step-equation">5x = 15</div>
+              <div class="step-explanation">Subtract 2 from both sides</div>
+            </div>
+          </div>
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num green-step">4</div>
+            <div class="step-content">
+              <div class="step-equation">x = 3</div>
+              <div class="step-explanation">Divide both sides by 5</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="practice-problem" data-answer="4">
+        <div class="problem-text">7x - 3 = 3x + 13</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+        <button class="show-steps-btn" onclick="toggleSteps(this)">Show Steps</button>
+        <div class="steps-reveal">
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num orange-step">1</div>
+            <div class="step-content">
+              <div class="step-equation">4x - 3 = 13</div>
+              <div class="step-explanation">Subtract 3x from both sides</div>
+            </div>
+          </div>
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num pink-step">2</div>
+            <div class="step-content">
+              <div class="step-equation">4x = 16</div>
+              <div class="step-explanation">Add 3 to both sides</div>
+            </div>
+          </div>
+          <div class="step visible" style="opacity:1;transform:none;">
+            <div class="step-num green-step">3</div>
+            <div class="step-content">
+              <div class="step-equation">x = 4</div>
+              <div class="step-explanation">Divide both sides by 4</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 5: Word Problems -->
+<!-- ═══════════════════════════════════════════════ -->
+<details id="section4">
+  <summary>5. Word Problems &rarr; Equations</summary>
+  <div class="section-body">
+
+    <h2>Translating English to Algebra</h2>
+    <p>Word problems are just equations in disguise. Learn the keywords and you can translate any sentence into math.</p>
+
+    <h3>Keyword Map</h3>
+    <div class="keyword-map">
+      <div class="keyword-card">
+        <div class="keyword-english">"is" / "equals"</div>
+        <div class="keyword-math">=</div>
+      </div>
+      <div class="keyword-card">
+        <div class="keyword-english">"more than" / "added to"</div>
+        <div class="keyword-math">+</div>
+      </div>
+      <div class="keyword-card">
+        <div class="keyword-english">"less than" / "decreased by"</div>
+        <div class="keyword-math">-</div>
+      </div>
+      <div class="keyword-card">
+        <div class="keyword-english">"times" / "product of"</div>
+        <div class="keyword-math">x</div>
+      </div>
+      <div class="keyword-card">
+        <div class="keyword-english">"of" (with fractions/percents)</div>
+        <div class="keyword-math">x</div>
+      </div>
+      <div class="keyword-card">
+        <div class="keyword-english">"a number" / "what"</div>
+        <div class="keyword-math">x</div>
+      </div>
+    </div>
+
+    <!-- Interactive Builder 1 -->
+    <h3>Build the Equation</h3>
+    <p class="dim">Read the word problem, then click the pieces in order to build the equation.</p>
+
+    <div class="word-problem-builder" id="wpb1">
+      <div class="word-problem-text">
+        "<span class="wp-highlight">Three times</span> a number <span class="wp-highlight">plus five</span> <span class="wp-highlight">is</span> <span class="wp-highlight">twenty</span>."
+      </div>
+      <p class="dim" style="text-align:center;">Build: 3x + 5 = 20</p>
+      <div class="equation-builder" id="builder1"></div>
+      <div class="piece-bank" id="bank1">
+        <div class="eq-piece" onclick="addPiece('wpb1', this)" data-val="3x">3x</div>
+        <div class="eq-piece" onclick="addPiece('wpb1', this)" data-val="+">+</div>
+        <div class="eq-piece" onclick="addPiece('wpb1', this)" data-val="5">5</div>
+        <div class="eq-piece" onclick="addPiece('wpb1', this)" data-val="=">=</div>
+        <div class="eq-piece" onclick="addPiece('wpb1', this)" data-val="20">20</div>
+        <div class="eq-piece" onclick="addPiece('wpb1', this)" data-val="-">-</div>
+        <div class="eq-piece" onclick="addPiece('wpb1', this)" data-val="7">7</div>
+      </div>
+      <div style="text-align:center; margin-top:0.5rem;">
+        <button class="scale-btn" onclick="checkBuilder('wpb1', ['3x','+','5','=','20'])" style="margin-right:0.5rem;">Check</button>
+        <button class="scale-btn" onclick="resetBuilder('wpb1')" style="border-color:var(--orange);color:var(--orange);">Reset</button>
+      </div>
+      <div class="feedback" id="wpb1-fb" style="text-align:center;"></div>
+    </div>
+
+    <!-- Interactive Builder 2 -->
+    <div class="word-problem-builder" id="wpb2">
+      <div class="word-problem-text">
+        "A number <span class="wp-highlight">decreased by</span> <span class="wp-highlight">four</span> <span class="wp-highlight">equals</span> <span class="wp-highlight">ten</span>."
+      </div>
+      <p class="dim" style="text-align:center;">Build: x - 4 = 10</p>
+      <div class="equation-builder" id="builder2"></div>
+      <div class="piece-bank" id="bank2">
+        <div class="eq-piece" onclick="addPiece('wpb2', this)" data-val="x">x</div>
+        <div class="eq-piece" onclick="addPiece('wpb2', this)" data-val="-">-</div>
+        <div class="eq-piece" onclick="addPiece('wpb2', this)" data-val="4">4</div>
+        <div class="eq-piece" onclick="addPiece('wpb2', this)" data-val="=">=</div>
+        <div class="eq-piece" onclick="addPiece('wpb2', this)" data-val="10">10</div>
+        <div class="eq-piece" onclick="addPiece('wpb2', this)" data-val="+">+</div>
+        <div class="eq-piece" onclick="addPiece('wpb2', this)" data-val="14">14</div>
+      </div>
+      <div style="text-align:center; margin-top:0.5rem;">
+        <button class="scale-btn" onclick="checkBuilder('wpb2', ['x','-','4','=','10'])" style="margin-right:0.5rem;">Check</button>
+        <button class="scale-btn" onclick="resetBuilder('wpb2')" style="border-color:var(--orange);color:var(--orange);">Reset</button>
+      </div>
+      <div class="feedback" id="wpb2-fb" style="text-align:center;"></div>
+    </div>
+
+    <!-- Interactive Builder 3 -->
+    <div class="word-problem-builder" id="wpb3">
+      <div class="word-problem-text">
+        "<span class="wp-highlight">Twice</span> a number <span class="wp-highlight">plus three</span> <span class="wp-highlight">is</span> <span class="wp-highlight">fifteen</span>."
+      </div>
+      <p class="dim" style="text-align:center;">Build: 2x + 3 = 15</p>
+      <div class="equation-builder" id="builder3"></div>
+      <div class="piece-bank" id="bank3">
+        <div class="eq-piece" onclick="addPiece('wpb3', this)" data-val="2x">2x</div>
+        <div class="eq-piece" onclick="addPiece('wpb3', this)" data-val="+">+</div>
+        <div class="eq-piece" onclick="addPiece('wpb3', this)" data-val="3">3</div>
+        <div class="eq-piece" onclick="addPiece('wpb3', this)" data-val="=">=</div>
+        <div class="eq-piece" onclick="addPiece('wpb3', this)" data-val="15">15</div>
+        <div class="eq-piece" onclick="addPiece('wpb3', this)" data-val="*">*</div>
+        <div class="eq-piece" onclick="addPiece('wpb3', this)" data-val="5">5</div>
+      </div>
+      <div style="text-align:center; margin-top:0.5rem;">
+        <button class="scale-btn" onclick="checkBuilder('wpb3', ['2x','+','3','=','15'])" style="margin-right:0.5rem;">Check</button>
+        <button class="scale-btn" onclick="resetBuilder('wpb3')" style="border-color:var(--orange);color:var(--orange);">Reset</button>
+      </div>
+      <div class="feedback" id="wpb3-fb" style="text-align:center;"></div>
+    </div>
+
+    <h3>Practice: Word Problem Equations</h3>
+    <p class="dim">Translate each problem into an equation and solve for x.</p>
+
+    <div class="practice-set" id="wordPractice">
+      <div class="practice-problem" data-answer="8">
+        <div class="problem-text">A number plus 7 equals 15. What is the number?</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+      <div class="practice-problem" data-answer="6">
+        <div class="problem-text">Five times a number is 30. What is the number?</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+      <div class="practice-problem" data-answer="4">
+        <div class="problem-text">Three times a number, decreased by 2, equals 10. Find the number.</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+      <div class="practice-problem" data-answer="9">
+        <div class="problem-text">A number divided by 3 equals 3. What is the number?</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+      <div class="practice-problem" data-answer="7">
+        <div class="problem-text">Twice a number, plus 1, equals 15. What is the number?</div>
+        <div class="input-row">
+          <span>x =</span>
+          <input type="text" placeholder="?">
+          <button class="check-btn" onclick="checkPractice(this)">Check</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 6: Quick Quiz -->
+<!-- ═══════════════════════════════════════════════ -->
+<details id="section5">
+  <summary>6. Quick Quiz</summary>
+  <div class="section-body">
+
+    <h2>Test Your Skills</h2>
+    <p>10 mixed problems. Your score appears at the top. If you get one wrong, the correct answer is shown.</p>
+
+    <div class="quiz-header">
+      <div class="quiz-score">Score: <span class="score-val" id="quizScore">0</span> / <span id="quizTotal">10</span></div>
+      <div class="quiz-progress-text" id="quizProgressText">Answer all 10 to see your final score.</div>
+    </div>
+
+    <div id="quizContainer">
+      <!-- Quiz problems are generated by JS -->
+    </div>
+
+    <div class="quiz-final" id="quizFinal" style="display:none;">
+      <div class="final-score" id="finalScoreDisplay"></div>
+      <div class="final-msg" id="finalMsg"></div>
+      <button class="retry-btn" onclick="resetQuiz()">Try Again</button>
+    </div>
+
+  </div>
+</details>
+
+<script>
+// ═══════════════════════════════════════════════
+// PROGRESS BAR
+// ═══════════════════════════════════════════════
+const sectionIds = ['section0','section1','section2','section3','section4','section5'];
+const completedSections = new Set();
+
+function markSectionComplete(idx) {
+  completedSections.add(idx);
+  const segs = document.querySelectorAll('.progress-bar .seg');
+  segs.forEach((s, i) => {
+    if (completedSections.has(i)) s.classList.add('done');
+  });
+}
+
+// Track interactions per section
+const sectionInteractions = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0};
+const sectionThresholds = {0:3, 1:3, 2:3, 3:3, 4:3, 5:5};
+
+function trackInteraction(sectionIdx) {
+  sectionInteractions[sectionIdx]++;
+  if (sectionInteractions[sectionIdx] >= sectionThresholds[sectionIdx]) {
+    markSectionComplete(sectionIdx);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// BALANCE SCALE (Section 1)
+// ═══════════════════════════════════════════════
+const scaleState = { 1: { left: 5, right: 5 } };
+
+function adjustScale(scaleId, side, delta) {
+  const s = scaleState[scaleId];
+  if (side === 'left' || side === 'both') s.left = Math.max(0, s.left + delta);
+  if (side === 'right' || side === 'both') s.right = Math.max(0, s.right + delta);
+  renderScale(scaleId);
+  trackInteraction(0);
+}
+
+function resetScale(scaleId) {
+  scaleState[scaleId] = { left: 5, right: 5 };
+  renderScale(scaleId);
+}
+
+function renderScale(scaleId) {
+  const s = scaleState[scaleId];
+  const beam = document.getElementById('beam' + scaleId);
+  const leftPan = document.getElementById('leftPan' + scaleId);
+  const rightPan = document.getElementById('rightPan' + scaleId);
+  const leftGroup = document.getElementById('leftGroup' + scaleId);
+  const rightGroup = document.getElementById('rightGroup' + scaleId);
+  const status = document.getElementById('scaleStatus' + scaleId);
+
+  leftPan.textContent = s.left;
+  rightPan.textContent = s.right;
+
+  const diff = s.left - s.right;
+  const maxTilt = 15;
+  const tilt = Math.max(-maxTilt, Math.min(maxTilt, diff * 3));
+
+  beam.style.transform = `translateX(-50%) rotate(${tilt}deg)`;
+
+  // Pan vertical offset based on tilt
+  const offset = tilt * 2.5;
+  leftGroup.style.transform = `translateY(${offset}px)`;
+  rightGroup.style.transform = `translateY(${-offset}px)`;
+
+  if (diff === 0) {
+    status.textContent = 'Balanced!';
+    status.style.color = 'var(--green)';
+  } else if (diff > 0) {
+    status.textContent = 'Left side is heavier. Tilting left.';
+    status.style.color = 'var(--pink)';
+  } else {
+    status.textContent = 'Right side is heavier. Tilting right.';
+    status.style.color = 'var(--pink)';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// YES/NO CHECKS (Section 1)
+// ═══════════════════════════════════════════════
+function checkYesNo(id, userAnswer, correctAnswer) {
+  const container = document.getElementById(id);
+  const fb = document.getElementById(id + '-fb');
+  const btns = container.querySelectorAll('.yn-btn');
+
+  btns.forEach(b => b.disabled = true);
+
+  if (userAnswer === correctAnswer) {
+    container.classList.add('correct');
+    fb.textContent = 'Correct! ' + (correctAnswer ? 'Yes, it is a solution.' : 'No, it is not a solution.');
+    fb.className = 'feedback correct-fb';
+    if (userAnswer) {
+      btns[0].classList.add('selected');
+    } else {
+      btns[1].classList.add('selected');
+    }
+  } else {
+    container.classList.add('incorrect');
+    fb.textContent = 'Not quite. The answer is ' + (correctAnswer ? 'Yes' : 'No') + '. Plug in the value and check both sides.';
+    fb.className = 'feedback incorrect-fb';
+    if (userAnswer) {
+      btns[0].classList.add('selected');
+    } else {
+      btns[1].classList.add('selected');
+    }
+  }
+  trackInteraction(0);
+}
+
+// ═══════════════════════════════════════════════
+// ONE-STEP SOLVER ANIMATIONS (Section 2)
+// ═══════════════════════════════════════════════
+function animateOneStep(solverId, stepIdx) {
+  const container = document.getElementById(solverId);
+  const steps = container.querySelectorAll('.step:not(.visible)');
+  if (steps.length === 0) return;
+
+  const btn = container.querySelector('.next-step-btn');
+  let shown = 0;
+
+  function showNext() {
+    if (shown < steps.length) {
+      steps[shown].classList.add('visible');
+      shown++;
+      if (shown < steps.length) {
+        setTimeout(showNext, 600);
+      } else {
+        btn.textContent = 'Done';
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        trackInteraction(1);
+      }
+    }
+  }
+  showNext();
+}
+
+// ═══════════════════════════════════════════════
+// TWO-STEP SOLVER ANIMATIONS (Section 3)
+// ═══════════════════════════════════════════════
+function animateTwoStep(solverId, stepIdx) {
+  const container = document.getElementById(solverId);
+  const steps = container.querySelectorAll('.step:not(.visible)');
+  if (steps.length === 0) return;
+
+  const btn = container.querySelector('.next-step-btn');
+  let shown = 0;
+
+  function showNext() {
+    if (shown < steps.length) {
+      steps[shown].classList.add('visible');
+      shown++;
+      if (shown < steps.length) {
+        setTimeout(showNext, 700);
+      } else {
+        btn.textContent = 'Done';
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        trackInteraction(2);
+      }
+    }
+  }
+  showNext();
+}
+
+// ═══════════════════════════════════════════════
+// MULTI-STEP SOLVER ANIMATIONS (Section 4)
+// ═══════════════════════════════════════════════
+function animateMultiStep(solverId, stepIdx) {
+  const container = document.getElementById(solverId);
+  const steps = container.querySelectorAll('.step:not(.visible)');
+  if (steps.length === 0) return;
+
+  const btn = container.querySelector('.next-step-btn');
+  let shown = 0;
+
+  function showNext() {
+    if (shown < steps.length) {
+      steps[shown].classList.add('visible');
+      shown++;
+      if (shown < steps.length) {
+        setTimeout(showNext, 800);
+      } else {
+        btn.textContent = 'Done';
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        trackInteraction(3);
+      }
+    }
+  }
+  showNext();
+}
+
+// ═══════════════════════════════════════════════
+// PRACTICE PROBLEM CHECKER
+// ═══════════════════════════════════════════════
+function checkPractice(btn) {
+  const problem = btn.closest('.practice-problem');
+  const input = problem.querySelector('input');
+  const fb = problem.querySelector('.feedback');
+  const answer = parseFloat(problem.dataset.answer);
+  const userVal = parseFloat(input.value.trim());
+
+  if (isNaN(userVal)) {
+    fb.textContent = 'Please enter a number.';
+    fb.className = 'feedback incorrect-fb';
+    return;
+  }
+
+  if (Math.abs(userVal - answer) < 0.001) {
+    problem.classList.add('correct');
+    problem.classList.remove('incorrect');
+    fb.textContent = 'Correct! x = ' + answer;
+    fb.className = 'feedback correct-fb';
+    btn.disabled = true;
+    input.disabled = true;
+  } else {
+    problem.classList.add('incorrect');
+    problem.classList.remove('correct');
+    fb.textContent = 'Not quite. Try again! Hint: the answer is a whole number.';
+    fb.className = 'feedback incorrect-fb';
+    input.value = '';
+    input.focus();
+  }
+
+  // Figure out which section this problem belongs to
+  const section = problem.closest('details');
+  const sIdx = sectionIds.indexOf(section.id);
+  if (sIdx >= 0) trackInteraction(sIdx);
+}
+
+// ═══════════════════════════════════════════════
+// SHOW STEPS TOGGLE (Section 4)
+// ═══════════════════════════════════════════════
+function toggleSteps(btn) {
+  const reveal = btn.nextElementSibling;
+  if (reveal.classList.contains('open')) {
+    reveal.classList.remove('open');
+    btn.textContent = 'Show Steps';
+  } else {
+    reveal.classList.add('open');
+    btn.textContent = 'Hide Steps';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// WORD PROBLEM BUILDER (Section 5)
+// ═══════════════════════════════════════════════
+const builderState = {};
+
+function addPiece(builderId, pieceEl) {
+  if (pieceEl.classList.contains('placed')) return;
+  if (!builderState[builderId]) builderState[builderId] = [];
+
+  const val = pieceEl.dataset.val;
+  builderState[builderId].push(val);
+  pieceEl.classList.add('placed');
+
+  // Add to builder area
+  const builderNum = builderId.replace('wpb', '');
+  const builder = document.getElementById('builder' + builderNum);
+  const span = document.createElement('span');
+  span.className = 'eq-piece in-builder';
+  span.textContent = val;
+  span.dataset.val = val;
+  span.onclick = function() {
+    // Remove from builder
+    const idx = builderState[builderId].indexOf(val);
+    if (idx >= 0) builderState[builderId].splice(idx, 1);
+    builder.removeChild(span);
+    pieceEl.classList.remove('placed');
+    // Reset feedback
+    const fb = document.getElementById(builderId + '-fb');
+    fb.textContent = '';
+    fb.className = 'feedback';
+    builder.classList.remove('builder-correct', 'builder-incorrect');
+  };
+  builder.appendChild(span);
+}
+
+function checkBuilder(builderId, correctSequence) {
+  const fb = document.getElementById(builderId + '-fb');
+  const builderNum = builderId.replace('wpb', '');
+  const builder = document.getElementById('builder' + builderNum);
+  const current = builderState[builderId] || [];
+
+  if (current.length !== correctSequence.length) {
+    fb.textContent = 'Not complete yet. Build the full equation.';
+    fb.className = 'feedback incorrect-fb';
+    builder.classList.add('builder-incorrect');
+    builder.classList.remove('builder-correct');
+    return;
+  }
+
+  let correct = true;
+  for (let i = 0; i < correctSequence.length; i++) {
+    if (current[i] !== correctSequence[i]) {
+      correct = false;
+      break;
+    }
+  }
+
+  if (correct) {
+    fb.textContent = 'Perfect! You built the equation correctly.';
+    fb.className = 'feedback correct-fb';
+    builder.classList.add('builder-correct');
+    builder.classList.remove('builder-incorrect');
+    trackInteraction(4);
+  } else {
+    fb.textContent = 'Not quite. Try a different order. Click pieces in the builder to remove them.';
+    fb.className = 'feedback incorrect-fb';
+    builder.classList.add('builder-incorrect');
+    builder.classList.remove('builder-correct');
+  }
+}
+
+function resetBuilder(builderId) {
+  builderState[builderId] = [];
+  const builderNum = builderId.replace('wpb', '');
+  const builder = document.getElementById('builder' + builderNum);
+  const bank = document.getElementById('bank' + builderNum);
+  builder.innerHTML = '';
+  builder.classList.remove('builder-correct', 'builder-incorrect');
+  bank.querySelectorAll('.eq-piece').forEach(p => p.classList.remove('placed'));
+  const fb = document.getElementById(builderId + '-fb');
+  fb.textContent = '';
+  fb.className = 'feedback';
+}
+
+// ═══════════════════════════════════════════════
+// QUIZ (Section 6)
+// ═══════════════════════════════════════════════
+const quizProblems = [
+  { q: 'x + 9 = 14', a: 5 },
+  { q: 'x - 6 = 11', a: 17 },
+  { q: '3x = 27', a: 9 },
+  { q: 'x / 4 = 5', a: 20 },
+  { q: '2x + 3 = 13', a: 5 },
+  { q: '4x - 7 = 25', a: 8 },
+  { q: '5(x + 1) = 30', a: 5 },
+  { q: '3x + 4 = x + 10', a: 3 },
+  { q: '2(x - 3) = 8', a: 7 },
+  { q: '6x - 2 = 4x + 6', a: 4 }
+];
+
+let quizScore = 0;
+let quizAnswered = 0;
+
+function initQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  quizScore = 0;
+  quizAnswered = 0;
+  document.getElementById('quizScore').textContent = '0';
+  document.getElementById('quizFinal').style.display = 'none';
+  document.getElementById('quizProgressText').textContent = 'Answer all 10 to see your final score.';
+
+  quizProblems.forEach((prob, idx) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-problem';
+    div.id = 'quiz-q' + idx;
+    div.innerHTML = `
+      <div class="q-text">${idx + 1}. Solve: <span class="inline-code">${prob.q}</span></div>
+      <div class="input-row">
+        <span>x =</span>
+        <input type="text" placeholder="?" id="quiz-input-${idx}">
+        <button class="check-btn" onclick="checkQuiz(${idx})">Check</button>
+      </div>
+      <div class="feedback" id="quiz-fb-${idx}"></div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function checkQuiz(idx) {
+  const input = document.getElementById('quiz-input-' + idx);
+  const fb = document.getElementById('quiz-fb-' + idx);
+  const problem = document.getElementById('quiz-q' + idx);
+  const btn = problem.querySelector('.check-btn');
+  const userVal = parseFloat(input.value.trim());
+  const correct = quizProblems[idx].a;
+
+  if (isNaN(userVal)) {
+    fb.textContent = 'Enter a number.';
+    fb.className = 'feedback incorrect-fb';
+    return;
+  }
+
+  btn.disabled = true;
+  input.disabled = true;
+  quizAnswered++;
+
+  if (Math.abs(userVal - correct) < 0.001) {
+    problem.classList.add('q-correct');
+    fb.textContent = 'Correct!';
+    fb.className = 'feedback correct-fb';
+    quizScore++;
+  } else {
+    problem.classList.add('q-incorrect');
+    fb.textContent = 'Incorrect. The answer is x = ' + correct;
+    fb.className = 'feedback incorrect-fb';
+  }
+
+  document.getElementById('quizScore').textContent = quizScore;
+  trackInteraction(5);
+
+  if (quizAnswered >= quizProblems.length) {
+    showQuizResults();
+  } else {
+    document.getElementById('quizProgressText').textContent = quizAnswered + ' of 10 answered.';
+  }
+}
+
+function showQuizResults() {
+  const finalDiv = document.getElementById('quizFinal');
+  const scoreDisp = document.getElementById('finalScoreDisplay');
+  const msgDisp = document.getElementById('finalMsg');
+  const pctg = Math.round((quizScore / quizProblems.length) * 100);
+
+  finalDiv.style.display = 'block';
+  scoreDisp.textContent = quizScore + ' / ' + quizProblems.length + ' (' + pctg + '%)';
+  document.getElementById('quizProgressText').textContent = 'Quiz complete!';
+
+  if (pctg === 100) {
+    msgDisp.textContent = 'Perfect score! You have mastered linear equations.';
+    scoreDisp.style.color = 'var(--green)';
+  } else if (pctg >= 80) {
+    msgDisp.textContent = 'Great job! You have a strong understanding of linear equations.';
+    scoreDisp.style.color = 'var(--green)';
+  } else if (pctg >= 60) {
+    msgDisp.textContent = 'Good effort. Review the sections where you struggled and try again.';
+    scoreDisp.style.color = 'var(--orange)';
+  } else {
+    msgDisp.textContent = 'Keep practicing. Go back through the lessons and try the quiz again.';
+    scoreDisp.style.color = 'var(--pink)';
+  }
+
+  // Smooth scroll to results
+  finalDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function resetQuiz() {
+  initQuiz();
+  document.getElementById('quizContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  renderScale(1);
+  initQuiz();
+
+  // Allow Enter key to submit practice problems
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const input = e.target;
+      if (input.tagName === 'INPUT') {
+        const row = input.closest('.input-row');
+        if (row) {
+          const btn = row.querySelector('.check-btn');
+          if (btn && !btn.disabled) btn.click();
+        }
+      }
+    }
+  });
+});
+</script>
+
+</body>
+</html>

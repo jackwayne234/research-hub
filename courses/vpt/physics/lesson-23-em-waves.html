@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physics Lesson 23: Electromagnetic Waves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1e2128;
+  --bg-card: #262a33;
+  --bg-card-hover: #2c313c;
+  --bg-input: #1a1d24;
+  --border: #363b47;
+  --text: #e2e4e9;
+  --text-dim: #9ca3af;
+  --text-bright: #fff;
+  --indigo: #6366f1;
+  --green: #22c55e;
+  --pink: #ec4899;
+  --amber: #f59e0b;
+  --indigo-dim: rgba(99,102,241,0.15);
+  --green-dim: rgba(34,197,94,0.15);
+  --pink-dim: rgba(236,72,153,0.15);
+  --amber-dim: rgba(245,158,11,0.15);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ─── TOP BAR ─────────────────────────────────────────────── */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.top-bar h1 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-bright);
+  white-space: nowrap;
+}
+
+.top-bar h1 .lesson-num {
+  color: var(--indigo);
+}
+
+.progress-wrap {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.progress-track {
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--indigo), var(--green));
+  border-radius: 999px;
+  width: 0%;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+.progress-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+/* ─── CONTENT ─────────────────────────────────────────────── */
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.hero {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.hero h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 8px;
+}
+
+.hero p {
+  color: var(--text-dim);
+  font-size: 13px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ─── SECTION CARDS ───────────────────────────────────────── */
+.section-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: border-color 0.3s cubic-bezier(.4,0,.2,1);
+}
+
+.section-card.completed {
+  border-color: var(--green);
+}
+
+.section-card.completed .section-header {
+  background: rgba(34,197,94,0.05);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s cubic-bezier(.4,0,.2,1);
+}
+
+.section-header:hover {
+  background: var(--bg-card-hover);
+}
+
+.section-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--indigo-dim);
+  color: var(--indigo);
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.section-card.completed .section-num {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.section-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.section-check {
+  font-size: 12px;
+  color: var(--green);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.section-card.completed .section-check {
+  opacity: 1;
+}
+
+.chevron {
+  color: var(--text-dim);
+  transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+  flex-shrink: 0;
+}
+
+.section-card.open .chevron {
+  transform: rotate(180deg);
+}
+
+.section-body {
+  display: none;
+  padding: 0 20px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.section-card.open .section-body {
+  display: block;
+}
+
+/* ─── FORMULA BOXES ───────────────────────────────────────── */
+.formula-box {
+  background: var(--indigo-dim);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 14px 0;
+  font-size: 13px;
+}
+
+.formula-box .formula-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--indigo);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.formula-box .eq {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-bright);
+  margin: 6px 0;
+}
+
+.formula-box .eq-note {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+.formula-box.green {
+  background: var(--green-dim);
+  border-color: rgba(34,197,94,0.3);
+}
+.formula-box.green .formula-title { color: var(--green); }
+
+.formula-box.pink {
+  background: var(--pink-dim);
+  border-color: rgba(236,72,153,0.3);
+}
+.formula-box.pink .formula-title { color: var(--pink); }
+
+.formula-box.amber {
+  background: var(--amber-dim);
+  border-color: rgba(245,158,11,0.3);
+}
+.formula-box.amber .formula-title { color: var(--amber); }
+
+/* ─── KEY POINTS ──────────────────────────────────────────── */
+.key-point {
+  border-left: 3px solid var(--amber);
+  background: var(--amber-dim);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.key-point strong {
+  color: var(--amber);
+  font-weight: 600;
+}
+
+/* ─── CONTENT ELEMENTS ────────────────────────────────────── */
+.section-body h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--indigo);
+  margin: 18px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.section-body p {
+  font-size: 13px;
+  color: var(--text);
+  margin: 8px 0;
+}
+
+.section-body ul {
+  list-style: none;
+  margin: 8px 0;
+}
+
+.section-body ul li {
+  font-size: 13px;
+  color: var(--text);
+  padding: 3px 0 3px 16px;
+  position: relative;
+}
+
+.section-body ul li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--indigo);
+}
+
+/* ─── PRACTICE PROBLEMS ───────────────────────────────────── */
+.practice-set {
+  margin-top: 20px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.practice-set h3 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 14px;
+}
+
+.problem {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: border-color 0.3s cubic-bezier(.4,0,.2,1);
+}
+
+.problem.solved {
+  border-color: var(--green);
+}
+
+.problem p {
+  font-size: 13px;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.problem .hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.input-row input[type="number"],
+.input-row input[type="text"] {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-bright);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  width: 180px;
+  outline: none;
+  transition: border-color 0.3s cubic-bezier(.4,0,.2,1);
+}
+
+.input-row input:focus {
+  border-color: var(--indigo);
+}
+
+.btn {
+  background: var(--indigo);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.btn:hover { opacity: 0.85; }
+.btn:active { transform: scale(0.97); }
+
+.mc-options {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.mc-option {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+  width: 100%;
+}
+
+.mc-option:hover {
+  border-color: var(--indigo);
+  background: var(--indigo-dim);
+}
+
+.mc-option.selected-correct {
+  border-color: var(--green);
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.mc-option.selected-incorrect {
+  border-color: var(--pink);
+  background: var(--pink-dim);
+  color: var(--pink);
+}
+
+/* ─── FEEDBACK ────────────────────────────────────────────── */
+.feedback {
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 7px;
+  display: none;
+}
+
+.feedback.correct {
+  display: block;
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid rgba(34,197,94,0.3);
+  animation: springPop 0.5s cubic-bezier(.34,1.56,.64,1);
+}
+
+.feedback.incorrect {
+  display: block;
+  background: var(--pink-dim);
+  color: var(--pink);
+  border: 1px solid rgba(236,72,153,0.3);
+  animation: shake 0.4s ease;
+}
+
+@keyframes springPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.15); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%  { transform: translateX(-6px); }
+  40%  { transform: translateX(6px); }
+  60%  { transform: translateX(-4px); }
+  80%  { transform: translateX(4px); }
+}
+
+/* ─── EM SPECTRUM VISUALIZER ──────────────────────────────── */
+.spectrum-wrap {
+  margin: 16px 0;
+}
+
+.spectrum-bar {
+  display: flex;
+  height: 44px;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.spectrum-band {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  transition: flex 0.3s cubic-bezier(.4,0,.2,1), filter 0.2s;
+  text-align: center;
+  line-height: 1.2;
+  padding: 2px;
+  letter-spacing: 0.04em;
+}
+
+.spectrum-band:hover,
+.spectrum-band.active {
+  flex: 2.5;
+  filter: brightness(1.2);
+}
+
+.spectrum-band[data-band="radio"]      { background: linear-gradient(135deg, #1e3a5f, #2563eb); }
+.spectrum-band[data-band="microwave"]  { background: linear-gradient(135deg, #1e4a3a, #16a34a); }
+.spectrum-band[data-band="infrared"]   { background: linear-gradient(135deg, #7c2d12, #dc2626); }
+.spectrum-band[data-band="visible"]    { background: linear-gradient(90deg, #7c3aed, #2563eb, #16a34a, #ca8a04, #ea580c, #dc2626); }
+.spectrum-band[data-band="uv"]         { background: linear-gradient(135deg, #4c1d95, #7c3aed); }
+.spectrum-band[data-band="xray"]       { background: linear-gradient(135deg, #312e81, #6366f1); }
+.spectrum-band[data-band="gamma"]      { background: linear-gradient(135deg, #1f1f2e, #a855f7); }
+
+.spectrum-info {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 12px;
+  min-height: 80px;
+}
+
+.spectrum-info .band-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 6px;
+}
+
+.spectrum-info .band-range {
+  color: var(--indigo);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.spectrum-info .band-apps {
+  color: var(--text-dim);
+}
+
+/* ─── POLARIZATION DEMO ───────────────────────────────────── */
+.polar-demo {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 14px 0;
+}
+
+.polar-demo label {
+  font-size: 12px;
+  color: var(--text-dim);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.polar-demo input[type="range"] {
+  width: 100%;
+  accent-color: var(--indigo);
+  cursor: pointer;
+}
+
+.polar-display {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.polar-canvas-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.polar-stats {
+  flex: 1;
+  min-width: 200px;
+}
+
+.polar-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.polar-stat:last-child { border-bottom: none; }
+.polar-stat .lbl { color: var(--text-dim); }
+.polar-stat .val { color: var(--text-bright); font-weight: 600; }
+
+.intensity-bar-wrap {
+  margin-top: 12px;
+}
+
+.intensity-bar-track {
+  height: 10px;
+  background: var(--bg-card);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.intensity-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--indigo), var(--pink));
+  border-radius: 999px;
+  transition: width 0.1s;
+}
+
+/* ─── WAVE ANIMATION ──────────────────────────────────────── */
+.wave-wrap {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin: 14px 0;
+  overflow: hidden;
+}
+
+.wave-wrap svg {
+  width: 100%;
+  display: block;
+}
+
+/* ─── QUIZ SECTION ────────────────────────────────────────── */
+.quiz-section {
+  background: var(--bg-card);
+  border: 1px solid var(--indigo);
+  border-radius: 10px;
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.quiz-section h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 6px;
+}
+
+.quiz-section .quiz-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+.quiz-score-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-input);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.quiz-score-num {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+
+.quiz-score-label {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.quiz-q {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+  transition: border-color 0.3s;
+}
+
+.quiz-q.answered-correct { border-color: var(--green); }
+.quiz-q.answered-wrong   { border-color: var(--pink); }
+
+.quiz-q-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.quiz-q-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-bright);
+  margin-bottom: 12px;
+}
+
+/* ─── GRID ────────────────────────────────────────────────── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.info-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.info-card .ic-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 6px;
+}
+
+.info-card .ic-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+
+.info-card .ic-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* ─── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .top-bar { padding: 12px 16px; gap: 12px; }
+  .content { padding: 16px; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .polar-display { flex-direction: column; }
+  .input-row { flex-direction: column; align-items: flex-start; }
+  .input-row input { width: 100%; }
+  .spectrum-band { font-size: 7px; }
+  .hero h2 { font-size: 17px; }
+}
+
+/* ─── DIVIDER ─────────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+
+/* ─── WAVE SVG PATHS ──────────────────────────────────────── */
+@keyframes wave-travel {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-120px); }
+}
+
+.wave-e, .wave-b {
+  animation: wave-travel 1.2s linear infinite;
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <h1><span class="lesson-num">Lesson 23</span> — Electromagnetic Waves</h1>
+  <div class="progress-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 / 5 sections</div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+  <div class="hero">
+    <h2>Electromagnetic Waves</h2>
+    <p>Maxwell unified electricity, magnetism, and light into one framework. Explore how changing fields generate self-propagating waves that travel at the speed of light.</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 1: Maxwell's Equations -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-card open" id="sec1">
+    <div class="section-header" onclick="toggleSection('sec1')">
+      <div class="section-num">1</div>
+      <div class="section-title">Maxwell's Equations &amp; Wave Prediction</div>
+      <div class="section-check">✓ Complete</div>
+      <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="section-body">
+
+      <h3>The Four Maxwell Equations</h3>
+      <p>James Clerk Maxwell (1865) synthesized all electromagnetic phenomena into four elegant equations, then made a stunning prediction: oscillating electric and magnetic fields could propagate through space as waves.</p>
+
+      <div class="grid-2">
+        <div class="formula-box" style="margin:0">
+          <div class="formula-title">Gauss's Law (E)</div>
+          <div class="eq">∮ E · dA = Q/ε₀</div>
+          <div class="eq-note">Electric flux through closed surface = charge enclosed / ε₀</div>
+        </div>
+        <div class="formula-box green" style="margin:0">
+          <div class="formula-title">Gauss's Law (B)</div>
+          <div class="eq">∮ B · dA = 0</div>
+          <div class="eq-note">No magnetic monopoles; B field lines always close on themselves</div>
+        </div>
+        <div class="formula-box pink" style="margin:0">
+          <div class="formula-title">Faraday's Law</div>
+          <div class="eq">∮ E · dl = -dΦ_B/dt</div>
+          <div class="eq-note">Changing magnetic flux induces an EMF (circulating E field)</div>
+        </div>
+        <div class="formula-box amber" style="margin:0">
+          <div class="formula-title">Ampere-Maxwell Law</div>
+          <div class="eq">∮ B · dl = μ₀I + μ₀ε₀ dΦ_E/dt</div>
+          <div class="eq-note">Current AND changing electric flux produce a B field</div>
+        </div>
+      </div>
+
+      <h3>Displacement Current &amp; Wave Prediction</h3>
+      <p>Maxwell's key addition was the <strong>displacement current</strong> term: μ₀ε₀ dΦ_E/dt. This term completes the symmetry — a changing E field creates B (Ampere-Maxwell), and a changing B field creates E (Faraday). This feedback loop is self-sustaining.</p>
+
+      <div class="key-point">
+        <strong>Key Insight:</strong> Once started, oscillating E and B fields mutually regenerate each other and travel through space without needing a medium. Maxwell calculated their speed: v = 1/√(μ₀ε₀) = 3×10⁸ m/s — exactly the speed of light. He concluded light IS an electromagnetic wave.
+      </div>
+
+      <div class="formula-box">
+        <div class="formula-title">Speed of EM Waves in Vacuum</div>
+        <div class="eq">c = 1/√(μ₀ε₀) = 3.00 × 10⁸ m/s</div>
+        <div class="eq-note">μ₀ = 4π×10⁻⁷ T·m/A (permeability),  ε₀ = 8.85×10⁻¹² C²/N·m² (permittivity)</div>
+      </div>
+
+      <div class="practice-set">
+        <h3>Practice Problems</h3>
+
+        <div class="problem" id="p1a">
+          <p><strong>1.</strong> What is the approximate speed of light in vacuum, in m/s? Enter the coefficient × 10⁸ (e.g. enter 3 for 3×10⁸).</p>
+          <div class="hint">Hint: c = 1/√(μ₀ε₀)</div>
+          <div class="input-row">
+            <input type="number" id="p1a-in" placeholder="coefficient × 10⁸" step="0.01">
+            <button class="btn" onclick="checkNum('p1a-in', 3, 0.05, 'p1a-fb', 'p1a')">Check</button>
+          </div>
+          <div class="feedback" id="p1a-fb"></div>
+        </div>
+
+        <div class="problem" id="p1b">
+          <p><strong>2.</strong> Maxwell's displacement current is proportional to the rate of change of what quantity?</p>
+          <div class="mc-options">
+            <button class="mc-option" onclick="checkMC(this,'B','p1b-fb','p1b')">A) Magnetic flux</button>
+            <button class="mc-option" onclick="checkMC(this,'A','p1b-fb','p1b')">B) Electric flux</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p1b-fb','p1b')">C) Current density</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p1b-fb','p1b')">D) Charge density</button>
+          </div>
+          <div class="feedback" id="p1b-fb"></div>
+        </div>
+
+        <div class="problem" id="p1c">
+          <p><strong>3.</strong> Which of Maxwell's equations states that a changing magnetic flux induces an electric field?</p>
+          <div class="mc-options">
+            <button class="mc-option" onclick="checkMC(this,'B','p1c-fb','p1c')">A) Gauss's Law for E</button>
+            <button class="mc-option" onclick="checkMC(this,'A','p1c-fb','p1c')">B) Faraday's Law</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p1c-fb','p1c')">C) Ampere-Maxwell Law</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p1c-fb','p1c')">D) Gauss's Law for B</button>
+          </div>
+          <div class="feedback" id="p1c-fb"></div>
+        </div>
+
+        <div class="problem" id="p1d">
+          <p><strong>4.</strong> Gauss's Law for magnetism (∮ B·dA = 0) implies what about magnetic monopoles?</p>
+          <div class="mc-options">
+            <button class="mc-option" onclick="checkMC(this,'B','p1d-fb','p1d')">A) They are very small</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p1d-fb','p1d')">B) They travel at light speed</button>
+            <button class="mc-option" onclick="checkMC(this,'A','p1d-fb','p1d')">C) They do not exist</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p1d-fb','p1d')">D) They exist only in plasma</button>
+          </div>
+          <div class="feedback" id="p1d-fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 2: EM Spectrum -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-card" id="sec2">
+    <div class="section-header" onclick="toggleSection('sec2')">
+      <div class="section-num">2</div>
+      <div class="section-title">The Electromagnetic Spectrum</div>
+      <div class="section-check">✓ Complete</div>
+      <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="section-body">
+
+      <h3>Spectrum Visualizer</h3>
+      <p>Click any band to see its frequency and wavelength range, plus real-world applications.</p>
+
+      <div class="spectrum-wrap">
+        <div class="spectrum-bar">
+          <div class="spectrum-band" data-band="radio" onclick="showBand('radio')">RADIO</div>
+          <div class="spectrum-band" data-band="microwave" onclick="showBand('microwave')">MICRO</div>
+          <div class="spectrum-band" data-band="infrared" onclick="showBand('infrared')">IR</div>
+          <div class="spectrum-band" data-band="visible" onclick="showBand('visible')">VISIBLE</div>
+          <div class="spectrum-band" data-band="uv" onclick="showBand('uv')">UV</div>
+          <div class="spectrum-band" data-band="xray" onclick="showBand('xray')">X-RAY</div>
+          <div class="spectrum-band" data-band="gamma" onclick="showBand('gamma')">γ</div>
+        </div>
+        <div class="spectrum-info" id="specInfo">
+          <div class="band-name" id="bandName">Select a band above</div>
+          <div class="band-range" id="bandRange">Click any region to see details</div>
+          <div class="band-apps" id="bandApps">The electromagnetic spectrum spans over 20 orders of magnitude in frequency — all traveling at c = 3×10⁸ m/s.</div>
+        </div>
+      </div>
+
+      <div class="formula-box green">
+        <div class="formula-title">Fundamental Relationship</div>
+        <div class="eq">c = f λ</div>
+        <div class="eq-note">c = speed of light (3×10⁸ m/s), f = frequency (Hz), λ = wavelength (m)</div>
+      </div>
+
+      <div class="key-point">
+        <strong>Remember:</strong> All EM waves travel at c = 3×10⁸ m/s in vacuum regardless of frequency. Higher frequency = shorter wavelength = more energy per photon (E = hf).
+      </div>
+
+      <h3>Visible Light Sub-Spectrum</h3>
+      <ul>
+        <li>Violet: ~380–450 nm (~670–790 THz)</li>
+        <li>Blue: ~450–495 nm (~605–670 THz)</li>
+        <li>Green: ~495–570 nm (~525–605 THz)</li>
+        <li>Yellow: ~570–590 nm (~510–525 THz)</li>
+        <li>Orange: ~590–625 nm (~480–510 THz)</li>
+        <li>Red: ~625–750 nm (~400–480 THz)</li>
+      </ul>
+
+      <div class="practice-set">
+        <h3>Practice Problems</h3>
+
+        <div class="problem" id="p2a">
+          <p><strong>1.</strong> An FM radio station broadcasts at 98.0 MHz. What is its wavelength in meters? (Round to 1 decimal place)</p>
+          <div class="hint">Hint: λ = c/f. Convert 98.0 MHz to Hz first.</div>
+          <div class="input-row">
+            <input type="number" id="p2a-in" placeholder="wavelength (m)" step="0.1">
+            <button class="btn" onclick="checkNum('p2a-in', 3.061, 0.1, 'p2a-fb', 'p2a')">Check</button>
+          </div>
+          <div class="feedback" id="p2a-fb"></div>
+        </div>
+
+        <div class="problem" id="p2b">
+          <p><strong>2.</strong> Green light has a wavelength of 520 nm. What is its frequency in THz? (Enter value, 1 decimal place)</p>
+          <div class="hint">Hint: f = c/λ. Convert nm to m. 1 THz = 10¹² Hz.</div>
+          <div class="input-row">
+            <input type="number" id="p2b-in" placeholder="frequency (THz)" step="0.1">
+            <button class="btn" onclick="checkNum('p2b-in', 576.9, 5, 'p2b-fb', 'p2b')">Check</button>
+          </div>
+          <div class="feedback" id="p2b-fb"></div>
+        </div>
+
+        <div class="problem" id="p2c">
+          <p><strong>3.</strong> Which region of the EM spectrum has the HIGHEST frequency?</p>
+          <div class="mc-options">
+            <button class="mc-option" onclick="checkMC(this,'B','p2c-fb','p2c')">A) Radio waves</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p2c-fb','p2c')">B) Visible light</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p2c-fb','p2c')">C) X-rays</button>
+            <button class="mc-option" onclick="checkMC(this,'A','p2c-fb','p2c')">D) Gamma rays</button>
+          </div>
+          <div class="feedback" id="p2c-fb"></div>
+        </div>
+
+        <div class="problem" id="p2d">
+          <p><strong>4.</strong> A microwave oven operates at 2.45 GHz. What is the wavelength in cm? (Round to 1 decimal)</p>
+          <div class="hint">Hint: λ = c/f. 1 GHz = 10⁹ Hz. Convert m to cm (×100).</div>
+          <div class="input-row">
+            <input type="number" id="p2d-in" placeholder="wavelength (cm)" step="0.1">
+            <button class="btn" onclick="checkNum('p2d-in', 12.24, 0.5, 'p2d-fb', 'p2d')">Check</button>
+          </div>
+          <div class="feedback" id="p2d-fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 3: Wave Properties -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-card" id="sec3">
+    <div class="section-header" onclick="toggleSection('sec3')">
+      <div class="section-num">3</div>
+      <div class="section-title">Wave Properties &amp; Structure</div>
+      <div class="section-check">✓ Complete</div>
+      <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="section-body">
+
+      <h3>Animated EM Wave</h3>
+      <p>An electromagnetic wave propagating in the +x direction. The E field oscillates in the y-direction (blue), and the B field oscillates in the z-direction (red). Both are in phase.</p>
+
+      <div class="wave-wrap">
+        <svg id="waveSVG" viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrowE" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#6366f1"/>
+            </marker>
+            <marker id="arrowB" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#ec4899"/>
+            </marker>
+          </defs>
+          <!-- x axis -->
+          <line x1="30" y1="100" x2="680" y2="100" stroke="#363b47" stroke-width="1.5"/>
+          <text x="685" y="104" fill="#9ca3af" font-size="12" font-family="JetBrains Mono">x</text>
+          <!-- E wave (y oscillation, shown as sine in 2D) -->
+          <g class="wave-e">
+            <path id="eWavePath" d="" stroke="#6366f1" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- B wave (z oscillation, shown offset) -->
+          <g class="wave-b">
+            <path id="bWavePath" d="" stroke="#ec4899" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-dasharray="6,3"/>
+          </g>
+          <!-- Labels -->
+          <text x="40" y="28" fill="#6366f1" font-size="11" font-family="JetBrains Mono" font-weight="600">E field (y)</text>
+          <text x="40" y="185" fill="#ec4899" font-size="11" font-family="JetBrains Mono" font-weight="600">B field (z) — dashed</text>
+          <!-- Arrow showing propagation -->
+          <line x1="600" y1="100" x2="660" y2="100" stroke="#22c55e" stroke-width="2" marker-end="url(#arrowE)" style="marker-end: none"/>
+          <text x="595" y="88" fill="#22c55e" font-size="10" font-family="JetBrains Mono">→ c</text>
+        </svg>
+      </div>
+
+      <h3>Key Properties</h3>
+      <ul>
+        <li>EM waves are <strong>transverse waves</strong> — E, B, and propagation direction are mutually perpendicular</li>
+        <li>E and B fields are always <strong>in phase</strong> — they reach maximum and zero together</li>
+        <li>The wave propagates in the direction of <strong>E × B</strong> (cross product)</li>
+        <li>In vacuum, all EM waves travel at exactly c = 3×10⁸ m/s</li>
+        <li>EM waves require no medium — they propagate through vacuum</li>
+      </ul>
+
+      <div class="formula-box pink">
+        <div class="formula-title">E and B Amplitude Relationship</div>
+        <div class="eq">E = cB  &nbsp;→&nbsp;  E_max = c · B_max</div>
+        <div class="eq-note">The ratio of E to B amplitudes always equals the speed of light. E in V/m, B in T.</div>
+      </div>
+
+      <div class="formula-box">
+        <div class="formula-title">Wave Equations (sinusoidal plane wave)</div>
+        <div class="eq">E(x,t) = E_max sin(kx − ωt)</div>
+        <div class="eq">B(x,t) = B_max sin(kx − ωt)</div>
+        <div class="eq-note">k = 2π/λ (wave number),  ω = 2πf (angular frequency),  ω/k = c</div>
+      </div>
+
+      <div class="practice-set">
+        <h3>Practice Problems</h3>
+
+        <div class="problem" id="p3a">
+          <p><strong>1.</strong> An EM wave has E_max = 600 V/m. What is B_max in μT? (1 μT = 10⁻⁶ T)</p>
+          <div class="hint">Hint: B_max = E_max / c = 600 / (3×10⁸)</div>
+          <div class="input-row">
+            <input type="number" id="p3a-in" placeholder="B_max (μT)" step="0.01">
+            <button class="btn" onclick="checkNum('p3a-in', 2.0, 0.1, 'p3a-fb', 'p3a')">Check</button>
+          </div>
+          <div class="feedback" id="p3a-fb"></div>
+        </div>
+
+        <div class="problem" id="p3b">
+          <p><strong>2.</strong> In what direction does an EM wave propagate if E is in the +y direction and B is in the +z direction?</p>
+          <div class="mc-options">
+            <button class="mc-option" onclick="checkMC(this,'B','p3b-fb','p3b')">A) −x direction</button>
+            <button class="mc-option" onclick="checkMC(this,'A','p3b-fb','p3b')">B) +x direction</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p3b-fb','p3b')">C) +y direction</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p3b-fb','p3b')">D) −z direction</button>
+          </div>
+          <div class="feedback" id="p3b-fb"></div>
+        </div>
+
+        <div class="problem" id="p3c">
+          <p><strong>3.</strong> A radio wave has B_max = 5.0 nT (5×10⁻⁹ T). What is E_max in V/m?</p>
+          <div class="hint">Hint: E_max = c × B_max</div>
+          <div class="input-row">
+            <input type="number" id="p3c-in" placeholder="E_max (V/m)" step="0.1">
+            <button class="btn" onclick="checkNum('p3c-in', 1.5, 0.1, 'p3c-fb', 'p3c')">Check</button>
+          </div>
+          <div class="feedback" id="p3c-fb"></div>
+        </div>
+
+        <div class="problem" id="p3d">
+          <p><strong>4.</strong> Which statement about the phase relationship between E and B in an EM wave is correct?</p>
+          <div class="mc-options">
+            <button class="mc-option" onclick="checkMC(this,'B','p3d-fb','p3d')">A) B leads E by 90°</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p3d-fb','p3d')">B) E leads B by 90°</button>
+            <button class="mc-option" onclick="checkMC(this,'A','p3d-fb','p3d')">C) E and B are in phase</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p3d-fb','p3d')">D) E and B are 180° out of phase</button>
+          </div>
+          <div class="feedback" id="p3d-fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 4: Polarization -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-card" id="sec4">
+    <div class="section-header" onclick="toggleSection('sec4')">
+      <div class="section-num">4</div>
+      <div class="section-title">Polarization &amp; Malus's Law</div>
+      <div class="section-check">✓ Complete</div>
+      <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="section-body">
+
+      <h3>What is Polarization?</h3>
+      <p>Unpolarized light has E field oscillations in all directions perpendicular to propagation. A <strong>polarizer</strong> transmits only the component along one axis, producing <strong>linearly polarized light</strong>.</p>
+
+      <div class="formula-box pink">
+        <div class="formula-title">Malus's Law</div>
+        <div class="eq">I = I₀ cos²θ</div>
+        <div class="eq-note">I₀ = incident intensity (W/m²), θ = angle between polarizer axis and E field direction, I = transmitted intensity</div>
+      </div>
+
+      <div class="key-point">
+        <strong>Unpolarized light through a polarizer:</strong> The transmitted intensity is always I₀/2, regardless of polarizer orientation, because the average of cos²θ over all angles is 1/2.
+      </div>
+
+      <h3>Interactive Polarization Demo</h3>
+      <p>Adjust the angle between the polarizer and analyzer. Watch how transmitted intensity changes according to Malus's Law.</p>
+
+      <div class="polar-demo">
+        <label>Angle θ between polarizer axes: <strong id="angleVal">0°</strong></label>
+        <input type="range" id="polarSlider" min="0" max="90" value="0" oninput="updatePolar()">
+        <div class="polar-display">
+          <div class="polar-canvas-wrap">
+            <canvas id="polarCanvas" width="180" height="180"></canvas>
+          </div>
+          <div class="polar-stats">
+            <div class="polar-stat">
+              <span class="lbl">Angle (θ)</span>
+              <span class="val" id="ps-angle">0°</span>
+            </div>
+            <div class="polar-stat">
+              <span class="lbl">cos(θ)</span>
+              <span class="val" id="ps-cos">1.000</span>
+            </div>
+            <div class="polar-stat">
+              <span class="lbl">cos²(θ)</span>
+              <span class="val" id="ps-cos2">1.000</span>
+            </div>
+            <div class="polar-stat">
+              <span class="lbl">I / I₀</span>
+              <span class="val" id="ps-ratio">1.000</span>
+            </div>
+            <div class="intensity-bar-wrap">
+              <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;">Transmitted Intensity</div>
+              <div class="intensity-bar-track">
+                <div class="intensity-bar-fill" id="intensityBar" style="width:100%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Applications</h3>
+      <ul>
+        <li><strong>Polarized sunglasses:</strong> Filter horizontally polarized glare from reflective surfaces</li>
+        <li><strong>LCD screens:</strong> Use two polarizers at 90° with liquid crystal layer that rotates polarization to control pixel brightness</li>
+        <li><strong>Photography:</strong> Circular polarizer filters eliminate reflections and darken skies</li>
+        <li><strong>Stress analysis:</strong> Photoelastic materials show stress patterns under polarized light</li>
+      </ul>
+
+      <div class="practice-set">
+        <h3>Practice Problems</h3>
+
+        <div class="problem" id="p4a">
+          <p><strong>1.</strong> Polarized light of intensity 80 W/m² hits an analyzer at θ = 60°. What is the transmitted intensity in W/m²?</p>
+          <div class="hint">Hint: I = I₀ cos²(60°). cos(60°) = 0.5</div>
+          <div class="input-row">
+            <input type="number" id="p4a-in" placeholder="intensity (W/m²)" step="0.1">
+            <button class="btn" onclick="checkNum('p4a-in', 20, 0.5, 'p4a-fb', 'p4a')">Check</button>
+          </div>
+          <div class="feedback" id="p4a-fb"></div>
+        </div>
+
+        <div class="problem" id="p4b">
+          <p><strong>2.</strong> Unpolarized light of intensity 200 W/m² passes through a polarizer. What is the emerging intensity in W/m²?</p>
+          <div class="hint">Hint: Unpolarized → polarizer always gives I₀/2</div>
+          <div class="input-row">
+            <input type="number" id="p4b-in" placeholder="intensity (W/m²)" step="1">
+            <button class="btn" onclick="checkNum('p4b-in', 100, 1, 'p4b-fb', 'p4b')">Check</button>
+          </div>
+          <div class="feedback" id="p4b-fb"></div>
+        </div>
+
+        <div class="problem" id="p4c">
+          <p><strong>3.</strong> At what angle θ does Malus's Law give exactly half the incident intensity? (in degrees)</p>
+          <div class="hint">Hint: cos²θ = 0.5, so cosθ = 1/√2. What angle is this?</div>
+          <div class="input-row">
+            <input type="number" id="p4c-in" placeholder="angle (degrees)" step="0.1">
+            <button class="btn" onclick="checkNum('p4c-in', 45, 1, 'p4c-fb', 'p4c')">Check</button>
+          </div>
+          <div class="feedback" id="p4c-fb"></div>
+        </div>
+
+        <div class="problem" id="p4d">
+          <p><strong>4.</strong> Two polarizers are crossed (θ = 90°). What fraction of the incident polarized light is transmitted?</p>
+          <div class="mc-options">
+            <button class="mc-option" onclick="checkMC(this,'B','p4d-fb','p4d')">A) I₀/2</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p4d-fb','p4d')">B) I₀/4</button>
+            <button class="mc-option" onclick="checkMC(this,'A','p4d-fb','p4d')">C) Zero (none)</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p4d-fb','p4d')">D) I₀</button>
+          </div>
+          <div class="feedback" id="p4d-fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SECTION 5: Energy & Intensity -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="section-card" id="sec5">
+    <div class="section-header" onclick="toggleSection('sec5')">
+      <div class="section-num">5</div>
+      <div class="section-title">Energy, Intensity &amp; Radiation Pressure</div>
+      <div class="section-check">✓ Complete</div>
+      <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="section-body">
+
+      <h3>Energy Density</h3>
+      <p>The electromagnetic wave carries energy stored in both the E and B fields. The total energy density is:</p>
+
+      <div class="formula-box">
+        <div class="formula-title">Energy Density</div>
+        <div class="eq">u = ε₀E²/2 + B²/(2μ₀)</div>
+        <div class="eq-note">Electric field contribution + Magnetic field contribution. For an EM wave: u_E = u_B (equal energy in each field)</div>
+      </div>
+
+      <div class="formula-box green">
+        <div class="formula-title">Instantaneous Energy Density (using E = cB)</div>
+        <div class="eq">u = ε₀E² = B²/μ₀</div>
+        <div class="eq-note">Since u_E = u_B for EM waves, total u = 2u_E = ε₀E²</div>
+      </div>
+
+      <h3>The Poynting Vector</h3>
+      <p>The Poynting vector <strong>S</strong> represents the power per unit area (intensity) flowing in the wave's propagation direction:</p>
+
+      <div class="formula-box amber">
+        <div class="formula-title">Poynting Vector</div>
+        <div class="eq">S = (1/μ₀) E × B</div>
+        <div class="eq-note">|S| = EB/μ₀ (W/m²). Direction = E × B = direction of wave propagation.</div>
+      </div>
+
+      <div class="formula-box pink">
+        <div class="formula-title">Average Intensity</div>
+        <div class="eq">I = S_avg = E_max²/(2μ₀c) = cε₀E_max²/2</div>
+        <div class="eq-note">The time-average of sin² is 1/2, giving the factor of 2 in the denominator. μ₀ = 4π×10⁻⁷ T·m/A, c = 3×10⁸ m/s</div>
+      </div>
+
+      <h3>Radiation Pressure</h3>
+      <p>EM waves carry momentum. When absorbed or reflected, they exert pressure:</p>
+
+      <div class="formula-box">
+        <div class="formula-title">Radiation Pressure</div>
+        <div class="eq">P_rad = I/c  (absorbed)  &nbsp;|&nbsp;  P_rad = 2I/c  (reflected)</div>
+        <div class="eq-note">I = intensity (W/m²), c = speed of light. Solar sails exploit radiation pressure.</div>
+      </div>
+
+      <div class="key-point">
+        <strong>Sun at Earth's surface:</strong> Solar constant ≈ 1361 W/m². This gives E_max ≈ 1011 V/m and B_max ≈ 3.37 μT near Earth.
+      </div>
+
+      <div class="practice-set">
+        <h3>Practice Problems</h3>
+
+        <div class="problem" id="p5a">
+          <p><strong>1.</strong> An EM wave has E_max = 300 V/m. What is the average intensity in W/m²? (Use μ₀ = 4π×10⁻⁷, c = 3×10⁸)</p>
+          <div class="hint">Hint: I = E_max² / (2μ₀c) = (300)² / (2 × 4π×10⁻⁷ × 3×10⁸)</div>
+          <div class="input-row">
+            <input type="number" id="p5a-in" placeholder="intensity (W/m²)" step="0.1">
+            <button class="btn" onclick="checkNum('p5a-in', 119.4, 5, 'p5a-fb', 'p5a')">Check</button>
+          </div>
+          <div class="feedback" id="p5a-fb"></div>
+        </div>
+
+        <div class="problem" id="p5b">
+          <p><strong>2.</strong> What is the radiation pressure on a perfect absorber if the incident intensity is 1200 W/m²? Give answer in μPa (×10⁻⁶ Pa).</p>
+          <div class="hint">Hint: P_rad = I/c = 1200 / (3×10⁸). Convert to μPa.</div>
+          <div class="input-row">
+            <input type="number" id="p5b-in" placeholder="pressure (μPa)" step="0.01">
+            <button class="btn" onclick="checkNum('p5b-in', 4.0, 0.2, 'p5b-fb', 'p5b')">Check</button>
+          </div>
+          <div class="feedback" id="p5b-fb"></div>
+        </div>
+
+        <div class="problem" id="p5c">
+          <p><strong>3.</strong> For an EM wave, the energy in the electric field compared to the energy in the magnetic field is:</p>
+          <div class="mc-options">
+            <button class="mc-option" onclick="checkMC(this,'B','p5c-fb','p5c')">A) E field has twice the energy</button>
+            <button class="mc-option" onclick="checkMC(this,'A','p5c-fb','p5c')">B) They are equal</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p5c-fb','p5c')">C) B field has twice the energy</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p5c-fb','p5c')">D) Depends on frequency</button>
+          </div>
+          <div class="feedback" id="p5c-fb"></div>
+        </div>
+
+        <div class="problem" id="p5d">
+          <p><strong>4.</strong> A perfect mirror reflects an EM wave. Compared to a perfect absorber, the radiation pressure on the mirror is:</p>
+          <div class="mc-options">
+            <button class="mc-option" onclick="checkMC(this,'B','p5d-fb','p5d')">A) The same</button>
+            <button class="mc-option" onclick="checkMC(this,'A','p5d-fb','p5d')">B) Twice as large</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p5d-fb','p5d')">C) Half as large</button>
+            <button class="mc-option" onclick="checkMC(this,'B','p5d-fb','p5d')">D) Four times as large</button>
+          </div>
+          <div class="feedback" id="p5d-fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- QUIZ SECTION -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="quiz-section" id="quizSection">
+    <h2>Lesson 23 Quiz</h2>
+    <div class="quiz-sub">10 questions covering all topics. Test your mastery of electromagnetic waves.</div>
+
+    <div class="quiz-score-bar">
+      <div class="quiz-score-num" id="quizScore">0</div>
+      <div>
+        <div class="quiz-score-label">correct out of 10</div>
+        <div class="quiz-score-label" id="quizPct">0%</div>
+      </div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-q" id="qq1">
+      <div class="quiz-q-num">Question 1</div>
+      <div class="quiz-q-text">What term did Maxwell add to Ampere's Law to create the complete Ampere-Maxwell Law?</div>
+      <div class="mc-options">
+        <button class="mc-option" onclick="quizMC(this,'B','qq1')">A) Magnetic flux term</button>
+        <button class="mc-option" onclick="quizMC(this,'A','qq1')">B) Displacement current (μ₀ε₀ dΦ_E/dt)</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq1')">C) Conduction current term</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq1')">D) Radiation pressure term</button>
+      </div>
+      <div class="feedback" id="qq1-fb"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q" id="qq2">
+      <div class="quiz-q-num">Question 2</div>
+      <div class="quiz-q-text">A wave has wavelength 10 cm. What is its frequency in GHz? (c = 3×10⁸ m/s)</div>
+      <div class="mc-options">
+        <button class="mc-option" onclick="quizMC(this,'B','qq2')">A) 0.3 GHz</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq2')">B) 30 GHz</button>
+        <button class="mc-option" onclick="quizMC(this,'A','qq2')">C) 3 GHz</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq2')">D) 300 GHz</button>
+      </div>
+      <div class="feedback" id="qq2-fb"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q" id="qq3">
+      <div class="quiz-q-num">Question 3</div>
+      <div class="quiz-q-text">In a linearly polarized EM wave traveling in the +x direction with E in the +y direction, B points in the:</div>
+      <div class="mc-options">
+        <button class="mc-option" onclick="quizMC(this,'B','qq3')">A) +y direction</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq3')">B) +x direction</button>
+        <button class="mc-option" onclick="quizMC(this,'A','qq3')">C) +z direction</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq3')">D) −y direction</button>
+      </div>
+      <div class="feedback" id="qq3-fb"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q" id="qq4">
+      <div class="quiz-q-num">Question 4</div>
+      <div class="quiz-q-text">Polarized light of intensity I₀ = 160 W/m² passes through an analyzer at θ = 30°. What is the transmitted intensity?</div>
+      <div class="mc-options">
+        <button class="mc-option" onclick="quizMC(this,'B','qq4')">A) 40 W/m²</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq4')">B) 80 W/m²</button>
+        <button class="mc-option" onclick="quizMC(this,'A','qq4')">C) 120 W/m²</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq4')">D) 160 W/m²</button>
+      </div>
+      <div class="feedback" id="qq4-fb"></div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q" id="qq5">
+      <div class="quiz-q-num">Question 5</div>
+      <div class="quiz-q-text">Which type of EM radiation has the longest wavelength?</div>
+      <div class="mc-options">
+        <button class="mc-option" onclick="quizMC(this,'B','qq5')">A) Visible light</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq5')">B) Infrared</button>
+        <button class="mc-option" onclick="quizMC(this,'A','qq5')">C) Radio waves</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq5')">D) Microwaves</button>
+      </div>
+      <div class="feedback" id="qq5-fb"></div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q" id="qq6">
+      <div class="quiz-q-num">Question 6</div>
+      <div class="quiz-q-text">The Poynting vector S = (1/μ₀) E × B represents:</div>
+      <div class="mc-options">
+        <button class="mc-option" onclick="quizMC(this,'B','qq6')">A) The magnetic energy density</button>
+        <button class="mc-option" onclick="quizMC(this,'A','qq6')">B) The power per unit area carried by the wave</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq6')">C) The electric force on a charge</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq6')">D) The radiation pressure</button>
+      </div>
+      <div class="feedback" id="qq6-fb"></div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q" id="qq7">
+      <div class="quiz-q-num">Question 7</div>
+      <div class="quiz-q-text">An EM wave has E_max = 150 V/m. What is B_max?</div>
+      <div class="mc-options">
+        <button class="mc-option" onclick="quizMC(this,'A','qq7')">A) 5.0 × 10⁻⁷ T</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq7')">B) 5.0 × 10⁻³ T</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq7')">C) 1.5 × 10⁻⁷ T</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq7')">D) 4.5 × 10¹⁰ T</button>
+      </div>
+      <div class="feedback" id="qq7-fb"></div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q" id="qq8">
+      <div class="quiz-q-num">Question 8</div>
+      <div class="quiz-q-text">Maxwell calculated c = 1/√(μ₀ε₀) ≈ 3×10⁸ m/s. This matched the known speed of light, leading him to conclude that:</div>
+      <div class="mc-options">
+        <button class="mc-option" onclick="quizMC(this,'B','qq8')">A) Light travels faster through conductors</button>
+        <button class="mc-option" onclick="quizMC(this,'A','qq8')">B) Light is an electromagnetic wave</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq8')">C) Light cannot exist in vacuum</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq8')">D) Electric and magnetic fields are separate phenomena</button>
+      </div>
+      <div class="feedback" id="qq8-fb"></div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-q" id="qq9">
+      <div class="quiz-q-num">Question 9</div>
+      <div class="quiz-q-text">For an EM wave, the average energy density in the electric field compared to the magnetic field is:</div>
+      <div class="mc-options">
+        <button class="mc-option" onclick="quizMC(this,'B','qq9')">A) u_E = 2u_B</button>
+        <button class="mc-option" onclick="quizMC(this,'A','qq9')">B) u_E = u_B</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq9')">C) u_B = 2u_E</div>
+        <button class="mc-option" onclick="quizMC(this,'B','qq9')">D) u_E = c × u_B</button>
+      </div>
+      <div class="feedback" id="qq9-fb"></div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="quiz-q" id="qq10">
+      <div class="quiz-q-num">Question 10</div>
+      <div class="quiz-q-text">X-rays used in medical imaging have wavelengths around 0.1 nm. Which statement is correct?</div>
+      <div class="mc-options">
+        <button class="mc-option" onclick="quizMC(this,'B','qq10')">A) They travel slower than visible light</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq10')">B) Their frequency is lower than radio waves</button>
+        <button class="mc-option" onclick="quizMC(this,'A','qq10')">C) Their frequency is approximately 3×10¹⁸ Hz</button>
+        <button class="mc-option" onclick="quizMC(this,'B','qq10')">D) They cannot be polarized</button>
+      </div>
+      <div class="feedback" id="qq10-fb"></div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+// ─── STATE ──────────────────────────────────────────────────
+const TOTAL_SECTIONS = 5;
+const sectionProblems = {
+  sec1: { problems: ['p1a','p1b','p1c','p1d'], solved: new Set() },
+  sec2: { problems: ['p2a','p2b','p2c','p2d'], solved: new Set() },
+  sec3: { problems: ['p3a','p3b','p3c','p3d'], solved: new Set() },
+  sec4: { problems: ['p4a','p4b','p4c','p4d'], solved: new Set() },
+  sec5: { problems: ['p5a','p5b','p5c','p5d'], solved: new Set() },
+};
+let completedSections = new Set();
+let quizScore = 0;
+let quizAnswered = new Set();
+
+// ─── SECTION TOGGLE ─────────────────────────────────────────
+function toggleSection(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+}
+
+// ─── PROGRESS ───────────────────────────────────────────────
+function updateProgress() {
+  const pct = (completedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    completedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+function checkSectionComplete(secId) {
+  const sec = sectionProblems[secId];
+  const allDone = sec.problems.every(p => sec.solved.has(p));
+  if (allDone && !completedSections.has(secId)) {
+    completedSections.add(secId);
+    document.getElementById(secId).classList.add('completed');
+    updateProgress();
+  }
+}
+
+// ─── CHECK NUMERIC ──────────────────────────────────────────
+function checkNum(inputId, answer, tolerance, feedbackId, problemId) {
+  const input = document.getElementById(inputId);
+  const fb = document.getElementById(feedbackId);
+  const val = parseFloat(input.value);
+
+  fb.className = 'feedback';
+  void fb.offsetWidth; // reflow to re-trigger animation
+
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Please enter a number.';
+    return;
+  }
+
+  if (Math.abs(val - answer) <= tolerance) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! ' + getCorrectNote(feedbackId);
+    const prob = document.getElementById(problemId);
+    if (prob) prob.classList.add('solved');
+    markProblemSolved(problemId);
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Expected ≈ ' + answer + '. Try again.';
+  }
+}
+
+// ─── CHECK MULTIPLE CHOICE ──────────────────────────────────
+function checkMC(btn, correct, feedbackId, problemId) {
+  const fb = document.getElementById(feedbackId);
+  const prob = document.getElementById(problemId);
+  if (prob && prob.classList.contains('solved')) return;
+
+  const isCorrect = (correct === 'A');
+  fb.className = 'feedback';
+  void fb.offsetWidth;
+
+  if (isCorrect) {
+    btn.classList.add('selected-correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! ' + getCorrectNote(feedbackId);
+    if (prob) prob.classList.add('solved');
+    markProblemSolved(problemId);
+  } else {
+    btn.classList.add('selected-incorrect');
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Incorrect. Review the concept and try again.';
+    setTimeout(() => btn.classList.remove('selected-incorrect'), 800);
+  }
+}
+
+function markProblemSolved(problemId) {
+  for (const [secId, sec] of Object.entries(sectionProblems)) {
+    if (sec.problems.includes(problemId)) {
+      sec.solved.add(problemId);
+      checkSectionComplete(secId);
+      break;
+    }
+  }
+}
+
+function getCorrectNote(feedbackId) {
+  const notes = {
+    'p1a-fb': 'c = 3.00 × 10⁸ m/s',
+    'p1b-fb': 'The displacement current is μ₀ε₀ · dΦ_E/dt.',
+    'p1c-fb': "Faraday's Law: ∮ E·dl = −dΦ_B/dt",
+    'p1d-fb': 'Gauss\'s Law for B (∮ B·dA = 0) means no monopoles.',
+    'p2a-fb': 'λ = (3×10⁸) / (98×10⁶) ≈ 3.06 m',
+    'p2b-fb': 'f = (3×10⁸) / (520×10⁻⁹) ≈ 577 THz',
+    'p2c-fb': 'Gamma rays have the highest frequency (>10¹⁹ Hz).',
+    'p2d-fb': 'λ = (3×10⁸) / (2.45×10⁹) ≈ 0.1224 m = 12.24 cm',
+    'p3a-fb': 'B_max = E_max/c = 600/(3×10⁸) = 2×10⁻⁶ T = 2 μT',
+    'p3b-fb': 'ŷ × ẑ = x̂. The wave propagates in +x.',
+    'p3c-fb': 'E_max = c × B_max = 3×10⁸ × 5×10⁻⁹ = 1.5 V/m',
+    'p3d-fb': 'E and B are always in phase in a free-space EM wave.',
+    'p4a-fb': 'I = 80 × cos²(60°) = 80 × 0.25 = 20 W/m²',
+    'p4b-fb': 'Unpolarized → polarizer: I = I₀/2 = 100 W/m²',
+    'p4c-fb': 'cos²(45°) = 0.5, so θ = 45°',
+    'p4d-fb': 'cos²(90°) = 0. Crossed polarizers block all light.',
+    'p5a-fb': 'I = (300)² / (2 × 4π×10⁻⁷ × 3×10⁸) ≈ 119.4 W/m²',
+    'p5b-fb': 'P = I/c = 1200/(3×10⁸) = 4×10⁻⁶ Pa = 4 μPa',
+    'p5c-fb': 'u_E = u_B for any free-space EM wave.',
+    'p5d-fb': 'P_reflected = 2I/c — twice the absorbed case.',
+  };
+  return notes[feedbackId] || '';
+}
+
+// ─── QUIZ MC ────────────────────────────────────────────────
+function quizMC(btn, correct, qId) {
+  if (quizAnswered.has(qId)) return;
+  quizAnswered.add(qId);
+
+  const isCorrect = (correct === 'A');
+  const fb = document.getElementById(qId + '-fb');
+  const qEl = document.getElementById(qId);
+
+  if (isCorrect) {
+    quizScore++;
+    btn.classList.add('selected-correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    qEl.classList.add('answered-correct');
+  } else {
+    btn.classList.add('selected-incorrect');
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Incorrect.';
+    qEl.classList.add('answered-wrong');
+  }
+
+  document.getElementById('quizScore').textContent = quizScore;
+  document.getElementById('quizPct').textContent =
+    Math.round((quizScore / 10) * 100) + '%';
+
+  // disable all options in this question
+  qEl.querySelectorAll('.mc-option').forEach(b => {
+    b.style.pointerEvents = 'none';
+    b.style.opacity = '0.6';
+  });
+  btn.style.opacity = '1';
+}
+
+// ─── EM SPECTRUM DATA ────────────────────────────────────────
+const bandData = {
+  radio:     { name: 'Radio Waves',  range: 'Frequency: < 300 MHz  |  Wavelength: > 1 m',      apps: 'AM/FM radio, TV broadcasting, MRI machines, long-range communication' },
+  microwave: { name: 'Microwaves',   range: 'Frequency: 300 MHz – 300 GHz  |  Wavelength: 1 mm – 1 m', apps: 'Microwave ovens, radar, satellite communication, Wi-Fi (2.4/5 GHz), 5G' },
+  infrared:  { name: 'Infrared (IR)',range: 'Frequency: 300 GHz – 430 THz  |  Wavelength: 700 nm – 1 mm', apps: 'Thermal imaging, TV remotes, heat lamps, night-vision, astronomy' },
+  visible:   { name: 'Visible Light',range: 'Frequency: 430 – 790 THz  |  Wavelength: 380 – 700 nm', apps: 'Human vision, photography, fiber optic communication, laser pointers' },
+  uv:        { name: 'Ultraviolet (UV)', range: 'Frequency: 790 THz – 30 PHz  |  Wavelength: 10 – 380 nm', apps: 'Sterilization (UV-C), tanning (UV-B/A), fluorescence, ozone layer absorption' },
+  xray:      { name: 'X-Rays',       range: 'Frequency: 30 PHz – 30 EHz  |  Wavelength: 0.01 – 10 nm', apps: 'Medical imaging, airport security, crystallography, cancer treatment' },
+  gamma:     { name: 'Gamma Rays (γ)', range: 'Frequency: > 30 EHz  |  Wavelength: < 0.01 nm', apps: 'Nuclear medicine (PET scans), sterilizing food/equipment, cancer radiation therapy, astronomy (GRBs)' },
+};
+
+function showBand(band) {
+  const d = bandData[band];
+  document.getElementById('bandName').textContent = d.name;
+  document.getElementById('bandRange').textContent = d.range;
+  document.getElementById('bandApps').textContent = 'Applications: ' + d.apps;
+
+  document.querySelectorAll('.spectrum-band').forEach(el => el.classList.remove('active'));
+  document.querySelector('[data-band="' + band + '"]').classList.add('active');
+}
+
+// ─── POLARIZATION DEMO ───────────────────────────────────────
+function updatePolar() {
+  const theta = parseFloat(document.getElementById('polarSlider').value);
+  const thetaRad = theta * Math.PI / 180;
+  const cosT = Math.cos(thetaRad);
+  const cos2T = cosT * cosT;
+
+  document.getElementById('angleVal').textContent = theta + '°';
+  document.getElementById('ps-angle').textContent = theta + '°';
+  document.getElementById('ps-cos').textContent = cosT.toFixed(3);
+  document.getElementById('ps-cos2').textContent = cos2T.toFixed(3);
+  document.getElementById('ps-ratio').textContent = cos2T.toFixed(3);
+  document.getElementById('intensityBar').style.width = (cos2T * 100) + '%';
+
+  drawPolarCanvas(theta, cos2T);
+}
+
+function drawPolarCanvas(theta, ratio) {
+  const canvas = document.getElementById('polarCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+  const r = 70;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Background circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, r + 4, 0, Math.PI * 2);
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Intensity fill (arc)
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * ratio, false);
+  ctx.closePath();
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+  grad.addColorStop(0, 'rgba(99,102,241,0.6)');
+  grad.addColorStop(1, 'rgba(236,72,153,0.4)');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Polarizer axis (blue)
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(0);
+  ctx.beginPath();
+  ctx.moveTo(0, -r - 10);
+  ctx.lineTo(0, r + 10);
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.restore();
+
+  // Analyzer axis (pink) rotated by theta
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(theta * Math.PI / 180);
+  ctx.beginPath();
+  ctx.moveTo(0, -r - 10);
+  ctx.lineTo(0, r + 10);
+  ctx.strokeStyle = '#ec4899';
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([5, 3]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  // Labels
+  ctx.font = '10px JetBrains Mono';
+  ctx.fillStyle = '#6366f1';
+  ctx.textAlign = 'center';
+  ctx.fillText('Polarizer', cx, H - 4);
+  ctx.fillStyle = '#ec4899';
+  ctx.fillText('Analyzer', cx, 12);
+
+  // Center dot
+  ctx.beginPath();
+  ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+  ctx.fillStyle = '#e2e4e9';
+  ctx.fill();
+}
+
+// ─── WAVE SVG ────────────────────────────────────────────────
+function buildWavePaths() {
+  const svg = document.getElementById('waveSVG');
+  const ePathEl = document.getElementById('eWavePath');
+  const bPathEl = document.getElementById('bWavePath');
+
+  const amplitude = 55;
+  const wavelength = 120;
+  const centerY = 100;
+  const startX = 30;
+  const endX = 820; // extra for seamless scroll
+
+  let ePath = '';
+  let bPath = '';
+
+  for (let x = startX; x <= endX; x += 2) {
+    const angle = ((x - startX) / wavelength) * Math.PI * 2;
+    const eY = centerY - amplitude * Math.sin(angle);
+    // B field represented as scaled version (same phase)
+    const bY = centerY - (amplitude * 0.6) * Math.sin(angle);
+
+    if (x === startX) {
+      ePath = 'M ' + x + ' ' + eY.toFixed(1);
+      bPath = 'M ' + x + ' ' + bY.toFixed(1);
+    } else {
+      ePath += ' L ' + x + ' ' + eY.toFixed(1);
+      bPath += ' L ' + x + ' ' + bY.toFixed(1);
+    }
+  }
+
+  ePathEl.setAttribute('d', ePath);
+  bPathEl.setAttribute('d', bPath);
+
+  // Apply animation to the groups
+  const eGroup = ePathEl.parentElement;
+  const bGroup = bPathEl.parentElement;
+  eGroup.style.animation = 'wave-travel 1.2s linear infinite';
+  bGroup.style.animation = 'wave-travel 1.2s linear infinite';
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  updateProgress();
+  updatePolar();
+  buildWavePaths();
+});
+</script>
+</body>
+</html>

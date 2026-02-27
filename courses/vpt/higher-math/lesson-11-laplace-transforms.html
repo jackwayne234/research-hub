@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 11: Laplace Transforms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.formula-box.small{font-size:.82rem;padding:10px 14px}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.transform-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.74rem}
+.transform-table th{background:var(--bg-input);color:var(--indigo);padding:10px 12px;text-align:left;border:1px solid var(--border);font-weight:600}
+.transform-table td{padding:10px 12px;border:1px solid var(--border);color:var(--text)}
+.transform-table tr:nth-child(even) td{background:rgba(99,102,241,.04)}
+.transform-table td:first-child{color:var(--green)}
+.transform-table td:nth-child(2){color:var(--amber)}
+.step-box{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:12px 0}
+.step-box .step-label{font-size:.68rem;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.step-box .step-content{font-size:.78rem;line-height:1.8}
+.step-box .step-content strong{color:var(--text-bright)}
+.pipeline-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:16px 0}
+.pipeline-box{background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.72rem;text-align:center;flex:1;min-width:120px}
+.pipeline-box .p-label{font-size:.62rem;color:var(--text-dim);margin-bottom:4px}
+.pipeline-box .p-val{color:var(--text-bright);font-weight:600}
+.pipeline-arrow{color:var(--indigo);font-size:1.1rem;font-weight:700;flex-shrink:0}
+.derivation-step{border-left:2px solid var(--indigo);padding:8px 14px;margin:8px 0;font-size:.78rem;line-height:1.8;color:var(--text)}
+.derivation-step strong{color:var(--indigo)}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.transform-table{font-size:.65rem}.transform-table th,.transform-table td{padding:6px 8px}.pipeline-row{flex-direction:column}.pipeline-arrow{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>11</span> Laplace Transforms</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: DEFINITION & MOTIVATION -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Definition &amp; Motivation</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>Laplace transform</strong> is an integral transform that converts a function of time t into a function of a complex variable s. It is defined as an improper integral that essentially "weighs" f(t) by the decaying exponential kernel e^(-st), then integrates over all positive time.
+    </p>
+
+    <div class="formula-box large">L{f(t)} = F(s) = integral from 0 to infinity of e^(-st) * f(t) dt</div>
+
+    <p class="concept-text">
+      <strong>Why does this matter?</strong> The transform converts ODEs into <strong>algebraic equations</strong>. Instead of solving a differential equation (hard), you solve an algebra problem in s (easy), then convert the answer back to the time domain. Derivatives become multiplications by s, and initial conditions get automatically embedded into the algebra.
+    </p>
+
+    <div class="pipeline-row">
+      <div class="pipeline-box"><div class="p-label">ODE in t</div><div class="p-val" style="color:var(--pink)">y'' + ay' + by = g(t)</div></div>
+      <div class="pipeline-arrow">-L-></div>
+      <div class="pipeline-box"><div class="p-label">Algebra in s</div><div class="p-val" style="color:var(--amber)">s²Y - sy(0) - y'(0) + ... = G(s)</div></div>
+      <div class="pipeline-arrow">-L&#x207B;&#xB9;-></div>
+      <div class="pipeline-box"><div class="p-label">Solution y(t)</div><div class="p-val" style="color:var(--green)">y(t) = c1*cos(wt) + ...</div></div>
+    </div>
+
+    <p class="concept-text">
+      The variable <strong>s</strong> is generally complex: s = sigma + i*omega. The real part sigma controls convergence (the e^(-st) kernel must decay), and the imaginary part omega encodes frequency information. The <strong>region of convergence</strong> is the set of s values for which the integral exists.
+    </p>
+
+    <div class="key-point">The kernel e^(-st) is the secret: it damps large-t behavior so the integral converges, while simultaneously encoding the "s-frequency" content of f(t). Different values of s probe different exponential decay rates in f(t).</div>
+
+    <p class="concept-text">
+      <strong>Domain shift:</strong> f(t) lives in the <strong>time domain</strong> (t >= 0). F(s) lives in the <strong>s-domain</strong> (also called the Laplace domain or frequency domain). Moving between them is the entire game.
+    </p>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Every transfer function in a ship's autopilot, every impedance in a sonar circuit, every stability analysis of a nuclear reactor control rod -- all are written in the s-domain because Laplace is the native language of control systems engineering. When you read H(s) = output/input on a Navy system datasheet, that is Laplace.
+    </div>
+
+    <!-- INTERACTIVE: Kernel Visualizer -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Kernel e^(-st) Visualizer</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust s and the function type to see how the kernel weights f(t). The shaded area under e^(-st)*f(t) is the Laplace transform value F(s). Larger s = faster decay = earlier shutoff of the integral.</p>
+      <div class="slider-row">
+        <label>s value:</label>
+        <input type="range" id="sSlider" min="0.2" max="4" step="0.1" value="1" oninput="updateKernel()">
+        <span class="slider-val" id="sVal">s = 1.0</span>
+      </div>
+      <div class="controls-row">
+        <span style="font-size:.7rem;color:var(--text-dim)">f(t) =</span>
+        <select id="kernelFunc" onchange="updateKernel()" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.72rem;outline:none">
+          <option value="one">1 (constant)</option>
+          <option value="t">t (ramp)</option>
+          <option value="sin">sin(t)</option>
+          <option value="exp">e^(0.5t)</option>
+        </select>
+      </div>
+      <svg id="kernelSvg" width="100%" height="200" viewBox="0 0 560 200" style="display:block"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">s value</span><br><span class="value indigo" id="kReadS">1.0</span></div>
+        <div class="readout-item"><span class="label">f(t) type</span><br><span class="value amber" id="kReadF">1</span></div>
+        <div class="readout-item"><span class="label">F(s) approx</span><br><span class="value green" id="kReadFt">1.000</span></div>
+        <div class="readout-item"><span class="label">Convergence</span><br><span class="value" id="kReadConv">s > 0</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> The Laplace transform converts a differential equation into what type of equation?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">Another differential equation in s</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','correct')">An algebraic equation in s</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">A trigonometric equation in omega</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> For the kernel e^(-st) to cause the Laplace integral to converge (for f(t) = constant), we need:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">s < 0</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','correct')">Re(s) > 0 (the real part of s must be positive)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">s = 0 exactly</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: BASIC TRANSFORM TABLE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Basic Transform Table &amp; Linearity</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      You rarely evaluate the Laplace integral from scratch. Instead, you memorize a short table of common transforms and use the <strong>linearity property</strong> to handle sums and scalar multiples. This table, combined with the properties in Section 3, covers nearly every ODE you will encounter.
+    </p>
+
+    <div class="formula-box amber">Linearity: L{a*f(t) + b*g(t)} = a*F(s) + b*G(s)</div>
+
+    <table class="transform-table">
+      <thead>
+        <tr><th>f(t)</th><th>F(s) = L{f(t)}</th><th>Condition</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>1/s</td><td>s > 0</td></tr>
+        <tr><td>t</td><td>1/s^2</td><td>s > 0</td></tr>
+        <tr><td>t^n</td><td>n! / s^(n+1)</td><td>s > 0, n = 0,1,2,...</td></tr>
+        <tr><td>e^(at)</td><td>1 / (s - a)</td><td>s > a</td></tr>
+        <tr><td>sin(wt)</td><td>w / (s^2 + w^2)</td><td>s > 0</td></tr>
+        <tr><td>cos(wt)</td><td>s / (s^2 + w^2)</td><td>s > 0</td></tr>
+        <tr><td>t*e^(at)</td><td>1 / (s - a)^2</td><td>s > a</td></tr>
+        <tr><td>e^(at)*sin(wt)</td><td>w / ((s-a)^2 + w^2)</td><td>s > a</td></tr>
+        <tr><td>e^(at)*cos(wt)</td><td>(s-a) / ((s-a)^2 + w^2)</td><td>s > a</td></tr>
+        <tr><td>u(t - c) (unit step)</td><td>e^(-cs) / s</td><td>s > 0, c > 0</td></tr>
+      </tbody>
+    </table>
+
+    <p class="concept-text">
+      <strong>Quick derivation of L{e^(at)}:</strong> Plug directly into the definition.
+    </p>
+
+    <div class="derivation-step"><strong>Start:</strong> L{e^(at)} = integral from 0 to inf of e^(-st) * e^(at) dt = integral from 0 to inf of e^(-(s-a)t) dt</div>
+    <div class="derivation-step"><strong>Integrate:</strong> = [ -1/(s-a) * e^(-(s-a)t) ] from 0 to inf</div>
+    <div class="derivation-step"><strong>Evaluate:</strong> As t -> inf, e^(-(s-a)t) -> 0 (provided s > a). At t = 0, value = 1.</div>
+    <div class="formula-box green">L{e^(at)} = 1/(s - a), &nbsp; valid for s > a</div>
+
+    <div class="key-point">The pattern for L{t^n} = n!/s^(n+1) comes from repeated integration by parts. n=0 gives L{1} = 1/s. n=1 gives L{t} = 1/s^2. n=2 gives L{t^2} = 2/s^3. The factorial grows but s^(n+1) in the denominator grows faster.</div>
+
+    <!-- INTERACTIVE: Derivation Explorer -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Step-by-Step Derivation Explorer</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Select a function from the table to see its derivation from the integral definition, step by step.</p>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="showDerivation('one',this)">f(t) = 1</button>
+        <button class="scenario-tab" onclick="showDerivation('tn',this)">f(t) = t^n</button>
+        <button class="scenario-tab" onclick="showDerivation('eat',this)">f(t) = e^(at)</button>
+        <button class="scenario-tab" onclick="showDerivation('sinwt',this)">f(t) = sin(wt)</button>
+        <button class="scenario-tab" onclick="showDerivation('coswt',this)">f(t) = cos(wt)</button>
+      </div>
+      <div id="derivationOutput" style="margin-top:12px"></div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> RLC circuit analysis in the s-domain: resistor R maps to R (unchanged), inductor L maps to impedance s*L (inductance times s), capacitor C maps to 1/(s*C). These come directly from L{1} = 1/s and the differentiation property. Every Navy electrical system datasheet uses these s-domain impedances.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s2p1">
+        <p><strong>1.</strong> Using linearity and the table, L{3 + 2t - e^(2t)} = ?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','wrong')">3/s + 2/s^2 - 1/s^2</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','correct')">3/s + 2/s^2 - 1/(s-2), valid for s > 2</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','wrong')">6/s^2 - 1/(s-2)</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> L{t^3} = n!/s^(n+1). For n = 3, the numerator n! equals what value?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" placeholder="n! = ?" onkeydown="if(event.key==='Enter')checkNum('s2p2',6,0)">
+          <button class="btn btn-sm" onclick="checkNum('s2p2',6,0)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem" id="s2p3">
+        <p><strong>3.</strong> What is L{cos(3t)}?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">3 / (s^2 + 9)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','correct')">s / (s^2 + 9)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">s / (s^2 + 3)</button>
+        </div>
+        <div class="feedback" id="s2p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: KEY PROPERTIES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Key Properties</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The real power of Laplace comes from these properties. They let you handle initial conditions automatically, shift transforms in both the time and s domains, and translate derivatives into algebra.
+    </p>
+
+    <!-- Differentiation property -->
+    <p class="concept-text"><strong>Differentiation Property</strong> -- this is why Laplace solves ODEs:</p>
+    <div class="formula-box">L{f'(t)} = s*F(s) - f(0)</div>
+    <div class="formula-box green">L{f''(t)} = s^2*F(s) - s*f(0) - f'(0)</div>
+
+    <p class="concept-text">
+      Each derivative picks up one factor of s and subtracts one initial condition. This is the core mechanism: differentiation in t-domain becomes multiplication by s in the s-domain, with initial conditions automatically built in.
+    </p>
+
+    <div class="derivation-step"><strong>Derivation of L{f'(t)}:</strong> Use integration by parts with u = e^(-st), dv = f'(t)dt</div>
+    <div class="derivation-step">= [e^(-st)*f(t)] from 0 to inf &nbsp;+&nbsp; s * integral(e^(-st)*f(t)dt from 0 to inf)</div>
+    <div class="derivation-step">= (0 - f(0)) + s*F(s) &nbsp;=&nbsp; <strong>s*F(s) - f(0)</strong></div>
+
+    <!-- First shifting theorem -->
+    <p class="concept-text" style="margin-top:20px"><strong>First Shifting Theorem (s-shifting)</strong></p>
+    <div class="formula-box amber">If L{f(t)} = F(s), then L{e^(at)*f(t)} = F(s - a)</div>
+
+    <p class="concept-text">
+      Multiplying f(t) by e^(at) in the time domain shifts F(s) by a in the s-domain. This handles all the e^(at)*sin(wt) and e^(at)*cos(wt) entries in the table automatically.
+    </p>
+
+    <p class="concept-text"><strong>Example:</strong> L{e^(3t)*cos(2t)} -- since L{cos(2t)} = s/(s^2+4), replace s with (s-3):</p>
+    <div class="formula-box green">L{e^(3t)*cos(2t)} = (s-3) / ((s-3)^2 + 4)</div>
+
+    <!-- Second shifting theorem -->
+    <p class="concept-text" style="margin-top:20px"><strong>Second Shifting Theorem (t-shifting / Heaviside)</strong></p>
+    <div class="formula-box pink">If L{f(t)} = F(s), then L{u(t-c)*f(t-c)} = e^(-cs)*F(s)</div>
+
+    <p class="concept-text">
+      The <strong>unit step (Heaviside) function</strong> u(t-c) = 0 for t &lt; c, u(t-c) = 1 for t &gt;= c. It switches a function on at time c. Multiplying by e^(-cs) in the s-domain corresponds to delaying the signal by c in the time domain.
+    </p>
+
+    <div class="key-point">Physical meaning: u(t-c)*f(t-c) is f(t) switched on at time c. In a Navy context this is a step command -- "autopilot engages at t = 5 seconds." The e^(-cs) factor in Laplace encodes that delay precisely.</div>
+
+    <!-- Summary table -->
+    <table class="transform-table" style="margin-top:16px">
+      <thead>
+        <tr><th>Property</th><th>Time Domain</th><th>s-Domain</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Linearity</td><td>a*f + b*g</td><td>a*F(s) + b*G(s)</td></tr>
+        <tr><td>First derivative</td><td>f'(t)</td><td>s*F(s) - f(0)</td></tr>
+        <tr><td>Second derivative</td><td>f''(t)</td><td>s^2*F(s) - s*f(0) - f'(0)</td></tr>
+        <tr><td>s-shifting</td><td>e^(at)*f(t)</td><td>F(s - a)</td></tr>
+        <tr><td>t-shifting</td><td>u(t-c)*f(t-c)</td><td>e^(-cs)*F(s)</td></tr>
+        <tr><td>Scaling</td><td>f(at)</td><td>(1/a)*F(s/a)</td></tr>
+        <tr><td>Multiply by t</td><td>t*f(t)</td><td>-F'(s)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Reactor power control -- when an operator inserts a control rod at t = 10 seconds, that step input is modeled as u(t-10) times the rod worth function. The Laplace transform of this delayed step is e^(-10s)/s. The entire reactor response calculation proceeds in the s-domain using this exact formula.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s3p1">
+        <p><strong>1.</strong> Using the differentiation property, L{f''(t)} = s^2*F(s) - s*f(0) - f'(0). If f(0) = 3 and f'(0) = -1, then L{f''} = ?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','wrong')">s^2*F(s) - 3s + 1</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','correct')">s^2*F(s) - 3s + 1 &nbsp;-- correct: -s*f(0) = -3s, -f'(0) = -(-1) = +1</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','wrong')">s^2*F(s) - 3s - 1</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem" id="s3p2">
+        <p><strong>2.</strong> Using the first shifting theorem, L{e^(2t)*sin(3t)} = ?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">3 / (s^2 + 9)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">(s-2) / ((s-2)^2 + 9)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','correct')">3 / ((s-2)^2 + 9)</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+      <div class="problem" id="s3p3">
+        <p><strong>3.</strong> What does the second shifting theorem add to a signal in the time domain, corresponding to e^(-cs) in the s-domain?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p3','wrong')">An exponential growth factor</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p3','correct')">A time delay of c units (the signal turns on at t = c)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p3','wrong')">A frequency shift of c radians per second</button>
+        </div>
+        <div class="feedback" id="s3p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: INVERSE LAPLACE TRANSFORMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Inverse Laplace Transforms</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      After solving an ODE in the s-domain, you have Y(s) -- a rational function in s. The final step is <strong>inverting</strong> it back to the time domain. The main tools are <strong>partial fraction decomposition</strong> and <strong>completing the square</strong>.
+    </p>
+
+    <div class="formula-box">L^(-1){F(s)} = f(t) &nbsp; (the inverse transform)</div>
+
+    <p class="concept-text">
+      <strong>Partial Fractions Strategy:</strong> Every proper rational function can be decomposed into simpler fractions, each of which matches a table entry. The process depends on the type of denominator factors.
+    </p>
+
+    <table class="transform-table">
+      <thead>
+        <tr><th>Denominator Factor</th><th>Partial Fraction Terms</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>(s - a)</td><td>A / (s - a)</td></tr>
+        <tr><td>(s - a)^2</td><td>A/(s-a) + B/(s-a)^2</td></tr>
+        <tr><td>(s - a)^n</td><td>A1/(s-a) + A2/(s-a)^2 + ... + An/(s-a)^n</td></tr>
+        <tr><td>s^2 + w^2</td><td>As/(s^2+w^2) + Bw/(s^2+w^2)</td></tr>
+        <tr><td>(s-a)^2 + w^2</td><td>A(s-a)/((s-a)^2+w^2) + Bw/((s-a)^2+w^2)</td></tr>
+      </tbody>
+    </table>
+
+    <p class="concept-text" style="margin-top:14px"><strong>Example:</strong> Find L^(-1){ (2s + 3) / ((s-1)(s+2)) }</p>
+
+    <div class="step-box">
+      <div class="step-label">Step 1: Partial Fractions</div>
+      <div class="step-content">
+        Write: (2s + 3)/((s-1)(s+2)) = A/(s-1) + B/(s+2)<br>
+        Multiply through: 2s + 3 = A(s+2) + B(s-1)
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 2: Find Coefficients</div>
+      <div class="step-content">
+        Set s = 1: 2(1)+3 = A(3) &rarr; A = 5/3<br>
+        Set s = -2: 2(-2)+3 = B(-3) &rarr; B = 1/3
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 3: Invert Each Term</div>
+      <div class="step-content">
+        F(s) = (5/3)/(s-1) + (1/3)/(s+2)<br>
+        <strong>f(t) = (5/3)*e^t + (1/3)*e^(-2t)</strong>
+      </div>
+    </div>
+    <div class="formula-box green">L^(-1){ (2s+3)/((s-1)(s+2)) } = (5/3)*e^t + (1/3)*e^(-2t)</div>
+
+    <p class="concept-text"><strong>Completing the Square</strong> is needed when the denominator is an irreducible quadratic with no nice factoring:</p>
+    <p class="concept-text"><strong>Example:</strong> L^(-1){ 1 / (s^2 + 4s + 13) }</p>
+
+    <div class="step-box">
+      <div class="step-label">Complete the Square</div>
+      <div class="step-content">
+        s^2 + 4s + 13 = (s^2 + 4s + 4) + 9 = (s + 2)^2 + 9<br>
+        So F(s) = 1/((s+2)^2 + 9)
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Match to Table</div>
+      <div class="step-content">
+        This matches w/((s-a)^2 + w^2) with a = -2 and w = 3<br>
+        Write as (1/3) * 3/((s+2)^2 + 9)
+      </div>
+    </div>
+    <div class="formula-box green">L^(-1){ 1/(s^2+4s+13) } = (1/3)*e^(-2t)*sin(3t)</div>
+
+    <!-- INTERACTIVE: Partial Fractions Tool -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Partial Fraction Decomposition</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Select a rational function F(s) to see the full partial fraction decomposition and the inverse transform.</p>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="showPF('case1',this)">1/((s+1)(s+3))</button>
+        <button class="scenario-tab" onclick="showPF('case2',this)">(s+4)/((s)(s+2))</button>
+        <button class="scenario-tab" onclick="showPF('case3',this)">1/(s^2+2s+5)</button>
+        <button class="scenario-tab" onclick="showPF('case4',this)">(3s-1)/((s-1)(s+2)^2)</button>
+      </div>
+      <div id="pfOutput" style="margin-top:12px;font-size:.77rem;line-height:1.9"></div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Sonar signal processing -- when a sonar return is modeled in the s-domain, the transfer function H(s) is a rational function. To find the actual time-domain signal (what you hear, what you display), you invert H(s) using partial fractions. The poles of H(s) -- the roots of the denominator -- determine the frequency components of the detected signal.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s4p1">
+        <p><strong>1.</strong> For (2s+3)/((s-1)(s+2)) = A/(s-1) + B/(s+2), using the cover-up method (set s=1), A = ?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="0.01" placeholder="A = ?" onkeydown="if(event.key==='Enter')checkNum('s4p1',5/3,0.05)">
+          <button class="btn btn-sm" onclick="checkNum('s4p1',5/3,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> To invert 1/(s^2+6s+13), you complete the square. The result is 1/((s+a)^2 + w^2). What is a?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2" placeholder="a = ?" onkeydown="if(event.key==='Enter')checkNum('s4p2',3,0)">
+          <button class="btn btn-sm" onclick="checkNum('s4p2',3,0)">Check</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+      <div class="problem" id="s4p3">
+        <p><strong>3.</strong> L^(-1){ 1/(s - 5) } = ?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">5*t</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','correct')">e^(5t)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">e^(-5t)</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: SOLVING IVPs WITH LAPLACE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Solving IVPs with Laplace</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>4-step Laplace pipeline</strong> solves any constant-coefficient linear ODE with initial conditions in a systematic, mechanical way. No guessing, no variation of parameters -- just algebra.
+    </p>
+
+    <div class="pipeline-row">
+      <div class="pipeline-box" style="border-color:var(--pink)"><div class="p-label">Step 1</div><div class="p-val" style="color:var(--pink)">Take L of entire ODE</div></div>
+      <div class="pipeline-arrow">-></div>
+      <div class="pipeline-box" style="border-color:var(--amber)"><div class="p-label">Step 2</div><div class="p-val" style="color:var(--amber)">Solve for Y(s)</div></div>
+      <div class="pipeline-arrow">-></div>
+      <div class="pipeline-box" style="border-color:var(--indigo)"><div class="p-label">Step 3</div><div class="p-val" style="color:var(--indigo)">Partial fractions</div></div>
+      <div class="pipeline-arrow">-></div>
+      <div class="pipeline-box" style="border-color:var(--green)"><div class="p-label">Step 4</div><div class="p-val" style="color:var(--green)">Take L^(-1) -> y(t)</div></div>
+    </div>
+
+    <!-- EXAMPLE 1 -->
+    <p class="concept-text" style="margin-top:20px"><strong>Example 1: y'' + 4y = 0, &nbsp; y(0) = 2, &nbsp; y'(0) = 0</strong></p>
+
+    <div class="step-box">
+      <div class="step-label">Step 1: Take L of both sides</div>
+      <div class="step-content">
+        L{y''} + 4*L{y} = 0<br>
+        [s^2*Y(s) - s*y(0) - y'(0)] + 4*Y(s) = 0<br>
+        [s^2*Y(s) - 2s - 0] + 4*Y(s) = 0
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 2: Collect Y(s) and solve</div>
+      <div class="step-content">
+        Y(s)*(s^2 + 4) = 2s<br>
+        <strong>Y(s) = 2s / (s^2 + 4)</strong>
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 3: Recognize table form</div>
+      <div class="step-content">
+        Y(s) = 2 * [s/(s^2 + 4)] &nbsp; which matches 2 * L{cos(2t)}
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 4: Invert</div>
+      <div class="step-content">
+        <strong>y(t) = 2*cos(2t)</strong>
+      </div>
+    </div>
+    <div class="formula-box green">y(t) = 2*cos(2t) &nbsp; [verifiable: y'' = -8cos(2t), y''+4y = -8cos+8cos = 0, y(0)=2, y'(0)=0]</div>
+
+    <!-- EXAMPLE 2 -->
+    <p class="concept-text" style="margin-top:24px"><strong>Example 2: y'' + y = e^t, &nbsp; y(0) = 0, &nbsp; y'(0) = 0</strong></p>
+
+    <div class="step-box">
+      <div class="step-label">Step 1: Take L of both sides</div>
+      <div class="step-content">
+        [s^2*Y - 0 - 0] + Y = 1/(s-1)<br>
+        Y*(s^2 + 1) = 1/(s-1)
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 2: Solve for Y(s)</div>
+      <div class="step-content">
+        <strong>Y(s) = 1 / ((s-1)(s^2+1))</strong>
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 3: Partial fractions</div>
+      <div class="step-content">
+        1/((s-1)(s^2+1)) = A/(s-1) + (Bs+C)/(s^2+1)<br>
+        Multiply: 1 = A(s^2+1) + (Bs+C)(s-1)<br>
+        s=1: 1 = 2A &rarr; A = 1/2<br>
+        s=0: 1 = A - C &rarr; C = A-1 = -1/2<br>
+        s=-1: 1 = 2A + (B*(-1)+C)(-2) = 1 + (-B-C)*(-2) = 1 + 2B + 2C = 1 + 2B - 1 &rarr; B = -1/2<br>
+        So: Y(s) = (1/2)/(s-1) + (-s/2 - 1/2)/(s^2+1) = (1/2)/(s-1) - (1/2)*s/(s^2+1) - (1/2)*1/(s^2+1)
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 4: Invert each term</div>
+      <div class="step-content">
+        (1/2)*L^(-1){1/(s-1)} = (1/2)*e^t<br>
+        -(1/2)*L^(-1){s/(s^2+1)} = -(1/2)*cos(t)<br>
+        -(1/2)*L^(-1){1/(s^2+1)} = -(1/2)*sin(t)
+      </div>
+    </div>
+    <div class="formula-box green">y(t) = (1/2)*e^t - (1/2)*cos(t) - (1/2)*sin(t)</div>
+    <div class="formula-box small">= (1/2)*(e^t - cos(t) - sin(t))</div>
+
+    <!-- Interactive: pipeline demo -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Solve Additional IVPs</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Select an IVP to walk through the full 4-step Laplace pipeline.</p>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="showIVP('iv1',this)">y' - 2y = 0, y(0)=3</button>
+        <button class="scenario-tab" onclick="showIVP('iv2',this)">y'' + y' = 0, y(0)=1, y'(0)=0</button>
+        <button class="scenario-tab" onclick="showIVP('iv3',this)">y'' + 4y = sin(t), y(0)=0, y'(0)=0</button>
+      </div>
+      <div id="ivpOutput" style="margin-top:12px;font-size:.77rem;line-height:1.9"></div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Ship autopilot heading control -- the ODE describing heading angle theta is theta'' + 2*zeta*wn*theta' + wn^2*theta = wn^2*theta_ref. With initial heading theta(0) and turning rate theta'(0) given by navigation sensors, Laplace solves this IVP exactly, giving the time-history of heading response to a commanded turn. The 4-step pipeline is how autopilot response curves are computed.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s5p1">
+        <p><strong>1.</strong> For y'' + 4y = 0 with y(0)=2, y'(0)=0, after taking the Laplace transform, Y(s) = ?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">2 / (s^2 + 4)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','correct')">2s / (s^2 + 4)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">(2s + 4) / (s^2 + 4)</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> For the IVP y' + 3y = 0, y(0) = 4, the Laplace step gives Y(s) = 4/(s+3). The solution y(t) is:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">4*cos(3t)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','correct')">4*e^(-3t)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">4*e^(3t)</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> In the solution y(t) = (1/2)*(e^t - cos(t) - sin(t)) for y'' + y = e^t, y(0)=0, y'(0)=0, verify: what is y(0)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p3" placeholder="y(0) = ?" onkeydown="if(event.key==='Enter')checkNum('s5p3',0,0)">
+          <button class="btn btn-sm" onclick="checkNum('s5p3',0,0)">Check</button>
+        </div>
+        <div class="feedback" id="s5p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: CONVOLUTION & TRANSFER FUNCTIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Convolution &amp; Transfer Functions</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>convolution theorem</strong> is one of the most powerful results in applied mathematics. It says that multiplication in the s-domain corresponds to convolution in the time domain.
+    </p>
+
+    <div class="formula-box large">Convolution Theorem: L{f * g} = F(s) * G(s)</div>
+
+    <p class="concept-text">
+      The <strong>convolution integral</strong> (f * g)(t) is defined as:
+    </p>
+
+    <div class="formula-box">(f * g)(t) = integral from 0 to t of f(tau)*g(t - tau) d(tau)</div>
+
+    <p class="concept-text">
+      Note: convolution is commutative: f * g = g * f. The integral "slides" one function across the other, accumulating the overlap at each time t.
+    </p>
+
+    <!-- Transfer functions -->
+    <p class="concept-text" style="margin-top:20px"><strong>Transfer Functions</strong></p>
+    <p class="concept-text">
+      For a linear system with input u(t) and output y(t), all initial conditions zero, the <strong>transfer function</strong> H(s) is defined as:
+    </p>
+
+    <div class="formula-box amber">H(s) = Y(s) / U(s) = Output / Input (in s-domain)</div>
+
+    <p class="concept-text">
+      The transfer function fully characterizes the system. Once you know H(s), the output to <em>any</em> input is Y(s) = H(s) * U(s), and in the time domain y(t) = h(t) * u(t) where h(t) = L^(-1){H(s)} is the <strong>impulse response</strong>.
+    </p>
+
+    <div class="formula-box green">Example: Mass-spring system &nbsp; y'' + 2y' + 5y = u(t)<br>H(s) = 1 / (s^2 + 2s + 5)</div>
+
+    <!-- Poles and stability -->
+    <p class="concept-text" style="margin-top:20px"><strong>Poles and System Stability</strong></p>
+    <p class="concept-text">
+      The <strong>poles</strong> of H(s) are the values of s where the denominator = 0 (the roots of the characteristic polynomial). Poles determine everything about long-term behavior:
+    </p>
+
+    <table class="transform-table">
+      <thead>
+        <tr><th>Pole Location</th><th>Time-Domain Behavior</th><th>Stability</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Re(s) < 0 (left half-plane)</td><td>Decaying exponential</td><td style="color:var(--green)">Stable</td></tr>
+        <tr><td>Re(s) = 0 (imaginary axis)</td><td>Sustained oscillation</td><td style="color:var(--amber)">Marginally stable</td></tr>
+        <tr><td>Re(s) > 0 (right half-plane)</td><td>Growing exponential</td><td style="color:var(--pink)">Unstable</td></tr>
+        <tr><td>Complex: s = a +/- i*w</td><td>Oscillatory with exponential envelope</td><td style="color:var(--indigo)">Depends on sign of a</td></tr>
+      </tbody>
+    </table>
+
+    <div class="key-point">All poles in the left half-plane (Re(s) < 0) = stable system. Any pole in the right half-plane = unstable (output grows without bound). This is the Routh-Hurwitz stability criterion in action.</div>
+
+    <!-- Pole visualizer -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Pole-Zero Map &amp; Stability</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Select a transfer function to see its poles plotted in the complex s-plane. Poles in the left half-plane are stable (green), right half-plane are unstable (pink).</p>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="showPoles('stable',this)">Stable: 1/(s^2+2s+5)</button>
+        <button class="scenario-tab" onclick="showPoles('marginal',this)">Marginal: 1/(s^2+4)</button>
+        <button class="scenario-tab" onclick="showPoles('unstable',this)">Unstable: 1/(s^2-s+2)</button>
+        <button class="scenario-tab" onclick="showPoles('overdamp',this)">Overdamped: 1/((s+1)(s+3))</button>
+      </div>
+      <svg id="poleSvg" width="100%" height="220" viewBox="0 0 560 220" style="display:block;margin-top:10px"></svg>
+      <div class="readout" id="poleReadout" style="margin-top:10px"></div>
+    </div>
+
+    <p class="concept-text" style="margin-top:16px"><strong>Convolution Example:</strong> Find y(t) = L^(-1){ 1/((s+1)(s+2)) } using convolution.</p>
+    <div class="step-box">
+      <div class="step-label">Recognize as product</div>
+      <div class="step-content">
+        F(s) = 1/(s+1) and G(s) = 1/(s+2)<br>
+        f(t) = e^(-t), &nbsp; g(t) = e^(-2t)
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Apply convolution integral</div>
+      <div class="step-content">
+        y(t) = integral from 0 to t of e^(-tau) * e^(-2(t-tau)) d(tau)<br>
+        = e^(-2t) * integral from 0 to t of e^(tau) d(tau)<br>
+        = e^(-2t) * [e^(tau)] from 0 to t = e^(-2t) * (e^t - 1)
+      </div>
+    </div>
+    <div class="formula-box green">y(t) = e^(-t) - e^(-2t) &nbsp; (matches partial fractions result)</div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Ship autopilot H(s) for heading control is typically designed so all poles have Re(s) < 0 with sufficient margin -- called the <em>stability margin</em>. Sonar signal processing transfer functions must also be stable: an unstable sonar filter would ring indefinitely, masking returns. Reactor power control systems have strict pole-placement requirements in NR design specifications.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s6p1">
+        <p><strong>1.</strong> For H(s) = 1/(s^2 + 2s + 5), the poles are at s = -1 +/- 2i. Is this system stable?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p1','correct')">Yes -- both poles have Re(s) = -1 < 0, so the system is stable</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p1','wrong')">No -- complex poles always indicate instability</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p1','wrong')">Cannot determine without the input U(s)</button>
+        </div>
+        <div class="feedback" id="s6p1-fb"></div>
+      </div>
+      <div class="problem" id="s6p2">
+        <p><strong>2.</strong> The convolution theorem says L{f * g} = F(s) * G(s). What does this enable in practice?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','wrong')">We can ignore initial conditions</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','correct')">We can compute complex time-domain integrals as simple multiplications in the s-domain</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','wrong')">Convolution in the s-domain becomes addition in the time domain</button>
+        </div>
+        <div class="feedback" id="s6p2-fb"></div>
+      </div>
+      <div class="problem" id="s6p3">
+        <p><strong>3.</strong> A system has H(s) = 1/(s^2 - 4). Where are the poles, and is this system stable?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p3','wrong')">Poles at s = +/- 2i (imaginary axis), marginally stable</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p3','correct')">Poles at s = +2 and s = -2; unstable because s = +2 is in the right half-plane</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p3','wrong')">Poles at s = +/- 4; unstable</button>
+        </div>
+        <div class="feedback" id="s6p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="quiz" id="quizCard">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num" style="background:var(--amber-dim);color:var(--amber)">Q</span> Week 11 Quiz &mdash; Laplace Transforms</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-primary btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-q" id="qq1">
+      <div class="q-num">Question 1</div>
+      <div class="q-text">The Laplace transform of f(t) = e^(7t) is F(s) = ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">7 / s^2</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">1 / (s + 7)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',true)">1 / (s - 7), valid for s > 7</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">7 / (s^2 + 49)</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q" id="qq2">
+      <div class="q-num">Question 2</div>
+      <div class="q-text">Using linearity, L{5*sin(3t) - 2*cos(3t)} = ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">15/(s^2+9) - 2s/(s^2+9)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',true)">15/(s^2+9) - 2s/(s^2+9) &nbsp; which simplifies to (15-2s)/(s^2+9)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">5s/(s^2+9) - 2*3/(s^2+9)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">3/(s^2+9) + s/(s^2+9)</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q" id="qq3">
+      <div class="q-num">Question 3</div>
+      <div class="q-text">The first shifting theorem states L{e^(at)*f(t)} = F(s - a). What is L{e^(-2t)*t^3}?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">6 / s^4</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">6 / (s+2)^3</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',true)">6 / (s+2)^4 &nbsp; [since L{t^3}=6/s^4, shift s -> s+2]</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">3! / (s-2)^4</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q" id="qq4">
+      <div class="q-num">Question 4</div>
+      <div class="q-text">For y'' + y' - 2y = 0 with y(0) = 1, y'(0) = 0, taking L gives Y(s) = ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">(s + 1) / (s^2 + s - 2)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',true)">(s + 1) / (s^2 + s - 2) &nbsp; [from s^2*Y-s + sY-1 - 2Y = 0, Y(s^2+s-2)=s+1]</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">s / (s^2 + s - 2)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">1 / (s^2 + s - 2)</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q" id="qq5">
+      <div class="q-num">Question 5</div>
+      <div class="q-text">To invert F(s) = 1/(s^2 + 4s + 8) you complete the square. The result is 1/((s+2)^2 + 4). This corresponds to L^(-1){F(s)} = ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">e^(2t)*sin(4t)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',true)">(1/2)*e^(-2t)*sin(2t)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">e^(-2t)*cos(2t)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">e^(-2t)*sin(4t)/4</button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q" id="qq6">
+      <div class="q-num">Question 6</div>
+      <div class="q-text">L{f'(t)} = s*F(s) - f(0). If F(s) = 5/(s+2) and f(0) = 1, what is L{f'(t)}?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">5s/(s+2)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',true)">5s/(s+2) - 1 &nbsp; = (5s - s - 2)/(s+2) = (4s-2)/(s+2)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">5/(s+2) - 1</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">s*F(s) = 5s/(s+2) only (no subtraction needed)</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q" id="qq7">
+      <div class="q-num">Question 7</div>
+      <div class="q-text">The transfer function H(s) = Y(s)/U(s) requires which assumption about initial conditions?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">Initial conditions must be nonzero</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">Initial conditions can be anything</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',true)">All initial conditions are zero (zero-state response)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">The system must be nonlinear</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q" id="qq8">
+      <div class="q-num">Question 8</div>
+      <div class="q-text">A system has poles at s = 1 + 2i and s = 1 - 2i. What is the system's behavior?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">Stable oscillation that decays to zero</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',true)">Unstable -- oscillations that grow because Re(s) = 1 > 0</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">Overdamped decay, no oscillation</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">Marginally stable oscillation</button>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-q" id="qq9">
+      <div class="q-num">Question 9</div>
+      <div class="q-text">The convolution theorem states L{f*g} = F(s)*G(s). What operation in time domain corresponds to multiplication in the s-domain?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">Multiplication: f(t) * g(t) pointwise</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">Differentiation of one function</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',true)">Convolution: integral from 0 to t of f(tau)*g(t-tau) d(tau)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">Addition: f(t) + g(t)</button>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="quiz-q" id="qq10">
+      <div class="q-num">Question 10</div>
+      <div class="q-text">For y'' + 4y = 0, y(0) = 2, y'(0) = 0, the Laplace method gives y(t) = ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">2*sin(2t)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">e^(-2t)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',true)">2*cos(2t)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">2*e^(2t) + 2*e^(-2t)</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+// ================================================================
+// PROGRESS TRACKING
+// ================================================================
+const TOTAL_SECTIONS = 6;
+const openedSections = new Set();
+
+function updateProgress() {
+  const pct = (openedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = openedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+function toggleSection(header) {
+  const card = header.parentElement;
+  const isOpen = card.classList.contains('open');
+  if (isOpen) {
+    card.classList.remove('open');
+  } else {
+    card.classList.add('open');
+    const sec = card.dataset.section;
+    if (sec && sec !== 'quiz') {
+      openedSections.add(sec);
+      card.classList.add('completed');
+      updateProgress();
+    }
+  }
+}
+
+// ================================================================
+// FEEDBACK: checkNum & checkMC
+// ================================================================
+function checkNum(id, answer, tolerance) {
+  const inp = document.getElementById(id);
+  const fb = document.getElementById(id + '-fb');
+  const val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; return; }
+  if (Math.abs(val - answer) <= tolerance) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! ' + (tolerance > 0 ? '(~' + answer.toFixed(4) + ')' : '');
+    inp.style.borderColor = 'var(--green)';
+    inp.classList.remove('shake');
+    void inp.offsetWidth;
+    inp.classList.add('pop');
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Expected ' + answer.toFixed(4);
+    inp.style.borderColor = 'var(--pink)';
+    inp.classList.remove('shake');
+    void inp.offsetWidth;
+    inp.classList.add('shake');
+    setTimeout(() => inp.classList.remove('shake'), 500);
+  }
+}
+
+function checkMC(btn, problemId, result) {
+  const container = document.getElementById(problemId);
+  const fb = document.getElementById(problemId + '-fb');
+  const btns = container.querySelectorAll('.mc-btn');
+  btns.forEach(b => { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    btn.classList.remove('pop');
+    void btn.offsetWidth;
+    btn.classList.add('pop');
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Incorrect -- review the notes and try to see why.';
+    btn.classList.remove('shake');
+    void btn.offsetWidth;
+    btn.classList.add('shake');
+    setTimeout(() => btn.classList.remove('shake'), 500);
+    // reveal correct
+    btns.forEach(b => { if (b.onclick && b.onclick.toString().includes("'correct'")) b.classList.add('correct'); });
+  }
+}
+
+// ================================================================
+// QUIZ
+// ================================================================
+let quizScoreVal = 0;
+const answeredQuestions = new Set();
+
+function quizAnswer(btn, qId, isCorrect) {
+  if (answeredQuestions.has(qId)) return;
+  answeredQuestions.add(qId);
+  const container = document.getElementById(qId);
+  const allBtns = container.querySelectorAll('.choice-btn');
+  allBtns.forEach(b => b.classList.add('disabled'));
+  if (isCorrect) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    document.getElementById('quizScore').textContent = quizScoreVal;
+    btn.classList.remove('pop');
+    void btn.offsetWidth;
+    btn.classList.add('pop');
+  } else {
+    btn.classList.add('selected-wrong');
+    btn.classList.remove('shake');
+    void btn.offsetWidth;
+    btn.classList.add('shake');
+    setTimeout(() => btn.classList.remove('shake'), 500);
+    allBtns.forEach(b => { if (b.onclick && b.onclick.toString().includes('true')) b.classList.add('reveal-correct'); });
+  }
+}
+
+function resetQuiz() {
+  quizScoreVal = 0;
+  answeredQuestions.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q').forEach(q => {
+    q.querySelectorAll('.choice-btn').forEach(b => {
+      b.className = 'choice-btn';
+    });
+  });
+}
+
+// ================================================================
+// SECTION 1: KERNEL VISUALIZER
+// ================================================================
+function updateKernel() {
+  const s = parseFloat(document.getElementById('sSlider').value);
+  const fType = document.getElementById('kernelFunc').value;
+  document.getElementById('sVal').textContent = 's = ' + s.toFixed(1);
+  document.getElementById('kReadS').textContent = s.toFixed(1);
+
+  const fNames = { one:'1', t:'t', sin:'sin(t)', exp:'e^(0.5t)' };
+  document.getElementById('kReadF').textContent = fNames[fType];
+
+  const W = 560, H = 200, pad = 40, tMax = 8;
+  const svg = document.getElementById('kernelSvg');
+  const xScale = (W - pad * 2) / tMax;
+  const yScale = (H - pad * 2) / 2.5;
+
+  // compute approximate numerical integral
+  let integral = 0;
+  const dt = 0.05;
+  for (let t = 0; t <= 20; t += dt) {
+    const f = getF(fType, t);
+    integral += Math.exp(-s * t) * f * dt;
+    if (integral > 1e6) { integral = Infinity; break; }
+  }
+
+  const convText = isFinite(integral) ? integral.toFixed(4) : 'Diverges';
+  document.getElementById('kReadFt').textContent = convText;
+
+  let convCond = '';
+  if (fType === 'exp') convCond = 's > 0.5';
+  else convCond = 's > 0';
+  document.getElementById('kReadConv').textContent = convCond;
+
+  // Build SVG paths
+  let kernelPath = '', funcPath = '', productPath = '', productFill = '';
+  let first = true, firstP = true;
+
+  for (let ti = 0; ti <= tMax; ti += 0.05) {
+    const x = pad + ti * xScale;
+    const kern = Math.exp(-s * ti);
+    const f = Math.min(getF(fType, ti), 3);
+    const product = Math.min(kern * f, 2.5);
+    const yk = H - pad - kern * yScale;
+    const yf = H - pad - f * yScale;
+    const yp = H - pad - product * yScale;
+
+    if (first) {
+      kernelPath = 'M' + x + ',' + yk;
+      funcPath = 'M' + x + ',' + yf;
+      productPath = 'M' + x + ',' + yp;
+      productFill = 'M' + x + ',' + (H - pad) + ' L' + x + ',' + yp;
+      first = false;
+    } else {
+      kernelPath += ' L' + x + ',' + yk;
+      funcPath += ' L' + x + ',' + yf;
+      productPath += ' L' + x + ',' + yp;
+      productFill += ' L' + x + ',' + yp;
+    }
+  }
+  const lastX = pad + tMax * xScale;
+  productFill += ' L' + lastX + ',' + (H - pad) + ' Z';
+
+  // Axes
+  const axisColor = '#363b47';
+  const baseline = H - pad;
+  svg.innerHTML = `
+    <line x1="${pad}" y1="${baseline}" x2="${W - pad}" y2="${baseline}" stroke="${axisColor}" stroke-width="1.5"/>
+    <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${baseline}" stroke="${axisColor}" stroke-width="1.5"/>
+    <text x="${pad + 2}" y="${pad + 14}" fill="#9ca3af" font-size="10">2.5</text>
+    <text x="${pad + 2}" y="${H - pad - yScale * 1}" fill="#9ca3af" font-size="10">1.0</text>
+    <text x="${pad + 2}" y="${baseline - 2}" fill="#9ca3af" font-size="10">0</text>
+    <text x="${W - pad - 16}" y="${baseline + 14}" fill="#9ca3af" font-size="10">t=8</text>
+    <path d="${productFill}" fill="rgba(99,102,241,0.15)" stroke="none"/>
+    <path d="${kernelPath}" stroke="#f59e0b" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+    <path d="${funcPath}" stroke="#ec4899" stroke-width="1.5" fill="none" stroke-dasharray="6,3"/>
+    <path d="${productPath}" stroke="#6366f1" stroke-width="2" fill="none"/>
+    <text x="${pad + 8}" y="${pad + 30}" fill="#f59e0b" font-size="10">-- e^(-st)</text>
+    <text x="${pad + 90}" y="${pad + 30}" fill="#ec4899" font-size="10">-- f(t)</text>
+    <text x="${pad + 160}" y="${pad + 30}" fill="#6366f1" font-size="10">-- e^(-st)*f(t) (shaded = F(s))</text>
+  `;
+}
+
+function getF(type, t) {
+  switch(type) {
+    case 'one': return 1;
+    case 't': return t;
+    case 'sin': return Math.sin(t);
+    case 'exp': return Math.exp(0.5 * t);
+    default: return 1;
+  }
+}
+
+// Initialize kernel visualizer
+updateKernel();
+
+// ================================================================
+// SECTION 2: DERIVATION EXPLORER
+// ================================================================
+const derivations = {
+  one: `
+    <div class="derivation-step"><strong>Start:</strong> L{1} = &int;&#x2080;&#x207E; e^(-st) &middot; 1 dt</div>
+    <div class="derivation-step"><strong>Integrate:</strong> = [ -1/s &middot; e^(-st) ] from 0 to &infin;</div>
+    <div class="derivation-step"><strong>Evaluate (s > 0):</strong> At t=&infin;, e^(-st) &rarr; 0. At t=0, value = 1/s.</div>
+    <div class="formula-box green small">L{1} = 1/s &nbsp; (valid for s > 0)</div>`,
+  tn: `
+    <div class="derivation-step"><strong>Start:</strong> L{t^n} = &int;&#x2080;&#x207E; e^(-st) &middot; t^n dt</div>
+    <div class="derivation-step"><strong>Substitute:</strong> Let u = st, then t = u/s, dt = du/s<br>= (1/s^(n+1)) &int;&#x2080;&#x207E; e^(-u) &middot; u^n du</div>
+    <div class="derivation-step"><strong>Recognize Gamma function:</strong> &int;&#x2080;&#x207E; e^(-u) &middot; u^n du = &Gamma;(n+1) = n!</div>
+    <div class="formula-box green small">L{t^n} = n! / s^(n+1) &nbsp; (valid for s > 0)</div>`,
+  eat: `
+    <div class="derivation-step"><strong>Start:</strong> L{e^(at)} = &int;&#x2080;&#x207E; e^(-st) &middot; e^(at) dt = &int;&#x2080;&#x207E; e^(-(s-a)t) dt</div>
+    <div class="derivation-step"><strong>Integrate:</strong> = [ -1/(s-a) &middot; e^(-(s-a)t) ] from 0 to &infin;</div>
+    <div class="derivation-step"><strong>Evaluate (s > a):</strong> As t &rarr; &infin;, e^(-(s-a)t) &rarr; 0 since s-a > 0. At t=0, value = 1/(s-a).</div>
+    <div class="formula-box green small">L{e^(at)} = 1/(s-a) &nbsp; (valid for s > a)</div>`,
+  sinwt: `
+    <div class="derivation-step"><strong>Method: Euler's formula</strong> e^(i&omega;t) = cos(&omega;t) + i&middot;sin(&omega;t)</div>
+    <div class="derivation-step"><strong>Step 1:</strong> L{e^(i&omega;t)} = 1/(s - i&omega;) = (s + i&omega;)/((s)^2 + &omega;^2)</div>
+    <div class="derivation-step"><strong>Step 2:</strong> Take imaginary part: Im[L{e^(i&omega;t)}] = L{sin(&omega;t)}</div>
+    <div class="derivation-step"><strong>Result:</strong> L{sin(&omega;t)} = &omega;/(s^2 + &omega;^2)</div>
+    <div class="formula-box green small">L{sin(&omega;t)} = &omega; / (s^2 + &omega;^2) &nbsp; (valid for s > 0)</div>`,
+  coswt: `
+    <div class="derivation-step"><strong>Method: Euler's formula</strong> e^(i&omega;t) = cos(&omega;t) + i&middot;sin(&omega;t)</div>
+    <div class="derivation-step"><strong>Step 1:</strong> L{e^(i&omega;t)} = 1/(s - i&omega;) = (s + i&omega;)/((s)^2 + &omega;^2)</div>
+    <div class="derivation-step"><strong>Step 2:</strong> Take real part: Re[L{e^(i&omega;t)}] = L{cos(&omega;t)}</div>
+    <div class="derivation-step"><strong>Result:</strong> L{cos(&omega;t)} = s/(s^2 + &omega;^2)</div>
+    <div class="formula-box green small">L{cos(&omega;t)} = s / (s^2 + &omega;^2) &nbsp; (valid for s > 0)</div>`
+};
+
+function showDerivation(key, btn) {
+  document.querySelectorAll('#contentArea .section-card:nth-child(2) .scenario-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('derivationOutput').innerHTML = derivations[key] || '';
+}
+showDerivation('one', document.querySelector('#contentArea .section-card:nth-child(2) .scenario-tab'));
+
+// ================================================================
+// SECTION 4: PARTIAL FRACTIONS INTERACTIVE
+// ================================================================
+const pfCases = {
+  case1: `
+    <p style="color:var(--text-dim);margin-bottom:10px"><strong style="color:var(--text-bright)">F(s) = 1 / ((s+1)(s+3))</strong></p>
+    <div class="derivation-step"><strong>Setup:</strong> 1/((s+1)(s+3)) = A/(s+1) + B/(s+3)</div>
+    <div class="derivation-step"><strong>Multiply through:</strong> 1 = A(s+3) + B(s+1)</div>
+    <div class="derivation-step"><strong>Cover-up s = -1:</strong> 1 = A(2) &rarr; A = 1/2</div>
+    <div class="derivation-step"><strong>Cover-up s = -3:</strong> 1 = B(-2) &rarr; B = -1/2</div>
+    <div class="derivation-step"><strong>F(s) = (1/2)/(s+1) - (1/2)/(s+3)</strong></div>
+    <div class="formula-box green small">f(t) = (1/2)*e^(-t) - (1/2)*e^(-3t)</div>`,
+  case2: `
+    <p style="color:var(--text-dim);margin-bottom:10px"><strong style="color:var(--text-bright)">F(s) = (s+4) / (s(s+2))</strong></p>
+    <div class="derivation-step"><strong>Setup:</strong> (s+4)/(s(s+2)) = A/s + B/(s+2)</div>
+    <div class="derivation-step"><strong>Multiply through:</strong> s+4 = A(s+2) + B(s)</div>
+    <div class="derivation-step"><strong>Cover-up s = 0:</strong> 4 = A(2) &rarr; A = 2</div>
+    <div class="derivation-step"><strong>Cover-up s = -2:</strong> 2 = B(-2) &rarr; B = -1</div>
+    <div class="derivation-step"><strong>F(s) = 2/s - 1/(s+2)</strong></div>
+    <div class="formula-box green small">f(t) = 2 - e^(-2t)</div>`,
+  case3: `
+    <p style="color:var(--text-dim);margin-bottom:10px"><strong style="color:var(--text-bright)">F(s) = 1 / (s^2 + 2s + 5)</strong></p>
+    <div class="derivation-step"><strong>Irreducible quadratic -- complete the square:</strong><br>s^2 + 2s + 5 = (s+1)^2 + 4</div>
+    <div class="derivation-step"><strong>F(s) = 1/((s+1)^2 + 4) = (1/2) &middot; 2/((s+1)^2 + 4)</strong></div>
+    <div class="derivation-step"><strong>Match to L{e^(at)sin(&omega;t)} = &omega;/((s-a)^2+&omega;^2) with a=-1, &omega;=2</strong></div>
+    <div class="formula-box green small">f(t) = (1/2)*e^(-t)*sin(2t)</div>`,
+  case4: `
+    <p style="color:var(--text-dim);margin-bottom:10px"><strong style="color:var(--text-bright)">F(s) = (3s-1) / ((s-1)(s+2)^2)</strong></p>
+    <div class="derivation-step"><strong>Setup (repeated root):</strong> (3s-1)/((s-1)(s+2)^2) = A/(s-1) + B/(s+2) + C/(s+2)^2</div>
+    <div class="derivation-step"><strong>Cover-up s=1:</strong> 2 = A(9) &rarr; A = 2/9</div>
+    <div class="derivation-step"><strong>Cover-up s=-2:</strong> -7 = C(-3) &rarr; C = 7/3</div>
+    <div class="derivation-step"><strong>s=0:</strong> -1 = A(-4) + B(-2) + C(-1) &rarr; -1 = -8/9 - 2B - 7/3 &rarr; B = -2/9</div>
+    <div class="formula-box green small">f(t) = (2/9)*e^t - (2/9)*e^(-2t) + (7/3)*t*e^(-2t)</div>`
+};
+
+function showPF(key, btn) {
+  document.querySelectorAll('#contentArea .section-card:nth-child(4) .scenario-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pfOutput').innerHTML = pfCases[key] || '';
+}
+showPF('case1', document.querySelector('#contentArea .section-card:nth-child(4) .scenario-tab'));
+
+// ================================================================
+// SECTION 5: IVP INTERACTIVE
+// ================================================================
+const ivpCases = {
+  iv1: `
+    <p style="color:var(--text-dim);margin-bottom:8px"><strong style="color:var(--text-bright)">y' - 2y = 0, y(0) = 3</strong></p>
+    <div class="step-box"><div class="step-label">Step 1: Take L</div><div class="step-content">sY(s) - y(0) - 2Y(s) = 0<br>sY - 3 - 2Y = 0</div></div>
+    <div class="step-box"><div class="step-label">Step 2: Solve for Y</div><div class="step-content">Y(s-2) = 3 &rarr; <strong>Y(s) = 3/(s-2)</strong></div></div>
+    <div class="step-box"><div class="step-label">Step 3: Table match</div><div class="step-content">3/(s-2) = 3 &middot; L{e^(2t)}</div></div>
+    <div class="formula-box green small">y(t) = 3*e^(2t)</div>`,
+  iv2: `
+    <p style="color:var(--text-dim);margin-bottom:8px"><strong style="color:var(--text-bright)">y'' + y' = 0, y(0) = 1, y'(0) = 0</strong></p>
+    <div class="step-box"><div class="step-label">Step 1: Take L</div><div class="step-content">[s^2*Y - s - 0] + [sY - 1] = 0<br>s^2*Y - s + sY - 1 = 0</div></div>
+    <div class="step-box"><div class="step-label">Step 2: Solve for Y</div><div class="step-content">Y(s^2 + s) = s + 1 &rarr; Y = (s+1)/(s(s+1)) = 1/s</div></div>
+    <div class="step-box"><div class="step-label">Step 4: Invert</div><div class="step-content">L^(-1){1/s} = 1</div></div>
+    <div class="formula-box green small">y(t) = 1 &nbsp; (constant -- the system has zero net force so it stays put)</div>`,
+  iv3: `
+    <p style="color:var(--text-dim);margin-bottom:8px"><strong style="color:var(--text-bright)">y'' + 4y = sin(t), y(0) = 0, y'(0) = 0</strong></p>
+    <div class="step-box"><div class="step-label">Step 1: Take L</div><div class="step-content">[s^2*Y] + 4Y = 1/(s^2+1)<br>Y(s^2+4) = 1/(s^2+1)</div></div>
+    <div class="step-box"><div class="step-label">Step 2: Solve for Y</div><div class="step-content"><strong>Y(s) = 1/((s^2+1)(s^2+4))</strong></div></div>
+    <div class="step-box"><div class="step-label">Step 3: Partial fractions</div><div class="step-content">Write: 1/((s^2+1)(s^2+4)) = A/(s^2+1) + B/(s^2+4)<br>1 = A(s^2+4) + B(s^2+1)<br>s^2: 0 = A+B; const: 1 = 4A+B &rarr; A = 1/3, B = -1/3</div></div>
+    <div class="step-box"><div class="step-label">Step 4: Invert</div><div class="step-content">(1/3) &middot; 1/(s^2+1) = (1/3) &middot; sin(t)<br>(-1/3) &middot; 1/(s^2+4) = (-1/6) &middot; sin(2t)</div></div>
+    <div class="formula-box green small">y(t) = (1/3)*sin(t) - (1/6)*sin(2t)</div>`
+};
+
+function showIVP(key, btn) {
+  document.querySelectorAll('#contentArea .section-card:nth-child(5) .scenario-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ivpOutput').innerHTML = ivpCases[key] || '';
+}
+showIVP('iv1', document.querySelector('#contentArea .section-card:nth-child(5) .scenario-tab'));
+
+// ================================================================
+// SECTION 6: POLE-ZERO MAP
+// ================================================================
+const poleCases = {
+  stable: {
+    title: '1/(s^2+2s+5)',
+    poles: [{re:-1,im:2},{re:-1,im:-2}],
+    desc: 'Complex conjugate poles at s = -1 \u00B1 2i',
+    stable: true
+  },
+  marginal: {
+    title: '1/(s^2+4)',
+    poles: [{re:0,im:2},{re:0,im:-2}],
+    desc: 'Pure imaginary poles at s = \u00B1 2i (marginally stable)',
+    stable: null
+  },
+  unstable: {
+    title: '1/(s^2-s+2)',
+    poles: [{re:0.5,im:1.32},{re:0.5,im:-1.32}],
+    desc: 'Poles at s = 0.5 \u00B1 1.32i -- RIGHT half-plane, UNSTABLE',
+    stable: false
+  },
+  overdamp: {
+    title: '1/((s+1)(s+3))',
+    poles: [{re:-1,im:0},{re:-3,im:0}],
+    desc: 'Real poles at s = -1 and s = -3 (overdamped, stable)',
+    stable: true
+  }
+};
+
+function showPoles(key, btn) {
+  document.querySelectorAll('#contentArea .section-card:nth-child(6) .scenario-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const data = poleCases[key];
+  const W = 560, H = 220;
+  const cx = W / 2, cy = H / 2;
+  const scale = 45;
+  const grid = '#363b47';
+  const axisCol = '#9ca3af';
+
+  let gridLines = '';
+  for (let i = -5; i <= 5; i++) {
+    const gx = cx + i * scale;
+    const gy = cy + i * scale;
+    gridLines += `<line x1="${gx}" y1="10" x2="${gx}" y2="${H-10}" stroke="${grid}" stroke-width="0.5"/>`;
+    gridLines += `<line x1="10" y1="${gy}" x2="${W-10}" y2="${gy}" stroke="${grid}" stroke-width="0.5"/>`;
+    if (i !== 0) {
+      gridLines += `<text x="${gx-4}" y="${cy+16}" fill="${axisCol}" font-size="9">${i}</text>`;
+      gridLines += `<text x="${cx+4}" y="${gy+4}" fill="${axisCol}" font-size="9">${-i}i</text>`;
+    }
+  }
+
+  // shaded half-planes
+  const lhpShade = `<rect x="10" y="10" width="${cx - 10}" height="${H - 20}" fill="rgba(34,197,94,0.04)" stroke="none"/>`;
+  const rhpShade = `<rect x="${cx}" y="10" width="${W - cx - 10}" height="${H - 20}" fill="rgba(236,72,153,0.04)" stroke="none"/>`;
+
+  let poleSvgContent = '';
+  data.poles.forEach(p => {
+    const px = cx + p.re * scale;
+    const py = cy - p.im * scale;
+    const col = p.re < 0 ? '#22c55e' : p.re > 0 ? '#ec4899' : '#f59e0b';
+    poleSvgContent += `
+      <line x1="${px-8}" y1="${py}" x2="${px+8}" y2="${py}" stroke="${col}" stroke-width="2.5"/>
+      <line x1="${px}" y1="${py-8}" x2="${px}" y2="${py+8}" stroke="${col}" stroke-width="2.5"/>
+      <circle cx="${px}" cy="${py}" r="5" fill="none" stroke="${col}" stroke-width="1.5"/>
+    `;
+  });
+
+  const stabColor = data.stable === true ? '#22c55e' : data.stable === false ? '#ec4899' : '#f59e0b';
+  const stabText = data.stable === true ? 'STABLE' : data.stable === false ? 'UNSTABLE' : 'MARGINAL';
+
+  document.getElementById('poleSvg').innerHTML = `
+    ${lhpShade}${rhpShade}${gridLines}
+    <line x1="${cx}" y1="10" x2="${cx}" y2="${H-10}" stroke="${axisCol}" stroke-width="1.5"/>
+    <line x1="10" y1="${cy}" x2="${W-10}" y2="${cy}" stroke="${axisCol}" stroke-width="1.5"/>
+    <text x="15" y="22" fill="#22c55e" font-size="9" opacity="0.7">LHP (stable)</text>
+    <text x="${cx+8}" y="22" fill="#ec4899" font-size="9" opacity="0.7">RHP (unstable)</text>
+    <text x="${cx+4}" y="${cy+14}" fill="${axisCol}" font-size="9">&sigma;</text>
+    <text x="${cx+4}" y="18" fill="${axisCol}" font-size="9">j&omega;</text>
+    ${poleSvgContent}
+    <text x="${W-10}" y="${H-10}" fill="${stabColor}" font-size="11" font-weight="600" text-anchor="end">${stabText}</text>
+  `;
+
+  document.getElementById('poleReadout').innerHTML = `
+    <div class="readout-item" style="flex:2"><span class="label">System</span><br><span class="value indigo">${data.title}</span></div>
+    <div class="readout-item" style="flex:3"><span class="label">Poles</span><br><span class="value" style="color:${stabColor}">${data.desc}</span></div>
+  `;
+}
+
+showPoles('stable', document.querySelector('#contentArea .section-card:nth-child(6) .scenario-tab'));
+
+// Initialize first derivation and IVP outputs
+document.getElementById('derivationOutput').innerHTML = derivations['one'];
+document.getElementById('ivpOutput').innerHTML = ivpCases['iv1'];
+document.getElementById('pfOutput').innerHTML = pfCases['case1'];
+</script>
+</body>
+</html>

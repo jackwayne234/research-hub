@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 4: Newton's Laws of Motion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#3a3f4b;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:var(--transition)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform var(--transition);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.problem .unit-label{font-size:.7rem;color:var(--text-dim)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-green{background:var(--green);border-color:var(--green);color:#fff}
+.btn-green:hover{background:#1ea34e}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.toggle-row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.toggle-switch{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:12px;transition:var(--transition)}
+.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:var(--text-bright);border-radius:50%;transition:var(--transition)}
+.toggle-switch input:checked+.toggle-slider{background:var(--indigo)}
+.toggle-switch input:checked+.toggle-slider::before{transform:translateX(20px)}
+.toggle-label{font-size:.72rem;color:var(--text-dim)}
+.graph-container{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.force-palette{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.force-btn{padding:6px 12px;font-size:.68rem;border:2px solid var(--border);border-radius:6px;background:var(--bg-card);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.force-btn:hover{opacity:.85}
+.force-btn.placed{opacity:.5}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.graph-container{grid-template-columns:1fr}.slider-row label{min-width:80px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>04</span> Newton's Laws of Motion</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: NEWTON'S FIRST LAW -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Newton's First Law &mdash; Inertia</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <p class="concept-text">
+        <strong>Newton's First Law</strong> states: An object at rest stays at rest, and an object in motion stays in motion with the same speed and direction, <strong>unless acted upon by an unbalanced force</strong>. This tendency to resist changes in motion is called <strong>inertia</strong>.
+      </p>
+
+      <div class="formula-box large">An object maintains its velocity (including v = 0) unless a net external force acts on it.</div>
+
+      <div class="key-point">Inertia is directly related to mass. More massive objects have greater inertia and are harder to accelerate or decelerate.</div>
+
+      <!-- Visual: rest vs motion -->
+      <div class="interactive-area">
+        <div class="interactive-label">Interactive: Inertia Demo</div>
+        <svg id="inertiaSvg" width="100%" viewBox="0 0 800 220" style="display:block">
+          <!-- Table / ground -->
+          <rect x="0" y="160" width="800" height="4" fill="#3a3f4b"/>
+          <!-- Block -->
+          <rect id="inertiaBlock" x="80" y="110" width="60" height="50" rx="6" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>
+          <text id="inertiaBlockLabel" x="110" y="140" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">5 kg</text>
+          <!-- Force arrow (shown when applying) -->
+          <line id="inertiaArrow" x1="140" y1="135" x2="140" y2="135" stroke="#22c55e" stroke-width="3" marker-end="url(#arrowGreen)" opacity="0"/>
+          <!-- Friction lines -->
+          <g id="frictionLines" opacity="0">
+            <line x1="85" y1="162" x2="75" y2="172" stroke="#ec4899" stroke-width="1.5"/>
+            <line x1="95" y1="162" x2="85" y2="172" stroke="#ec4899" stroke-width="1.5"/>
+            <line x1="105" y1="162" x2="95" y2="172" stroke="#ec4899" stroke-width="1.5"/>
+            <line x1="115" y1="162" x2="105" y2="172" stroke="#ec4899" stroke-width="1.5"/>
+            <line x1="125" y1="162" x2="115" y2="172" stroke="#ec4899" stroke-width="1.5"/>
+            <line x1="135" y1="162" x2="125" y2="172" stroke="#ec4899" stroke-width="1.5"/>
+          </g>
+          <!-- Velocity label -->
+          <text id="inertiaVelLabel" x="110" y="100" text-anchor="middle" fill="#22c55e" font-size="11" font-weight="600" opacity="0">v = 0 m/s</text>
+          <defs>
+            <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#22c55e"/></marker>
+            <marker id="arrowPink" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker>
+          </defs>
+        </svg>
+        <div class="controls-row">
+          <button class="btn btn-primary" onclick="inertiaApplyForce()">Apply Force</button>
+          <button class="btn" onclick="inertiaRemoveForce()">Remove Force</button>
+          <button class="btn btn-sm" onclick="inertiaReset()">Reset</button>
+        </div>
+        <div class="toggle-row">
+          <label class="toggle-switch"><input type="checkbox" id="frictionToggle" onchange="inertiaToggleFriction()"><span class="toggle-slider"></span></label>
+          <span class="toggle-label">Friction <span id="frictionState">OFF</span></span>
+        </div>
+        <div class="readout">
+          <div class="readout-item"><span class="label">Velocity</span><br><span class="value indigo" id="inertiaVel">0.0 m/s</span></div>
+          <div class="readout-item"><span class="label">Net Force</span><br><span class="value green" id="inertiaForce">0 N</span></div>
+          <div class="readout-item"><span class="label">Friction</span><br><span class="value pink" id="inertiaFriction">0 N</span></div>
+        </div>
+      </div>
+
+      <!-- Practice -->
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+
+        <div class="problem" id="s1p1">
+          <p><strong>1.</strong> A book sits on a table. What forces act on it, and why doesn't it accelerate?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">Only gravity acts on it</button>
+            <button class="mc-btn" onclick="checkMC(this,'s1p1','correct')">Gravity pulls down and the normal force pushes up &mdash; they balance, so net force is zero</button>
+            <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">The table's force is stronger than gravity</button>
+          </div>
+          <div class="feedback" id="s1p1-fb"></div>
+        </div>
+
+        <div class="problem" id="s1p2">
+          <p><strong>2.</strong> A hockey puck slides across frictionless ice. What happens to its velocity?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'s1p2','correct')">It stays constant &mdash; no net force means no acceleration</button>
+            <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">It gradually slows down</button>
+            <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">It speeds up slightly</button>
+          </div>
+          <div class="feedback" id="s1p2-fb"></div>
+        </div>
+
+        <div class="problem" id="s1p3">
+          <p><strong>3.</strong> You are in a car that suddenly brakes. You lurch forward. Which law explains this?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'s1p3','correct')">Newton's 1st Law &mdash; your body tends to keep moving at the car's original speed</button>
+            <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">Newton's 2nd Law &mdash; the brakes apply a force to you</button>
+            <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">Newton's 3rd Law &mdash; the car pushes you forward</button>
+          </div>
+          <div class="feedback" id="s1p3-fb"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: NEWTON'S SECOND LAW -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Newton's Second Law &mdash; F = ma</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <p class="concept-text">
+        <strong>Newton's Second Law</strong>: The acceleration of an object is directly proportional to the net force acting on it and inversely proportional to its mass. This is the quantitative heart of classical mechanics.
+      </p>
+
+      <div class="formula-box large">F_net = m * a &nbsp; or equivalently &nbsp; a = F_net / m</div>
+
+      <div class="key-point">Units: Force is in Newtons (N), where 1 N = 1 kg * m/s^2. Doubling the force doubles the acceleration. Doubling the mass halves the acceleration.</div>
+
+      <!-- Interactive: F and m sliders -->
+      <div class="interactive-area">
+        <div class="interactive-label">Interactive: F = ma Explorer</div>
+        <div class="slider-row">
+          <label>Force F</label>
+          <input type="range" id="fmaForce" min="1" max="100" value="20" oninput="updateFma()">
+          <span class="slider-val" id="fmaForceVal">20 N</span>
+        </div>
+        <div class="slider-row">
+          <label>Mass m</label>
+          <input type="range" id="fmaMass" min="1" max="50" value="10" oninput="updateFma()">
+          <span class="slider-val" id="fmaMassVal">10 kg</span>
+        </div>
+        <div class="readout">
+          <div class="readout-item"><span class="label">Acceleration</span><br><span class="value green" id="fmaAccel">2.00 m/s^2</span></div>
+        </div>
+        <!-- Animated block -->
+        <svg id="fmaBlockSvg" width="100%" viewBox="0 0 800 100" style="display:block;margin-top:12px">
+          <rect x="0" y="70" width="800" height="3" fill="#3a3f4b"/>
+          <rect id="fmaBlock" x="60" y="30" width="50" height="40" rx="5" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>
+          <text id="fmaBlockText" x="85" y="55" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">10 kg</text>
+          <line id="fmaArrow" x1="110" y1="50" x2="160" y2="50" stroke="#22c55e" stroke-width="3" marker-end="url(#arrowGreen)"/>
+          <text id="fmaArrowLabel" x="165" y="46" fill="#22c55e" font-size="10">20 N</text>
+        </svg>
+      </div>
+
+      <!-- Graphs: a vs F, a vs m -->
+      <div class="interactive-area">
+        <div class="interactive-label">Graphs: Acceleration Relationships</div>
+        <div class="graph-container">
+          <div>
+            <div class="sub-label">a vs F (mass = <span id="graphMassLabel">10</span> kg)</div>
+            <svg id="graphAvsF" width="100%" viewBox="0 0 360 240" style="display:block">
+              <rect x="50" y="10" width="290" height="200" fill="var(--bg-card)" stroke="var(--border)" rx="4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="sub-label">a vs m (force = <span id="graphForceLabel">20</span> N)</div>
+            <svg id="graphAvsM" width="100%" viewBox="0 0 360 240" style="display:block">
+              <rect x="50" y="10" width="290" height="200" fill="var(--bg-card)" stroke="var(--border)" rx="4"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multiple forces -->
+      <div class="interactive-area">
+        <div class="interactive-label">Multiple Forces on an Object</div>
+        <p class="concept-text" style="margin-bottom:10px">Add up to 3 horizontal forces. The net force determines acceleration.</p>
+        <div id="multiForceInputs">
+          <div class="slider-row">
+            <label>Force 1 (N)</label>
+            <input type="range" id="mf1" min="-50" max="50" value="30" oninput="updateMultiForce()">
+            <span class="slider-val" id="mf1Val">+30 N</span>
+          </div>
+          <div class="slider-row">
+            <label>Force 2 (N)</label>
+            <input type="range" id="mf2" min="-50" max="50" value="-10" oninput="updateMultiForce()">
+            <span class="slider-val" id="mf2Val">-10 N</span>
+          </div>
+          <div class="slider-row">
+            <label>Force 3 (N)</label>
+            <input type="range" id="mf3" min="-50" max="50" value="0" oninput="updateMultiForce()">
+            <span class="slider-val" id="mf3Val">0 N</span>
+          </div>
+          <div class="slider-row">
+            <label>Mass (kg)</label>
+            <input type="range" id="mfMass" min="1" max="30" value="5" oninput="updateMultiForce()">
+            <span class="slider-val" id="mfMassVal">5 kg</span>
+          </div>
+        </div>
+        <svg id="multiSvg" width="100%" viewBox="0 0 800 130" style="display:block;margin-top:10px">
+          <rect x="0" y="95" width="800" height="3" fill="#3a3f4b"/>
+          <rect id="mfBlock" x="360" y="50" width="60" height="45" rx="5" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>
+          <text x="390" y="78" text-anchor="middle" fill="#fff" font-size="10" font-weight="600" id="mfBlockLabel">5 kg</text>
+        </svg>
+        <div class="readout">
+          <div class="readout-item"><span class="label">Net Force</span><br><span class="value green" id="mfNet">+20 N</span></div>
+          <div class="readout-item"><span class="label">Acceleration</span><br><span class="value amber" id="mfAccel">4.00 m/s^2</span></div>
+          <div class="readout-item"><span class="label">Direction</span><br><span class="value indigo" id="mfDir">Right</span></div>
+        </div>
+      </div>
+
+      <!-- Practice -->
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+
+        <div class="problem">
+          <p><strong>1.</strong> A 4 kg object has a net force of 12 N applied. What is its acceleration?</p>
+          <div class="problem-input-row">
+            <input type="number" id="s2p1" step="0.1" placeholder="a = ?">
+            <span class="unit-label">m/s^2</span>
+            <button class="btn btn-sm" onclick="checkNum('s2p1',3,0.1)">Check</button>
+          </div>
+          <div class="feedback" id="s2p1-fb"></div>
+        </div>
+
+        <div class="problem">
+          <p><strong>2.</strong> A 1500 kg car accelerates at 2 m/s^2. What net force acts on it?</p>
+          <div class="problem-input-row">
+            <input type="number" id="s2p2" step="1" placeholder="F = ?">
+            <span class="unit-label">N</span>
+            <button class="btn btn-sm" onclick="checkNum('s2p2',3000,50)">Check</button>
+          </div>
+          <div class="feedback" id="s2p2-fb"></div>
+        </div>
+
+        <div class="problem">
+          <p><strong>3.</strong> A 60 N force accelerates an object at 5 m/s^2. What is the mass?</p>
+          <div class="problem-input-row">
+            <input type="number" id="s2p3" step="0.1" placeholder="m = ?">
+            <span class="unit-label">kg</span>
+            <button class="btn btn-sm" onclick="checkNum('s2p3',12,0.5)">Check</button>
+          </div>
+          <div class="feedback" id="s2p3-fb"></div>
+        </div>
+
+        <div class="problem">
+          <p><strong>4.</strong> Two forces act on a 3 kg object: 15 N east and 9 N west. What is the acceleration and direction?</p>
+          <div class="problem-input-row">
+            <input type="number" id="s2p4" step="0.1" placeholder="a = ?">
+            <span class="unit-label">m/s^2 east</span>
+            <button class="btn btn-sm" onclick="checkNum('s2p4',2,0.1)">Check</button>
+          </div>
+          <div class="feedback" id="s2p4-fb"></div>
+        </div>
+
+        <div class="problem">
+          <p><strong>5.</strong> If you triple the force on an object and double its mass, by what factor does the acceleration change?</p>
+          <div class="problem-input-row">
+            <input type="number" id="s2p5" step="0.01" placeholder="factor = ?">
+            <span class="unit-label">x</span>
+            <button class="btn btn-sm" onclick="checkNum('s2p5',1.5,0.05)">Check</button>
+          </div>
+          <div class="feedback" id="s2p5-fb"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: FREE BODY DIAGRAMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Free Body Diagrams</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <p class="concept-text">
+        A <strong>Free Body Diagram (FBD)</strong> isolates a single object and draws all the forces acting <em>on</em> it as arrows from the center of the object. It is the single most important problem-solving tool in Newtonian mechanics.
+      </p>
+
+      <div class="key-point">Steps: (1) Identify the object. (2) Draw it as a dot or box. (3) Identify every force acting ON it. (4) Draw each force as an arrow from the center, with length proportional to magnitude.</div>
+
+      <!-- FBD Builder -->
+      <div class="interactive-area">
+        <div class="interactive-label">Interactive FBD Builder</div>
+        <div class="scenario-tabs">
+          <button class="scenario-tab active" onclick="setFBDScenario(0,this)">Flat Surface</button>
+          <button class="scenario-tab" onclick="setFBDScenario(1,this)">Hanging</button>
+          <button class="scenario-tab" onclick="setFBDScenario(2,this)">Inclined Plane</button>
+          <button class="scenario-tab" onclick="setFBDScenario(3,this)">Two Connected</button>
+        </div>
+        <p class="concept-text" id="fbdDescription" style="margin-bottom:8px">A block rests on a flat horizontal surface. Select the forces that act on it.</p>
+        <div class="force-palette" id="fbdPalette">
+          <!-- buttons generated by JS -->
+        </div>
+        <svg id="fbdSvg" width="100%" viewBox="0 0 500 350" style="display:block;margin:10px 0">
+        </svg>
+        <div class="controls-row">
+          <button class="btn btn-green" onclick="checkFBD()">Check FBD</button>
+          <button class="btn btn-sm" onclick="resetFBD()">Clear</button>
+        </div>
+        <div class="feedback" id="fbd-fb"></div>
+      </div>
+
+      <!-- Practice -->
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+        <div class="problem" id="s3p1">
+          <p><strong>1.</strong> A 10 kg box sits on a flat floor. How many forces act on it in an FBD?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'s3p1','wrong')">1 (gravity only)</button>
+            <button class="mc-btn" onclick="checkMC(this,'s3p1','correct')">2 (gravity and normal force)</button>
+            <button class="mc-btn" onclick="checkMC(this,'s3p1','wrong')">3 (gravity, normal, and friction)</button>
+          </div>
+          <div class="feedback" id="s3p1-fb"></div>
+        </div>
+        <div class="problem" id="s3p2">
+          <p><strong>2.</strong> A block slides down a frictionless ramp at angle theta. Which forces appear in the FBD?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'s3p2','correct')">Weight (mg down) and Normal force (perpendicular to surface)</button>
+            <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">Weight and a force along the ramp</button>
+            <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">Weight, normal, and friction</button>
+          </div>
+          <div class="feedback" id="s3p2-fb"></div>
+        </div>
+        <div class="problem" id="s3p3">
+          <p><strong>3.</strong> A chandelier hangs from two cables at angles. How many forces act on it?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'s3p3','wrong')">2 (two tensions)</button>
+            <button class="mc-btn" onclick="checkMC(this,'s3p3','correct')">3 (two tensions + weight)</button>
+            <button class="mc-btn" onclick="checkMC(this,'s3p3','wrong')">4 (two tensions + weight + normal)</button>
+          </div>
+          <div class="feedback" id="s3p3-fb"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: FRICTION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Friction</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <p class="concept-text">
+        <strong>Friction</strong> opposes relative motion between surfaces in contact. <strong>Static friction</strong> prevents motion and can vary up to a maximum of f_s = mu_s * N. <strong>Kinetic friction</strong> acts on a moving object at a constant f_k = mu_k * N, where mu_k &lt; mu_s.
+      </p>
+
+      <div class="formula-box">f_s,max = mu_s * N &nbsp;&nbsp;&nbsp; f_k = mu_k * N</div>
+      <div class="formula-box pink">Static friction matches applied force up to f_s,max, then the object breaks free and kinetic friction takes over.</div>
+
+      <!-- Friction graph interactive -->
+      <div class="interactive-area">
+        <div class="interactive-label">Interactive: Applied Force vs Friction</div>
+        <div class="slider-row">
+          <label>Applied Force</label>
+          <input type="range" id="fricApplied" min="0" max="80" value="0" oninput="updateFrictionDemo()">
+          <span class="slider-val" id="fricAppliedVal">0 N</span>
+        </div>
+        <div class="slider-row">
+          <label>mu_s</label>
+          <input type="range" id="fricMuS" min="0.1" max="1.0" step="0.05" value="0.5" oninput="updateFrictionDemo()">
+          <span class="slider-val" id="fricMuSVal">0.50</span>
+        </div>
+        <div class="slider-row">
+          <label>mu_k</label>
+          <input type="range" id="fricMuK" min="0.05" max="0.9" step="0.05" value="0.3" oninput="updateFrictionDemo()">
+          <span class="slider-val" id="fricMuKVal">0.30</span>
+        </div>
+        <div class="slider-row">
+          <label>Mass (kg)</label>
+          <input type="range" id="fricMass" min="1" max="20" value="10" oninput="updateFrictionDemo()">
+          <span class="slider-val" id="fricMassVal">10 kg</span>
+        </div>
+        <svg id="fricGraphSvg" width="100%" viewBox="0 0 700 280" style="display:block;margin-top:10px">
+          <rect x="60" y="10" width="620" height="240" fill="var(--bg-card)" stroke="var(--border)" rx="4"/>
+        </svg>
+        <div class="readout">
+          <div class="readout-item"><span class="label">Friction Force</span><br><span class="value pink" id="fricForceVal">0 N</span></div>
+          <div class="readout-item"><span class="label">f_s,max</span><br><span class="value amber" id="fricFsMax">49.0 N</span></div>
+          <div class="readout-item"><span class="label">f_k</span><br><span class="value indigo" id="fricFkVal">29.4 N</span></div>
+          <div class="readout-item"><span class="label">Status</span><br><span class="value green" id="fricStatus">Stationary</span></div>
+        </div>
+      </div>
+
+      <!-- Inclined plane friction -->
+      <div class="interactive-area">
+        <div class="interactive-label">Inclined Plane: Will It Slide?</div>
+        <div class="slider-row">
+          <label>Angle theta</label>
+          <input type="range" id="rampAngle" min="0" max="60" value="20" oninput="updateRamp()">
+          <span class="slider-val" id="rampAngleVal">20 deg</span>
+        </div>
+        <div class="slider-row">
+          <label>mu_s</label>
+          <input type="range" id="rampMuS" min="0.1" max="1.2" step="0.05" value="0.5" oninput="updateRamp()">
+          <span class="slider-val" id="rampMuSVal">0.50</span>
+        </div>
+        <div class="slider-row">
+          <label>Mass (kg)</label>
+          <input type="range" id="rampMass" min="1" max="20" value="5" oninput="updateRamp()">
+          <span class="slider-val" id="rampMassVal">5 kg</span>
+        </div>
+        <svg id="rampSvg" width="100%" viewBox="0 0 600 320" style="display:block;margin-top:10px">
+        </svg>
+        <div class="readout">
+          <div class="readout-item"><span class="label">mg sin theta</span><br><span class="value pink" id="rampPar">16.8 N</span></div>
+          <div class="readout-item"><span class="label">mu_s mg cos theta</span><br><span class="value green" id="rampFricMax">23.0 N</span></div>
+          <div class="readout-item"><span class="label">Result</span><br><span class="value amber" id="rampResult">Stays put</span></div>
+        </div>
+      </div>
+
+      <!-- Practice -->
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+        <div class="problem">
+          <p><strong>1.</strong> A 20 kg crate on a floor has mu_s = 0.4. What is the maximum force you can push horizontally before it starts to move? (g = 9.8 m/s^2)</p>
+          <div class="problem-input-row">
+            <input type="number" id="s4p1" step="0.1" placeholder="F = ?">
+            <span class="unit-label">N</span>
+            <button class="btn btn-sm" onclick="checkNum('s4p1',78.4,1)">Check</button>
+          </div>
+          <div class="feedback" id="s4p1-fb"></div>
+        </div>
+        <div class="problem">
+          <p><strong>2.</strong> The same crate is now sliding with mu_k = 0.25. What is the friction force?</p>
+          <div class="problem-input-row">
+            <input type="number" id="s4p2" step="0.1" placeholder="f_k = ?">
+            <span class="unit-label">N</span>
+            <button class="btn btn-sm" onclick="checkNum('s4p2',49,1)">Check</button>
+          </div>
+          <div class="feedback" id="s4p2-fb"></div>
+        </div>
+        <div class="problem">
+          <p><strong>3.</strong> At what angle does a block start sliding on a ramp with mu_s = 0.6? (Hint: tan(theta) = mu_s)</p>
+          <div class="problem-input-row">
+            <input type="number" id="s4p3" step="0.1" placeholder="theta = ?">
+            <span class="unit-label">degrees</span>
+            <button class="btn btn-sm" onclick="checkNum('s4p3',31,1)">Check</button>
+          </div>
+          <div class="feedback" id="s4p3-fb"></div>
+        </div>
+        <div class="problem">
+          <p><strong>4.</strong> A 5 kg block is pushed with 40 N across a floor (mu_k = 0.3). What is its acceleration?</p>
+          <div class="problem-input-row">
+            <input type="number" id="s4p4" step="0.01" placeholder="a = ?">
+            <span class="unit-label">m/s^2</span>
+            <button class="btn btn-sm" onclick="checkNum('s4p4',5.06,0.2)">Check</button>
+          </div>
+          <div class="feedback" id="s4p4-fb"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: NEWTON'S THIRD LAW -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Newton's Third Law &amp; Applications</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <p class="concept-text">
+        <strong>Newton's Third Law</strong>: For every action, there is an equal and opposite reaction. If object A exerts a force on object B, then B exerts a force of equal magnitude but opposite direction on A. These forces act on <strong>different objects</strong>.
+      </p>
+
+      <div class="formula-box large">F_AB = -F_BA</div>
+
+      <div class="key-point">The action-reaction pair always acts on two different objects. They never cancel each other because they are on different FBDs.</div>
+
+      <!-- Action-Reaction Visual -->
+      <div class="interactive-area">
+        <div class="interactive-label">Action-Reaction Pairs</div>
+        <svg id="thirdLawSvg" width="100%" viewBox="0 0 700 300" style="display:block">
+          <!-- Pair 1: Ship and water -->
+          <text x="350" y="25" text-anchor="middle" fill="#9ca3af" font-size="12">Ship propeller pushes water back; water pushes ship forward</text>
+          <rect x="220" y="45" width="120" height="50" rx="6" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>
+          <text x="280" y="75" text-anchor="middle" fill="#fff" font-size="10">Ship</text>
+          <rect x="380" y="45" width="120" height="50" rx="6" fill="#22c55e" stroke="#4ade80" stroke-width="2"/>
+          <text x="440" y="75" text-anchor="middle" fill="#fff" font-size="10">Water</text>
+          <!-- Arrows -->
+          <line x1="340" y1="60" x2="385" y2="60" stroke="#ec4899" stroke-width="3" marker-end="url(#arrowPink)"/>
+          <text x="362" y="54" text-anchor="middle" fill="#ec4899" font-size="9">F ship on water</text>
+          <line x1="380" y1="80" x2="335" y2="80" stroke="#22c55e" stroke-width="3" marker-end="url(#arrowGreen)"/>
+          <text x="358" y="94" text-anchor="middle" fill="#22c55e" font-size="9">F water on ship</text>
+
+          <!-- Pair 2: Person and floor -->
+          <text x="350" y="140" text-anchor="middle" fill="#9ca3af" font-size="12">Person pushes floor down; floor pushes person up</text>
+          <rect x="280" y="155" width="50" height="60" rx="6" fill="#f59e0b" stroke="#fbbf24" stroke-width="2"/>
+          <text x="305" y="190" text-anchor="middle" fill="#fff" font-size="9">Person</text>
+          <rect x="220" y="225" width="180" height="20" rx="4" fill="#3a3f4b"/>
+          <text x="310" y="240" text-anchor="middle" fill="#9ca3af" font-size="9">Floor</text>
+          <line x1="305" y1="215" x2="305" y2="240" stroke="#ec4899" stroke-width="3" marker-end="url(#arrowPink)"/>
+          <text x="330" y="232" fill="#ec4899" font-size="8">F on floor</text>
+          <line x1="295" y1="225" x2="295" y2="200" stroke="#22c55e" stroke-width="3" marker-end="url(#arrowGreen)"/>
+          <text x="265" y="210" fill="#22c55e" font-size="8">Normal</text>
+        </svg>
+      </div>
+
+      <!-- Atwood Machine -->
+      <div class="interactive-area">
+        <div class="interactive-label">Atwood Machine Simulator</div>
+        <p class="concept-text" style="margin-bottom:8px">Two masses connected by a string over a frictionless pulley. The heavier side accelerates downward.</p>
+        <div class="slider-row">
+          <label>Mass m1 (left)</label>
+          <input type="range" id="atwoodM1" min="1" max="20" value="5" oninput="updateAtwood()">
+          <span class="slider-val" id="atwoodM1Val">5 kg</span>
+        </div>
+        <div class="slider-row">
+          <label>Mass m2 (right)</label>
+          <input type="range" id="atwoodM2" min="1" max="20" value="10" oninput="updateAtwood()">
+          <span class="slider-val" id="atwoodM2Val">10 kg</span>
+        </div>
+        <svg id="atwoodSvg" width="100%" viewBox="0 0 500 350" style="display:block;margin-top:10px">
+        </svg>
+        <div class="controls-row">
+          <button class="btn btn-primary" onclick="animateAtwood()">Animate</button>
+          <button class="btn btn-sm" onclick="resetAtwood()">Reset</button>
+        </div>
+        <div class="readout">
+          <div class="readout-item"><span class="label">Acceleration</span><br><span class="value green" id="atwoodAccel">3.27 m/s^2</span></div>
+          <div class="readout-item"><span class="label">Tension</span><br><span class="value amber" id="atwoodTension">65.3 N</span></div>
+          <div class="readout-item"><span class="label">Heavier Side</span><br><span class="value pink" id="atwoodHeavier">Right (m2)</span></div>
+        </div>
+        <div class="formula-box green" style="font-size:.82rem;margin-top:12px">a = (m2 - m1) * g / (m1 + m2) &nbsp;&nbsp; T = 2 * m1 * m2 * g / (m1 + m2)</div>
+      </div>
+
+      <!-- Practice -->
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+        <div class="problem" id="s5p1">
+          <p><strong>1.</strong> You push on a wall with 50 N. What force does the wall exert on you?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'s5p1','correct')">50 N in the opposite direction</button>
+            <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">50 N in the same direction</button>
+            <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">0 N (the wall doesn't move)</button>
+          </div>
+          <div class="feedback" id="s5p1-fb"></div>
+        </div>
+        <div class="problem">
+          <p><strong>2.</strong> In an Atwood machine, m1 = 3 kg and m2 = 7 kg. What is the acceleration? (g = 9.8 m/s^2)</p>
+          <div class="problem-input-row">
+            <input type="number" id="s5p2" step="0.01" placeholder="a = ?">
+            <span class="unit-label">m/s^2</span>
+            <button class="btn btn-sm" onclick="checkNum('s5p2',3.92,0.1)">Check</button>
+          </div>
+          <div class="feedback" id="s5p2-fb"></div>
+        </div>
+        <div class="problem">
+          <p><strong>3.</strong> Same Atwood machine (m1=3, m2=7). What is the tension in the string?</p>
+          <div class="problem-input-row">
+            <input type="number" id="s5p3" step="0.1" placeholder="T = ?">
+            <span class="unit-label">N</span>
+            <button class="btn btn-sm" onclick="checkNum('s5p3',41.16,1)">Check</button>
+          </div>
+          <div class="feedback" id="s5p3-fb"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quick Quiz &mdash; 10 Questions</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <div class="quiz-score">
+        <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+        <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+      </div>
+
+      <div class="quiz-q" id="qq1">
+        <div class="q-num">Question 1</div>
+        <div class="q-text">An object at rest on a table has zero net force. This is an example of:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(1,this,0)">Newton's 2nd Law only</button>
+          <button class="choice-btn" onclick="quizAnswer(1,this,1)">Newton's 1st Law (inertia)</button>
+          <button class="choice-btn" onclick="quizAnswer(1,this,0)">Newton's 3rd Law</button>
+          <button class="choice-btn" onclick="quizAnswer(1,this,0)">Conservation of energy</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq2">
+        <div class="q-num">Question 2</div>
+        <div class="q-text">A 5 kg box is pushed with a net force of 25 N. Its acceleration is:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(2,this,0)">125 m/s^2</button>
+          <button class="choice-btn" onclick="quizAnswer(2,this,1)">5 m/s^2</button>
+          <button class="choice-btn" onclick="quizAnswer(2,this,0)">0.2 m/s^2</button>
+          <button class="choice-btn" onclick="quizAnswer(2,this,0)">25 m/s^2</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq3">
+        <div class="q-num">Question 3</div>
+        <div class="q-text">A box is on a frictionless surface. You push it and let go. The box will:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(3,this,0)">Stop immediately</button>
+          <button class="choice-btn" onclick="quizAnswer(3,this,0)">Slow down and stop</button>
+          <button class="choice-btn" onclick="quizAnswer(3,this,1)">Move at constant velocity forever</button>
+          <button class="choice-btn" onclick="quizAnswer(3,this,0)">Accelerate forever</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq4">
+        <div class="q-num">Question 4</div>
+        <div class="q-text">Static friction on a stationary object is always equal to:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(4,this,0)">mu_s * N</button>
+          <button class="choice-btn" onclick="quizAnswer(4,this,1)">The applied force (up to mu_s * N)</button>
+          <button class="choice-btn" onclick="quizAnswer(4,this,0)">mu_k * N</button>
+          <button class="choice-btn" onclick="quizAnswer(4,this,0)">Zero</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq5">
+        <div class="q-num">Question 5</div>
+        <div class="q-text">In a free body diagram of a book on a table, which pair of forces balance?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(5,this,1)">Gravity and normal force</button>
+          <button class="choice-btn" onclick="quizAnswer(5,this,0)">Gravity and the book's push on the table</button>
+          <button class="choice-btn" onclick="quizAnswer(5,this,0)">Normal force and friction</button>
+          <button class="choice-btn" onclick="quizAnswer(5,this,0)">Gravity and friction</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq6">
+        <div class="q-num">Question 6</div>
+        <div class="q-text">A 10 kg mass and a 6 kg mass are on an Atwood machine. The acceleration is closest to:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(6,this,1)">2.45 m/s^2</button>
+          <button class="choice-btn" onclick="quizAnswer(6,this,0)">9.8 m/s^2</button>
+          <button class="choice-btn" onclick="quizAnswer(6,this,0)">4.9 m/s^2</button>
+          <button class="choice-btn" onclick="quizAnswer(6,this,0)">0.625 m/s^2</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq7">
+        <div class="q-num">Question 7</div>
+        <div class="q-text">The action-reaction forces in Newton's 3rd Law:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(7,this,0)">Act on the same object</button>
+          <button class="choice-btn" onclick="quizAnswer(7,this,0)">Can cancel each other out</button>
+          <button class="choice-btn" onclick="quizAnswer(7,this,1)">Act on two different objects</button>
+          <button class="choice-btn" onclick="quizAnswer(7,this,0)">Are not always equal</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq8">
+        <div class="q-num">Question 8</div>
+        <div class="q-text">A block slides down a ramp at constant velocity. The net force on it is:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(8,this,0)">mg sin theta down the ramp</button>
+          <button class="choice-btn" onclick="quizAnswer(8,this,1)">Zero (constant velocity means zero acceleration)</button>
+          <button class="choice-btn" onclick="quizAnswer(8,this,0)">Equal to kinetic friction up the ramp</button>
+          <button class="choice-btn" onclick="quizAnswer(8,this,0)">mg down</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq9">
+        <div class="q-num">Question 9</div>
+        <div class="q-text">If you double the net force and triple the mass, the new acceleration is:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(9,this,1)">2/3 of the original</button>
+          <button class="choice-btn" onclick="quizAnswer(9,this,0)">3/2 of the original</button>
+          <button class="choice-btn" onclick="quizAnswer(9,this,0)">6 times the original</button>
+          <button class="choice-btn" onclick="quizAnswer(9,this,0)">1/6 of the original</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq10">
+        <div class="q-num">Question 10</div>
+        <div class="q-text">A block begins to slide on a surface when the angle reaches 30 degrees. The coefficient of static friction is:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(10,this,0)">0.50</button>
+          <button class="choice-btn" onclick="quizAnswer(10,this,1)">0.577 (tan 30)</button>
+          <button class="choice-btn" onclick="quizAnswer(10,this,0)">0.866 (cos 30)</button>
+          <button class="choice-btn" onclick="quizAnswer(10,this,0)">0.30</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+const G = 9.8;
+
+/* =============================== PROGRESS =============================== */
+const openedSections = new Set();
+function updateProgress() {
+  document.querySelectorAll('.section-card.open').forEach(c => openedSections.add(c.dataset.section));
+  const n = openedSections.size;
+  document.getElementById('progressFill').style.width = (n/6*100)+'%';
+  document.getElementById('progressLabel').textContent = n+' / 6 sections';
+}
+
+function toggleSection(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+  updateProgress();
+}
+
+/* ==================== SECTION 1: INERTIA DEMO ==================== */
+let inertiaState = { x:80, v:0, forceOn:false, friction:false, animId:null };
+function inertiaApplyForce() {
+  inertiaState.forceOn = true;
+  if (!inertiaState.animId) inertiaAnimate();
+}
+function inertiaRemoveForce() { inertiaState.forceOn = false; }
+function inertiaToggleFriction() {
+  inertiaState.friction = document.getElementById('frictionToggle').checked;
+  document.getElementById('frictionState').textContent = inertiaState.friction ? 'ON' : 'OFF';
+  document.getElementById('frictionLines').setAttribute('opacity', inertiaState.friction ? '1' : '0');
+}
+function inertiaReset() {
+  if (inertiaState.animId) cancelAnimationFrame(inertiaState.animId);
+  inertiaState = { x:80, v:0, forceOn:false, friction:inertiaState.friction, animId:null };
+  updateInertiaSvg();
+}
+function inertiaAnimate() {
+  const dt = 0.03;
+  let a = 0;
+  if (inertiaState.forceOn) a += 4;
+  if (inertiaState.friction && inertiaState.v > 0.01) a -= 1.5;
+  if (inertiaState.friction && inertiaState.v < -0.01) a += 1.5;
+  if (inertiaState.friction && !inertiaState.forceOn && Math.abs(inertiaState.v) < 0.05) { inertiaState.v = 0; }
+  inertiaState.v += a * dt;
+  if (inertiaState.v < 0) inertiaState.v = 0;
+  inertiaState.x += inertiaState.v * 8;
+  if (inertiaState.x > 700) { inertiaState.x = 80; inertiaState.v = 0; }
+  updateInertiaSvg();
+  inertiaState.animId = requestAnimationFrame(inertiaAnimate);
+}
+function updateInertiaSvg() {
+  const block = document.getElementById('inertiaBlock');
+  const label = document.getElementById('inertiaBlockLabel');
+  const arrow = document.getElementById('inertiaArrow');
+  const velLabel = document.getElementById('inertiaVelLabel');
+  block.setAttribute('x', inertiaState.x);
+  label.setAttribute('x', inertiaState.x + 30);
+  velLabel.setAttribute('x', inertiaState.x + 30);
+  velLabel.setAttribute('opacity', '1');
+  velLabel.textContent = 'v = ' + inertiaState.v.toFixed(1) + ' m/s';
+  if (inertiaState.forceOn) {
+    arrow.setAttribute('x1', inertiaState.x + 60);
+    arrow.setAttribute('x2', inertiaState.x + 110);
+    arrow.setAttribute('y1', 135); arrow.setAttribute('y2', 135);
+    arrow.setAttribute('opacity', '1');
+  } else {
+    arrow.setAttribute('opacity', '0');
+  }
+  // Update friction lines position
+  const fl = document.getElementById('frictionLines');
+  const lines = fl.querySelectorAll('line');
+  lines.forEach((l, i) => {
+    l.setAttribute('x1', inertiaState.x + 5 + i*10);
+    l.setAttribute('x2', inertiaState.x - 5 + i*10);
+  });
+  document.getElementById('inertiaVel').textContent = inertiaState.v.toFixed(1) + ' m/s';
+  document.getElementById('inertiaForce').textContent = (inertiaState.forceOn ? '20' : '0') + ' N';
+  const fric = inertiaState.friction && inertiaState.v > 0.01 ? 7.5 : 0;
+  document.getElementById('inertiaFriction').textContent = fric.toFixed(1) + ' N';
+}
+
+/* ==================== SECTION 2: F=ma ==================== */
+let fmaAnimX = 60, fmaAnimV = 0, fmaAnimId = null;
+function updateFma() {
+  const F = +document.getElementById('fmaForce').value;
+  const m = +document.getElementById('fmaMass').value;
+  const a = F / m;
+  document.getElementById('fmaForceVal').textContent = F + ' N';
+  document.getElementById('fmaMassVal').textContent = m + ' kg';
+  document.getElementById('fmaAccel').textContent = a.toFixed(2) + ' m/s^2';
+  document.getElementById('fmaBlockText').textContent = m + ' kg';
+  document.getElementById('graphMassLabel').textContent = m;
+  document.getElementById('graphForceLabel').textContent = F;
+  // Arrow length proportional to force
+  const arrowLen = Math.max(10, F * 1.2);
+  document.getElementById('fmaArrow').setAttribute('x2', 110 + arrowLen);
+  document.getElementById('fmaArrowLabel').setAttribute('x', 115 + arrowLen);
+  document.getElementById('fmaArrowLabel').textContent = F + ' N';
+  drawGraphs(F, m);
+  // Restart animation
+  if (fmaAnimId) cancelAnimationFrame(fmaAnimId);
+  fmaAnimX = 60; fmaAnimV = 0;
+  fmaAnimId = requestAnimationFrame(() => fmaBlockAnimate(a));
+}
+function fmaBlockAnimate(a) {
+  fmaAnimV += a * 0.016;
+  fmaAnimX += fmaAnimV * 2;
+  if (fmaAnimX > 720) { fmaAnimX = 60; fmaAnimV = 0; }
+  document.getElementById('fmaBlock').setAttribute('x', fmaAnimX);
+  document.getElementById('fmaBlockText').setAttribute('x', fmaAnimX + 25);
+  const arrowLen = Math.max(10, (+document.getElementById('fmaForce').value) * 1.2);
+  document.getElementById('fmaArrow').setAttribute('x1', fmaAnimX + 50);
+  document.getElementById('fmaArrow').setAttribute('x2', fmaAnimX + 50 + arrowLen);
+  document.getElementById('fmaArrowLabel').setAttribute('x', fmaAnimX + 55 + arrowLen);
+  fmaAnimId = requestAnimationFrame(() => fmaBlockAnimate(a));
+}
+function drawGraphs(F, m) {
+  // a vs F graph
+  let svg1 = document.getElementById('graphAvsF');
+  let html1 = '<rect x="50" y="10" width="290" height="200" fill="#1a1d24" stroke="#3a3f4b" rx="4"/>';
+  // Axes
+  html1 += '<line x1="70" y1="190" x2="330" y2="190" stroke="#3a3f4b" stroke-width="1"/>';
+  html1 += '<line x1="70" y1="190" x2="70" y2="20" stroke="#3a3f4b" stroke-width="1"/>';
+  html1 += '<text x="200" y="230" text-anchor="middle" fill="#9ca3af" font-size="10">Force (N)</text>';
+  html1 += '<text x="30" y="110" text-anchor="middle" fill="#9ca3af" font-size="10" transform="rotate(-90,30,110)">a (m/s^2)</text>';
+  // Line: a = F/m, F from 0 to 100
+  let pts1 = '';
+  for (let f = 0; f <= 100; f += 5) {
+    const ax = 70 + (f/100)*260;
+    const ay = 190 - Math.min((f/m)/(100/m)*170, 170);
+    pts1 += ax+','+ay+' ';
+  }
+  html1 += '<polyline points="'+pts1+'" fill="none" stroke="#6366f1" stroke-width="2"/>';
+  // Current point
+  const cx1 = 70 + (F/100)*260;
+  const cy1 = 190 - Math.min((F/m)/(100/m)*170, 170);
+  html1 += '<circle cx="'+cx1+'" cy="'+cy1+'" r="5" fill="#ec4899"/>';
+  html1 += '<text x="'+cx1+'" y="'+(cy1-10)+'" text-anchor="middle" fill="#ec4899" font-size="9">a='+(F/m).toFixed(1)+'</text>';
+  // Tick labels
+  for (let f = 0; f <= 100; f += 25) {
+    html1 += '<text x="'+(70+(f/100)*260)+'" y="204" text-anchor="middle" fill="#9ca3af" font-size="8">'+f+'</text>';
+  }
+  svg1.innerHTML = html1;
+
+  // a vs m graph
+  let svg2 = document.getElementById('graphAvsM');
+  let html2 = '<rect x="50" y="10" width="290" height="200" fill="#1a1d24" stroke="#3a3f4b" rx="4"/>';
+  html2 += '<line x1="70" y1="190" x2="330" y2="190" stroke="#3a3f4b" stroke-width="1"/>';
+  html2 += '<line x1="70" y1="190" x2="70" y2="20" stroke="#3a3f4b" stroke-width="1"/>';
+  html2 += '<text x="200" y="230" text-anchor="middle" fill="#9ca3af" font-size="10">Mass (kg)</text>';
+  html2 += '<text x="30" y="110" text-anchor="middle" fill="#9ca3af" font-size="10" transform="rotate(-90,30,110)">a (m/s^2)</text>';
+  let pts2 = '';
+  const maxA2 = F / 1;
+  for (let mi = 1; mi <= 50; mi += 1) {
+    const ax = 70 + ((mi-1)/49)*260;
+    const aVal = F / mi;
+    const ay = 190 - Math.min((aVal/maxA2)*170, 170);
+    pts2 += ax+','+ay+' ';
+  }
+  html2 += '<polyline points="'+pts2+'" fill="none" stroke="#22c55e" stroke-width="2"/>';
+  const cx2 = 70 + ((m-1)/49)*260;
+  const cy2 = 190 - Math.min(((F/m)/maxA2)*170, 170);
+  html2 += '<circle cx="'+cx2+'" cy="'+cy2+'" r="5" fill="#ec4899"/>';
+  html2 += '<text x="'+cx2+'" y="'+(cy2-10)+'" text-anchor="middle" fill="#ec4899" font-size="9">a='+(F/m).toFixed(1)+'</text>';
+  for (let mi = 1; mi <= 50; mi += 12) {
+    html2 += '<text x="'+(70+((mi-1)/49)*260)+'" y="204" text-anchor="middle" fill="#9ca3af" font-size="8">'+mi+'</text>';
+  }
+  svg2.innerHTML = html2;
+}
+
+/* Multiple forces */
+function updateMultiForce() {
+  const f1 = +document.getElementById('mf1').value;
+  const f2 = +document.getElementById('mf2').value;
+  const f3 = +document.getElementById('mf3').value;
+  const m = +document.getElementById('mfMass').value;
+  document.getElementById('mf1Val').textContent = (f1>=0?'+':'') + f1 + ' N';
+  document.getElementById('mf2Val').textContent = (f2>=0?'+':'') + f2 + ' N';
+  document.getElementById('mf3Val').textContent = (f3>=0?'+':'') + f3 + ' N';
+  document.getElementById('mfMassVal').textContent = m + ' kg';
+  const net = f1 + f2 + f3;
+  const a = net / m;
+  document.getElementById('mfNet').textContent = (net>=0?'+':'') + net + ' N';
+  document.getElementById('mfAccel').textContent = Math.abs(a).toFixed(2) + ' m/s^2';
+  document.getElementById('mfDir').textContent = net > 0 ? 'Right' : net < 0 ? 'Left' : 'None';
+  document.getElementById('mfBlockLabel').textContent = m + ' kg';
+  // Draw arrows on SVG
+  let svg = document.getElementById('multiSvg');
+  let html = '<rect x="0" y="95" width="800" height="3" fill="#3a3f4b"/>';
+  html += '<rect x="360" y="50" width="60" height="45" rx="5" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+  html += '<text x="390" y="78" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">'+m+' kg</text>';
+  const colors = ['#22c55e','#ec4899','#f59e0b'];
+  const forces = [f1,f2,f3];
+  const yOff = [65,72,79];
+  forces.forEach((f,i) => {
+    if (f !== 0) {
+      const startX = f > 0 ? 420 : 360;
+      const endX = startX + f * 2.5;
+      const mid = f > 0 ? 'url(#a'+i+')' : 'url(#a'+i+')';
+      html += '<defs><marker id="a'+i+'" markerWidth="8" markerHeight="6" refX="'+(f>0?8:0)+'" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="'+colors[i]+'"/></marker></defs>';
+      html += '<line x1="'+startX+'" y1="'+yOff[i]+'" x2="'+endX+'" y2="'+yOff[i]+'" stroke="'+colors[i]+'" stroke-width="2.5" marker-end="url(#a'+i+')"/>';
+      html += '<text x="'+endX+'" y="'+(yOff[i]-5)+'" fill="'+colors[i]+'" font-size="9">'+(f>0?'+':'')+f+'N</text>';
+    }
+  });
+  // Net force arrow
+  if (net !== 0) {
+    const startX = net > 0 ? 420 : 360;
+    const endX = startX + net * 2.5;
+    html += '<defs><marker id="anet" markerWidth="8" markerHeight="6" refX="'+(net>0?8:0)+'" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#fff"/></marker></defs>';
+    html += '<line x1="'+startX+'" y1="40" x2="'+endX+'" y2="40" stroke="#fff" stroke-width="3" marker-end="url(#anet)" stroke-dasharray="6,3"/>';
+    html += '<text x="'+((startX+endX)/2)+'" y="32" text-anchor="middle" fill="#fff" font-size="10">Net: '+(net>0?'+':'')+net+'N</text>';
+  }
+  svg.innerHTML = html;
+}
+
+/* ==================== SECTION 3: FBD BUILDER ==================== */
+const fbdScenarios = [
+  { name:'Flat Surface', desc:'A block rests on a flat horizontal surface. Select all forces acting on it.',
+    required:['Weight','Normal'], available:['Weight','Normal','Tension','Friction','Applied'] },
+  { name:'Hanging', desc:'A block hangs from a single rope, stationary. Select all forces acting on it.',
+    required:['Weight','Tension'], available:['Weight','Normal','Tension','Friction','Applied'] },
+  { name:'Inclined Plane', desc:'A block sits on a rough inclined plane, not sliding. Select all forces acting on it.',
+    required:['Weight','Normal','Friction'], available:['Weight','Normal','Tension','Friction','Applied'] },
+  { name:'Two Connected', desc:'Block A sits on a table, connected by a string over a pulley to Block B hanging off the edge. Select forces on Block A (assume no motion yet, friction present).',
+    required:['Weight','Normal','Tension','Friction'], available:['Weight','Normal','Tension','Friction','Applied'] }
+];
+let currentFBDScenario = 0;
+let placedForces = new Set();
+
+const forceColors = { Weight:'#ec4899', Normal:'#22c55e', Tension:'#f59e0b', Friction:'#6366f1', Applied:'#818cf8' };
+
+function setFBDScenario(idx, btn) {
+  currentFBDScenario = idx;
+  placedForces.clear();
+  document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('fbdDescription').textContent = fbdScenarios[idx].desc;
+  document.getElementById('fbd-fb').className = 'feedback';
+  document.getElementById('fbd-fb').textContent = '';
+  buildFBDPalette();
+  drawFBD();
+}
+
+function buildFBDPalette() {
+  const pal = document.getElementById('fbdPalette');
+  const sc = fbdScenarios[currentFBDScenario];
+  pal.innerHTML = '';
+  sc.available.forEach(f => {
+    const b = document.createElement('button');
+    b.className = 'force-btn';
+    b.style.borderColor = forceColors[f];
+    b.style.color = forceColors[f];
+    b.textContent = f;
+    b.onclick = () => {
+      if (placedForces.has(f)) { placedForces.delete(f); b.classList.remove('placed'); b.style.background='var(--bg-card)'; }
+      else { placedForces.add(f); b.classList.add('placed'); b.style.background='rgba(255,255,255,.08)'; }
+      drawFBD();
+    };
+    pal.appendChild(b);
+  });
+}
+
+function drawFBD() {
+  const svg = document.getElementById('fbdSvg');
+  let html = '';
+  const cx = 250, cy = 175;
+  const sc = currentFBDScenario;
+  // Draw scenario
+  if (sc === 0) {
+    html += '<rect x="100" y="230" width="300" height="8" rx="2" fill="#3a3f4b"/>';
+    html += '<rect x="210" y="180" width="80" height="50" rx="6" fill="#262a33" stroke="#3a3f4b" stroke-width="2"/>';
+    html += '<text x="250" y="210" text-anchor="middle" fill="#9ca3af" font-size="11">Block</text>';
+  } else if (sc === 1) {
+    html += '<line x1="250" y1="60" x2="250" y2="155" stroke="#3a3f4b" stroke-width="2" stroke-dasharray="6,3"/>';
+    html += '<circle cx="250" cy="55" r="8" fill="#3a3f4b"/>';
+    html += '<rect x="210" y="155" width="80" height="50" rx="6" fill="#262a33" stroke="#3a3f4b" stroke-width="2"/>';
+    html += '<text x="250" y="185" text-anchor="middle" fill="#9ca3af" font-size="11">Block</text>';
+  } else if (sc === 2) {
+    html += '<polygon points="100,280 400,280 400,150" fill="none" stroke="#3a3f4b" stroke-width="2"/>';
+    const rx = 300, ry = 200;
+    html += '<rect x="'+(rx-30)+'" y="'+(ry-25)+'" width="60" height="40" rx="6" fill="#262a33" stroke="#3a3f4b" stroke-width="2" transform="rotate(-25,'+rx+','+ry+')"/>';
+    html += '<text x="'+rx+'" y="'+(ry+5)+'" text-anchor="middle" fill="#9ca3af" font-size="10" transform="rotate(-25,'+rx+','+ry+')">Block</text>';
+  } else {
+    html += '<rect x="50" y="200" width="400" height="8" rx="2" fill="#3a3f4b"/>';
+    html += '<rect x="130" y="150" width="70" height="50" rx="6" fill="#262a33" stroke="#3a3f4b" stroke-width="2"/>';
+    html += '<text x="165" y="180" text-anchor="middle" fill="#9ca3af" font-size="10">A</text>';
+    html += '<line x1="200" y1="175" x2="380" y2="175" stroke="#3a3f4b" stroke-width="1.5" stroke-dasharray="4,3"/>';
+    html += '<circle cx="400" cy="175" r="12" fill="none" stroke="#3a3f4b" stroke-width="2"/>';
+    html += '<line x1="400" y1="187" x2="400" y2="260" stroke="#3a3f4b" stroke-width="1.5" stroke-dasharray="4,3"/>';
+    html += '<rect x="375" y="260" width="50" height="40" rx="6" fill="#262a33" stroke="#3a3f4b" stroke-width="2"/>';
+    html += '<text x="400" y="285" text-anchor="middle" fill="#9ca3af" font-size="10">B</text>';
+  }
+  // Draw placed force arrows
+  const arrowDefs = {
+    Weight:  { dx:0, dy:60, label:'mg' },
+    Normal:  sc===2 ? { dx:-35, dy:-45, label:'N' } : { dx:0, dy:-60, label:'N' },
+    Tension: sc===1 ? { dx:0, dy:-60, label:'T' } : sc===3 ? { dx:50, dy:0, label:'T' } : { dx:50, dy:0, label:'T' },
+    Friction:sc===2 ? { dx:-50, dy:10, label:'f' } : { dx:-50, dy:0, label:'f' },
+    Applied: { dx:60, dy:0, label:'F_app' }
+  };
+  let blockCx = 250, blockCy = sc===0?205 : sc===1?180 : sc===2?200 : 175;
+  if (sc===3) { blockCx = 165; blockCy = 175; }
+  placedForces.forEach(f => {
+    const def = arrowDefs[f];
+    const col = forceColors[f];
+    const ex = blockCx + def.dx;
+    const ey = blockCy + def.dy;
+    html += '<defs><marker id="fbd_'+f+'" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="'+col+'"/></marker></defs>';
+    html += '<line x1="'+blockCx+'" y1="'+blockCy+'" x2="'+ex+'" y2="'+ey+'" stroke="'+col+'" stroke-width="3" marker-end="url(#fbd_'+f+')"/>';
+    html += '<text x="'+(ex+(def.dx>0?8:def.dx<0?-8:0))+'" y="'+(ey+(def.dy>0?14:def.dy<0?-6:4))+'" text-anchor="'+(def.dx<0?'end':'start')+'" fill="'+col+'" font-size="11" font-weight="600">'+def.label+'</text>';
+  });
+  svg.innerHTML = html;
+}
+
+function checkFBD() {
+  const sc = fbdScenarios[currentFBDScenario];
+  const req = new Set(sc.required);
+  const fb = document.getElementById('fbd-fb');
+  if (placedForces.size === req.size && [...req].every(f => placedForces.has(f))) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! You identified all the forces.';
+  } else {
+    const missing = [...req].filter(f => !placedForces.has(f));
+    const extra = [...placedForces].filter(f => !req.has(f));
+    let msg = 'Not quite. ';
+    if (missing.length) msg += 'Missing: ' + missing.join(', ') + '. ';
+    if (extra.length) msg += 'Extra: ' + extra.join(', ') + '. ';
+    fb.className = 'feedback incorrect';
+    fb.textContent = msg;
+  }
+}
+
+function resetFBD() {
+  placedForces.clear();
+  document.querySelectorAll('.force-btn').forEach(b => { b.classList.remove('placed'); b.style.background='var(--bg-card)'; });
+  document.getElementById('fbd-fb').className = 'feedback';
+  drawFBD();
+}
+
+/* ==================== SECTION 4: FRICTION ==================== */
+function updateFrictionDemo() {
+  const Fa = +document.getElementById('fricApplied').value;
+  const muS = +document.getElementById('fricMuS').value;
+  const muK = +document.getElementById('fricMuK').value;
+  const m = +document.getElementById('fricMass').value;
+  document.getElementById('fricAppliedVal').textContent = Fa + ' N';
+  document.getElementById('fricMuSVal').textContent = muS.toFixed(2);
+  document.getElementById('fricMuKVal').textContent = muK.toFixed(2);
+  document.getElementById('fricMassVal').textContent = m + ' kg';
+  const N = m * G;
+  const fsMax = muS * N;
+  const fk = muK * N;
+  document.getElementById('fricFsMax').textContent = fsMax.toFixed(1) + ' N';
+  document.getElementById('fricFkVal').textContent = fk.toFixed(1) + ' N';
+  let fricForce, status;
+  if (Fa <= fsMax) { fricForce = Fa; status = Fa > 0 ? 'Stationary (static)' : 'Stationary'; }
+  else { fricForce = fk; status = 'Sliding (kinetic)'; }
+  document.getElementById('fricForceVal').textContent = fricForce.toFixed(1) + ' N';
+  document.getElementById('fricStatus').textContent = status;
+  drawFrictionGraph(Fa, fsMax, fk);
+}
+
+function drawFrictionGraph(Fa, fsMax, fk) {
+  const svg = document.getElementById('fricGraphSvg');
+  const L=60, R=670, T=20, B=240;
+  let html = '<rect x="'+L+'" y="'+T+'" width="'+(R-L)+'" height="'+(B-T)+'" fill="#1a1d24" stroke="#3a3f4b" rx="4"/>';
+  html += '<line x1="'+L+'" y1="'+B+'" x2="'+R+'" y2="'+B+'" stroke="#3a3f4b"/>';
+  html += '<line x1="'+L+'" y1="'+B+'" x2="'+L+'" y2="'+T+'" stroke="#3a3f4b"/>';
+  html += '<text x="'+((L+R)/2)+'" y="270" text-anchor="middle" fill="#9ca3af" font-size="10">Applied Force (N)</text>';
+  html += '<text x="25" y="'+((T+B)/2)+'" text-anchor="middle" fill="#9ca3af" font-size="10" transform="rotate(-90,25,'+((T+B)/2)+')">Friction (N)</text>';
+  const maxF = 80;
+  const scaleX = (R-L)/maxF;
+  const maxFric = Math.max(fsMax, fk) * 1.3;
+  const scaleY = (B-T)/maxFric;
+  // Static phase: friction = applied, up to fsMax
+  const x1 = L, y1 = B;
+  const x2 = L + fsMax*scaleX, y2 = B - fsMax*scaleY;
+  html += '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#f59e0b" stroke-width="2.5"/>';
+  // Drop to kinetic
+  const y3 = B - fk*scaleY;
+  html += '<line x1="'+x2+'" y1="'+y2+'" x2="'+x2+'" y2="'+y3+'" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,3"/>';
+  // Kinetic phase
+  html += '<line x1="'+x2+'" y1="'+y3+'" x2="'+R+'" y2="'+y3+'" stroke="#6366f1" stroke-width="2.5"/>';
+  // Labels
+  html += '<text x="'+(x2+5)+'" y="'+(y2-6)+'" fill="#f59e0b" font-size="9">f_s,max='+fsMax.toFixed(0)+'N</text>';
+  html += '<text x="'+(R-5)+'" y="'+(y3-6)+'" text-anchor="end" fill="#6366f1" font-size="9">f_k='+fk.toFixed(0)+'N</text>';
+  // Current point
+  let cpx, cpy;
+  if (Fa <= fsMax) { cpx = L + Fa*scaleX; cpy = B - Fa*scaleY; }
+  else { cpx = L + Fa*scaleX; cpy = y3; }
+  html += '<circle cx="'+cpx+'" cy="'+cpy+'" r="6" fill="#ec4899" stroke="#fff" stroke-width="2"/>';
+  html += '<line x1="'+cpx+'" y1="'+B+'" x2="'+cpx+'" y2="'+cpy+'" stroke="#ec4899" stroke-width="1" stroke-dasharray="3,3"/>';
+  // Axis ticks
+  for (let v = 0; v <= maxF; v += 20) {
+    html += '<text x="'+(L+v*scaleX)+'" y="'+(B+14)+'" text-anchor="middle" fill="#9ca3af" font-size="8">'+v+'</text>';
+  }
+  svg.innerHTML = html;
+}
+
+/* Inclined Plane */
+function updateRamp() {
+  const angle = +document.getElementById('rampAngle').value;
+  const muS = +document.getElementById('rampMuS').value;
+  const m = +document.getElementById('rampMass').value;
+  document.getElementById('rampAngleVal').textContent = angle + ' deg';
+  document.getElementById('rampMuSVal').textContent = muS.toFixed(2);
+  document.getElementById('rampMassVal').textContent = m + ' kg';
+  const rad = angle * Math.PI / 180;
+  const par = m * G * Math.sin(rad);
+  const fricMax = muS * m * G * Math.cos(rad);
+  document.getElementById('rampPar').textContent = par.toFixed(1) + ' N';
+  document.getElementById('rampFricMax').textContent = fricMax.toFixed(1) + ' N';
+  document.getElementById('rampResult').textContent = par > fricMax ? 'SLIDES!' : 'Stays put';
+  document.getElementById('rampResult').style.color = par > fricMax ? 'var(--pink)' : 'var(--green)';
+  drawRamp(angle, m, par, fricMax);
+}
+
+function drawRamp(angle, m, par, fricMax) {
+  const svg = document.getElementById('rampSvg');
+  const rad = angle * Math.PI / 180;
+  // Ramp geometry
+  const rampLen = 350;
+  const bx = 80, by = 280;
+  const tx = bx + rampLen * Math.cos(rad);
+  const ty = by - rampLen * Math.sin(rad);
+  let html = '';
+  html += '<polygon points="'+bx+','+by+' '+tx+','+ty+' '+tx+','+by+'" fill="none" stroke="#3a3f4b" stroke-width="2"/>';
+  // Block on ramp
+  const blockDist = 0.45;
+  const bcx = bx + rampLen * blockDist * Math.cos(rad);
+  const bcy = by - rampLen * blockDist * Math.sin(rad);
+  const bw = 40, bh = 30;
+  html += '<g transform="translate('+bcx+','+bcy+') rotate('+ (-angle)+')">';
+  html += '<rect x="'+(-bw/2)+'" y="'+(-bh)+'" width="'+bw+'" height="'+bh+'" rx="4" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+  html += '<text x="0" y="'+(-bh/2+4)+'" text-anchor="middle" fill="#fff" font-size="9">'+m+'kg</text>';
+  html += '</g>';
+  // Weight arrow (straight down)
+  const wLen = 50;
+  html += '<line x1="'+bcx+'" y1="'+bcy+'" x2="'+bcx+'" y2="'+(bcy+wLen)+'" stroke="#ec4899" stroke-width="2.5" marker-end="url(#arrowPink)"/>';
+  html += '<text x="'+(bcx+8)+'" y="'+(bcy+wLen+4)+'" fill="#ec4899" font-size="9">mg</text>';
+  // Normal (perpendicular to surface, pointing away)
+  const nx = -Math.sin(rad) * 40;
+  const ny = -Math.cos(rad) * 40;
+  html += '<defs><marker id="arrN" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#22c55e"/></marker></defs>';
+  html += '<line x1="'+bcx+'" y1="'+bcy+'" x2="'+(bcx+nx)+'" y2="'+(bcy+ny)+'" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrN)"/>';
+  html += '<text x="'+(bcx+nx-8)+'" y="'+(bcy+ny-4)+'" fill="#22c55e" font-size="9">N</text>';
+  // mg sin theta component (along ramp, downhill)
+  const pLen = Math.min(par * 0.8, 60);
+  const pdx = Math.cos(rad) * (-pLen);
+  const pdy = Math.sin(rad) * pLen;
+  html += '<defs><marker id="arrP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#f59e0b"/></marker></defs>';
+  html += '<line x1="'+bcx+'" y1="'+bcy+'" x2="'+(bcx+pdx)+'" y2="'+(bcy+pdy)+'" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#arrP)"/>';
+  html += '<text x="'+(bcx+pdx-10)+'" y="'+(bcy+pdy+12)+'" fill="#f59e0b" font-size="9">mg sin'+angle+'</text>';
+  // Angle arc
+  html += '<path d="M'+(bx+50)+','+by+' A50,50 0 0,0 '+(bx+50*Math.cos(rad))+','+(by-50*Math.sin(rad))+'" fill="none" stroke="#9ca3af" stroke-width="1"/>';
+  html += '<text x="'+(bx+60)+'" y="'+(by-10)+'" fill="#9ca3af" font-size="10">'+angle+'</text>';
+  svg.innerHTML = html;
+}
+
+/* ==================== SECTION 5: ATWOOD MACHINE ==================== */
+let atwoodAnimId = null;
+let atwoodOffset = 0;
+function updateAtwood() {
+  const m1 = +document.getElementById('atwoodM1').value;
+  const m2 = +document.getElementById('atwoodM2').value;
+  document.getElementById('atwoodM1Val').textContent = m1 + ' kg';
+  document.getElementById('atwoodM2Val').textContent = m2 + ' kg';
+  const a = Math.abs(m2 - m1) * G / (m1 + m2);
+  const T = 2 * m1 * m2 * G / (m1 + m2);
+  document.getElementById('atwoodAccel').textContent = a.toFixed(2) + ' m/s^2';
+  document.getElementById('atwoodTension').textContent = T.toFixed(1) + ' N';
+  document.getElementById('atwoodHeavier').textContent = m2 > m1 ? 'Right (m2)' : m1 > m2 ? 'Left (m1)' : 'Equal';
+  atwoodOffset = 0;
+  drawAtwood(m1, m2, 0);
+}
+
+function drawAtwood(m1, m2, offset) {
+  const svg = document.getElementById('atwoodSvg');
+  const pcx = 250, pcy = 50, pr = 25;
+  // Determine which side goes down
+  const dir = m2 > m1 ? 1 : m1 > m2 ? -1 : 0;
+  const oL = -dir * offset;
+  const oR = dir * offset;
+  let html = '';
+  // Pulley
+  html += '<circle cx="'+pcx+'" cy="'+pcy+'" r="'+pr+'" fill="none" stroke="#3a3f4b" stroke-width="3"/>';
+  html += '<circle cx="'+pcx+'" cy="'+pcy+'" r="4" fill="#9ca3af"/>';
+  // Support
+  html += '<line x1="'+pcx+'" y1="'+(pcy-pr)+'" x2="'+pcx+'" y2="10" stroke="#3a3f4b" stroke-width="2"/>';
+  html += '<rect x="'+(pcx-40)+'" y="5" width="80" height="8" rx="2" fill="#3a3f4b"/>';
+  // Left string + mass
+  const lx = pcx - pr;
+  const ly1 = pcy;
+  const ly2 = 180 + oL;
+  html += '<line x1="'+lx+'" y1="'+ly1+'" x2="'+lx+'" y2="'+ly2+'" stroke="#9ca3af" stroke-width="1.5"/>';
+  html += '<rect x="'+(lx-25)+'" y="'+ly2+'" width="50" height="40" rx="6" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+  html += '<text x="'+lx+'" y="'+(ly2+25)+'" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">'+m1+'kg</text>';
+  html += '<text x="'+lx+'" y="'+(ly2-8)+'" text-anchor="middle" fill="#9ca3af" font-size="10">m1</text>';
+  // Right string + mass
+  const rx = pcx + pr;
+  const ry2 = 180 + oR;
+  html += '<line x1="'+rx+'" y1="'+pcy+'" x2="'+rx+'" y2="'+ry2+'" stroke="#9ca3af" stroke-width="1.5"/>';
+  html += '<rect x="'+(rx-25)+'" y="'+ry2+'" width="50" height="40" rx="6" fill="#22c55e" stroke="#4ade80" stroke-width="2"/>';
+  html += '<text x="'+rx+'" y="'+(ry2+25)+'" text-anchor="middle" fill="#fff" font-size="11" font-weight="600">'+m2+'kg</text>';
+  html += '<text x="'+rx+'" y="'+(ry2-8)+'" text-anchor="middle" fill="#9ca3af" font-size="10">m2</text>';
+  // Weight arrows
+  html += '<defs><marker id="arrD" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker></defs>';
+  html += '<line x1="'+lx+'" y1="'+(ly2+40)+'" x2="'+lx+'" y2="'+(ly2+70)+'" stroke="#ec4899" stroke-width="2" marker-end="url(#arrD)"/>';
+  html += '<line x1="'+rx+'" y1="'+(ry2+40)+'" x2="'+rx+'" y2="'+(ry2+70)+'" stroke="#ec4899" stroke-width="2" marker-end="url(#arrD)"/>';
+  svg.innerHTML = html;
+}
+
+function animateAtwood() {
+  if (atwoodAnimId) cancelAnimationFrame(atwoodAnimId);
+  atwoodOffset = 0;
+  const m1 = +document.getElementById('atwoodM1').value;
+  const m2 = +document.getElementById('atwoodM2').value;
+  if (m1 === m2) return;
+  let v = 0;
+  const a = Math.abs(m2 - m1) * G / (m1 + m2);
+  function step() {
+    v += a * 0.016;
+    atwoodOffset += v * 0.5;
+    if (atwoodOffset > 80) { atwoodOffset = 80; drawAtwood(m1, m2, atwoodOffset); return; }
+    drawAtwood(m1, m2, atwoodOffset);
+    atwoodAnimId = requestAnimationFrame(step);
+  }
+  atwoodAnimId = requestAnimationFrame(step);
+}
+
+function resetAtwood() {
+  if (atwoodAnimId) cancelAnimationFrame(atwoodAnimId);
+  atwoodAnimId = null;
+  atwoodOffset = 0;
+  updateAtwood();
+}
+
+/* ==================== QUIZ ==================== */
+let quizScoreVal = 0;
+let quizAnswered = new Set();
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  const btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(b => b.classList.add('disabled'));
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(b => { if (!b.classList.contains('selected-wrong')) { /* find correct */ } });
+    // Highlight correct answer
+    const idx = Array.from(btns).indexOf(btn);
+    btns.forEach((b,i) => {
+      // We encoded correct=1 in onclick, find which one
+    });
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0;
+  quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(b => {
+    b.className = 'choice-btn';
+  });
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  const input = document.getElementById(id);
+  const fb = document.getElementById(id + '-fb');
+  const val = parseFloat(input.value);
+  if (isNaN(val)) { fb.className='feedback incorrect'; fb.textContent='Enter a number.'; return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! The answer is ' + answer + '.';
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Try again. (Hint: answer is near ' + answer.toFixed(1) + ')';
+  }
+}
+
+function checkMC(btn, id, result) {
+  const fb = document.getElementById(id + '-fb');
+  const btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(b => b.classList.add('disabled'));
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+  } else {
+    btn.classList.add('wrong');
+    btns.forEach(b => { /* find the correct one */ });
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Think about it and review the concept above.';
+  }
+}
+
+/* ==================== INIT ==================== */
+updateProgress();
+updateFma();
+updateMultiForce();
+buildFBDPalette();
+drawFBD();
+updateFrictionDemo();
+updateRamp();
+updateAtwood();
+</script>
+</body>
+</html>

@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 13: Vectors &amp; 3D Geometry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:60px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:50px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:4px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.formula-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+@media(max-width:640px){.formula-grid{grid-template-columns:1fr}}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:44px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>13</span> Vectors &amp; 3D Geometry</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: VECTORS IN 3D -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Vectors in 3D</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>vector in 3D</strong> is an ordered triple v = (x, y, z) representing both magnitude and direction in three-dimensional space. Unlike scalars, vectors carry directional information -- they are the fundamental language of physics for describing displacement, velocity, force, and fields. The <strong>position vector</strong> r = (x, y, z) points from the origin to a point in space.
+    </p>
+
+    <div class="formula-box large">v = (x, y, z) = x i + y j + z k</div>
+
+    <p class="concept-text">
+      The unit vectors <strong>i = (1,0,0)</strong>, <strong>j = (0,1,0)</strong>, and <strong>k = (0,0,1)</strong> point along the positive x, y, z axes respectively. Any vector decomposes uniquely into components along these three axes. The <strong>magnitude</strong> (length) of v extends the 2D Pythagorean theorem into three dimensions via two applications of it.
+    </p>
+
+    <div class="formula-box large">|v| = sqrt(x&sup2; + y&sup2; + z&sup2;)</div>
+
+    <p class="concept-text">
+      A <strong>unit vector</strong> has magnitude exactly 1 and indicates direction only. To convert any nonzero vector to a unit vector, divide by its magnitude. The <strong>direction cosines</strong> are the cosines of the angles alpha, beta, gamma that v makes with the positive x, y, z axes -- they satisfy a constraint that links all three angles together.
+    </p>
+
+    <div class="formula-grid">
+      <div class="formula-box green">u_hat = v / |v|</div>
+      <div class="formula-box amber">cos&alpha; = x/|v|, cos&beta; = y/|v|, cos&gamma; = z/|v|</div>
+    </div>
+
+    <div class="formula-box pink">cos&sup2;&alpha; + cos&sup2;&beta; + cos&sup2;&gamma; = 1</div>
+
+    <p class="concept-text">
+      <strong>Vector addition</strong> and <strong>scalar multiplication</strong> work component-wise: (a+b) = (a1+b1, a2+b2, a3+b3), and c*v = (cx, cy, cz). Geometrically, addition follows the parallelogram rule -- place two vectors tail-to-tail and the diagonal is their sum.
+    </p>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> A ship's velocity through water is a 3D vector (surge, sway, heave). A radar beam direction is a unit vector from the antenna. Torpedo intercept geometry requires computing the lead angle -- the direction to aim so the torpedo's velocity vector intersects the target's future position. Ship heading is a 2D vector projected from a 3D navigation fix.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: 3D Vector on Isometric Axes</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust x, y, z components. The isometric projection shows the vector and its three axis-aligned components.</p>
+      <div class="slider-row"><label>x</label><input type="range" min="-5" max="5" value="3" step="0.5" oninput="updateVec3D();" id="vx3"><span class="slider-val" id="vx3v">3</span></div>
+      <div class="slider-row"><label>y</label><input type="range" min="-5" max="5" value="2" step="0.5" oninput="updateVec3D();" id="vy3"><span class="slider-val" id="vy3v">2</span></div>
+      <div class="slider-row"><label>z</label><input type="range" min="-5" max="5" value="4" step="0.5" oninput="updateVec3D();" id="vz3"><span class="slider-val" id="vz3v">4</span></div>
+      <svg id="isoSvg" width="100%" viewBox="0 0 420 300" style="margin-top:8px;border-radius:6px;background:rgba(0,0,0,.2)">
+        <!-- drawn by JS -->
+      </svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Magnitude |v|</span><br><span class="value green" id="mag3d">--</span></div>
+        <div class="readout-item"><span class="label">Unit vector</span><br><span class="value indigo" id="unit3d">--</span></div>
+        <div class="readout-item"><span class="label">cos &alpha;</span><br><span class="value amber" id="cosA">--</span></div>
+        <div class="readout-item"><span class="label">cos &beta;</span><br><span class="value amber" id="cosB">--</span></div>
+        <div class="readout-item"><span class="label">cos &gamma;</span><br><span class="value amber" id="cosC">--</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> Find |v| for v = (2, -3, 6). Enter the exact integer value.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1ans" placeholder="answer">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s1p1ans',7,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1ans-fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> A vector v has direction cosines cos&alpha; = 1/2, cos&beta; = 1/2. What is |cos&gamma;|? (Enter as a decimal, 2 decimal places)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2ans" placeholder="0.xx" step="0.01">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s1p2ans',0.7071,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2ans-fb"></div>
+      </div>
+      <div class="problem" id="s1p3">
+        <p><strong>3.</strong> Which property of direction cosines is always true?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">cos&alpha; + cos&beta; + cos&gamma; = 1</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','correct')">cos&sup2;&alpha; + cos&sup2;&beta; + cos&sup2;&gamma; = 1</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">cos&alpha; * cos&beta; * cos&gamma; = 1</button>
+        </div>
+        <div class="feedback" id="s1p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: DOT PRODUCT -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> The Dot Product</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>dot product</strong> (scalar product) takes two vectors and returns a scalar. It has two equivalent definitions that each reveal different geometric information. The algebraic form is easy to compute from components; the geometric form directly connects to the angle between vectors.
+    </p>
+
+    <div class="formula-box large">a &middot; b = a1b1 + a2b2 + a3b3 = |a||b|cos(&theta;)</div>
+
+    <p class="concept-text">
+      From the geometric form, we can isolate the angle: cos(&theta;) = (a &middot; b) / (|a||b|). This is how you find the angle between any two vectors in 3D -- a computation that would be nearly impossible from coordinates alone without the dot product. When a &middot; b = 0, cos(&theta;) = 0, meaning &theta; = 90deg: the vectors are <strong>orthogonal</strong>.
+    </p>
+
+    <div class="formula-box green">Angle: &theta; = arccos( a &middot; b / (|a||b|) )</div>
+
+    <p class="concept-text">
+      The <strong>scalar projection</strong> of b onto a is the signed length of b's shadow along a: comp_a(b) = (a &middot; b) / |a|. The <strong>vector projection</strong> is that scalar times the unit vector of a, giving the component of b that lies exactly along a.
+    </p>
+
+    <div class="formula-grid">
+      <div class="formula-box amber">comp_a(b) = (a &middot; b) / |a|</div>
+      <div class="formula-box pink">proj_a(b) = [(a &middot; b) / |a|&sup2;] a</div>
+    </div>
+
+    <div class="key-point"><strong>Work = F &middot; d:</strong> When a force F acts on an object displaced by d, only the component of force along the displacement does work. W = F &middot; d = |F||d|cos(&theta;). If you push perpendicular to motion (&theta; = 90deg), you do zero work -- this is why planets in circular orbits gain no kinetic energy from gravity.</div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Flux -- the amount of a field passing through a surface -- is computed as F &middot; n_hat where n_hat is the surface's unit normal. A sonar beam has maximum intensity along its axis; the acoustic power intercepted by a hull panel depends on the dot product of the beam direction with the panel's normal. Electric flux through a hull section uses the same formula.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Dot Product and Projection</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust angle and magnitudes of two 2D vectors. Watch the angle, dot product, and projection update in real time.</p>
+      <div class="slider-row"><label>|a|</label><input type="range" min="1" max="5" value="4" step="0.1" oninput="updateDot()" id="dotMagA"><span class="slider-val" id="dotMagAv">4.0</span></div>
+      <div class="slider-row"><label>|b|</label><input type="range" min="1" max="5" value="3" step="0.1" oninput="updateDot()" id="dotMagB"><span class="slider-val" id="dotMagBv">3.0</span></div>
+      <div class="slider-row"><label>&theta; (deg)</label><input type="range" min="0" max="180" value="50" step="1" oninput="updateDot()" id="dotTheta"><span class="slider-val" id="dotThetav">50</span></div>
+      <svg id="dotSvg" width="100%" viewBox="0 0 420 260" style="margin-top:8px;border-radius:6px;background:rgba(0,0,0,.2)"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">a &middot; b</span><br><span class="value indigo" id="dotVal">--</span></div>
+        <div class="readout-item"><span class="label">Angle &theta;</span><br><span class="value green" id="dotAngle">--</span></div>
+        <div class="readout-item"><span class="label">comp_a(b)</span><br><span class="value amber" id="dotComp">--</span></div>
+        <div class="readout-item"><span class="label">Orthogonal?</span><br><span class="value pink" id="dotOrth">--</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s2p1">
+        <p><strong>1.</strong> Compute a &middot; b for a = (1, -2, 3) and b = (4, 0, -1).</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1ans" placeholder="answer">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s2p1ans',1,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1ans-fb"></div>
+      </div>
+      <div class="problem" id="s2p2">
+        <p><strong>2.</strong> Vectors a = (1,0,0) and b = (0,1,0) are orthogonal. What is a &middot; b?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2ans" placeholder="answer">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s2p2ans',0,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2ans-fb"></div>
+      </div>
+      <div class="problem" id="s2p3">
+        <p><strong>3.</strong> A force F = (3, 4, 0) N acts on an object displaced d = (2, 0, 0) m. What is the work done (in J)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p3ans" placeholder="answer">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s2p3ans',6,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s2p3ans-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: CROSS PRODUCT -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> The Cross Product</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>cross product</strong> a &times; b produces a <em>vector</em> perpendicular to both a and b. Its direction is given by the <strong>right-hand rule</strong>: point fingers of right hand along a, curl toward b, and your thumb points in the direction of a &times; b. Its magnitude equals the area of the parallelogram spanned by a and b.
+    </p>
+
+    <div class="formula-box large">|a &times; b| = |a||b|sin(&theta;)</div>
+
+    <p class="concept-text">
+      To compute the cross product from components, use the <strong>3x3 determinant</strong> expansion along the first row, with i, j, k as the entries of that row:
+    </p>
+
+    <div class="formula-box pink">a &times; b = (a2b3 - a3b2)i - (a1b3 - a3b1)j + (a1b2 - a2b1)k</div>
+
+    <p class="concept-text">
+      Key properties: a &times; b = -(b &times; a) (anti-commutative). If a and b are parallel, sin(&theta;) = 0 so a &times; b = 0. The cross product is unique to 3D -- it has no analog in 2D or 4D in the same form.
+    </p>
+
+    <div class="key-point"><strong>Area of parallelogram</strong> = |a &times; b|. Area of triangle with sides a, b = (1/2)|a &times; b|. This is the geometric interpretation every time you see a cross product magnitude.</div>
+
+    <div class="formula-grid">
+      <div class="formula-box amber">Torque: &tau; = r &times; F</div>
+      <div class="formula-box green">Magnetic force: F = qv &times; B</div>
+    </div>
+
+    <p class="concept-text">
+      <strong>Torque</strong> r &times; F captures how a force F applied at position r creates rotation. The perpendicular distance from the axis matters -- this is the lever arm. <strong>Angular momentum</strong> L = r &times; p = r &times; mv. The magnetic force on a charge q moving with velocity v in field B is F = qv &times; B -- the force is always perpendicular to both the velocity and the field.
+    </p>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> A ship's propeller shaft exerts torque = r &times; F on the hull. The magnetic force F = qv &times; B on charged particles in seawater near a degaussing system (used to reduce a ship's magnetic signature to avoid mines) is computed via cross product. Sonar transducer beam steering uses cross products to find perpendicular planes.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Cross Product &amp; Right-Hand Rule</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust the angle between vectors a (red) and b (green). The cross product vector (indigo) is always perpendicular to both and animates into view.</p>
+      <div class="slider-row"><label>|a|</label><input type="range" min="1" max="4" value="3" step="0.1" oninput="updateCross()" id="crossMagA"><span class="slider-val" id="crossMagAv">3.0</span></div>
+      <div class="slider-row"><label>|b|</label><input type="range" min="1" max="4" value="2.5" step="0.1" oninput="updateCross()" id="crossMagB"><span class="slider-val" id="crossMagBv">2.5</span></div>
+      <div class="slider-row"><label>&theta; (deg)</label><input type="range" min="5" max="175" value="60" step="1" oninput="updateCross()" id="crossTheta"><span class="slider-val" id="crossThetav">60</span></div>
+      <svg id="crossSvg" width="100%" viewBox="0 0 420 280" style="margin-top:8px;border-radius:6px;background:rgba(0,0,0,.2)"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">|a &times; b|</span><br><span class="value indigo" id="crossMag">--</span></div>
+        <div class="readout-item"><span class="label">Parallelogram area</span><br><span class="value green" id="crossArea">--</span></div>
+        <div class="readout-item"><span class="label">Triangle area</span><br><span class="value amber" id="crossTriArea">--</span></div>
+        <div class="readout-item"><span class="label">Parallel?</span><br><span class="value pink" id="crossParallel">--</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s3p1">
+        <p><strong>1.</strong> Compute the k-component of (1,2,0) &times; (3,4,0). (i.e., a1b2 - a2b1)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1ans" placeholder="answer">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s3p1ans',-2,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1ans-fb"></div>
+      </div>
+      <div class="problem" id="s3p2">
+        <p><strong>2.</strong> Vectors a and b are parallel. What is |a &times; b|?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">|a||b|</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','correct')">0</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">|a| + |b|</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+      <div class="problem" id="s3p3">
+        <p><strong>3.</strong> What is the direction of a &times; b relative to a and b?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p3','wrong')">Parallel to both a and b</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p3','correct')">Perpendicular to both a and b</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p3','wrong')">Perpendicular to a only</button>
+        </div>
+        <div class="feedback" id="s3p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: LINES IN 3D -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Lines in 3D</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>line in 3D</strong> is determined by a point on the line and a direction vector. Unlike 2D where y = mx + b suffices, in 3D you need either the <strong>vector form</strong>, <strong>parametric equations</strong>, or <strong>symmetric equations</strong>. All three are equivalent descriptions of the same geometric object.
+    </p>
+
+    <div class="formula-box large">Vector form: r = r0 + tv</div>
+
+    <p class="concept-text">
+      Here r0 = (x0, y0, z0) is a known point on the line, v = (a, b, c) is the <strong>direction vector</strong>, and t is the real-valued parameter. As t ranges over all reals, r traces out every point on the line. Expanding into components gives the parametric form:
+    </p>
+
+    <div class="formula-box green">x = x0 + at, &nbsp; y = y0 + bt, &nbsp; z = z0 + ct</div>
+
+    <p class="concept-text">
+      Solving each parametric equation for t and setting them equal gives the <strong>symmetric equations</strong> (valid when a, b, c are all nonzero):
+    </p>
+
+    <div class="formula-box amber">(x - x0)/a = (y - y0)/b = (z - z0)/c</div>
+
+    <p class="concept-text">
+      The <strong>distance from a point P to a line</strong> through point Q with direction vector v uses the cross product. The distance equals the length of the component of (P - Q) perpendicular to v.
+    </p>
+
+    <div class="formula-box pink">d = |(P - Q) &times; v| / |v|</div>
+
+    <div class="key-point"><strong>Two lines in 3D</strong> can be parallel (same direction vector), intersecting (meet at a point), or <strong>skew</strong> (neither parallel nor intersecting). Skew lines are a 3D-only phenomenon -- they don't exist in 2D.</div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> A torpedo's path is a line in 3D (slightly sloped as depth changes). Given a target's current position and velocity vector, computing the intercept requires finding where two lines (torpedo trajectory and target trajectory) get closest -- a skew-lines distance problem. Radar tracking projects target motion along a line; intercept geometry is vector-form line arithmetic.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Line Through Two Points</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Drag the movable point (green) to see the line through it and the fixed point (indigo) update. Parametric equations update live.</p>
+      <svg id="lineSvg" width="100%" viewBox="0 0 420 260" style="margin-top:4px;border-radius:6px;background:rgba(0,0,0,.2);cursor:crosshair"></svg>
+      <p style="font-size:.68rem;color:var(--text-dim);margin-top:8px">Click anywhere in the diagram to move the green point.</p>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Direction v</span><br><span class="value indigo" id="lineDir">--</span></div>
+        <div class="readout-item"><span class="label">x = x0 + at</span><br><span class="value green" id="lineX">--</span></div>
+        <div class="readout-item"><span class="label">y = y0 + bt</span><br><span class="value green" id="lineY">--</span></div>
+        <div class="readout-item"><span class="label">|v|</span><br><span class="value amber" id="lineMag">--</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s4p1">
+        <p><strong>1.</strong> A line passes through (1, 2, 3) with direction v = (2, -1, 4). What is the x-value when t = 2?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1ans" placeholder="answer">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s4p1ans',5,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1ans-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> Which of the following is the correct vector form for a line through (0,1,2) in direction (1,0,-1)?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">r = (1,0,-1) + t(0,1,2)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','correct')">r = (0,1,2) + t(1,0,-1)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">r = t(0,1,2)</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+      <div class="problem" id="s4p3">
+        <p><strong>3.</strong> Two lines in 3D that are not parallel and do not intersect are called:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">Perpendicular lines</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">Divergent lines</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','correct')">Skew lines</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: PLANES IN 3D -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Planes in 3D</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>plane in 3D</strong> is determined by a <strong>normal vector</strong> n = (a, b, c) perpendicular to it, and a point (x0, y0, z0) on the plane. The equation of the plane follows from the condition that any vector lying in the plane must be perpendicular to n: n &middot; (r - r0) = 0.
+    </p>
+
+    <div class="formula-box large">ax + by + cz = d &nbsp;&nbsp; where d = ax0 + by0 + cz0</div>
+
+    <p class="concept-text">
+      The <strong>angle between two planes</strong> equals the angle between their normal vectors (or its supplement -- we take the acute angle). Two planes are parallel if their normals are parallel (one is a scalar multiple of the other); perpendicular if their normals are orthogonal (dot product = 0).
+    </p>
+
+    <div class="formula-box green">cos(&theta;) = |n1 &middot; n2| / (|n1||n2|)</div>
+
+    <p class="concept-text">
+      The <strong>distance from a point P = (x0, y0, z0) to the plane ax + by + cz = d</strong> is the perpendicular (shortest) distance. Plugging P into the left side of the plane equation measures how far P is from satisfying the equation, normalized by the magnitude of the normal vector.
+    </p>
+
+    <div class="formula-box pink">Distance = |ax0 + by0 + cz0 - d| / sqrt(a&sup2; + b&sup2; + c&sup2;)</div>
+
+    <div class="key-point"><strong>Physical meaning of the normal vector:</strong> The normal n = (a, b, c) points perpendicular to the plane. In physics, wavefronts of a plane wave are planes, and the wave propagation direction is the normal vector. Equipotential surfaces in electrostatics are planes in uniform fields -- the electric field E is always perpendicular to them, i.e., along the normal.</div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> In sonar, a sonar cone has a flat face -- the transducer plane. Sound propagates along the normal to this plane. Radar wavefronts are planes; the beam direction is the plane's normal. Equipotential surfaces around a charged hull are planes in uniform field approximations -- relevant for degaussing and magnetics signature control.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Tilting Plane via Normal Vector</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust the normal vector components. The plane tilts in isometric 3D view to remain perpendicular to n.</p>
+      <div class="slider-row"><label>n_x</label><input type="range" min="-3" max="3" value="1" step="0.5" oninput="updatePlane()" id="nx"><span class="slider-val" id="nxv">1</span></div>
+      <div class="slider-row"><label>n_y</label><input type="range" min="-3" max="3" value="1" step="0.5" oninput="updatePlane()" id="ny"><span class="slider-val" id="nyv">1</span></div>
+      <div class="slider-row"><label>n_z</label><input type="range" min="-3" max="3" value="2" step="0.5" oninput="updatePlane()" id="nz"><span class="slider-val" id="nzv">2</span></div>
+      <svg id="planeSvg" width="100%" viewBox="0 0 420 300" style="margin-top:8px;border-radius:6px;background:rgba(0,0,0,.2)"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Normal n</span><br><span class="value indigo" id="planeN">--</span></div>
+        <div class="readout-item"><span class="label">Plane equation</span><br><span class="value green" id="planeEq">--</span></div>
+        <div class="readout-item"><span class="label">|n|</span><br><span class="value amber" id="planeNmag">--</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s5p1">
+        <p><strong>1.</strong> Find the distance from point (1, 2, 3) to the plane 2x - y + 2z = 5. (Enter exact value as decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1ans" placeholder="answer" step="0.01">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s5p1ans',1.0,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1ans-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> Two planes have normals n1 = (1,0,0) and n2 = (0,1,0). What is the angle between the planes?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">0 degrees (parallel)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','correct')">90 degrees (perpendicular)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">45 degrees</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem" id="s5p3">
+        <p><strong>3.</strong> The plane x + 2y - 2z = 4 has normal vector n. What is |n|?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p3ans" placeholder="answer">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s5p3ans',3,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s5p3ans-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUADRIC SURFACES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quadric Surfaces</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Quadric surfaces</strong> are the 3D analogs of conic sections (ellipses, parabolas, hyperbolas). Their equations are second-degree in x, y, z. Understanding them means understanding their <strong>cross-sections</strong> -- slices parallel to coordinate planes that reveal familiar 2D shapes.
+    </p>
+
+    <div class="formula-grid">
+      <div class="formula-box">Sphere: x&sup2; + y&sup2; + z&sup2; = r&sup2;</div>
+      <div class="formula-box green">Ellipsoid: x&sup2;/a&sup2; + y&sup2;/b&sup2; + z&sup2;/c&sup2; = 1</div>
+      <div class="formula-box amber">Elliptic paraboloid: z = x&sup2;/a&sup2; + y&sup2;/b&sup2;</div>
+      <div class="formula-box pink">Hyperboloid (1 sheet): x&sup2;/a&sup2; + y&sup2;/b&sup2; - z&sup2;/c&sup2; = 1</div>
+    </div>
+
+    <p class="concept-text">
+      <strong>Key cross-section strategy:</strong> Set one variable to a constant k and identify the resulting 2D curve. For the ellipsoid x&sup2;/a&sup2; + y&sup2;/b&sup2; + z&sup2;/c&sup2; = 1, slicing at z = k gives an ellipse in the xy-plane. As k increases toward c, the ellipse shrinks to a point. Every horizontal slice is an ellipse; every vertical slice is also an ellipse.
+    </p>
+
+    <p class="concept-text">
+      The <strong>paraboloid</strong> z = x&sup2;/a&sup2; + y&sup2;/b&sup2; opens upward. Horizontal slices (z = k &gt; 0) are ellipses growing larger as z increases. Vertical slices give parabolas. This shape is a <strong>potential energy well</strong> in physics: near a stable equilibrium, V(x,y) &approx; (1/2)kx x&sup2; + (1/2)ky y&sup2; -- a paraboloid. Particles near the bottom oscillate in two independent harmonic oscillators.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Cross-Section Explorer</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Select a surface and a cut height z = k to see the cross-section shape and equation.</p>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="showSurface('sphere',this)">Sphere</button>
+        <button class="scenario-tab" onclick="showSurface('ellipsoid',this)">Ellipsoid</button>
+        <button class="scenario-tab" onclick="showSurface('paraboloid',this)">Paraboloid</button>
+        <button class="scenario-tab" onclick="showSurface('hyperboloid',this)">Hyperboloid</button>
+      </div>
+      <div class="slider-row"><label>z = k</label><input type="range" min="-3" max="3" value="0" step="0.1" oninput="updateCrossSection()" id="csK"><span class="slider-val" id="csKv">0.0</span></div>
+      <svg id="csSvg" width="100%" viewBox="0 0 420 240" style="margin-top:8px;border-radius:6px;background:rgba(0,0,0,.2)"></svg>
+      <div class="readout">
+        <div class="readout-item" style="flex:1"><span class="label">Surface</span><br><span class="value indigo" id="csSurface">x&sup2; + y&sup2; + z&sup2; = 4</span></div>
+        <div class="readout-item" style="flex:1"><span class="label">Cross-section at z=k</span><br><span class="value green" id="csEq">--</span></div>
+        <div class="readout-item"><span class="label">Shape</span><br><span class="value amber" id="csShape">--</span></div>
+      </div>
+    </div>
+
+    <p class="concept-text">
+      <strong>Physics connections:</strong> Planetary orbits are ellipses -- the 3D orbit of a binary star system sweeps out an ellipsoid of revolution. Rocket nozzles have hyperboloidal shapes. The gravitational potential near a planet's surface (in the rotating frame) creates a paraboloidal equipotential -- this is why astronauts feel weightless in free-fall.
+    </p>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> A sonar transducer produces a beam with a roughly ellipsoidal sensitivity pattern. Acoustic power diminishes as 1/r&sup2; (a sphere in 3D), but directional sonar concentrates it into an ellipsoidal cone. Radar cross-section of a submarine hull is modeled as a half-ellipsoid. Underwater detonation pressure waves spread as expanding spherical surfaces.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s6p1">
+        <p><strong>1.</strong> What shape is the cross-section of the ellipsoid x&sup2;/4 + y&sup2;/9 + z&sup2;/4 = 1 at z = 0?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p1','wrong')">Circle</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p1','correct')">Ellipse (with semi-axes 2 and 3)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p1','wrong')">Parabola</button>
+        </div>
+        <div class="feedback" id="s6p1-fb"></div>
+      </div>
+      <div class="problem" id="s6p2">
+        <p><strong>2.</strong> A paraboloid z = x&sup2; + y&sup2; models a potential energy well. At what point is the potential energy minimum?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','correct')">Origin (0, 0, 0)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','wrong')">At z = 1</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','wrong')">Along the z-axis for all z</button>
+        </div>
+        <div class="feedback" id="s6p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- FINAL QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num" style="background:rgba(245,158,11,.2);color:var(--amber)">Q</span> Final Quiz &mdash; 10 Questions</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / <span id="quizTotal">10</span></span>
+      <span style="font-size:.72rem;color:var(--text-dim)" id="quizPct">0%</span>
+    </div>
+
+    <div class="quiz-q" id="qq1">
+      <div class="q-num">Question 1</div>
+      <div class="q-text">The magnitude of v = (1, 2, 2) is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1','wrong')">A) 5</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1','correct')">B) 3</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1','wrong')">C) sqrt(5)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1','wrong')">D) 7</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq2">
+      <div class="q-num">Question 2</div>
+      <div class="q-text">The dot product a &middot; b = 0 means the vectors are:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2','wrong')">A) Parallel</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2','correct')">B) Orthogonal (perpendicular)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2','wrong')">C) Equal in magnitude</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2','wrong')">D) Anti-parallel</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq3">
+      <div class="q-num">Question 3</div>
+      <div class="q-text">Which formula gives the work done by force F over displacement d?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3','wrong')">A) W = F &times; d</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3','correct')">B) W = F &middot; d</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3','wrong')">C) W = |F| + |d|</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3','wrong')">D) W = |F| / |d|</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq4">
+      <div class="q-num">Question 4</div>
+      <div class="q-text">The cross product a &times; b produces:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4','wrong')">A) A scalar equal to |a||b|cos&theta;</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4','correct')">B) A vector perpendicular to both a and b</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4','wrong')">C) A vector parallel to a</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4','wrong')">D) A scalar equal to |a||b|</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq5">
+      <div class="q-num">Question 5</div>
+      <div class="q-text">The magnetic force on a charge q moving with velocity v in field B is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5','wrong')">A) F = qv &middot; B</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5','correct')">B) F = qv &times; B</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5','wrong')">C) F = q(v + B)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5','wrong')">D) F = q|v||B|</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq6">
+      <div class="q-num">Question 6</div>
+      <div class="q-text">The vector form of a line through point r0 with direction v is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6','wrong')">A) r = tv only</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6','correct')">B) r = r0 + tv</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6','wrong')">C) r = r0 &middot; v</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6','wrong')">D) r = r0 &times; v</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq7">
+      <div class="q-num">Question 7</div>
+      <div class="q-text">Two lines in 3D that are not parallel and do not intersect are called:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7','wrong')">A) Divergent lines</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7','wrong')">B) Perpendicular lines</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7','correct')">C) Skew lines</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7','wrong')">D) Orthogonal lines</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq8">
+      <div class="q-num">Question 8</div>
+      <div class="q-text">The normal vector to the plane 3x - y + 2z = 7 is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8','wrong')">A) (7, 0, 0)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8','correct')">B) (3, -1, 2)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8','wrong')">C) (1/3, -1, 1/2)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8','wrong')">D) (3, 1, -2)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq9">
+      <div class="q-num">Question 9</div>
+      <div class="q-text">The surface z = x&sup2; + y&sup2; is a:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9','wrong')">A) Sphere</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9','wrong')">B) Ellipsoid</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9','correct')">C) Paraboloid</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9','wrong')">D) Hyperboloid</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq10">
+      <div class="q-num">Question 10</div>
+      <div class="q-text">The area of the parallelogram formed by vectors a and b equals:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10','wrong')">A) a &middot; b</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10','correct')">B) |a &times; b|</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10','wrong')">C) |a| + |b|</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10','wrong')">D) |a| &middot; |b| &middot; cos&theta;</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ============================================================
+// PROGRESS TRACKING
+// ============================================================
+const TOTAL_SECTIONS = 6;
+const completedSections = new Set();
+
+function markSectionComplete(num) {
+  completedSections.add(num);
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = (completedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+// ============================================================
+// SECTION TOGGLE
+// ============================================================
+function toggleSection(header) {
+  const card = header.closest('.section-card');
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open', !wasOpen);
+  const secNum = parseInt(card.dataset.section);
+  if (!wasOpen && secNum >= 1 && secNum <= TOTAL_SECTIONS) {
+    markSectionComplete(secNum);
+    card.classList.add('completed');
+  }
+}
+
+// ============================================================
+// FEEDBACK HELPERS
+// ============================================================
+function checkNum(inputId, answer, tolerance) {
+  const el = document.getElementById(inputId);
+  const fb = document.getElementById(inputId + '-fb');
+  const val = parseFloat(el.value);
+  if (isNaN(val)) { showFeedback(fb, false, 'Enter a number.'); return; }
+  const correct = Math.abs(val - answer) <= tolerance;
+  showFeedback(fb, correct, correct ? 'Correct! Good work.' : 'Not quite. Try again -- check your arithmetic.');
+  if (correct) { el.style.borderColor = 'var(--green)'; animatePop(el); }
+  else { el.style.borderColor = 'var(--pink)'; animateShake(el); }
+}
+
+function checkMC(btn, containerId, result) {
+  const container = document.getElementById(containerId);
+  const allBtns = container.querySelectorAll('.mc-btn');
+  const fb = container.querySelector('.feedback');
+  allBtns.forEach(b => b.classList.add('disabled'));
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    showFeedback(fb, true, 'Correct!');
+    animatePop(btn);
+  } else {
+    btn.classList.add('wrong');
+    showFeedback(fb, false, 'Not quite. Review this concept and try the quiz at the end.');
+    animateShake(btn);
+    allBtns.forEach(b => { if (b.onclick && b.onclick.toString().includes("'correct'")) b.classList.add('correct'); });
+  }
+}
+
+function showFeedback(el, correct, msg) {
+  el.className = 'feedback ' + (correct ? 'correct' : 'incorrect');
+  el.textContent = msg;
+}
+
+function animatePop(el) {
+  el.classList.remove('pop','shake');
+  void el.offsetWidth;
+  el.classList.add('pop');
+}
+function animateShake(el) {
+  el.classList.remove('pop','shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+let quizScore = 0;
+const quizAnswered = new Set();
+
+function quizAnswer(btn, qId, result) {
+  if (quizAnswered.has(qId)) return;
+  quizAnswered.add(qId);
+  const qDiv = document.getElementById(qId);
+  const allBtns = qDiv.querySelectorAll('.choice-btn');
+  allBtns.forEach(b => b.classList.add('disabled'));
+  if (result === 'correct') {
+    btn.classList.add('selected-correct');
+    quizScore++;
+    animatePop(btn);
+  } else {
+    btn.classList.add('selected-wrong');
+    animateShake(btn);
+    allBtns.forEach(b => {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'correct'")) {
+        b.classList.add('reveal-correct');
+      }
+    });
+  }
+  document.getElementById('quizScore').textContent = quizScore;
+  const pct = Math.round((quizScore / 10) * 100);
+  document.getElementById('quizPct').textContent = pct + '%';
+}
+
+// ============================================================
+// ISO HELPERS
+// ============================================================
+// Isometric projection: x_screen = cx + (isoX - isoY)*cos30*scale
+//                        y_screen = cy - (isoZ*scale) + (isoX + isoY)*sin30*scale
+const COS30 = Math.cos(Math.PI / 6);
+const SIN30 = Math.sin(Math.PI / 6);
+
+function iso(cx, cy, x, y, z, scale) {
+  return {
+    sx: cx + (x - y) * COS30 * scale,
+    sy: cy - z * scale + (x + y) * SIN30 * scale
+  };
+}
+
+function svgLine(x1, y1, x2, y2, stroke, sw, opts) {
+  opts = opts || '';
+  return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${stroke}" stroke-width="${sw}" ${opts}/>`;
+}
+
+function svgArrow(x1, y1, x2, y2, stroke, sw, markerId) {
+  return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${stroke}" stroke-width="${sw}" marker-end="url(#${markerId})"/>`;
+}
+
+function arrowMarker(id, color) {
+  return `<marker id="${id}" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="${color}"/></marker>`;
+}
+
+// ============================================================
+// SECTION 1: 3D VECTOR ISO
+// ============================================================
+function updateVec3D() {
+  const x = parseFloat(document.getElementById('vx3').value);
+  const y = parseFloat(document.getElementById('vy3').value);
+  const z = parseFloat(document.getElementById('vz3').value);
+  document.getElementById('vx3v').textContent = x;
+  document.getElementById('vy3v').textContent = y;
+  document.getElementById('vz3v').textContent = z;
+
+  const mag = Math.sqrt(x*x + y*y + z*z);
+  document.getElementById('mag3d').textContent = mag.toFixed(3);
+  if (mag > 0) {
+    document.getElementById('unit3d').textContent = `(${(x/mag).toFixed(2)}, ${(y/mag).toFixed(2)}, ${(z/mag).toFixed(2)})`;
+    document.getElementById('cosA').textContent = (x/mag).toFixed(3);
+    document.getElementById('cosB').textContent = (y/mag).toFixed(3);
+    document.getElementById('cosC').textContent = (z/mag).toFixed(3);
+  } else {
+    document.getElementById('unit3d').textContent = 'undefined';
+    document.getElementById('cosA').textContent = '--';
+    document.getElementById('cosB').textContent = '--';
+    document.getElementById('cosC').textContent = '--';
+  }
+
+  const svg = document.getElementById('isoSvg');
+  const W = 420, H = 300;
+  const cx = 170, cy = 180, sc = 28;
+  const axLen = 6;
+
+  // axis endpoints
+  const O = iso(cx,cy,0,0,0,sc);
+  const Ax = iso(cx,cy,axLen,0,0,sc);
+  const Ay = iso(cx,cy,0,axLen,0,sc);
+  const Az = iso(cx,cy,0,0,axLen,sc);
+  const V  = iso(cx,cy,x,y,z,sc);
+
+  // component ghost lines (dashed)
+  const Vx  = iso(cx,cy,x,0,0,sc);
+  const Vy  = iso(cx,cy,0,y,0,sc);
+  const Vxy = iso(cx,cy,x,y,0,sc);
+  const Vxz = iso(cx,cy,x,0,z,sc);
+  const Vyz = iso(cx,cy,0,y,z,sc);
+
+  let html = `<defs>
+    ${arrowMarker('arrX','#f59e0b')}
+    ${arrowMarker('arrY','#22c55e')}
+    ${arrowMarker('arrZ','#ec4899')}
+    ${arrowMarker('arrV','#6366f1')}
+  </defs>`;
+
+  // grid dots on floor (z=0 plane)
+  for (let gx = -1; gx <= 6; gx++) {
+    for (let gy = -1; gy <= 6; gy++) {
+      const gp = iso(cx,cy,gx,gy,0,sc);
+      html += `<circle cx="${gp.sx.toFixed(1)}" cy="${gp.sy.toFixed(1)}" r="1" fill="#363b47"/>`;
+    }
+  }
+
+  // axes
+  html += svgArrow(O.sx,O.sy,Ax.sx,Ax.sy,'#f59e0b',2,'arrX');
+  html += svgArrow(O.sx,O.sy,Ay.sx,Ay.sy,'#22c55e',2,'arrY');
+  html += svgArrow(O.sx,O.sy,Az.sx,Az.sy,'#ec4899',2,'arrZ');
+  html += `<text x="${Ax.sx+6}" y="${Ax.sy+4}" fill="#f59e0b" font-size="11">x</text>`;
+  html += `<text x="${Ay.sx-14}" y="${Ay.sy+4}" fill="#22c55e" font-size="11">y</text>`;
+  html += `<text x="${Az.sx-2}" y="${Az.sy-6}" fill="#ec4899" font-size="11">z</text>`;
+
+  // component ghost lines
+  const dashStyle = 'stroke-dasharray="4,3" opacity="0.45"';
+  html += svgLine(O.sx,O.sy,Vx.sx,Vx.sy,'#f59e0b',1,dashStyle);
+  html += svgLine(Vx.sx,Vx.sy,Vxy.sx,Vxy.sy,'#22c55e',1,dashStyle);
+  html += svgLine(Vxy.sx,Vxy.sy,V.sx,V.sy,'#ec4899',1,dashStyle);
+  html += svgLine(O.sx,O.sy,Vy.sx,Vy.sy,'#22c55e',1,dashStyle);
+  html += svgLine(Vy.sx,Vy.sy,Vxy.sx,Vxy.sy,'#f59e0b',1,dashStyle);
+  html += svgLine(Vxy.sx,Vxy.sy,V.sx,V.sy,'#ec4899',1,dashStyle);
+
+  // main vector
+  html += svgArrow(O.sx,O.sy,V.sx,V.sy,'#6366f1',2.5,'arrV');
+
+  // label
+  if (mag > 0) {
+    html += `<text x="${V.sx+6}" y="${V.sy-4}" fill="#818cf8" font-size="11" font-weight="600">v=(${x},${y},${z})</text>`;
+  }
+
+  svg.innerHTML = html;
+}
+
+// ============================================================
+// SECTION 2: DOT PRODUCT
+// ============================================================
+function updateDot() {
+  const magA = parseFloat(document.getElementById('dotMagA').value);
+  const magB = parseFloat(document.getElementById('dotMagB').value);
+  const thetaDeg = parseFloat(document.getElementById('dotTheta').value);
+  document.getElementById('dotMagAv').textContent = magA.toFixed(1);
+  document.getElementById('dotMagBv').textContent = magB.toFixed(1);
+  document.getElementById('dotThetav').textContent = thetaDeg;
+
+  const thetaRad = thetaDeg * Math.PI / 180;
+  const dot = magA * magB * Math.cos(thetaRad);
+  const comp = dot / magA; // comp_a(b) = (a.b)/|a|
+  const orth = Math.abs(dot) < 0.05;
+
+  document.getElementById('dotVal').textContent = dot.toFixed(3);
+  document.getElementById('dotAngle').textContent = thetaDeg + 'deg';
+  document.getElementById('dotComp').textContent = comp.toFixed(3);
+  document.getElementById('dotOrth').textContent = orth ? 'Yes' : 'No';
+
+  const svg = document.getElementById('dotSvg');
+  const W = 420, H = 260;
+  const cx = 200, cy = 160;
+  const scale = 40;
+
+  // vector a along 0 degrees, vector b at theta from a
+  const aAngle = 0;
+  const bAngle = thetaRad;
+  const ax = cx + magA * Math.cos(aAngle) * scale;
+  const ay = cy - magA * Math.sin(aAngle) * scale;
+  const bx = cx + magB * Math.cos(bAngle) * scale;
+  const by = cy - magB * Math.sin(bAngle) * scale;
+
+  // projection of b onto a direction
+  const projLen = magB * Math.cos(thetaRad);
+  const px = cx + projLen * Math.cos(aAngle) * scale;
+  const py = cy - projLen * Math.sin(aAngle) * scale;
+
+  let html = `<defs>
+    ${arrowMarker('darrA','#ec4899')}
+    ${arrowMarker('darrB','#22c55e')}
+    ${arrowMarker('darrP','#f59e0b')}
+  </defs>`;
+
+  // x-axis guide
+  html += svgLine(cx-180,cy,cx+180,cy,'#363b47',1,'');
+
+  // projection drop line
+  if (Math.abs(projLen) > 0.05 && thetaDeg > 1 && thetaDeg < 179) {
+    html += svgLine(bx,by,px,py,'#f59e0b',1,'stroke-dasharray="4,3" opacity="0.6"');
+    html += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="4" fill="#f59e0b" opacity="0.8"/>`;
+    html += `<text x="${(px+6).toFixed(1)}" y="${(py-6).toFixed(1)}" fill="#f59e0b" font-size="10">proj</text>`;
+  }
+
+  // arc for angle
+  if (thetaDeg > 2) {
+    const arcR = 30;
+    const arcX2 = cx + arcR * Math.cos(bAngle);
+    const arcY2 = cy - arcR * Math.sin(bAngle);
+    const large = thetaDeg > 180 ? 1 : 0;
+    html += `<path d="M ${(cx+arcR).toFixed(1)} ${cy.toFixed(1)} A ${arcR} ${arcR} 0 ${large} 0 ${arcX2.toFixed(1)} ${arcY2.toFixed(1)}" fill="none" stroke="rgba(99,102,241,.5)" stroke-width="1.5"/>`;
+    const midAngle = thetaRad / 2;
+    html += `<text x="${(cx + (arcR+14)*Math.cos(midAngle)).toFixed(1)}" y="${(cy - (arcR+14)*Math.sin(midAngle)).toFixed(1)}" fill="#6366f1" font-size="10" text-anchor="middle">&theta;</text>`;
+  }
+
+  // vectors
+  html += svgArrow(cx,cy,ax,ay,'#ec4899',2.5,'darrA');
+  html += svgArrow(cx,cy,bx,by,'#22c55e',2.5,'darrB');
+  html += `<text x="${ax+6}" y="${ay+4}" fill="#ec4899" font-size="11" font-weight="600">a</text>`;
+  html += `<text x="${bx+6}" y="${by-4}" fill="#22c55e" font-size="11" font-weight="600">b</text>`;
+  html += `<text x="${cx+4}" y="${cy+18}" fill="#6366f1" font-size="10">O</text>`;
+
+  // dot product value display
+  const dotColor = dot >= 0 ? '#22c55e' : '#ec4899';
+  html += `<text x="10" y="20" fill="${dotColor}" font-size="12" font-weight="600">a\u00b7b = ${dot.toFixed(2)}</text>`;
+
+  svg.innerHTML = html;
+}
+
+// ============================================================
+// SECTION 3: CROSS PRODUCT
+// ============================================================
+let crossAnimFrame = 0;
+let crossAnimDir = 1;
+let crossAnimRunning = false;
+
+function updateCross() {
+  const magA = parseFloat(document.getElementById('crossMagA').value);
+  const magB = parseFloat(document.getElementById('crossMagB').value);
+  const thetaDeg = parseFloat(document.getElementById('crossTheta').value);
+  document.getElementById('crossMagAv').textContent = magA.toFixed(1);
+  document.getElementById('crossMagBv').textContent = magB.toFixed(1);
+  document.getElementById('crossThetav').textContent = thetaDeg;
+
+  const thetaRad = thetaDeg * Math.PI / 180;
+  const crossMag = magA * magB * Math.sin(thetaRad);
+  const isParallel = Math.abs(crossMag) < 0.05;
+
+  document.getElementById('crossMag').textContent = crossMag.toFixed(3);
+  document.getElementById('crossArea').textContent = crossMag.toFixed(3);
+  document.getElementById('crossTriArea').textContent = (crossMag / 2).toFixed(3);
+  document.getElementById('crossParallel').textContent = isParallel ? 'Yes' : 'No';
+
+  drawCross(magA, magB, thetaRad, crossMag, isParallel, 1.0);
+}
+
+function drawCross(magA, magB, thetaRad, crossMag, isParallel, crossScale) {
+  const svg = document.getElementById('crossSvg');
+  const cx = 200, cy = 160;
+  const scale = 42;
+
+  // a along 0, b at theta
+  const ax = cx + magA * scale;
+  const ay = cy;
+  const bx = cx + magB * Math.cos(thetaRad) * scale;
+  const by = cy - magB * Math.sin(thetaRad) * scale;
+
+  // cross product vector shown vertically (out of screen = up in 2D representation)
+  const crossH = crossMag * crossScale * 18;
+  const cpx = cx;
+  const cpy = cy - crossH;
+
+  let html = `<defs>
+    ${arrowMarker('carrA','#ec4899')}
+    ${arrowMarker('carrB','#22c55e')}
+    ${arrowMarker('carrC','#6366f1')}
+  </defs>`;
+
+  // parallelogram fill
+  if (!isParallel) {
+    const dx = bx - cx, dy = by - cy;
+    const p1x = ax + dx, p1y = ay + dy;
+    html += `<polygon points="${cx},${cy} ${ax.toFixed(1)},${ay.toFixed(1)} ${p1x.toFixed(1)},${p1y.toFixed(1)} ${bx.toFixed(1)},${by.toFixed(1)}" fill="rgba(99,102,241,.08)" stroke="rgba(99,102,241,.3)" stroke-width="1"/>`;
+  }
+
+  // arc for angle
+  if (thetaRad > 0.05) {
+    const arcR = 28;
+    const arcX2 = cx + arcR * Math.cos(thetaRad);
+    const arcY2 = cy - arcR * Math.sin(thetaRad);
+    html += `<path d="M ${cx+arcR} ${cy} A ${arcR} ${arcR} 0 0 0 ${arcX2.toFixed(1)} ${arcY2.toFixed(1)}" fill="none" stroke="rgba(245,158,11,.6)" stroke-width="1.5"/>`;
+    const midA = thetaRad / 2;
+    html += `<text x="${(cx+(arcR+14)*Math.cos(midA)).toFixed(1)}" y="${(cy-(arcR+14)*Math.sin(midA)).toFixed(1)}" fill="#f59e0b" font-size="10" text-anchor="middle">&theta;</text>`;
+  }
+
+  // vectors a and b
+  html += svgArrow(cx,cy,ax,ay,'#ec4899',2.5,'carrA');
+  html += svgArrow(cx,cy,bx,by,'#22c55e',2.5,'carrB');
+  html += `<text x="${ax+6}" y="${ay+4}" fill="#ec4899" font-size="12" font-weight="600">a</text>`;
+  html += `<text x="${bx+6}" y="${by-4}" fill="#22c55e" font-size="12" font-weight="600">b</text>`;
+
+  // cross product vector (shown perpendicular, animated scale)
+  if (!isParallel && crossScale > 0.01) {
+    html += svgArrow(cx,cy,cpx,cpy,'#6366f1',2.5,'carrC');
+    html += `<text x="${cpx+8}" y="${cpy}" fill="#6366f1" font-size="11" font-weight="600">a&times;b</text>`;
+    // right-angle indicator at base
+    const rSize = 10;
+    html += `<rect x="${cx}" y="${cy-rSize}" width="${rSize}" height="${rSize}" fill="none" stroke="rgba(99,102,241,.4)" stroke-width="1"/>`;
+  }
+
+  if (isParallel) {
+    html += `<text x="${cx-60}" y="${cy+40}" fill="#f59e0b" font-size="11">Parallel: a&times;b = 0</text>`;
+  }
+
+  html += `<text x="${cx+4}" y="${cy+16}" fill="#9ca3af" font-size="10">O</text>`;
+  html += `<text x="8" y="18" fill="#6366f1" font-size="11" font-weight="600">|a\u00d7b| = ${(crossMag).toFixed(2)}</text>`;
+
+  svg.innerHTML = html;
+}
+
+// ============================================================
+// SECTION 4: LINES - CLICK-TO-MOVE POINT
+// ============================================================
+let lineP2 = { x: 280, y: 100 }; // screen coords of movable point
+const lineP1 = { x: 160, y: 160 }; // fixed point in screen coords
+
+function initLineSvg() {
+  const svg = document.getElementById('lineSvg');
+  svg.addEventListener('click', function(e) {
+    const rect = svg.getBoundingClientRect();
+    const scaleX = 420 / rect.width;
+    const scaleY = 260 / rect.height;
+    lineP2.x = (e.clientX - rect.left) * scaleX;
+    lineP2.y = (e.clientY - rect.top) * scaleY;
+    drawLine();
+  });
+  drawLine();
+}
+
+function drawLine() {
+  const svg = document.getElementById('lineSvg');
+  // Convert screen coords to math coords (centered at P1 as origin approx)
+  // Just use raw screen for display, compute direction
+  const dx = lineP2.x - lineP1.x;
+  const dy = -(lineP2.y - lineP1.y); // flip y
+
+  // Math: fixed point Q = (3, 2), movable P = scaled from screen
+  const mx1 = 3, my1 = 2;
+  const mx2 = mx1 + Math.round(dx / 30 * 10) / 10;
+  const my2 = my1 + Math.round(dy / 30 * 10) / 10;
+  const vx = mx2 - mx1, vy = my2 - my1;
+  const vmag = Math.sqrt(vx*vx + vy*vy);
+
+  document.getElementById('lineDir').textContent = `(${vx.toFixed(1)}, ${vy.toFixed(1)})`;
+  document.getElementById('lineX').textContent = `x = ${mx1} + ${vx.toFixed(1)}t`;
+  document.getElementById('lineY').textContent = `y = ${my1} + ${vy.toFixed(1)}t`;
+  document.getElementById('lineMag').textContent = vmag.toFixed(2);
+
+  // Extend line across viewport
+  let html = `<defs>${arrowMarker('larrG','#22c55e')}${arrowMarker('larrI','#6366f1')}</defs>`;
+
+  // Extend line in both directions
+  if (vmag > 0.1) {
+    const nx = dx / Math.sqrt(dx*dx+dy*dy);
+    const ny = (lineP2.y - lineP1.y) / Math.sqrt(dx*dx+(lineP2.y-lineP1.y)*(lineP2.y-lineP1.y));
+    const farScale = 500;
+    const lx1 = lineP1.x - nx * farScale;
+    const ly1 = lineP1.y - ny * farScale;
+    const lx2 = lineP1.x + nx * farScale;
+    const ly2 = lineP1.y + ny * farScale;
+    html += svgLine(lx1,ly1,lx2,ly2,'rgba(99,102,241,.35)',1.5,'stroke-dasharray="6,4"');
+  }
+
+  // Direction arrow from fixed to movable
+  if (vmag > 0.1) {
+    html += svgArrow(lineP1.x,lineP1.y,lineP2.x,lineP2.y,'#6366f1',2,'larrI');
+  }
+
+  // Fixed point (indigo)
+  html += `<circle cx="${lineP1.x}" cy="${lineP1.y}" r="7" fill="#6366f1" opacity="0.9"/>`;
+  html += `<text x="${lineP1.x+10}" y="${lineP1.y-8}" fill="#818cf8" font-size="10">P0=(${mx1},${my1})</text>`;
+
+  // Movable point (green)
+  html += `<circle cx="${lineP2.x.toFixed(1)}" cy="${lineP2.y.toFixed(1)}" r="7" fill="#22c55e" opacity="0.9"/>`;
+  html += `<text x="${(lineP2.x+10).toFixed(1)}" y="${(lineP2.y-8).toFixed(1)}" fill="#22c55e" font-size="10">P1</text>`;
+
+  // v label midpoint
+  if (vmag > 0.1) {
+    const mpx = (lineP1.x + lineP2.x) / 2;
+    const mpy = (lineP1.y + lineP2.y) / 2;
+    html += `<text x="${(mpx+8).toFixed(1)}" y="${(mpy-6).toFixed(1)}" fill="#6366f1" font-size="10">v</text>`;
+  }
+
+  html += `<text x="8" y="18" fill="#9ca3af" font-size="10">Click to move green point</text>`;
+
+  svg.innerHTML = html;
+}
+
+// ============================================================
+// SECTION 5: PLANE
+// ============================================================
+function updatePlane() {
+  const nx = parseFloat(document.getElementById('nx').value);
+  const ny = parseFloat(document.getElementById('ny').value);
+  const nz = parseFloat(document.getElementById('nz').value);
+  document.getElementById('nxv').textContent = nx;
+  document.getElementById('nyv').textContent = ny;
+  document.getElementById('nzv').textContent = nz;
+
+  const nmag = Math.sqrt(nx*nx + ny*ny + nz*nz);
+  document.getElementById('planeN').textContent = `(${nx}, ${ny}, ${nz})`;
+  const d = 0; // plane through origin
+  document.getElementById('planeEq').textContent = `${nx}x + ${ny}y + ${nz}z = 0`;
+  document.getElementById('planeNmag').textContent = nmag.toFixed(3);
+
+  const svg = document.getElementById('planeSvg');
+  const W = 420, H = 300;
+  const cx = 180, cy = 180, sc = 26;
+
+  let html = `<defs>
+    ${arrowMarker('parrX','#f59e0b')}
+    ${arrowMarker('parrY','#22c55e')}
+    ${arrowMarker('parrZ','#ec4899')}
+    ${arrowMarker('parrN','#6366f1')}
+  </defs>`;
+
+  // Coordinate axes
+  const O = iso(cx,cy,0,0,0,sc);
+  const Xa = iso(cx,cy,5,0,0,sc);
+  const Ya = iso(cx,cy,0,5,0,sc);
+  const Za = iso(cx,cy,0,0,5,sc);
+  html += svgArrow(O.sx,O.sy,Xa.sx,Xa.sy,'#f59e0b',1.5,'parrX');
+  html += svgArrow(O.sx,O.sy,Ya.sx,Ya.sy,'#22c55e',1.5,'parrY');
+  html += svgArrow(O.sx,O.sy,Za.sx,Za.sy,'#ec4899',1.5,'parrZ');
+  html += `<text x="${Xa.sx+4}" y="${Xa.sy+4}" fill="#f59e0b" font-size="10">x</text>`;
+  html += `<text x="${Ya.sx-12}" y="${Ya.sy+4}" fill="#22c55e" font-size="10">y</text>`;
+  html += `<text x="${Za.sx-2}" y="${Za.sy-4}" fill="#ec4899" font-size="10">z</text>`;
+
+  // Build 4 corners of a plane patch perpendicular to n
+  // Find two vectors u, v orthogonal to n
+  let u, v;
+  const nv = [nx, ny, nz];
+  // find a vector not parallel to n
+  let tmp = [1, 0, 0];
+  if (Math.abs(nx) > 0.9) tmp = [0, 1, 0];
+  // u = n x tmp, v = n x u
+  u = cross3(nv, tmp);
+  const umag = Math.sqrt(u[0]*u[0]+u[1]*u[1]+u[2]*u[2]);
+  if (umag > 0.001) { u = u.map(c => c/umag); } else { u = [1,0,0]; }
+  v = cross3(nv, u);
+  const vmag2 = Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+  if (vmag2 > 0.001) { v = v.map(c => c/vmag2); }
+
+  const ps = 3.5; // plane half-size in world units
+  const corners = [
+    [-ps, -ps], [ps, -ps], [ps, ps], [-ps, ps]
+  ].map(([a, b]) => {
+    const wx = a * u[0] + b * v[0];
+    const wy = a * u[1] + b * v[1];
+    const wz = a * u[2] + b * v[2];
+    return iso(cx, cy, wx, wy, wz, sc);
+  });
+
+  const pts = corners.map(c => `${c.sx.toFixed(1)},${c.sy.toFixed(1)}`).join(' ');
+  html += `<polygon points="${pts}" fill="rgba(99,102,241,.12)" stroke="rgba(99,102,241,.5)" stroke-width="1.5"/>`;
+
+  // Normal vector arrow
+  if (nmag > 0.1) {
+    const nscale = 3.5;
+    const Nend = iso(cx,cy, nx/nmag*nscale, ny/nmag*nscale, nz/nmag*nscale, sc);
+    html += svgArrow(O.sx,O.sy,Nend.sx,Nend.sy,'#6366f1',2.5,'parrN');
+    html += `<text x="${(Nend.sx+6).toFixed(1)}" y="${(Nend.sy-4).toFixed(1)}" fill="#818cf8" font-size="11" font-weight="600">n</text>`;
+  }
+
+  svg.innerHTML = html;
+}
+
+function cross3(a, b) {
+  return [
+    a[1]*b[2] - a[2]*b[1],
+    a[2]*b[0] - a[0]*b[2],
+    a[0]*b[1] - a[1]*b[0]
+  ];
+}
+
+// ============================================================
+// SECTION 6: QUADRIC SURFACES
+// ============================================================
+let currentSurface = 'sphere';
+
+function showSurface(name, btn) {
+  currentSurface = name;
+  document.querySelectorAll('.scenario-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateCrossSection();
+}
+
+function updateCrossSection() {
+  const k = parseFloat(document.getElementById('csK').value);
+  document.getElementById('csKv').textContent = k.toFixed(1);
+
+  const svg = document.getElementById('csSvg');
+  const W = 420, H = 240;
+  const cx = 210, cy = 120;
+  const scale = 38;
+
+  let surfLabel = '', csEq = '', csShape = '';
+  let drawEllipse = false, ea = 0, eb = 0;
+  let valid = true;
+
+  if (currentSurface === 'sphere') {
+    // x^2+y^2+z^2=4, r=2
+    document.getElementById('csSurface').innerHTML = 'x&sup2; + y&sup2; + z&sup2; = 4';
+    const r2 = 4 - k*k;
+    if (r2 <= 0) { valid = false; csEq = 'No intersection'; csShape = 'None'; }
+    else {
+      const r = Math.sqrt(r2);
+      ea = eb = r;
+      drawEllipse = true;
+      csEq = `x\u00b2 + y\u00b2 = ${r2.toFixed(2)}`;
+      csShape = `Circle, r=${r.toFixed(2)}`;
+    }
+  } else if (currentSurface === 'ellipsoid') {
+    // x^2/4 + y^2/9 + z^2/4 = 1, a=2,b=3,c=2
+    document.getElementById('csSurface').innerHTML = 'x&sup2;/4 + y&sup2;/9 + z&sup2;/4 = 1';
+    const rem = 1 - k*k/4;
+    if (rem <= 0) { valid = false; csEq = 'No intersection'; csShape = 'None'; }
+    else {
+      ea = 2 * Math.sqrt(rem);
+      eb = 3 * Math.sqrt(rem);
+      drawEllipse = true;
+      csEq = `x\u00b2/${(4*rem).toFixed(2)} + y\u00b2/${(9*rem).toFixed(2)} = 1`;
+      csShape = `Ellipse a=${ea.toFixed(2)}, b=${eb.toFixed(2)}`;
+    }
+  } else if (currentSurface === 'paraboloid') {
+    // z = x^2 + y^2
+    document.getElementById('csSurface').innerHTML = 'z = x&sup2; + y&sup2;';
+    if (k < 0) { valid = false; csEq = 'No intersection (z\u22650)'; csShape = 'None'; }
+    else if (k === 0) { ea = eb = 0; drawEllipse = true; csEq = 'x\u00b2 + y\u00b2 = 0 (point)'; csShape = 'Point at origin'; }
+    else {
+      ea = eb = Math.sqrt(k);
+      drawEllipse = true;
+      csEq = `x\u00b2 + y\u00b2 = ${k.toFixed(2)}`;
+      csShape = `Circle, r=${ea.toFixed(2)}`;
+    }
+  } else if (currentSurface === 'hyperboloid') {
+    // x^2 + y^2 - z^2 = 1
+    document.getElementById('csSurface').innerHTML = 'x&sup2; + y&sup2; - z&sup2; = 1';
+    const rem2 = 1 + k*k;
+    ea = eb = Math.sqrt(rem2);
+    drawEllipse = true;
+    csEq = `x\u00b2 + y\u00b2 = ${rem2.toFixed(2)}`;
+    csShape = `Circle, r=${ea.toFixed(2)}`;
+  }
+
+  document.getElementById('csEq').textContent = csEq;
+  document.getElementById('csShape').textContent = csShape;
+
+  let html = `<defs>${arrowMarker('csArrX','#f59e0b')}${arrowMarker('csArrY','#22c55e')}</defs>`;
+
+  // Axes
+  html += svgLine(cx,20,cx,H-20,'#363b47',1,'');
+  html += svgLine(20,cy,W-20,cy,'#363b47',1,'');
+  html += `<text x="${W-16}" y="${cy+4}" fill="#f59e0b" font-size="11">x</text>`;
+  html += `<text x="${cx+4}" y="18" fill="#22c55e" font-size="11">y</text>`;
+
+  // Grid circles for reference
+  for (let gr = 1; gr <= 3; gr++) {
+    html += `<circle cx="${cx}" cy="${cy}" r="${gr*scale}" fill="none" stroke="#363b47" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>`;
+    html += `<text x="${cx+gr*scale+2}" y="${cy-4}" fill="#9ca3af" font-size="9">${gr}</text>`;
+  }
+
+  if (valid && drawEllipse && (ea > 0.01 || eb > 0.01)) {
+    const screenA = Math.min(ea * scale, 200);
+    const screenB = Math.min(eb * scale, 200);
+    html += `<ellipse cx="${cx}" cy="${cy}" rx="${screenA.toFixed(1)}" ry="${screenB.toFixed(1)}" fill="rgba(99,102,241,.15)" stroke="#6366f1" stroke-width="2"/>`;
+    // Semi-axis labels
+    html += `<line x1="${cx}" y1="${cy}" x2="${(cx+screenA).toFixed(1)}" y2="${cy}" stroke="#6366f1" stroke-width="1" stroke-dasharray="3,2"/>`;
+    html += `<text x="${(cx+screenA/2).toFixed(1)}" y="${cy-8}" fill="#6366f1" font-size="10" text-anchor="middle">a=${ea.toFixed(2)}</text>`;
+    if (Math.abs(ea - eb) > 0.01) {
+      html += `<line x1="${cx}" y1="${cy}" x2="${cx}" y2="${(cy-screenB).toFixed(1)}" stroke="#818cf8" stroke-width="1" stroke-dasharray="3,2"/>`;
+      html += `<text x="${cx+6}" y="${(cy-screenB/2).toFixed(1)}" fill="#818cf8" font-size="10">b=${eb.toFixed(2)}</text>`;
+    }
+  } else if (!valid) {
+    html += `<text x="${cx}" y="${cy}" fill="#ec4899" font-size="13" text-anchor="middle" dominant-baseline="middle">No cross-section at z=${k.toFixed(1)}</text>`;
+  }
+
+  html += `<text x="8" y="18" fill="#9ca3af" font-size="10">Cross-section at z = ${k.toFixed(1)}</text>`;
+
+  svg.innerHTML = html;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+  updateVec3D();
+  updateDot();
+  updateCross();
+  initLineSvg();
+  updatePlane();
+  updateCrossSection();
+});
+</script>
+</body>
+</html>

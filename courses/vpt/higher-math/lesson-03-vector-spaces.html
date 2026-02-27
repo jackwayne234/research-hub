@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 3: Vector Spaces</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1);--spring:cubic-bezier(.34,1.56,.64,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .35s var(--spring);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:120000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.btn-danger{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.btn-danger:hover{background:rgba(236,72,153,.25)}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.matrix-display{display:inline-flex;align-items:center;margin:12px 0;font-size:.9rem;font-weight:600}
+.matrix-bracket{font-size:2.2em;font-weight:200;color:var(--text-dim);line-height:1}
+.matrix-grid{display:inline-grid;gap:4px 12px;padding:4px 8px}
+.matrix-grid span{text-align:center;min-width:28px;padding:2px 4px;border-radius:3px;transition:all .3s}
+.matrix-grid span.coeff{color:var(--indigo)}
+.matrix-grid span.const{color:var(--green)}
+.matrix-grid span.pivot{background:var(--indigo-dim);color:var(--indigo);font-weight:700}
+.matrix-grid span.highlight{background:var(--amber-dim);color:var(--amber)}
+.aug-line{width:2px;background:var(--text-dim);margin:0 6px;align-self:stretch;border-radius:1px}
+.matrix-input-grid{display:inline-grid;gap:6px 8px;margin:8px 0}
+.matrix-input-grid input{width:50px;padding:6px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.8rem;outline:none;transition:border-color var(--transition)}
+.matrix-input-grid input:focus{border-color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.case-badge{display:inline-block;padding:3px 10px;border-radius:4px;font-size:.7rem;font-weight:600;margin:4px 0}
+.case-badge.one{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.case-badge.none{background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.case-badge.inf{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.vec-input-group{display:flex;gap:6px;align-items:center;margin:6px 0;font-size:.78rem}
+.vec-input-group label{color:var(--text-dim);min-width:30px}
+.vec-input-group input{width:55px;padding:6px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;outline:none}
+.vec-input-group input:focus{border-color:var(--indigo)}
+.subspace-test-row{display:flex;gap:8px;align-items:center;margin:4px 0;font-size:.76rem}
+.subspace-test-row .status{font-weight:600;min-width:24px}
+.subspace-test-row .status.pass{color:var(--green)}
+.subspace-test-row .status.fail{color:var(--pink)}
+@keyframes springPop{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.pop{animation:springPop .35s var(--spring)}
+.shake{animation:shake .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.matrix-input-grid input{width:40px;padding:4px;font-size:.72rem}.vec-input-group input{width:42px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>03</span> Vector Spaces</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: SPAN & LINEAR COMBINATIONS -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Span &amp; Linear Combinations</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>linear combination</strong> of vectors v<sub>1</sub>, v<sub>2</sub>, ..., v<sub>k</sub> is any vector of the form c<sub>1</sub>v<sub>1</sub> + c<sub>2</sub>v<sub>2</sub> + ... + c<sub>k</sub>v<sub>k</sub>, where the c<sub>i</sub> are scalars. The <strong>span</strong> of a set of vectors is the set of all possible linear combinations -- it is every point you can reach by scaling and adding those vectors.
+    </p>
+
+    <div class="formula-box large">
+      span{v<sub>1</sub>, v<sub>2</sub>} = {c<sub>1</sub>v<sub>1</sub> + c<sub>2</sub>v<sub>2</sub> : c<sub>1</sub>, c<sub>2</sub> in R}
+    </div>
+
+    <p class="concept-text">
+      Two non-parallel vectors in R<sup>2</sup> span all of R<sup>2</sup> -- you can reach any point. But if the vectors are parallel, their span is only a line. This is the geometric intuition behind span: it defines the "reachable" region of space.
+    </p>
+
+    <div class="key-point">In physics, the span tells you what configurations are possible. If your force vectors only span a line, you cannot balance forces that point off that line. You need forces that span the full plane (or space) to achieve equilibrium in all directions.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Linear Combination Visualizer</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:8px">Adjust c<sub>1</sub> and c<sub>2</sub> to form c<sub>1</sub>v<sub>1</sub> + c<sub>2</sub>v<sub>2</sub>. Try to hit the target point (white circle). Toggle "parallel mode" to see what happens when v<sub>1</sub> and v<sub>2</sub> point the same direction.</p>
+      <svg id="s1Svg" width="100%" viewBox="0 0 600 400" style="display:block;margin-bottom:8px"></svg>
+      <div class="slider-row">
+        <label>c<sub>1</sub> (indigo)</label>
+        <input type="range" id="s1c1" min="-3" max="3" value="1" step="0.1" oninput="updateS1()">
+        <span class="slider-val" id="s1c1Val">1.0</span>
+      </div>
+      <div class="slider-row">
+        <label>c<sub>2</sub> (amber)</label>
+        <input type="range" id="s1c2" min="-3" max="3" value="0.5" step="0.1" oninput="updateS1()">
+        <span class="slider-val" id="s1c2Val">0.5</span>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-sm" id="s1ParallelBtn" onclick="toggleS1Parallel()">Parallel Mode: OFF</button>
+        <button class="btn btn-sm" onclick="newS1Target()">New Target</button>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">v<sub>1</sub></span><br><span class="value indigo" id="s1v1Txt">(2, 1)</span></div>
+        <div class="readout-item"><span class="label">v<sub>2</sub></span><br><span class="value amber" id="s1v2Txt">(0.5, 1.5)</span></div>
+        <div class="readout-item"><span class="label">c<sub>1</sub>v<sub>1</sub> + c<sub>2</sub>v<sub>2</sub></span><br><span class="value green" id="s1ResultTxt">(2.25, 1.75)</span></div>
+        <div class="readout-item"><span class="label">Target</span><br><span class="value" id="s1TargetTxt" style="color:var(--text-bright)">(3, 2)</span></div>
+        <div class="readout-item"><span class="label">Span</span><br><span class="value indigo" id="s1SpanTxt">All of R<sup>2</sup></span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Physics Context:</strong> When you decompose a force into components along two non-parallel directions, you are writing it as a linear combination. If the two directions span R<sup>2</sup>, any planar force can be decomposed this way. This is exactly why we pick orthogonal axes (x, y) -- they span the whole plane.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> Given v<sub>1</sub> = (1, 0) and v<sub>2</sub> = (0, 1), what linear combination gives (3, -2)? Enter c<sub>1</sub>:</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1" step="0.1" placeholder="c1 = ?" onkeydown="if(event.key==='Enter')checkNum('s1p1',3,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s1p1',3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> If v<sub>1</sub> = (2, 4) and v<sub>2</sub> = (1, 2), do these vectors span all of R<sup>2</sup>? (Enter 1 for yes, 0 for no)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2" step="1" placeholder="1 or 0" onkeydown="if(event.key==='Enter')checkNum('s1p2',0,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s1p2',0,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> Write (7, 3) as a linear combination of (1, 1) and (1, -1). What is c<sub>2</sub>? (Hint: c<sub>1</sub>(1,1) + c<sub>2</sub>(1,-1) = (7, 3) gives two equations.)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p3" step="0.1" placeholder="c2 = ?" onkeydown="if(event.key==='Enter')checkNum('s1p3',2,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s1p3',2,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: LINEAR INDEPENDENCE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Linear Independence</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Vectors v<sub>1</sub>, v<sub>2</sub>, ..., v<sub>k</sub> are <strong>linearly independent</strong> if the only solution to c<sub>1</sub>v<sub>1</sub> + c<sub>2</sub>v<sub>2</sub> + ... + c<sub>k</sub>v<sub>k</sub> = 0 is c<sub>1</sub> = c<sub>2</sub> = ... = c<sub>k</sub> = 0. Equivalently, no vector in the set can be written as a linear combination of the others.
+    </p>
+
+    <div class="formula-box large">
+      c<sub>1</sub>v<sub>1</sub> + c<sub>2</sub>v<sub>2</sub> + ... + c<sub>k</sub>v<sub>k</sub> = 0 &nbsp;&nbsp; implies &nbsp;&nbsp; all c<sub>i</sub> = 0
+    </div>
+
+    <p class="concept-text">
+      For two vectors in R<sup>2</sup>: they are <strong>linearly independent</strong> if and only if they are not parallel -- equivalently, the determinant of the matrix formed by the vectors is nonzero. For three or more vectors in R<sup>2</sup>, they are always dependent (you cannot have more than 2 independent vectors in a 2D space).
+    </p>
+
+    <div class="formula-box amber">
+      det [v<sub>1</sub> | v<sub>2</sub>] = a<sub>1</sub>b<sub>2</sub> - a<sub>2</sub>b<sub>1</sub> &nbsp; != 0 &nbsp; means independent
+    </div>
+
+    <div class="key-point">Linearly dependent vectors carry redundant information. In physics: if you have three force sensors but two measure the same direction, the third adds no new constraint. You have a redundant measurement, and the system is underdetermined in the perpendicular direction.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Linear Independence Checker</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:8px">Enter 2 or 3 vectors in R<sup>2</sup>. The tool plots them and checks independence via the determinant.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:10px">
+        <div>
+          <div class="vec-input-group"><label style="color:var(--indigo);font-weight:600">v<sub>1</sub></label> ( <input type="number" id="s2v1x" value="2" step="0.5" oninput="updateS2()"> , <input type="number" id="s2v1y" value="1" step="0.5" oninput="updateS2()"> )</div>
+          <div class="vec-input-group"><label style="color:var(--amber);font-weight:600">v<sub>2</sub></label> ( <input type="number" id="s2v2x" value="1" step="0.5" oninput="updateS2()"> , <input type="number" id="s2v2y" value="3" step="0.5" oninput="updateS2()"> )</div>
+          <div class="vec-input-group"><label style="color:var(--pink);font-weight:600">v<sub>3</sub></label> ( <input type="number" id="s2v3x" value="" step="0.5" placeholder="-" oninput="updateS2()"> , <input type="number" id="s2v3y" value="" step="0.5" placeholder="-" oninput="updateS2()"> ) <span style="font-size:.65rem;color:var(--text-dim);margin-left:4px">(optional)</span></div>
+        </div>
+      </div>
+      <svg id="s2Svg" width="100%" viewBox="0 0 600 400" style="display:block;margin-bottom:8px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Determinant (v1,v2)</span><br><span class="value indigo" id="s2DetTxt">5</span></div>
+        <div class="readout-item"><span class="label">Result</span><br><span class="value green" id="s2ResultTxt">Linearly Independent</span></div>
+        <div class="readout-item"><span class="label">Relationship</span><br><span class="value" id="s2RelTxt" style="color:var(--text-dim)">No dependency</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Physics Context:</strong> In statics, if you have N forces acting on a body in equilibrium, those forces are linearly dependent (they sum to zero). Redundant constraints mean the system is statically indeterminate -- you need additional equations (material properties) to find the individual forces.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> Are (3, 6) and (1, 2) linearly independent? (Enter 1 for yes, 0 for no)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1" step="1" placeholder="1 or 0" onkeydown="if(event.key==='Enter')checkNum('s2p1',0,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s2p1',0,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> Compute det[(1, 4), (2, 7)] = 1*7 - 4*2. What is the value?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" step="0.1" placeholder="det = ?" onkeydown="if(event.key==='Enter')checkNum('s2p2',-1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s2p2',-1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem" id="s2p3mc">
+        <p><strong>3.</strong> Can 3 vectors in R<sup>2</sup> be linearly independent?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p3mc','wrong')">Yes -- if they point in 3 different directions</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3mc','correct')">No -- R<sup>2</sup> has dimension 2, so any 3 vectors must be dependent</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3mc','wrong')">Only if all three have the same magnitude</button>
+        </div>
+        <div class="feedback" id="s2p3mc-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: BASIS & DIMENSION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Basis &amp; Dimension</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>basis</strong> for a vector space V is a set of vectors that is (1) linearly independent and (2) spans V. Every vector in V can be written uniquely as a linear combination of the basis vectors. The <strong>dimension</strong> of V is the number of vectors in any basis.
+    </p>
+
+    <div class="formula-box large green">
+      Basis = Linearly Independent + Spans V &nbsp;&nbsp;|&nbsp;&nbsp; dim(R<sup>n</sup>) = n
+    </div>
+
+    <p class="concept-text">
+      The <strong>standard basis</strong> for R<sup>2</sup> is {e<sub>1</sub>, e<sub>2</sub>} = {(1,0), (0,1)}. But any two non-parallel vectors also form a basis. The same vector has different coordinates in different bases -- the components depend on the basis you choose.
+    </p>
+
+    <div class="key-point">Dimension is an intrinsic property of the space, independent of which basis you pick. R<sup>2</sup> always has dimension 2. A line through the origin has dimension 1. The zero vector alone has dimension 0. Every basis for the same space has the same number of vectors.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Same Vector, Two Bases</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:8px">See how the vector w is represented in the standard basis {e<sub>1</sub>, e<sub>2</sub>} versus an alternate basis {b<sub>1</sub>, b<sub>2</sub>}. Drag the slider to change w.</p>
+      <svg id="s3Svg" width="100%" viewBox="0 0 600 400" style="display:block;margin-bottom:8px"></svg>
+      <div class="slider-row">
+        <label>w<sub>x</sub> (standard)</label>
+        <input type="range" id="s3wx" min="-3" max="3" value="2" step="0.25" oninput="updateS3()">
+        <span class="slider-val" id="s3wxVal">2.0</span>
+      </div>
+      <div class="slider-row">
+        <label>w<sub>y</sub> (standard)</label>
+        <input type="range" id="s3wy" min="-3" max="3" value="1.5" step="0.25" oninput="updateS3()">
+        <span class="slider-val" id="s3wyVal">1.5</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Standard basis coords</span><br><span class="value green" id="s3StdTxt">(2.0, 1.5)</span></div>
+        <div class="readout-item"><span class="label">Alt basis b<sub>1</sub>=(1,1), b<sub>2</sub>=(-1,1)</span><br><span class="value amber" id="s3AltTxt">(1.75, -0.25)</span></div>
+        <div class="readout-item"><span class="label">Same vector w</span><br><span class="value indigo" id="s3SameTxt">Yes -- just different coordinates</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Physics Context:</strong> Choosing a coordinate system IS choosing a basis. When you rotate axes to align with an inclined plane, you switch bases to simplify the equations. The physics (forces, motion) does not change -- only the component representation changes.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> What is the dimension of R<sup>3</sup>?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="1" placeholder="dim = ?" onkeydown="if(event.key==='Enter')checkNum('s3p1',3,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s3p1',3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem" id="s3p2mc">
+        <p><strong>2.</strong> Is the set {(1, 0), (0, 1), (1, 1)} a basis for R<sup>2</sup>?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p2mc','wrong')">Yes -- they span R<sup>2</sup> and are independent</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2mc','correct')">No -- they span R<sup>2</sup> but are NOT independent (3 vectors in R<sup>2</sup>)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2mc','wrong')">No -- they are independent but do not span R<sup>2</sup></button>
+        </div>
+        <div class="feedback" id="s3p2mc-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> Express w = (5, 3) in the basis b<sub>1</sub> = (1, 1), b<sub>2</sub> = (1, -1). Find c<sub>1</sub> where w = c<sub>1</sub>b<sub>1</sub> + c<sub>2</sub>b<sub>2</sub>. (Hint: solve the system c<sub>1</sub> + c<sub>2</sub> = 5, c<sub>1</sub> - c<sub>2</sub> = 3)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p3" step="0.1" placeholder="c1 = ?" onkeydown="if(event.key==='Enter')checkNum('s3p3',4,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s3p3',4,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: SUBSPACES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Subspaces</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>subspace</strong> of R<sup>n</sup> is a subset H that satisfies three conditions: (1) contains the zero vector, (2) is closed under addition (if u, v are in H, then u + v is in H), (3) is closed under scalar multiplication (if u is in H and c is a scalar, then cu is in H).
+    </p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0">
+      <div class="formula-box" style="text-align:left;font-size:.85rem"><strong style="color:var(--green)">Test 1: Zero vector</strong> -- is 0 in the set?</div>
+      <div class="formula-box" style="text-align:left;font-size:.85rem"><strong style="color:var(--amber)">Test 2: Closed under addition</strong> -- if u and v are in H, is u + v also in H?</div>
+      <div class="formula-box" style="text-align:left;font-size:.85rem"><strong style="color:var(--indigo)">Test 3: Closed under scalar multiplication</strong> -- if u is in H and c is any scalar, is cu in H?</div>
+    </div>
+
+    <p class="concept-text">
+      In R<sup>2</sup>, the subspaces are: (a) the <strong>zero vector</strong> {0} -- dimension 0, (b) any <strong>line through the origin</strong> -- dimension 1, (c) all of <strong>R<sup>2</sup></strong> -- dimension 2. A line that does NOT pass through the origin fails test 1 and is NOT a subspace.
+    </p>
+
+    <div class="key-point">Every subspace must pass through the origin. This is why the y-intercept matters: y = 2x passes through origin (subspace), but y = 2x + 1 does not (not a subspace, just an affine subset).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Subspace Visualizer &amp; Checker</div>
+      <svg id="s4Svg" width="100%" viewBox="0 0 600 400" style="display:block;margin-bottom:12px"></svg>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:8px">Test a proposed set: y = mx + b. Adjust the slope and intercept to see which sets are subspaces of R<sup>2</sup>.</p>
+      <div class="slider-row">
+        <label>Slope m</label>
+        <input type="range" id="s4m" min="-3" max="3" value="1.5" step="0.25" oninput="updateS4()">
+        <span class="slider-val" id="s4mVal">1.5</span>
+      </div>
+      <div class="slider-row">
+        <label>Intercept b</label>
+        <input type="range" id="s4b" min="-3" max="3" value="0" step="0.25" oninput="updateS4()">
+        <span class="slider-val" id="s4bVal">0.0</span>
+      </div>
+      <div style="margin-top:12px">
+        <div class="subspace-test-row"><span class="status" id="s4t1">--</span> <span>Contains the zero vector (0, 0)</span></div>
+        <div class="subspace-test-row"><span class="status" id="s4t2">--</span> <span>Closed under addition</span></div>
+        <div class="subspace-test-row"><span class="status" id="s4t3">--</span> <span>Closed under scalar multiplication</span></div>
+      </div>
+      <div class="readout" style="margin-top:12px">
+        <div class="readout-item"><span class="label">Set</span><br><span class="value amber" id="s4SetTxt">y = 1.5x</span></div>
+        <div class="readout-item"><span class="label">Verdict</span><br><span class="value green" id="s4VerdictTxt">SUBSPACE</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Physics Context:</strong> Conservation laws define subspaces. The set of all velocity vectors with zero net momentum forms a subspace (closed under addition and scaling). The constraint surface for a system with conserved energy at a specific value is NOT a subspace -- it does not contain zero. The distinction matters when linearizing around equilibrium.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s4p1mc">
+        <p><strong>1.</strong> Is the set {(x, y) : x + y = 0} a subspace of R<sup>2</sup>?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p1mc','correct')">Yes -- it is the line y = -x through the origin</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p1mc','wrong')">No -- it does not contain (1, 1)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p1mc','wrong')">No -- it is not closed under addition</button>
+        </div>
+        <div class="feedback" id="s4p1mc-fb"></div>
+      </div>
+      <div class="problem" id="s4p2mc">
+        <p><strong>2.</strong> Is the set {(x, y) : x >= 0 and y >= 0} (the first quadrant) a subspace?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p2mc','wrong')">Yes -- it contains zero and is closed under addition</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2mc','correct')">No -- it fails scalar multiplication (multiply by -1 leaves the quadrant)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2mc','wrong')">No -- it does not contain the zero vector</button>
+        </div>
+        <div class="feedback" id="s4p2mc-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> The set {(x, y) : y = 3x + 2} fails which subspace test first? (Enter 1, 2, or 3 for zero vector, addition, or scalar mult)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p3" step="1" placeholder="test #?" onkeydown="if(event.key==='Enter')checkNum('s4p3',1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s4p3',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: COLUMN SPACE & NULL SPACE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Column Space &amp; Null Space</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      For a matrix A, the <strong>column space</strong> Col(A) is the span of its columns -- it is the set of all vectors b for which Ax = b has a solution. The <strong>null space</strong> Nul(A) is the set of all solutions to Ax = 0 -- the vectors that get "flattened" to zero by the transformation.
+    </p>
+
+    <div class="formula-box large">
+      Col(A) = span of columns of A &nbsp;&nbsp;|&nbsp;&nbsp; Nul(A) = {x : Ax = 0}
+    </div>
+
+    <p class="concept-text">
+      Both Col(A) and Nul(A) are subspaces. The <strong>Rank-Nullity Theorem</strong> says: rank(A) + nullity(A) = number of columns. The rank is dim(Col(A)), the nullity is dim(Nul(A)). This is the fundamental accounting equation of linear algebra.
+    </p>
+
+    <div class="formula-box amber">
+      rank(A) + nullity(A) = n &nbsp;&nbsp; (n = number of columns)
+    </div>
+
+    <div class="key-point">Column space = what you CAN produce (reachable outputs). Null space = what gets killed (the "lost" directions). Together they account for all n input dimensions. This is the Rank-Nullity Theorem in action.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Column Space &amp; Null Space Calculator</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:8px">Enter a 2x3 matrix A. The tool computes RREF, identifies Col(A) and Nul(A), and checks Rank-Nullity.</p>
+      <div style="margin:8px 0">
+        <div class="sub-label">Matrix A (2 x 3):</div>
+        <div class="matrix-input-grid" style="grid-template-columns:repeat(3,1fr)">
+          <input type="number" id="s5a00" value="1" oninput="updateS5()">
+          <input type="number" id="s5a01" value="2" oninput="updateS5()">
+          <input type="number" id="s5a02" value="3" oninput="updateS5()">
+          <input type="number" id="s5a10" value="2" oninput="updateS5()">
+          <input type="number" id="s5a11" value="4" oninput="updateS5()">
+          <input type="number" id="s5a12" value="6" oninput="updateS5()">
+        </div>
+      </div>
+      <div id="s5Output" style="margin-top:12px"></div>
+      <div class="readout" style="margin-top:12px">
+        <div class="readout-item"><span class="label">Rank</span><br><span class="value indigo" id="s5RankTxt">1</span></div>
+        <div class="readout-item"><span class="label">Nullity</span><br><span class="value amber" id="s5NullityTxt">2</span></div>
+        <div class="readout-item"><span class="label">Rank + Nullity</span><br><span class="value green" id="s5SumTxt">3 = n</span></div>
+        <div class="readout-item"><span class="label">Col(A) dimension</span><br><span class="value indigo" id="s5ColDimTxt">1 (a line in R<sup>2</sup>)</span></div>
+        <div class="readout-item"><span class="label">Nul(A) dimension</span><br><span class="value amber" id="s5NulDimTxt">2 (a plane in R<sup>3</sup>)</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Physics Context:</strong> In a constrained mechanical system, the matrix A encodes constraints. Col(A) is the set of forces that can be generated by the constraints. Nul(A) is the set of displacement modes that are free -- the degrees of freedom. If your robot arm has a 3x3 Jacobian with rank 2, it has 1 degree of freedom in its null space (a motion that produces no end-effector movement).</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 3x5 matrix has rank 3. What is its nullity?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1" step="1" placeholder="nullity = ?" onkeydown="if(event.key==='Enter')checkNum('s5p1',2,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s5p1',2,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> For A = [[1, 0], [0, 1]] (the 2x2 identity), what is dim(Nul(A))?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p2" step="1" placeholder="dim = ?" onkeydown="if(event.key==='Enter')checkNum('s5p2',0,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s5p2',0,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem" id="s5p3mc">
+        <p><strong>3.</strong> If A is a 2x3 matrix and Col(A) = R<sup>2</sup>, what is the nullity?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p3mc','wrong')">0 -- because Col(A) is full</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3mc','correct')">1 -- rank is 2, so nullity = 3 - 2 = 1</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3mc','wrong')">2 -- because A has 2 rows</button>
+        </div>
+        <div class="feedback" id="s5p3mc-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUICK QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quick Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 8</span>
+      <button class="btn btn-sm btn-danger" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 1</div>
+      <div class="q-text">What is the span of a single nonzero vector v in R<sup>3</sup>?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(1,this,false)">A point</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,true)">A line through the origin</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,false)">A plane through the origin</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,false)">All of R<sup>3</sup></button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 2</div>
+      <div class="q-text">Vectors {(1, 2), (3, 6)} are linearly ___.</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(2,this,false)">Independent -- determinant = 0 means independent</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,true)">Dependent -- (3, 6) = 3 * (1, 2), det = 0</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,false)">Cannot be determined without more information</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 3</div>
+      <div class="q-text">How many vectors are in a basis for R<sup>4</sup>?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(3,this,false)">3</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,true)">4</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,false)">5</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,false)">It depends on which basis you choose</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 4</div>
+      <div class="q-text">Which is NOT a subspace of R<sup>2</sup>?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(4,this,false)">The x-axis: {(x, 0) : x in R}</button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,false)">The line y = 3x</button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,true)">The line y = x + 1</button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,false)">Just the origin: {(0, 0)}</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 5</div>
+      <div class="q-text">A 4x6 matrix has rank 3. What is its nullity?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(5,this,false)">1</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,false)">2</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,true)">3</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,false)">4</button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 6</div>
+      <div class="q-text">The column space of a matrix A is a subspace of which space?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(6,this,false)">R<sup>n</sup> where n = number of columns</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,true)">R<sup>m</sup> where m = number of rows</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,false)">R<sup>m x n</sup></button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,false)">The null space of A</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 7</div>
+      <div class="q-text">If 5 vectors in R<sup>3</sup> are given, the maximum number that can be linearly independent is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(7,this,false)">2</button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,true)">3</button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,false)">4</button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,false)">5</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q">
+      <div class="q-num">Question 8</div>
+      <div class="q-text">The null space of a matrix A is a subspace of which space?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(8,this,true)">R<sup>n</sup> where n = number of columns</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,false)">R<sup>m</sup> where m = number of rows</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,false)">The column space of A</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,false)">It is not a subspace</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+/* ==================== GLOBAL STATE ==================== */
+var totalSections = 6;
+var completedSections = new Set();
+
+/* ==================== SECTION TOGGLE ==================== */
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+/* ==================== SECTION COMPLETION ==================== */
+function completeSection(sectionNum) {
+  var card = document.querySelector('[data-section="' + sectionNum + '"]');
+  if (card && !completedSections.has(String(sectionNum))) {
+    completedSections.add(String(sectionNum));
+    card.classList.add('completed');
+    updateProgress();
+  }
+}
+
+function checkSectionCompletion(sectionNum) {
+  var card = document.querySelector('[data-section="' + sectionNum + '"]');
+  if (!card) return;
+  var problems = card.querySelectorAll('.feedback.correct');
+  var totalProblems = card.querySelectorAll('.feedback').length;
+  if (totalProblems > 0 && problems.length >= Math.ceil(totalProblems * 0.6)) {
+    completeSection(sectionNum);
+  }
+}
+
+function updateProgress() {
+  var pct = (completedSections.size / totalSections) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + totalSections + ' sections';
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.closest('.problem').classList.add('shake'); setTimeout(function(){ inp.parentElement.closest('.problem').classList.remove('shake'); }, 400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.closest('.problem').classList.add('pop'); setTimeout(function(){ inp.parentElement.closest('.problem').classList.remove('pop'); }, 350);
+    var card = inp.closest('.section-card');
+    if (card) checkSectionCompletion(card.getAttribute('data-section'));
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again.';
+    inp.parentElement.closest('.problem').classList.add('shake'); setTimeout(function(){ inp.parentElement.closest('.problem').classList.remove('shake'); }, 400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){ btn.closest('.problem').classList.remove('pop'); }, 350);
+    var card = btn.closest('.section-card');
+    if (card) checkSectionCompletion(card.getAttribute('data-section'));
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){ btn.closest('.problem').classList.remove('shake'); }, 400);
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf("'correct'") !== -1) b.classList.add('correct');
+    });
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){ btn.closest('.quiz-q').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){ btn.closest('.quiz-q').classList.remove('shake'); }, 400);
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+  if (quizAnswered.size >= 8 && quizScoreVal >= 5) {
+    completeSection(6);
+  }
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SVG HELPERS ==================== */
+function svgGrid(W, H, scale) {
+  var ox = W / 2, oy = H / 2;
+  var h = '';
+  h += '<rect width="' + W + '" height="' + H + '" fill="#1a1d24" rx="8"/>';
+  var xSteps = Math.ceil(W / (2 * scale));
+  var ySteps = Math.ceil(H / (2 * scale));
+  for (var gx = -xSteps; gx <= xSteps; gx++) {
+    var px = ox + gx * scale;
+    h += '<line x1="' + px + '" y1="0" x2="' + px + '" y2="' + H + '" stroke="#2a2e38" stroke-width="1"/>';
+  }
+  for (var gy = -ySteps; gy <= ySteps; gy++) {
+    var py = oy - gy * scale;
+    h += '<line x1="0" y1="' + py + '" x2="' + W + '" y2="' + py + '" stroke="#2a2e38" stroke-width="1"/>';
+  }
+  h += '<line x1="0" y1="' + oy + '" x2="' + W + '" y2="' + oy + '" stroke="#4a4e5a" stroke-width="1.5"/>';
+  h += '<line x1="' + ox + '" y1="0" x2="' + ox + '" y2="' + H + '" stroke="#4a4e5a" stroke-width="1.5"/>';
+  for (var lx = -xSteps; lx <= xSteps; lx++) {
+    if (lx === 0) continue;
+    h += '<text x="' + (ox + lx * scale) + '" y="' + (oy + 14) + '" text-anchor="middle" fill="#6b7080" font-size="9">' + lx + '</text>';
+  }
+  for (var ly = -ySteps; ly <= ySteps; ly++) {
+    if (ly === 0) continue;
+    h += '<text x="' + (ox - 10) + '" y="' + (oy - ly * scale + 4) + '" text-anchor="end" fill="#6b7080" font-size="9">' + ly + '</text>';
+  }
+  h += '<text x="' + (ox + 8) + '" y="' + (oy + 14) + '" fill="#6b7080" font-size="9">0</text>';
+  return h;
+}
+
+function svgArrow(ox, oy, scale, vx, vy, color, width) {
+  var ex = ox + vx * scale, ey = oy - vy * scale;
+  var len = Math.sqrt(vx * vx + vy * vy) * scale;
+  if (len < 2) return '';
+  var headLen = Math.min(12, len * 0.3);
+  var angle = Math.atan2(-(vy * scale), vx * scale);
+  var a1x = ex - headLen * Math.cos(angle - 0.35);
+  var a1y = ey - headLen * Math.sin(angle - 0.35);
+  var a2x = ex - headLen * Math.cos(angle + 0.35);
+  var a2y = ey - headLen * Math.sin(angle + 0.35);
+  var h = '<line x1="' + ox + '" y1="' + oy + '" x2="' + ex + '" y2="' + ey + '" stroke="' + color + '" stroke-width="' + (width || 2.5) + '" stroke-linecap="round"/>';
+  h += '<polygon points="' + ex + ',' + ey + ' ' + a1x + ',' + a1y + ' ' + a2x + ',' + a2y + '" fill="' + color + '"/>';
+  return h;
+}
+
+/* ==================== SECTION 1: SPAN & LINEAR COMBINATIONS ==================== */
+var s1Parallel = false;
+var s1v1 = [2, 1], s1v2 = [0.5, 1.5];
+var s1target = [3, 2];
+
+function toggleS1Parallel() {
+  s1Parallel = !s1Parallel;
+  var btn = document.getElementById('s1ParallelBtn');
+  if (s1Parallel) {
+    btn.textContent = 'Parallel Mode: ON';
+    btn.style.borderColor = 'var(--pink)';
+    btn.style.color = 'var(--pink)';
+    s1v1 = [2, 1];
+    s1v2 = [4, 2]; // parallel to v1
+  } else {
+    btn.textContent = 'Parallel Mode: OFF';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+    s1v1 = [2, 1];
+    s1v2 = [0.5, 1.5];
+  }
+  updateS1();
+}
+
+function newS1Target() {
+  s1target = [
+    Math.round((Math.random() * 4 - 2) * 4) / 4,
+    Math.round((Math.random() * 4 - 2) * 4) / 4
+  ];
+  updateS1();
+}
+
+function updateS1() {
+  var c1 = parseFloat(document.getElementById('s1c1').value);
+  var c2 = parseFloat(document.getElementById('s1c2').value);
+  document.getElementById('s1c1Val').textContent = c1.toFixed(1);
+  document.getElementById('s1c2Val').textContent = c2.toFixed(1);
+
+  var rx = c1 * s1v1[0] + c2 * s1v2[0];
+  var ry = c1 * s1v1[1] + c2 * s1v2[1];
+
+  document.getElementById('s1v1Txt').textContent = '(' + s1v1[0] + ', ' + s1v1[1] + ')';
+  document.getElementById('s1v2Txt').textContent = '(' + s1v2[0] + ', ' + s1v2[1] + ')';
+  document.getElementById('s1ResultTxt').textContent = '(' + rx.toFixed(2) + ', ' + ry.toFixed(2) + ')';
+  document.getElementById('s1TargetTxt').textContent = '(' + s1target[0].toFixed(2) + ', ' + s1target[1].toFixed(2) + ')';
+
+  var det = s1v1[0] * s1v2[1] - s1v1[1] * s1v2[0];
+  var spanAll = Math.abs(det) > 1e-9;
+  document.getElementById('s1SpanTxt').innerHTML = spanAll ? 'All of R<sup>2</sup>' : 'Only a line (parallel vectors)';
+  document.getElementById('s1SpanTxt').style.color = spanAll ? 'var(--green)' : 'var(--pink)';
+
+  var W = 600, H = 400, scale = 60;
+  var ox = W / 2, oy = H / 2;
+  var h = svgGrid(W, H, scale);
+
+  // If parallel, show the spanned line
+  if (!spanAll) {
+    var mag = Math.sqrt(s1v1[0] * s1v1[0] + s1v1[1] * s1v1[1]);
+    if (mag > 0.01) {
+      var dx = s1v1[0] / mag, dy = s1v1[1] / mag;
+      var ext = 10;
+      h += '<line x1="' + (ox - dx * ext * scale) + '" y1="' + (oy + dy * ext * scale) + '" x2="' + (ox + dx * ext * scale) + '" y2="' + (oy - dy * ext * scale) + '" stroke="rgba(236,72,153,0.3)" stroke-width="8" stroke-linecap="round"/>';
+    }
+    h += '<text x="' + (W / 2) + '" y="28" text-anchor="middle" fill="#ec4899" font-size="12" font-weight="600">Parallel vectors -- span is only a line!</text>';
+  }
+
+  // Basis vectors
+  h += svgArrow(ox, oy, scale, s1v1[0], s1v1[1], '#6366f1', 3);
+  h += svgArrow(ox, oy, scale, s1v2[0], s1v2[1], '#f59e0b', 3);
+
+  // Scaled vectors (ghosted)
+  h += '<line x1="' + ox + '" y1="' + oy + '" x2="' + (ox + c1 * s1v1[0] * scale) + '" y2="' + (oy - c1 * s1v1[1] * scale) + '" stroke="rgba(99,102,241,0.3)" stroke-width="2" stroke-dasharray="6,4"/>';
+  h += '<line x1="' + (ox + c1 * s1v1[0] * scale) + '" y1="' + (oy - c1 * s1v1[1] * scale) + '" x2="' + (ox + rx * scale) + '" y2="' + (oy - ry * scale) + '" stroke="rgba(245,158,11,0.3)" stroke-width="2" stroke-dasharray="6,4"/>';
+
+  // Result arrow
+  h += svgArrow(ox, oy, scale, rx, ry, '#22c55e', 3);
+
+  // Target
+  var tx = ox + s1target[0] * scale, ty = oy - s1target[1] * scale;
+  h += '<circle cx="' + tx + '" cy="' + ty + '" r="8" fill="none" stroke="#fff" stroke-width="2"/>';
+  h += '<circle cx="' + tx + '" cy="' + ty + '" r="3" fill="#fff"/>';
+
+  // Hit check
+  var dist = Math.sqrt((rx - s1target[0]) * (rx - s1target[0]) + (ry - s1target[1]) * (ry - s1target[1]));
+  if (dist < 0.15) {
+    h += '<text x="' + tx + '" y="' + (ty - 14) + '" text-anchor="middle" fill="#22c55e" font-size="13" font-weight="700">HIT!</text>';
+  }
+
+  // Labels
+  h += '<text x="' + (ox + s1v1[0] * scale + 8) + '" y="' + (oy - s1v1[1] * scale - 6) + '" fill="#6366f1" font-size="11" font-weight="600">v1</text>';
+  h += '<text x="' + (ox + s1v2[0] * scale + 8) + '" y="' + (oy - s1v2[1] * scale - 6) + '" fill="#f59e0b" font-size="11" font-weight="600">v2</text>';
+  h += '<text x="' + (ox + rx * scale + 8) + '" y="' + (oy - ry * scale - 6) + '" fill="#22c55e" font-size="10" font-weight="600">c1v1+c2v2</text>';
+
+  document.getElementById('s1Svg').innerHTML = h;
+}
+
+/* ==================== SECTION 2: LINEAR INDEPENDENCE ==================== */
+function updateS2() {
+  var v1x = parseFloat(document.getElementById('s2v1x').value) || 0;
+  var v1y = parseFloat(document.getElementById('s2v1y').value) || 0;
+  var v2x = parseFloat(document.getElementById('s2v2x').value) || 0;
+  var v2y = parseFloat(document.getElementById('s2v2y').value) || 0;
+  var v3x = parseFloat(document.getElementById('s2v3x').value);
+  var v3y = parseFloat(document.getElementById('s2v3y').value);
+  var hasV3 = !isNaN(v3x) && !isNaN(v3y) && (document.getElementById('s2v3x').value !== '' || document.getElementById('s2v3y').value !== '');
+
+  var det = v1x * v2y - v1y * v2x;
+  document.getElementById('s2DetTxt').textContent = det.toFixed(2);
+
+  var W = 600, H = 400, scale = 50;
+  var ox = W / 2, oy = H / 2;
+  var h = svgGrid(W, H, scale);
+
+  // Draw vectors
+  h += svgArrow(ox, oy, scale, v1x, v1y, '#6366f1', 3);
+  h += svgArrow(ox, oy, scale, v2x, v2y, '#f59e0b', 3);
+  h += '<text x="' + (ox + v1x * scale + 8) + '" y="' + (oy - v1y * scale - 6) + '" fill="#6366f1" font-size="11" font-weight="600">v1</text>';
+  h += '<text x="' + (ox + v2x * scale + 8) + '" y="' + (oy - v2y * scale - 6) + '" fill="#f59e0b" font-size="11" font-weight="600">v2</text>';
+
+  if (hasV3) {
+    h += svgArrow(ox, oy, scale, v3x, v3y, '#ec4899', 3);
+    h += '<text x="' + (ox + v3x * scale + 8) + '" y="' + (oy - v3y * scale - 6) + '" fill="#ec4899" font-size="11" font-weight="600">v3</text>';
+  }
+
+  if (Math.abs(det) < 1e-9) {
+    // Dependent
+    document.getElementById('s2ResultTxt').textContent = 'Linearly Dependent';
+    document.getElementById('s2ResultTxt').style.color = 'var(--pink)';
+    // Find the relationship
+    var relText = '';
+    if (Math.abs(v1x) > 1e-9 || Math.abs(v1y) > 1e-9) {
+      if (Math.abs(v2x) > 1e-9 || Math.abs(v2y) > 1e-9) {
+        var k = Math.abs(v1x) > 1e-9 ? (v2x / v1x) : (v2y / v1y);
+        relText = 'v2 = ' + k.toFixed(2) + ' * v1';
+      } else {
+        relText = 'v2 = 0 (zero vector)';
+      }
+    } else {
+      relText = 'v1 = 0 (zero vector)';
+    }
+    document.getElementById('s2RelTxt').textContent = relText;
+    document.getElementById('s2RelTxt').style.color = 'var(--pink)';
+    // Draw spanned line
+    var mag = Math.sqrt(v1x * v1x + v1y * v1y);
+    if (mag > 0.01) {
+      var dx = v1x / mag, dy = v1y / mag;
+      h += '<line x1="' + (ox - dx * 8 * scale) + '" y1="' + (oy + dy * 8 * scale) + '" x2="' + (ox + dx * 8 * scale) + '" y2="' + (oy - dy * 8 * scale) + '" stroke="rgba(236,72,153,0.2)" stroke-width="6"/>';
+    }
+    h += '<text x="' + (W / 2) + '" y="25" text-anchor="middle" fill="#ec4899" font-size="12" font-weight="600">DEPENDENT -- det = 0</text>';
+  } else {
+    document.getElementById('s2ResultTxt').textContent = hasV3 ? 'v1,v2 indep. (but 3 vecs in R2 always dep.)' : 'Linearly Independent';
+    document.getElementById('s2ResultTxt').style.color = hasV3 ? 'var(--amber)' : 'var(--green)';
+    document.getElementById('s2RelTxt').textContent = hasV3 ? 'v3 = c1*v1 + c2*v2 for some c1,c2' : 'No dependency';
+    document.getElementById('s2RelTxt').style.color = hasV3 ? 'var(--amber)' : 'var(--text-dim)';
+    // Shade parallelogram for independent case
+    var p1x = ox, p1y = oy;
+    var p2x = ox + v1x * scale, p2y = oy - v1y * scale;
+    var p3x = ox + (v1x + v2x) * scale, p3y = oy - (v1y + v2y) * scale;
+    var p4x = ox + v2x * scale, p4y = oy - v2y * scale;
+    h += '<polygon points="' + p1x + ',' + p1y + ' ' + p2x + ',' + p2y + ' ' + p3x + ',' + p3y + ' ' + p4x + ',' + p4y + '" fill="rgba(99,102,241,0.08)" stroke="rgba(99,102,241,0.2)" stroke-width="1"/>';
+    h += '<text x="' + (W / 2) + '" y="25" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">INDEPENDENT -- det = ' + det.toFixed(2) + '</text>';
+  }
+
+  document.getElementById('s2Svg').innerHTML = h;
+}
+
+/* ==================== SECTION 3: BASIS & DIMENSION ==================== */
+var s3b1 = [1, 1], s3b2 = [-1, 1]; // alternate basis
+
+function updateS3() {
+  var wx = parseFloat(document.getElementById('s3wx').value);
+  var wy = parseFloat(document.getElementById('s3wy').value);
+  document.getElementById('s3wxVal').textContent = wx.toFixed(1);
+  document.getElementById('s3wyVal').textContent = wy.toFixed(1);
+
+  // Compute w in alternate basis: w = c1*b1 + c2*b2
+  // [b1x b2x][c1] = [wx]   =>  [1 -1][c1] = [wx]
+  // [b1y b2y][c2]   [wy]       [1  1][c2]   [wy]
+  var det = s3b1[0] * s3b2[1] - s3b1[1] * s3b2[0]; // 1*1 - 1*(-1) = 2
+  var c1 = (s3b2[1] * wx - s3b2[0] * wy) / det;
+  var c2 = (-s3b1[1] * wx + s3b1[0] * wy) / det;
+
+  document.getElementById('s3StdTxt').textContent = '(' + wx.toFixed(1) + ', ' + wy.toFixed(1) + ')';
+  document.getElementById('s3AltTxt').textContent = '(' + c1.toFixed(2) + ', ' + c2.toFixed(2) + ')';
+
+  var W = 600, H = 400, scale = 60;
+  var ox = W / 2, oy = H / 2;
+  var h = svgGrid(W, H, scale);
+
+  // Standard basis vectors (thin, dim)
+  h += '<line x1="' + ox + '" y1="' + oy + '" x2="' + (ox + scale) + '" y2="' + oy + '" stroke="rgba(34,197,94,0.4)" stroke-width="2" stroke-dasharray="4,3"/>';
+  h += '<line x1="' + ox + '" y1="' + oy + '" x2="' + ox + '" y2="' + (oy - scale) + '" stroke="rgba(34,197,94,0.4)" stroke-width="2" stroke-dasharray="4,3"/>';
+  h += '<text x="' + (ox + scale + 6) + '" y="' + (oy - 4) + '" fill="rgba(34,197,94,0.6)" font-size="10" font-weight="600">e1</text>';
+  h += '<text x="' + (ox + 6) + '" y="' + (oy - scale - 4) + '" fill="rgba(34,197,94,0.6)" font-size="10" font-weight="600">e2</text>';
+
+  // Alternate basis vectors
+  h += svgArrow(ox, oy, scale, s3b1[0], s3b1[1], '#f59e0b', 2.5);
+  h += svgArrow(ox, oy, scale, s3b2[0], s3b2[1], '#ec4899', 2.5);
+  h += '<text x="' + (ox + s3b1[0] * scale + 8) + '" y="' + (oy - s3b1[1] * scale - 6) + '" fill="#f59e0b" font-size="10" font-weight="600">b1(1,1)</text>';
+  h += '<text x="' + (ox + s3b2[0] * scale + 8) + '" y="' + (oy - s3b2[1] * scale - 6) + '" fill="#ec4899" font-size="10" font-weight="600">b2(-1,1)</text>';
+
+  // Standard decomposition: wx*e1 + wy*e2 (dashed lines forming a rectangle)
+  h += '<line x1="' + (ox + wx * scale) + '" y1="' + oy + '" x2="' + (ox + wx * scale) + '" y2="' + (oy - wy * scale) + '" stroke="rgba(34,197,94,0.3)" stroke-width="1.5" stroke-dasharray="4,3"/>';
+  h += '<line x1="' + ox + '" y1="' + (oy - wy * scale) + '" x2="' + (ox + wx * scale) + '" y2="' + (oy - wy * scale) + '" stroke="rgba(34,197,94,0.3)" stroke-width="1.5" stroke-dasharray="4,3"/>';
+
+  // Alt basis decomposition: c1*b1 and c2*b2 shown as parallelogram sides
+  var cb1x = c1 * s3b1[0] * scale, cb1y = c1 * s3b1[1] * scale;
+  var cb2x = c2 * s3b2[0] * scale, cb2y = c2 * s3b2[1] * scale;
+  h += '<line x1="' + ox + '" y1="' + oy + '" x2="' + (ox + cb1x) + '" y2="' + (oy - cb1y) + '" stroke="rgba(245,158,11,0.4)" stroke-width="2" stroke-dasharray="6,3"/>';
+  h += '<line x1="' + (ox + cb1x) + '" y1="' + (oy - cb1y) + '" x2="' + (ox + cb1x + cb2x) + '" y2="' + (oy - cb1y - cb2y) + '" stroke="rgba(236,72,153,0.4)" stroke-width="2" stroke-dasharray="6,3"/>';
+
+  // The vector w
+  h += svgArrow(ox, oy, scale, wx, wy, '#6366f1', 3.5);
+  h += '<text x="' + (ox + wx * scale + 10) + '" y="' + (oy - wy * scale - 8) + '" fill="#6366f1" font-size="12" font-weight="700">w</text>';
+
+  // Coord labels
+  h += '<text x="20" y="22" fill="#22c55e" font-size="10" font-weight="600">Standard: (' + wx.toFixed(1) + ')e1 + (' + wy.toFixed(1) + ')e2</text>';
+  h += '<text x="20" y="38" fill="#f59e0b" font-size="10" font-weight="600">Alt basis: (' + c1.toFixed(2) + ')b1 + (' + c2.toFixed(2) + ')b2</text>';
+
+  document.getElementById('s3Svg').innerHTML = h;
+}
+
+/* ==================== SECTION 4: SUBSPACES ==================== */
+function updateS4() {
+  var m = parseFloat(document.getElementById('s4m').value);
+  var b = parseFloat(document.getElementById('s4b').value);
+  document.getElementById('s4mVal').textContent = m.toFixed(1);
+  document.getElementById('s4bVal').textContent = b.toFixed(1);
+
+  document.getElementById('s4SetTxt').textContent = Math.abs(b) < 0.01 ? 'y = ' + m.toFixed(1) + 'x' : 'y = ' + m.toFixed(1) + 'x + ' + b.toFixed(1);
+
+  // Subspace tests
+  var zeroTest = Math.abs(b) < 0.01; // (0,0) satisfies y = mx + b only if b = 0
+  var addTest = Math.abs(b) < 0.01;  // If b=0, y=mx is closed under add. If b!=0, not.
+  var scaleTest = Math.abs(b) < 0.01; // Same reasoning
+
+  var t1El = document.getElementById('s4t1');
+  var t2El = document.getElementById('s4t2');
+  var t3El = document.getElementById('s4t3');
+
+  t1El.textContent = zeroTest ? 'PASS' : 'FAIL';
+  t1El.className = 'status ' + (zeroTest ? 'pass' : 'fail');
+  t2El.textContent = addTest ? 'PASS' : 'FAIL';
+  t2El.className = 'status ' + (addTest ? 'pass' : 'fail');
+  t3El.textContent = scaleTest ? 'PASS' : 'FAIL';
+  t3El.className = 'status ' + (scaleTest ? 'pass' : 'fail');
+
+  var isSubspace = zeroTest && addTest && scaleTest;
+  document.getElementById('s4VerdictTxt').textContent = isSubspace ? 'SUBSPACE' : 'NOT A SUBSPACE';
+  document.getElementById('s4VerdictTxt').style.color = isSubspace ? 'var(--green)' : 'var(--pink)';
+
+  var W = 600, H = 400, scale = 50;
+  var ox = W / 2, oy = H / 2;
+  var h = svgGrid(W, H, scale);
+
+  // Shade the full plane as R2
+  h += '<rect x="2" y="2" width="' + (W - 4) + '" height="' + (H - 4) + '" fill="rgba(99,102,241,0.03)" rx="6"/>';
+  h += '<text x="' + (W - 16) + '" y="20" text-anchor="end" fill="rgba(99,102,241,0.3)" font-size="11" font-weight="600">R<tspan baseline-shift="super" font-size="8">2</tspan></text>';
+
+  // Origin dot
+  h += '<circle cx="' + ox + '" cy="' + oy + '" r="5" fill="none" stroke="#22c55e" stroke-width="2"/>';
+  h += '<circle cx="' + ox + '" cy="' + oy + '" r="2" fill="#22c55e"/>';
+  h += '<text x="' + (ox + 10) + '" y="' + (oy + 16) + '" fill="#22c55e" font-size="9" font-weight="600">0</text>';
+
+  // The proposed line y = mx + b
+  var xMin = -W / (2 * scale), xMax = W / (2 * scale);
+  var y1v = m * xMin + b, y2v = m * xMax + b;
+  var lx1 = ox + xMin * scale, ly1 = oy - y1v * scale;
+  var lx2 = ox + xMax * scale, ly2 = oy - y2v * scale;
+  var lineColor = isSubspace ? '#22c55e' : '#ec4899';
+  h += '<line x1="' + lx1 + '" y1="' + ly1 + '" x2="' + lx2 + '" y2="' + ly2 + '" stroke="' + lineColor + '" stroke-width="3" stroke-linecap="round" opacity="0.8"/>';
+
+  // If not subspace, mark the origin miss
+  if (!zeroTest) {
+    var byPx = oy - b * scale;
+    h += '<circle cx="' + ox + '" cy="' + byPx + '" r="6" fill="none" stroke="#ec4899" stroke-width="2"/>';
+    h += '<text x="' + (ox + 12) + '" y="' + (byPx + 4) + '" fill="#ec4899" font-size="10" font-weight="600">b = ' + b.toFixed(1) + ' (misses origin)</text>';
+  }
+
+  // Label
+  var labelTxt = isSubspace ? 'SUBSPACE (line through origin)' : 'NOT a subspace';
+  h += '<text x="' + (W / 2) + '" y="25" text-anchor="middle" fill="' + lineColor + '" font-size="12" font-weight="600">' + labelTxt + '</text>';
+
+  // Show a 1D subspace (line through origin) faintly if the current line is not one
+  if (!isSubspace) {
+    var sly1 = m * xMin, sly2 = m * xMax;
+    h += '<line x1="' + (ox + xMin * scale) + '" y1="' + (oy - sly1 * scale) + '" x2="' + (ox + xMax * scale) + '" y2="' + (oy - sly2 * scale) + '" stroke="rgba(34,197,94,0.2)" stroke-width="2" stroke-dasharray="6,4"/>';
+    h += '<text x="' + (W / 2) + '" y="42" text-anchor="middle" fill="rgba(34,197,94,0.5)" font-size="10">Dashed green = y = ' + m.toFixed(1) + 'x (the subspace version)</text>';
+  }
+
+  document.getElementById('s4Svg').innerHTML = h;
+}
+
+/* ==================== SECTION 5: COLUMN SPACE & NULL SPACE ==================== */
+function updateS5() {
+  var A = [
+    [parseFloat(document.getElementById('s5a00').value) || 0, parseFloat(document.getElementById('s5a01').value) || 0, parseFloat(document.getElementById('s5a02').value) || 0],
+    [parseFloat(document.getElementById('s5a10').value) || 0, parseFloat(document.getElementById('s5a11').value) || 0, parseFloat(document.getElementById('s5a12').value) || 0]
+  ];
+
+  // Compute RREF
+  var R = [A[0].slice(), A[1].slice()];
+  var pivotCols = [];
+
+  // Forward elimination
+  var lead = 0;
+  for (var r = 0; r < 2; r++) {
+    if (lead >= 3) break;
+    var i = r;
+    while (Math.abs(R[i][lead]) < 1e-12) {
+      i++;
+      if (i >= 2) { i = r; lead++; if (lead >= 3) break; }
+    }
+    if (lead >= 3) break;
+    // Swap rows
+    if (i !== r) { var tmp = R[r]; R[r] = R[i]; R[i] = tmp; }
+    // Scale row
+    var lv = R[r][lead];
+    if (Math.abs(lv) > 1e-12) {
+      for (var j = 0; j < 3; j++) R[r][j] /= lv;
+    }
+    pivotCols.push(lead);
+    // Eliminate other rows
+    for (var k = 0; k < 2; k++) {
+      if (k !== r && Math.abs(R[k][lead]) > 1e-12) {
+        var f = R[k][lead];
+        for (var j = 0; j < 3; j++) R[k][j] -= f * R[r][j];
+      }
+    }
+    lead++;
+  }
+
+  var rank = pivotCols.length;
+  var nullity = 3 - rank;
+
+  // Build output
+  var html = '';
+
+  // Show columns highlighted
+  html += '<div style="margin-bottom:12px"><span style="font-size:.76rem;color:var(--text-dim)">Matrix A with column highlighting:</span></div>';
+  html += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:12px">';
+  html += '<span class="matrix-bracket">[</span>';
+  html += '<div class="matrix-grid" style="grid-template-columns:repeat(3,1fr)">';
+  for (var i = 0; i < 2; i++) {
+    for (var j = 0; j < 3; j++) {
+      var isPivot = pivotCols.indexOf(j) !== -1;
+      var cls = isPivot ? 'pivot' : 'highlight';
+      html += '<span class="' + cls + '">' + fmtNum5(A[i][j]) + '</span>';
+    }
+  }
+  html += '</div>';
+  html += '<span class="matrix-bracket">]</span>';
+  html += '</div>';
+
+  // Show RREF
+  html += '<div style="margin-bottom:8px"><span style="font-size:.76rem;color:var(--text-dim)">RREF:</span></div>';
+  html += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:12px">';
+  html += '<span class="matrix-bracket">[</span>';
+  html += '<div class="matrix-grid" style="grid-template-columns:repeat(3,1fr)">';
+  for (var i = 0; i < 2; i++) {
+    for (var j = 0; j < 3; j++) {
+      var val = Math.abs(R[i][j]) < 1e-10 ? 0 : R[i][j];
+      var isPivot = pivotCols.indexOf(j) !== -1;
+      html += '<span class="' + (isPivot ? 'pivot' : 'coeff') + '">' + fmtNum5(val) + '</span>';
+    }
+  }
+  html += '</div>';
+  html += '<span class="matrix-bracket">]</span>';
+  html += '</div>';
+
+  // Pivot cols
+  html += '<div style="font-size:.76rem;margin-bottom:6px"><span style="color:var(--indigo);font-weight:600">Pivot columns:</span> <span style="color:var(--text-bright)">' + (pivotCols.length > 0 ? pivotCols.map(function(c){return 'col ' + (c+1);}).join(', ') : 'none') + '</span></div>';
+
+  // Free variables
+  var freeCols = [];
+  for (var j = 0; j < 3; j++) {
+    if (pivotCols.indexOf(j) === -1) freeCols.push(j);
+  }
+  html += '<div style="font-size:.76rem;margin-bottom:6px"><span style="color:var(--amber);font-weight:600">Free variables:</span> <span style="color:var(--text-bright)">' + (freeCols.length > 0 ? freeCols.map(function(c){return 'x' + (c+1);}).join(', ') : 'none') + '</span></div>';
+
+  // Null space description
+  if (nullity > 0) {
+    html += '<div style="font-size:.76rem;margin-bottom:6px"><span style="color:var(--amber);font-weight:600">Null space basis vectors:</span></div>';
+    // For each free variable, construct a null space basis vector
+    for (var fi = 0; fi < freeCols.length; fi++) {
+      var fc = freeCols[fi];
+      var nv = [0, 0, 0];
+      nv[fc] = 1;
+      // For each pivot row, set the pivot variable
+      for (var pi = 0; pi < pivotCols.length; pi++) {
+        nv[pivotCols[pi]] = -R[pi][fc];
+      }
+      // Clean near-zero values
+      for (var k = 0; k < 3; k++) { if (Math.abs(nv[k]) < 1e-10) nv[k] = 0; }
+      html += '<div style="font-size:.76rem;color:var(--text-bright);margin-left:16px;margin-bottom:4px">n' + (fi + 1) + ' = (' + fmtNum5(nv[0]) + ', ' + fmtNum5(nv[1]) + ', ' + fmtNum5(nv[2]) + ')</div>';
+    }
+  } else {
+    html += '<div style="font-size:.76rem;color:var(--green);margin-bottom:6px">Null space = {0} (only the zero vector)</div>';
+  }
+
+  // Column space description
+  html += '<div style="font-size:.76rem;margin-top:8px"><span style="color:var(--indigo);font-weight:600">Column space:</span> <span style="color:var(--text-bright)">span of ' + (pivotCols.length > 0 ? pivotCols.map(function(c){
+    return 'col' + (c+1) + '=(' + fmtNum5(A[0][c]) + ',' + fmtNum5(A[1][c]) + ')';
+  }).join(', ') : '{0}') + '</span></div>';
+
+  document.getElementById('s5Output').innerHTML = html;
+
+  // Readouts
+  document.getElementById('s5RankTxt').textContent = rank;
+  document.getElementById('s5NullityTxt').textContent = nullity;
+  document.getElementById('s5SumTxt').textContent = (rank + nullity) + ' = 3 (n)';
+  var colDesc = rank === 0 ? '0 (just the origin)' : rank === 1 ? '1 (a line in R2)' : '2 (all of R2)';
+  var nulDesc = nullity === 0 ? '0 (just the origin)' : nullity === 1 ? '1 (a line in R3)' : nullity === 2 ? '2 (a plane in R3)' : '3 (all of R3)';
+  document.getElementById('s5ColDimTxt').innerHTML = colDesc;
+  document.getElementById('s5NulDimTxt').innerHTML = nulDesc;
+}
+
+function fmtNum5(n) {
+  if (Math.abs(n) < 1e-10) return '0';
+  if (Number.isInteger(n)) return n.toString();
+  return n.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+}
+
+/* ==================== INITIALIZATION ==================== */
+window.addEventListener('DOMContentLoaded', function() {
+  updateS1();
+  updateS2();
+  updateS3();
+  updateS4();
+  updateS5();
+});
+</script>
+</body>
+</html>

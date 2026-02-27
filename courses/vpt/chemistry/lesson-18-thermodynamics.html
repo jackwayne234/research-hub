@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 18 — Thermodynamics</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1e2128;
+  --bg-card: #262a33;
+  --bg-input: #1a1d24;
+  --border: #363b47;
+  --text: #e2e4e9;
+  --indigo: #6366f1;
+  --green: #22c55e;
+  --pink: #ec4899;
+  --amber: #f59e0b;
+  --indigo-dim: rgba(99,102,241,0.12);
+  --green-dim: rgba(34,197,94,0.12);
+  --pink-dim: rgba(236,72,153,0.12);
+  --amber-dim: rgba(245,158,11,0.12);
+  --indigo-border: rgba(99,102,241,0.4);
+  --green-border: rgba(34,197,94,0.4);
+  --pink-border: rgba(236,72,153,0.4);
+  --amber-border: rgba(245,158,11,0.4);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* TOP BAR */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.lesson-badge {
+  background: var(--indigo);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.lesson-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.progress-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 320px;
+}
+.progress-track {
+  height: 5px;
+  background: var(--bg-input);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 99px;
+  width: 0%;
+  transition: width 0.4s cubic-bezier(.34,1.56,.64,1);
+}
+.progress-label {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* MAIN CONTENT */
+.content {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+/* SECTION CARDS */
+.section-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+.section-card.completed { border-color: var(--green-border); }
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  cursor: pointer;
+  user-select: none;
+  gap: 12px;
+}
+.section-header:hover { background: rgba(255,255,255,0.02); }
+.section-num {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--indigo);
+  background: var(--indigo-dim);
+  border: 1px solid var(--indigo-border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+.section-name {
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+.chevron {
+  width: 18px;
+  height: 18px;
+  color: #6b7280;
+  transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+  flex-shrink: 0;
+}
+.section-card.open .chevron { transform: rotate(180deg); }
+.section-body {
+  display: none;
+  padding: 0 20px 24px;
+  border-top: 1px solid var(--border);
+}
+.section-card.open .section-body { display: block; }
+
+/* TYPOGRAPHY */
+h3 { font-size: 13px; font-weight: 600; color: var(--indigo); margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+p { margin-bottom: 12px; color: #c9cdd6; }
+ul, ol { margin: 0 0 12px 20px; color: #c9cdd6; }
+li { margin-bottom: 4px; }
+strong { color: var(--text); }
+
+/* FORMULA BOX */
+.formula-box {
+  background: var(--indigo-dim);
+  border: 1px solid var(--indigo-border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+.formula-box.green {
+  background: var(--green-dim);
+  border-color: var(--green-border);
+  color: #86efac;
+}
+.formula-box.pink {
+  background: var(--pink-dim);
+  border-color: var(--pink-border);
+  color: #f9a8d4;
+}
+.formula-box.amber {
+  background: var(--amber-dim);
+  border-color: var(--amber-border);
+  color: #fcd34d;
+}
+.formula-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+/* KEY POINT */
+.key-point {
+  background: var(--amber-dim);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin: 12px 0;
+  color: #fcd34d;
+  font-size: 13px;
+}
+.key-point strong { color: var(--amber); }
+
+/* NAVY CONTEXT */
+.navy-context {
+  background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(99,102,241,0.05) 100%);
+  border: 1px solid var(--indigo-border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 14px 0;
+}
+.navy-context-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--indigo);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.navy-context p { color: #a5b4fc; margin-bottom: 6px; }
+.navy-context p:last-child { margin-bottom: 0; }
+
+/* INTERACTIVE AREA */
+.interactive-area {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.interactive-area h4 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--indigo);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+}
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.slider-label {
+  font-size: 12px;
+  color: #9ca3af;
+  min-width: 180px;
+}
+input[type=range] {
+  flex: 1;
+  min-width: 120px;
+  accent-color: var(--indigo);
+  cursor: pointer;
+}
+.readout {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  min-width: 100px;
+  text-align: right;
+}
+.calc-result {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 12px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+.calc-result .result-label { font-size: 11px; color: #6b7280; margin-bottom: 4px; font-weight: 400; }
+.calc-result .result-val { font-size: 18px; }
+.result-spontaneous { color: var(--green); }
+.result-nonspontaneous { color: var(--pink); }
+.result-neutral { color: var(--amber); }
+
+/* DATA TABLE */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.data-table th {
+  background: var(--bg-input);
+  color: var(--indigo);
+  font-weight: 600;
+  padding: 8px 12px;
+  text-align: left;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.data-table td {
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  color: #c9cdd6;
+}
+.data-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.data-table td.highlight { color: var(--green); font-weight: 600; }
+.data-table td.neg { color: var(--pink); }
+.data-table td.pos { color: var(--amber); }
+
+/* CASE TABLE */
+.case-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.case-table th {
+  background: var(--bg-input);
+  color: var(--indigo);
+  font-weight: 600;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.case-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  color: #c9cdd6;
+  vertical-align: middle;
+}
+.case-table .always-spont { color: var(--green); font-weight: 600; }
+.case-table .never-spont { color: var(--pink); font-weight: 600; }
+.case-table .temp-dep { color: var(--amber); font-weight: 600; }
+
+/* WORKED EXAMPLE */
+.worked-example {
+  background: rgba(99,102,241,0.06);
+  border: 1px solid var(--indigo-border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin: 14px 0;
+}
+.worked-example .ex-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--indigo);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+.worked-example .step {
+  margin-bottom: 8px;
+  padding-left: 12px;
+  border-left: 2px solid var(--indigo-border);
+  color: #c9cdd6;
+}
+.worked-example .step strong { color: var(--text); }
+.worked-example .answer {
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin-top: 10px;
+  color: #86efac;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* PROBLEMS */
+.problem {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.problem-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--indigo);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.problem p { margin-bottom: 10px; }
+.answer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.answer-row input {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 12px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  width: 130px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.answer-row input:focus { border-color: var(--indigo); }
+.answer-row .unit {
+  font-size: 12px;
+  color: #6b7280;
+}
+.check-btn {
+  background: var(--indigo);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.check-btn:hover { opacity: 0.85; }
+.feedback {
+  font-size: 12px;
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: none;
+}
+.feedback.correct {
+  display: block;
+  background: var(--green-dim);
+  color: #86efac;
+  border: 1px solid var(--green-border);
+}
+.feedback.incorrect {
+  display: block;
+  background: var(--pink-dim);
+  color: #f9a8d4;
+  border: 1px solid var(--pink-border);
+}
+
+/* MC BUTTONS */
+.mc-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.mc-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 14px;
+  color: #c9cdd6;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.mc-btn:hover:not(.disabled) { border-color: var(--indigo); background: var(--indigo-dim); }
+.mc-btn.disabled { cursor: default; opacity: 0.7; }
+.mc-btn.correct { border-color: var(--green-border); background: var(--green-dim); color: #86efac; }
+.mc-btn.wrong { border-color: var(--pink-border); background: var(--pink-dim); color: #f9a8d4; }
+
+/* QUIZ */
+.quiz-q {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.quiz-q-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.choice-btn {
+  display: block;
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 14px;
+  color: #c9cdd6;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.choice-btn:hover:not(.disabled) { border-color: var(--amber); background: var(--amber-dim); }
+.choice-btn.disabled { cursor: default; }
+.choice-btn.selected-correct { border-color: var(--green-border); background: var(--green-dim); color: #86efac; }
+.choice-btn.selected-wrong { border-color: var(--pink-border); background: var(--pink-dim); color: #f9a8d4; }
+.choice-btn.reveal-correct { border-color: var(--green-border); background: var(--green-dim); color: #86efac; opacity: 0.8; }
+.quiz-score-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.quiz-score-bar .score-num { font-size: 28px; font-weight: 700; color: var(--green); }
+.quiz-score-bar .score-denom { font-size: 16px; color: #6b7280; }
+.reset-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 16px;
+  color: #9ca3af;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.reset-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+/* ANIMATIONS */
+@keyframes pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.pop { animation: pop 0.35s cubic-bezier(.34,1.56,.64,1); }
+.shake { animation: shake 0.4s ease; }
+
+/* CROSSOVER VIZ */
+#crossoverCanvas {
+  width: 100%;
+  height: 220px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: block;
+  cursor: crosshair;
+}
+
+/* SECTION INTRO */
+.section-intro {
+  padding-top: 18px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* INPUT GROUP */
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.input-group label {
+  font-size: 12px;
+  color: #9ca3af;
+  min-width: 80px;
+}
+.input-group input {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  width: 120px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-group input:focus { border-color: var(--indigo); }
+.input-group .unit-label {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* STAT MECH HIGHLIGHT */
+.stat-mech {
+  background: linear-gradient(135deg, rgba(236,72,153,0.08) 0%, rgba(99,102,241,0.08) 100%);
+  border: 1px solid rgba(236,72,153,0.3);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 14px 0;
+}
+.stat-mech-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--pink);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.stat-mech p { color: #f9a8d4; margin-bottom: 6px; }
+.stat-mech p:last-child { margin-bottom: 0; }
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .top-bar { padding: 10px 14px; gap: 10px; }
+  .lesson-title { font-size: 13px; }
+  .content { padding: 20px 14px 60px; }
+  .section-header { padding: 14px 14px; }
+  .section-body { padding: 0 14px 18px; }
+  .slider-label { min-width: 120px; font-size: 11px; }
+  .data-table { font-size: 11px; }
+  .case-table { font-size: 11px; }
+  .formula-box { font-size: 13px; }
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="lesson-badge">18</div>
+  <div class="lesson-title">Thermodynamics</div>
+  <div class="progress-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 / 8 sections</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- SECTION 1: Entropy & Second Law -->
+  <div class="section-card" data-section="1">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">01</span>
+      <span class="section-name">Entropy &amp; the Second Law — S = k ln W</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <p class="section-intro">Entropy is the thermodynamic bridge to statistical mechanics. Here, chemistry and physics converge.</p>
+
+      <h3>Entropy: Thermodynamic Definition</h3>
+      <p>Entropy (S) measures the dispersal of energy across available microstates. The Second Law states that the total entropy of an isolated system can only increase or remain constant — it never spontaneously decreases.</p>
+
+      <div class="formula-box">
+        dS = dq<sub>rev</sub> / T
+        <div class="formula-sub">Clausius inequality — reversible heat transfer at temperature T</div>
+      </div>
+
+      <div class="formula-box amber">
+        &Delta;S<sub>univ</sub> = &Delta;S<sub>sys</sub> + &Delta;S<sub>surr</sub> &ge; 0
+        <div class="formula-sub">Second Law — equality holds only for reversible processes</div>
+      </div>
+
+      <h3>Statistical Mechanics Bridge: Boltzmann's Equation</h3>
+      <p>Boltzmann connected macroscopic entropy to microscopic disorder. <strong>W</strong> is the number of microstates — distinct arrangements consistent with the macrostate.</p>
+
+      <div class="stat-mech">
+        <div class="stat-mech-label">Statistical Mechanics Connection</div>
+        <p><strong>S = k<sub>B</sub> ln W</strong></p>
+        <p>k<sub>B</sub> = 1.381 &times; 10<sup>-23</sup> J/K (Boltzmann constant = R/N<sub>A</sub>)</p>
+        <p>W = number of accessible microstates. For a mole of gas expanding into twice the volume, W<sub>final</sub>/W<sub>initial</sub> = 2<sup>N</sup> — so &Delta;S = Nk<sub>B</sub> ln 2 = R ln 2 per mole. This is the same result as the thermodynamic derivation.</p>
+        <p>Carnot efficiency follows directly: &eta;<sub>max</sub> = 1 - T<sub>cold</sub>/T<sub>hot</sub>. Any real engine produces more entropy than a Carnot engine, so less work is extracted per unit heat.</p>
+      </div>
+
+      <h3>What Increases Entropy?</h3>
+      <ul>
+        <li><strong>More particles in gas phase</strong> — gases have far more microstates than liquids or solids</li>
+        <li><strong>Mixing</strong> — dispersal of different molecules (entropy of mixing)</li>
+        <li><strong>Higher temperature</strong> — more thermal energy distributed across more states</li>
+        <li><strong>Larger, more complex molecules</strong> — more vibrational and rotational modes</li>
+        <li><strong>Dissolving solids</strong> — solute gains positional freedom (usually)</li>
+      </ul>
+
+      <h3>Predicting &Delta;S Sign</h3>
+      <table class="data-table">
+        <tr><th>Scenario</th><th>Expected &Delta;S</th><th>Reason</th></tr>
+        <tr><td>Solid &rarr; liquid &rarr; gas</td><td class="highlight">+ (large)</td><td>Gas phase = enormous W</td></tr>
+        <tr><td>2 mol gas &rarr; 1 mol gas</td><td class="neg">Negative</td><td>Fewer microstates</td></tr>
+        <tr><td>Dissolving NaCl in water</td><td class="highlight">+</td><td>Ion dispersion (usually)</td></tr>
+        <tr><td>Crystallization</td><td class="neg">Negative</td><td>Ordered solid, fewer W</td></tr>
+        <tr><td>Reaction produces more gas moles</td><td class="highlight">+</td><td>&Delta;n<sub>gas</sub> &gt; 0</td></tr>
+        <tr><td>Combustion of hydrocarbon</td><td class="highlight">+</td><td>CO<sub>2</sub> + H<sub>2</sub>O (g) &gt; reactant moles</td></tr>
+      </table>
+
+      <h3>Third Law of Thermodynamics</h3>
+      <p>The entropy of a perfect crystalline substance is <strong>zero at absolute zero (0 K)</strong>. This gives us an absolute reference point — all tabulated S° values are absolute, not relative.</p>
+
+      <div class="formula-box green">
+        S(perfect crystal, T = 0 K) = 0
+        <div class="formula-sub">Third Law — enables absolute entropy measurements</div>
+      </div>
+
+      <div class="key-point">
+        <strong>Key insight:</strong> Unlike &Delta;H, we can know the absolute value of S for any substance. Standard entropy S° is measured relative to 0 K, not relative to elements in standard states. This is why S°(elements) &ne; 0.
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-context-label">Navy / Physics Connection</div>
+        <p><strong>Steam turbines:</strong> Carnot efficiency &eta; = 1 - T<sub>cold</sub>/T<sub>hot</sub> sets the maximum fraction of heat converted to shaft work. A naval steam plant with T<sub>hot</sub> = 600 K and T<sub>cold</sub> = 300 K has &eta;<sub>Carnot</sub> = 50%. Real plants achieve ~30-35% due to irreversibilities — entropy generation in each component.</p>
+        <p><strong>Nuclear reactors:</strong> The reactor core transfers heat to steam at ~570 K. The same Carnot limit applies — the Second Law constrains how much of that fission energy becomes electricity. Entropy generated in heat exchangers is a key efficiency loss mechanism.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Calculating ΔS -->
+  <div class="section-card" data-section="2">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">02</span>
+      <span class="section-name">Calculating &Delta;S — Standard Entropy Values</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <h3>The Hess-Style Formula</h3>
+      <p>Just like &Delta;H°, we can calculate standard reaction entropy from tabulated absolute entropy values:</p>
+
+      <div class="formula-box">
+        &Delta;S°<sub>rxn</sub> = &Sigma; n&middot;S°(products) &minus; &Sigma; m&middot;S°(reactants)
+        <div class="formula-sub">n, m = stoichiometric coefficients; units: J/(mol&middot;K)</div>
+      </div>
+
+      <div class="key-point">
+        <strong>Watch units:</strong> Standard entropies S° are in J/(mol&middot;K). Gibbs energy (&Delta;G = &Delta;H - T&Delta;S) requires consistent units — convert T&Delta;S to kJ by dividing J by 1000, since &Delta;H is typically in kJ.
+      </div>
+
+      <h3>Standard Entropy Table (298 K, 1 atm)</h3>
+      <table class="data-table">
+        <tr><th>Substance</th><th>Phase</th><th>S° (J/mol&middot;K)</th></tr>
+        <tr><td>H<sub>2</sub>(g)</td><td>gas</td><td class="highlight">130.7</td></tr>
+        <tr><td>O<sub>2</sub>(g)</td><td>gas</td><td class="highlight">205.0</td></tr>
+        <tr><td>N<sub>2</sub>(g)</td><td>gas</td><td class="highlight">191.6</td></tr>
+        <tr><td>H<sub>2</sub>O(g)</td><td>gas</td><td class="highlight">188.7</td></tr>
+        <tr><td>H<sub>2</sub>O(l)</td><td>liquid</td><td class="pos">69.9</td></tr>
+        <tr><td>CO<sub>2</sub>(g)</td><td>gas</td><td class="highlight">213.8</td></tr>
+        <tr><td>CO(g)</td><td>gas</td><td class="highlight">197.7</td></tr>
+        <tr><td>CH<sub>4</sub>(g)</td><td>gas</td><td class="highlight">186.3</td></tr>
+        <tr><td>C<sub>3</sub>H<sub>8</sub>(g)</td><td>gas</td><td class="highlight">269.9</td></tr>
+        <tr><td>NH<sub>3</sub>(g)</td><td>gas</td><td class="highlight">192.5</td></tr>
+        <tr><td>NO(g)</td><td>gas</td><td class="highlight">210.8</td></tr>
+        <tr><td>NO<sub>2</sub>(g)</td><td>gas</td><td class="highlight">240.1</td></tr>
+        <tr><td>Fe(s)</td><td>solid</td><td class="pos">27.3</td></tr>
+        <tr><td>Fe<sub>2</sub>O<sub>3</sub>(s)</td><td>solid</td><td class="pos">87.4</td></tr>
+        <tr><td>Al(s)</td><td>solid</td><td class="pos">28.3</td></tr>
+        <tr><td>Al<sub>2</sub>O<sub>3</sub>(s)</td><td>solid</td><td class="pos">51.1</td></tr>
+        <tr><td>C(graphite)</td><td>solid</td><td class="pos">5.7</td></tr>
+        <tr><td>NaCl(s)</td><td>solid</td><td class="pos">72.1</td></tr>
+      </table>
+
+      <h3>Worked Example: Haber Process</h3>
+      <div class="worked-example">
+        <div class="ex-title">Example — N<sub>2</sub>(g) + 3 H<sub>2</sub>(g) &rarr; 2 NH<sub>3</sub>(g)</div>
+        <div class="step"><strong>Products:</strong> 2 mol NH<sub>3</sub> &times; 192.5 J/(mol&middot;K) = 385.0 J/K</div>
+        <div class="step"><strong>Reactants:</strong> 1 mol N<sub>2</sub> &times; 191.6 + 3 mol H<sub>2</sub> &times; 130.7 = 191.6 + 392.1 = 583.7 J/K</div>
+        <div class="step"><strong>&Delta;S°<sub>rxn</sub></strong> = 385.0 &minus; 583.7 = <strong>&minus;198.7 J/(mol&middot;K)</strong></div>
+        <div class="step"><strong>Physical interpretation:</strong> 4 moles of gas &rarr; 2 moles of gas. Fewer gas molecules = fewer microstates = negative &Delta;S. This is consistent with the Boltzmann picture.</div>
+        <div class="answer">&Delta;S° = &minus;198.7 J/(mol&middot;K) — entropy decreases as expected for gas compression</div>
+      </div>
+
+      <h3>Worked Example: Combustion of Methane</h3>
+      <div class="worked-example">
+        <div class="ex-title">Example — CH<sub>4</sub>(g) + 2 O<sub>2</sub>(g) &rarr; CO<sub>2</sub>(g) + 2 H<sub>2</sub>O(l)</div>
+        <div class="step"><strong>Products:</strong> 1&times;213.8 + 2&times;69.9 = 353.6 J/K</div>
+        <div class="step"><strong>Reactants:</strong> 1&times;186.3 + 2&times;205.0 = 596.3 J/K</div>
+        <div class="step"><strong>&Delta;S°<sub>rxn</sub></strong> = 353.6 &minus; 596.3 = <strong>&minus;242.7 J/(mol&middot;K)</strong></div>
+        <div class="step"><strong>Note:</strong> Producing liquid water is the entropy killer — 3 mol gas &rarr; 1 mol gas + 2 mol liquid. Entropy strongly decreases.</div>
+        <div class="answer">&Delta;S° = &minus;242.7 J/(mol&middot;K)</div>
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-context-label">Physics Bridge</div>
+        <p><strong>Entropy generation in irreversible processes:</strong> For a turbine operating irreversibly, the actual work output W<sub>actual</sub> &lt; W<sub>ideal</sub>. The difference is T&Delta;S<sub>gen</sub> — the "lost work" goes into entropy generation. Isentropic efficiency &eta;<sub>s</sub> = W<sub>actual</sub>/W<sub>ideal</sub> tracks how close a real device is to the reversible limit.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Gibbs Free Energy -->
+  <div class="section-card" data-section="3">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">03</span>
+      <span class="section-name">Gibbs Free Energy — &Delta;G = &Delta;H &minus; T&Delta;S</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <p class="section-intro">Gibbs free energy is the maximum non-expansion work extractable from a process at constant T and P. It unifies enthalpy and entropy into a single spontaneity criterion.</p>
+
+      <h3>The Gibbs Equation</h3>
+      <div class="formula-box">
+        &Delta;G = &Delta;H &minus; T&Delta;S
+        <div class="formula-sub">Constant temperature and pressure | Units: kJ/mol</div>
+      </div>
+
+      <div class="stat-mech">
+        <div class="stat-mech-label">Free Energy as Work Potential</div>
+        <p>From statistical mechanics: &Delta;G = &Delta;A + P&Delta;V where A is the Helmholtz free energy (maximum work at constant T, V). At constant T and P, Gibbs free energy equals the maximum useful (non-PV) work the system can deliver to the surroundings.</p>
+        <p>&Delta;G &lt; 0 means the system can do work on surroundings spontaneously. &Delta;G = &minus;W<sub>max,useful</sub>. In a battery, &Delta;G = &minus;nFE (electrochemical work). The fuel efficiency of any device is bounded by its &Delta;G.</p>
+      </div>
+
+      <h3>Spontaneity Criterion</h3>
+      <table class="case-table">
+        <tr><th>&Delta;H</th><th>&Delta;S</th><th>&Delta;G = &Delta;H &minus; T&Delta;S</th><th>Spontaneity</th></tr>
+        <tr>
+          <td class="neg">&minus; (exothermic)</td>
+          <td class="highlight">+ (disorder)</td>
+          <td>Always negative</td>
+          <td class="always-spont">Spontaneous at all T</td>
+        </tr>
+        <tr>
+          <td class="pos">+ (endothermic)</td>
+          <td class="neg">&minus; (order)</td>
+          <td>Always positive</td>
+          <td class="never-spont">Non-spontaneous at all T</td>
+        </tr>
+        <tr>
+          <td class="neg">&minus; (exothermic)</td>
+          <td class="neg">&minus; (order)</td>
+          <td>&Delta;G = &minus; &minus; T(&minus;) = &minus; + T|&Delta;S|<br>Negative at low T</td>
+          <td class="temp-dep">Spontaneous at low T only</td>
+        </tr>
+        <tr>
+          <td class="pos">+ (endothermic)</td>
+          <td class="highlight">+ (disorder)</td>
+          <td>&Delta;G = + &minus; T(+)<br>Negative at high T</td>
+          <td class="temp-dep">Spontaneous at high T only</td>
+        </tr>
+      </table>
+
+      <h3>Interactive &Delta;G Calculator</h3>
+      <div class="interactive-area">
+        <h4>&Delta;G = &Delta;H &minus; T&Delta;S Explorer</h4>
+        <div class="slider-row">
+          <span class="slider-label">&Delta;H (kJ/mol)</span>
+          <input type="range" id="dH-slider" min="-300" max="300" value="-100" step="5" oninput="updateGibbs()">
+          <span class="readout" id="dH-val">&minus;100 kJ/mol</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">&Delta;S (J/mol&middot;K)</span>
+          <input type="range" id="dS-slider" min="-300" max="300" value="100" step="5" oninput="updateGibbs()">
+          <span class="readout" id="dS-val">+100 J/mol&middot;K</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">Temperature (K)</span>
+          <input type="range" id="T-slider" min="10" max="2000" value="298" step="10" oninput="updateGibbs()">
+          <span class="readout" id="T-val">298 K</span>
+        </div>
+        <div class="calc-result">
+          <div class="result-label">&Delta;G = &Delta;H &minus; T&Delta;S</div>
+          <div class="result-val" id="dG-result">Calculating...</div>
+          <div id="spont-verdict" style="font-size:11px;margin-top:6px;color:#6b7280;"></div>
+        </div>
+      </div>
+
+      <div class="key-point">
+        <strong>Unit trap:</strong> &Delta;H is in kJ/mol, &Delta;S is in J/(mol&middot;K). The T&Delta;S term must be divided by 1000 to get kJ: &Delta;G(kJ) = &Delta;H(kJ) &minus; T(K) &times; &Delta;S(J/K) / 1000
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-context-label">Navy / Physics Connection</div>
+        <p><strong>Battery discharge:</strong> During discharge, &Delta;G = &minus;nFE where n = moles of electrons transferred and F = 96485 C/mol (Faraday's constant). A lithium-ion cell with E = 3.7 V and n = 1 delivers |&Delta;G| = 357 kJ/mol of Li — this is the stored free energy per mole of lithium that does electrical work. When &Delta;G = 0, the battery is dead (equilibrium).</p>
+        <p><strong>Reactor fuel cells:</strong> In hydrogen fuel cells used for backup power, H<sub>2</sub> + &frac12;O<sub>2</sub> &rarr; H<sub>2</sub>O has &Delta;G° = &minus;237 kJ/mol. Maximum electrical efficiency = |&Delta;G|/|&Delta;H| = 237/286 = 83% — far exceeding Carnot-limited heat engines at typical temperatures.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: ΔG° and Equilibrium -->
+  <div class="section-card" data-section="4">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">04</span>
+      <span class="section-name">Standard &Delta;G° and Equilibrium — &Delta;G° = &minus;RT ln K</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <h3>The Fundamental Relationship</h3>
+      <p>At standard conditions (all species at 1 M or 1 atm), the free energy change is &Delta;G°. This is connected to the equilibrium constant K through one of the most important equations in chemistry:</p>
+
+      <div class="formula-box">
+        &Delta;G° = &minus;RT ln K
+        <div class="formula-sub">R = 8.314 J/(mol&middot;K) | T in Kelvin | K = equilibrium constant</div>
+      </div>
+
+      <div class="formula-box amber">
+        &Delta;G = &Delta;G° + RT ln Q
+        <div class="formula-sub">Q = reaction quotient (same form as K, but at any concentrations)</div>
+      </div>
+
+      <h3>Physical Meaning</h3>
+      <ul>
+        <li><strong>&Delta;G° &lt; 0</strong> → K &gt; 1 → Products favored at equilibrium</li>
+        <li><strong>&Delta;G° = 0</strong> → K = 1 → Equal mixture at equilibrium</li>
+        <li><strong>&Delta;G° &gt; 0</strong> → K &lt; 1 → Reactants favored at equilibrium</li>
+        <li>At equilibrium: Q = K, so &Delta;G = 0 (system at minimum free energy)</li>
+      </ul>
+
+      <div class="key-point">
+        <strong>Critical distinction:</strong> &Delta;G° tells you where equilibrium lies. &Delta;G (with Q) tells you which direction the reaction will shift right now. When Q &lt; K, &Delta;G &lt; 0 and reaction proceeds forward. When Q &gt; K, &Delta;G &gt; 0 and reaction runs backward.
+      </div>
+
+      <h3>K &harr; &Delta;G° Relationship Table (298 K)</h3>
+      <table class="data-table">
+        <tr><th>&Delta;G° (kJ/mol)</th><th>K</th><th>Interpretation</th></tr>
+        <tr><td class="neg">&minus;57.1</td><td class="highlight">10<sup>10</sup></td><td>Essentially complete</td></tr>
+        <tr><td class="neg">&minus;34.2</td><td class="highlight">10<sup>6</sup></td><td>Strongly product-favored</td></tr>
+        <tr><td class="neg">&minus;17.1</td><td class="highlight">10<sup>3</sup> = 1000</td><td>Moderately product-favored</td></tr>
+        <tr><td class="neg">&minus;5.7</td><td class="highlight">10</td><td>Slightly product-favored</td></tr>
+        <tr><td>0</td><td>1</td><td>Equal at equilibrium</td></tr>
+        <tr><td class="pos">+5.7</td><td class="neg">0.1</td><td>Slightly reactant-favored</td></tr>
+        <tr><td class="pos">+17.1</td><td class="neg">10<sup>&minus;3</sup></td><td>Moderately reactant-favored</td></tr>
+        <tr><td class="pos">+34.2</td><td class="neg">10<sup>&minus;6</sup></td><td>Strongly reactant-favored</td></tr>
+        <tr><td class="pos">+57.1</td><td class="neg">10<sup>&minus;10</sup></td><td>Essentially no products</td></tr>
+      </table>
+      <p style="font-size:11px;color:#6b7280;">Note: &Delta;G° = &minus;RT ln K; each 5.71 kJ/mol at 298 K changes K by a factor of 10</p>
+
+      <h3>Interactive K &harr; &Delta;G° Converter</h3>
+      <div class="interactive-area">
+        <h4>K &harr; &Delta;G° Converter (at 298 K)</h4>
+        <div class="slider-row">
+          <span class="slider-label">Temperature (K)</span>
+          <input type="range" id="Keq-T" min="100" max="1000" value="298" step="10" oninput="updateKeqCalc()">
+          <span class="readout" id="Keq-T-val">298 K</span>
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;">
+          <div style="flex:1;min-width:180px;">
+            <div style="font-size:11px;color:#9ca3af;margin-bottom:6px;">Enter &Delta;G° (kJ/mol):</div>
+            <input type="number" id="dG-input" value="-17.1" step="0.1" oninput="fromDG()" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;width:100%;outline:none;">
+            <div style="font-size:11px;color:#6b7280;margin-top:4px;">&rarr; K = <span id="K-from-dG" style="color:var(--green);font-weight:600;">1000.0</span></div>
+          </div>
+          <div style="flex:1;min-width:180px;">
+            <div style="font-size:11px;color:#9ca3af;margin-bottom:6px;">Enter K:</div>
+            <input type="number" id="K-input" value="1000" step="1" min="1e-20" oninput="fromK()" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;width:100%;outline:none;">
+            <div style="font-size:11px;color:#6b7280;margin-top:4px;">&rarr; &Delta;G° = <span id="dG-from-K" style="color:var(--amber);font-weight:600;">&minus;17.1 kJ/mol</span></div>
+          </div>
+        </div>
+        <div class="calc-result">
+          <div class="result-label">At equilibrium, &Delta;G = 0 and Q = K. The reaction drives until products/reactants reach this ratio.</div>
+          <div id="keq-interpretation" class="result-val result-spontaneous" style="font-size:14px;">K = 1000: Products strongly favored</div>
+        </div>
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-context-label">Physics Bridge — Partition Functions</div>
+        <p>In statistical mechanics, K = Z<sub>products</sub>/Z<sub>reactants</sub> where Z is the molecular partition function (sum over all microstates weighted by Boltzmann factors e<sup>-&epsilon;/kT</sup>). Thus &Delta;G° = &minus;RT ln K = &minus;RT ln(Z<sub>prod</sub>/Z<sub>react</sub>) — thermodynamic equilibrium reflects the ratio of available microstates at temperature T.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: Temperature Crossover -->
+  <div class="section-card" data-section="5">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">05</span>
+      <span class="section-name">Temperature Crossover — When Does Spontaneity Flip?</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <h3>The Crossover Temperature</h3>
+      <p>For reactions where &Delta;H and &Delta;S have the same sign (both negative or both positive), spontaneity depends on temperature. The crossover temperature T<sub>cross</sub> is where &Delta;G = 0:</p>
+
+      <div class="formula-box pink">
+        T<sub>cross</sub> = &Delta;H / &Delta;S
+        <div class="formula-sub">Set &Delta;G = 0: 0 = &Delta;H &minus; T&Delta;S &rarr; T = &Delta;H/&Delta;S | Convert &Delta;H to J if &Delta;S in J/K</div>
+      </div>
+
+      <ul>
+        <li><strong>&Delta;H &lt; 0, &Delta;S &lt; 0:</strong> Spontaneous below T<sub>cross</sub> — enthalpy drives spontaneity at low T; entropy penalty wins at high T (e.g., gas liquefaction)</li>
+        <li><strong>&Delta;H &gt; 0, &Delta;S &gt; 0:</strong> Spontaneous above T<sub>cross</sub> — entropy drives spontaneity at high T; enthalpy penalty dominates at low T (e.g., melting ice above 273 K)</li>
+      </ul>
+
+      <div class="worked-example">
+        <div class="ex-title">Example — Calcium carbonate decomposition: CaCO<sub>3</sub>(s) &rarr; CaO(s) + CO<sub>2</sub>(g)</div>
+        <div class="step"><strong>&Delta;H°</strong> = +178 kJ/mol (endothermic — breaks ionic lattice)</div>
+        <div class="step"><strong>&Delta;S°</strong> = +161 J/(mol&middot;K) = +0.161 kJ/(mol&middot;K) (produces CO<sub>2</sub> gas: &Delta;n<sub>gas</sub> = +1)</div>
+        <div class="step"><strong>T<sub>cross</sub></strong> = &Delta;H/&Delta;S = 178,000 J / 161 J&middot;K<sup>-1</sup> = <strong>1106 K (833°C)</strong></div>
+        <div class="step">Below 1106 K: &Delta;G &gt; 0, non-spontaneous. Above 1106 K: &Delta;G &lt; 0, spontaneous. Limestone kiln operators run at ~900-1000°C for exactly this reason.</div>
+        <div class="answer">T<sub>cross</sub> &approx; 1106 K — reaction spontaneous above ~833°C</div>
+      </div>
+
+      <h3>Interactive Crossover Visualization</h3>
+      <div class="interactive-area">
+        <h4>&Delta;G vs Temperature — Spontaneity Crossover</h4>
+        <div class="slider-row">
+          <span class="slider-label">&Delta;H (kJ/mol)</span>
+          <input type="range" id="cross-dH" min="-300" max="300" value="178" step="5" oninput="updateCrossover()">
+          <span class="readout" id="cross-dH-val">+178 kJ/mol</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">&Delta;S (J/mol&middot;K)</span>
+          <input type="range" id="cross-dS" min="-300" max="300" value="161" step="5" oninput="updateCrossover()">
+          <span class="readout" id="cross-dS-val">+161 J/mol&middot;K</span>
+        </div>
+        <canvas id="crossoverCanvas"></canvas>
+        <div class="calc-result" style="margin-top:10px;">
+          <div class="result-label">Crossover Temperature (&Delta;G = 0)</div>
+          <div id="crossover-result" class="result-val result-neutral">T<sub>cross</sub> = 1106 K</div>
+          <div id="crossover-regime" style="font-size:11px;color:#9ca3af;margin-top:4px;"></div>
+        </div>
+      </div>
+
+      <div class="key-point">
+        <strong>Entropic control vs enthalpic control:</strong> At low T, &Delta;H dominates (enthalpic control). At high T, the T&Delta;S term dominates (entropic control). Many industrial processes are run at specific temperatures to exploit one regime or the other.
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-context-label">Navy / Engineering Context</div>
+        <p><strong>Propellant chemistry:</strong> Solid rocket propellants must be spontaneous at ignition temperature but ideally stable at storage temperature. Engineers tune the &Delta;H/&Delta;S balance to set the crossover temperature above ambient but accessible by an igniter. Too low a T<sub>cross</sub> = unstable propellant. Too high = hard to ignite.</p>
+        <p><strong>Metallurgy:</strong> Iron ore reduction (Fe<sub>2</sub>O<sub>3</sub> + 3CO &rarr; 2Fe + 3CO<sub>2</sub>) becomes spontaneous above its T<sub>cross</sub>. Blast furnaces operate at temperatures calculated from exactly this analysis.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: Coupling Reactions -->
+  <div class="section-card" data-section="6">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">06</span>
+      <span class="section-name">Coupling Reactions — Driving Non-Spontaneous Processes</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+      <p class="section-intro">A non-spontaneous reaction (&Delta;G &gt; 0) can be driven by coupling it to a highly spontaneous one. Free energies are additive.</p>
+
+      <h3>The Coupling Principle</h3>
+      <div class="formula-box green">
+        &Delta;G<sub>total</sub> = &Delta;G<sub>1</sub> + &Delta;G<sub>2</sub>
+        <div class="formula-sub">If &Delta;G<sub>total</sub> &lt; 0, the coupled system is spontaneous even if &Delta;G<sub>1</sub> &gt; 0</div>
+      </div>
+
+      <p>For coupling to work, the reactions must share a common intermediate — a product of one reaction is a reactant of the other. The reactions are literally mechanistically connected, not just thermodynamically added on paper.</p>
+
+      <h3>Example 1: ATP Hydrolysis (Biochemical Coupling)</h3>
+      <div class="worked-example">
+        <div class="ex-title">Glucose phosphorylation driven by ATP</div>
+        <div class="step"><strong>Target (non-spontaneous):</strong><br>Glucose + P<sub>i</sub> &rarr; Glucose-6-phosphate + H<sub>2</sub>O &nbsp;&nbsp;&nbsp; &Delta;G° = +13.8 kJ/mol</div>
+        <div class="step"><strong>Driver (spontaneous):</strong><br>ATP + H<sub>2</sub>O &rarr; ADP + P<sub>i</sub> &nbsp;&nbsp;&nbsp; &Delta;G° = &minus;30.5 kJ/mol</div>
+        <div class="step"><strong>Coupled net reaction:</strong><br>Glucose + ATP &rarr; Glucose-6-phosphate + ADP &nbsp;&nbsp;&nbsp; &Delta;G° = +13.8 + (&minus;30.5) = <strong>&minus;16.7 kJ/mol</strong></div>
+        <div class="answer">Coupled &Delta;G° = &minus;16.7 kJ/mol — spontaneous. ATP makes the impossible possible.</div>
+      </div>
+
+      <h3>Example 2: Thermite Reaction (Industrial/Military)</h3>
+      <div class="worked-example">
+        <div class="ex-title">Thermite: Fe<sub>2</sub>O<sub>3</sub>(s) + 2 Al(s) &rarr; Al<sub>2</sub>O<sub>3</sub>(s) + 2 Fe(l)</div>
+        <div class="step"><strong>Decompose into half-reactions:</strong></div>
+        <div class="step">2 Al &rarr; Al<sub>2</sub>O<sub>3</sub>: &Delta;G°<sub>f</sub>(Al<sub>2</sub>O<sub>3</sub>) = &minus;1582 kJ/mol (very favorable — Al oxidation)</div>
+        <div class="step">Fe<sub>2</sub>O<sub>3</sub> &rarr; 2 Fe: reverse of formation = +&Delta;G°<sub>f</sub>(Fe<sub>2</sub>O<sub>3</sub>) = +&minus;742 = +742 kJ/mol (unfavorable)</div>
+        <div class="step"><strong>&Delta;G°<sub>rxn</sub></strong> = &minus;1582 + 742 = <strong>&minus;840 kJ/mol</strong> — extremely spontaneous</div>
+        <div class="step">The aluminum oxidation is so strongly spontaneous it drives the iron oxide reduction. Burns at ~2500°C, hot enough to melt iron in seconds.</div>
+        <div class="answer">&Delta;G° = &minus;840 kJ/mol. Al's extreme affinity for oxygen couples to reduce Fe<sub>2</sub>O<sub>3</sub>.</div>
+      </div>
+
+      <h3>Example 3: Glucose Oxidation Driving Biosynthesis</h3>
+      <div class="worked-example">
+        <div class="ex-title">Metabolism: Coupling respiration to biosynthesis</div>
+        <div class="step"><strong>Combustion of glucose:</strong> C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6O<sub>2</sub> &rarr; 6CO<sub>2</sub> + 6H<sub>2</sub>O &nbsp;&nbsp;&nbsp; &Delta;G° = &minus;2870 kJ/mol</div>
+        <div class="step">This free energy is captured as ~38 ATP molecules: 38 &times; 30.5 = &minus;1159 kJ/mol captured (40% efficiency)</div>
+        <div class="step">Each ATP then couples to drive biosynthetic reactions with &Delta;G° up to +30.5 kJ/mol</div>
+        <div class="answer">Life is thermodynamically possible because an extremely spontaneous redox reaction (combustion) is coupled through ATP to drive non-spontaneous biosynthesis.</div>
+      </div>
+
+      <h3>Interactive Coupling Calculator</h3>
+      <div class="interactive-area">
+        <h4>Coupling: Will it Work?</h4>
+        <div class="input-group">
+          <label>&Delta;G<sub>1</sub> (kJ):</label>
+          <input type="number" id="coup-dG1" value="13.8" step="0.1" oninput="updateCoupling()">
+          <span class="unit-label">kJ/mol (target reaction)</span>
+        </div>
+        <div class="input-group">
+          <label>&Delta;G<sub>2</sub> (kJ):</label>
+          <input type="number" id="coup-dG2" value="-30.5" step="0.1" oninput="updateCoupling()">
+          <span class="unit-label">kJ/mol (driver reaction)</span>
+        </div>
+        <div class="calc-result">
+          <div class="result-label">&Delta;G<sub>total</sub> = &Delta;G<sub>1</sub> + &Delta;G<sub>2</sub></div>
+          <div id="coupling-result" class="result-val">&minus;16.7 kJ/mol</div>
+          <div id="coupling-verdict" style="font-size:12px;margin-top:6px;"></div>
+        </div>
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-context-label">Navy Context — Electrochemical Coupling</div>
+        <p><strong>Galvanic protection:</strong> Zinc sacrificial anodes on ship hulls couple zinc oxidation (spontaneous, &Delta;G &lt;&lt; 0) to the non-spontaneous reduction of hull steel. Zinc is oxidized preferentially, protecting the steel — exactly the coupling principle applied to corrosion prevention.</p>
+        <p><strong>Electrolysis:</strong> The reverse of coupling — an external electrical source (non-spontaneous work input) drives a thermodynamically unfavorable reaction. Submarine oxygen generators electrolyze seawater, forcing H<sub>2</sub>O &rarr; H<sub>2</sub> + &frac12;O<sub>2</sub> despite &Delta;G° = +237 kJ/mol.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: Practice Problems -->
+  <div class="section-card" data-section="7">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">07</span>
+      <span class="section-name">Practice Problems</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+
+      <div class="problem">
+        <div class="problem-num">Problem 1 — Entropy Calculation</div>
+        <p>Calculate &Delta;S° for the reaction: 2 SO<sub>2</sub>(g) + O<sub>2</sub>(g) &rarr; 2 SO<sub>3</sub>(g)<br>
+        Given: S°(SO<sub>2</sub>) = 248.2 J/(mol&middot;K), S°(O<sub>2</sub>) = 205.0 J/(mol&middot;K), S°(SO<sub>3</sub>) = 256.8 J/(mol&middot;K)<br>
+        Enter &Delta;S° in J/(mol&middot;K).</p>
+        <div class="answer-row">
+          <input type="number" id="p1" placeholder="?">
+          <span class="unit">J/(mol&middot;K)</span>
+          <button class="check-btn" onclick="checkNum('p1', -187.6, 1)">Check</button>
+        </div>
+        <div id="p1-fb" class="feedback"></div>
+        <details style="margin-top:10px;color:#6b7280;font-size:12px;cursor:pointer;">
+          <summary>Hint</summary>
+          <p style="margin-top:6px;color:#6b7280;">Products: 2&times;256.8 = 513.6. Reactants: 2&times;248.2 + 205.0 = 701.4. &Delta;S° = 513.6 &minus; 701.4 = &minus;187.8 &asymp; &minus;187.6 J/(mol&middot;K). 3 mol gas &rarr; 2 mol gas, so negative makes sense.</p>
+        </details>
+      </div>
+
+      <div class="problem">
+        <div class="problem-num">Problem 2 — Gibbs Free Energy</div>
+        <p>For a reaction at 500 K: &Delta;H° = &minus;92.4 kJ/mol and &Delta;S° = &minus;198.7 J/(mol&middot;K).<br>
+        Calculate &Delta;G° in kJ/mol. (Haber process at 500 K)</p>
+        <div class="answer-row">
+          <input type="number" id="p2" placeholder="?">
+          <span class="unit">kJ/mol</span>
+          <button class="check-btn" onclick="checkNum('p2', 6.95, 0.5)">Check</button>
+        </div>
+        <div id="p2-fb" class="feedback"></div>
+        <details style="margin-top:10px;color:#6b7280;font-size:12px;cursor:pointer;">
+          <summary>Hint</summary>
+          <p style="margin-top:6px;color:#6b7280;">&Delta;G = &Delta;H &minus; T&Delta;S = &minus;92.4 &minus; (500)(−0.1987) = &minus;92.4 + 99.35 = +6.95 kJ/mol. Non-spontaneous at 500 K — the entropy term wins at high T.</p>
+        </details>
+      </div>
+
+      <div class="problem">
+        <div class="problem-num">Problem 3 — Equilibrium Constant from &Delta;G°</div>
+        <p>At 298 K, &Delta;G° = &minus;31.4 kJ/mol for a reaction.<br>
+        Calculate K. Enter your answer in scientific notation as a decimal (e.g., 3.04&times;10<sup>5</sup> &rarr; enter 304000). Round to 3 significant figures.</p>
+        <div class="answer-row">
+          <input type="number" id="p3" placeholder="?">
+          <span class="unit">(unitless)</span>
+          <button class="check-btn" onclick="checkNum('p3', 304000, 10000)">Check</button>
+        </div>
+        <div id="p3-fb" class="feedback"></div>
+        <details style="margin-top:10px;color:#6b7280;font-size:12px;cursor:pointer;">
+          <summary>Hint</summary>
+          <p style="margin-top:6px;color:#6b7280;">K = e<sup>-&Delta;G°/RT</sup> = e<sup>-(-31400)/(8.314&times;298)</sup> = e<sup>31400/2477.6</sup> = e<sup>12.675</sup> &asymp; 3.20&times;10<sup>5</sup> = 320000. Accept values near 304000&ndash;320000 depending on rounding.</p>
+        </details>
+      </div>
+
+      <div class="problem">
+        <div class="problem-num">Problem 4 — Crossover Temperature</div>
+        <p>A reaction has &Delta;H° = +88.0 kJ/mol and &Delta;S° = +220 J/(mol&middot;K).<br>
+        At what temperature (in K) does the reaction become spontaneous? (T<sub>cross</sub>)</p>
+        <div class="answer-row">
+          <input type="number" id="p4" placeholder="?">
+          <span class="unit">K</span>
+          <button class="check-btn" onclick="checkNum('p4', 400, 5)">Check</button>
+        </div>
+        <div id="p4-fb" class="feedback"></div>
+        <details style="margin-top:10px;color:#6b7280;font-size:12px;cursor:pointer;">
+          <summary>Hint</summary>
+          <p style="margin-top:6px;color:#6b7280;">T<sub>cross</sub> = &Delta;H/&Delta;S = 88000 J / 220 J&middot;K<sup>-1</sup> = 400 K. Since &Delta;H &gt; 0 and &Delta;S &gt; 0, spontaneous above 400 K.</p>
+        </details>
+      </div>
+
+      <div class="problem">
+        <div class="problem-num">Problem 5 — &Delta;G° from Standard Enthalpies and Entropies</div>
+        <p>For 2 H<sub>2</sub>(g) + O<sub>2</sub>(g) &rarr; 2 H<sub>2</sub>O(l) at 298 K:<br>
+        &Delta;H°<sub>rxn</sub> = &minus;571.6 kJ/mol &nbsp; &Delta;S°<sub>rxn</sub> = &minus;326.9 J/(mol&middot;K)<br>
+        Calculate &Delta;G° in kJ/mol.</p>
+        <div class="answer-row">
+          <input type="number" id="p5" placeholder="?">
+          <span class="unit">kJ/mol</span>
+          <button class="check-btn" onclick="checkNum('p5', -474.2, 1)">Check</button>
+        </div>
+        <div id="p5-fb" class="feedback"></div>
+        <details style="margin-top:10px;color:#6b7280;font-size:12px;cursor:pointer;">
+          <summary>Hint</summary>
+          <p style="margin-top:6px;color:#6b7280;">&Delta;G = &minus;571.6 &minus; (298)(&minus;0.3269) = &minus;571.6 + 97.4 = &minus;474.2 kJ/mol. Both negative, but enthalpic term dominates at 298 K.</p>
+        </details>
+      </div>
+
+      <div class="problem">
+        <div class="problem-num">Problem 6 — Coupling Reactions</div>
+        <p>Reaction A has &Delta;G° = +45.2 kJ/mol (non-spontaneous).<br>
+        Reaction B has &Delta;G° = &minus;73.4 kJ/mol (spontaneous driver).<br>
+        What is &Delta;G°<sub>total</sub> for the coupled reaction (kJ/mol)?</p>
+        <div class="answer-row">
+          <input type="number" id="p6" placeholder="?">
+          <span class="unit">kJ/mol</span>
+          <button class="check-btn" onclick="checkNum('p6', -28.2, 0.5)">Check</button>
+        </div>
+        <div id="p6-fb" class="feedback"></div>
+        <details style="margin-top:10px;color:#6b7280;font-size:12px;cursor:pointer;">
+          <summary>Hint</summary>
+          <p style="margin-top:6px;color:#6b7280;">&Delta;G<sub>total</sub> = +45.2 + (&minus;73.4) = &minus;28.2 kJ/mol. The coupled system is spontaneous — reaction B provides enough free energy to drive A.</p>
+        </details>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 8: Quiz -->
+  <div class="section-card" data-section="8">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">08</span>
+      <span class="section-name">Quiz — 10 Questions</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+
+      <div class="quiz-score-bar">
+        <div><span class="score-num" id="quizScore">0</span><span class="score-denom"> / 10</span></div>
+        <div style="font-size:11px;color:#6b7280;margin-top:4px;">Answer all questions — correct answers shown on wrong attempts</div>
+        <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 1</div>
+        <p>In Boltzmann's equation S = k<sub>B</sub> ln W, what does W represent?</p>
+        <button class="choice-btn" onclick="quizAnswer(1,this,false)">A) Work done by the system</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,true)">B) Number of accessible microstates</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,false)">C) Mass of the system</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,false)">D) Thermal wavelength</button>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 2</div>
+        <p>Which condition ALWAYS produces a spontaneous reaction, regardless of temperature?</p>
+        <button class="choice-btn" onclick="quizAnswer(2,this,false)">A) &Delta;H &gt; 0 and &Delta;S &gt; 0</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,true)">B) &Delta;H &lt; 0 and &Delta;S &gt; 0</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,false)">C) &Delta;H &lt; 0 and &Delta;S &lt; 0</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,false)">D) &Delta;H &gt; 0 and &Delta;S &lt; 0</button>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 3</div>
+        <p>The Third Law of Thermodynamics establishes that:</p>
+        <button class="choice-btn" onclick="quizAnswer(3,this,false)">A) Entropy of elements in standard state is zero</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,false)">B) Entropy of the universe always decreases</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,true)">C) Entropy of a perfect crystal at 0 K is zero</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,false)">D) Entropy cannot be measured absolutely</button>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 4</div>
+        <p>For a reaction with &Delta;G° = &minus;34.2 kJ/mol at 298 K, the equilibrium constant K is approximately:</p>
+        <button class="choice-btn" onclick="quizAnswer(4,this,false)">A) 10<sup>3</sup></button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,true)">B) 10<sup>6</sup></button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,false)">C) 10<sup>10</sup></button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,false)">D) 0.1</button>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 5</div>
+        <p>Which of the following reactions is expected to have the MOST POSITIVE &Delta;S°?</p>
+        <button class="choice-btn" onclick="quizAnswer(5,this,false)">A) N<sub>2</sub>(g) + 3H<sub>2</sub>(g) &rarr; 2NH<sub>3</sub>(g)</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,false)">B) H<sub>2</sub>O(g) &rarr; H<sub>2</sub>O(l)</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,true)">C) 2H<sub>2</sub>O<sub>2</sub>(l) &rarr; 2H<sub>2</sub>O(g) + O<sub>2</sub>(g)</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,false)">D) CaCO<sub>3</sub>(s) + CO<sub>2</sub>(g) &rarr; Ca(HCO<sub>3</sub>)<sub>2</sub>(s)</button>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 6</div>
+        <p>A reaction at equilibrium has Q = K. What is &Delta;G at this point?</p>
+        <button class="choice-btn" onclick="quizAnswer(6,this,false)">A) &Delta;G = &Delta;G°</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,false)">B) &Delta;G = RT ln K</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,true)">C) &Delta;G = 0</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,false)">D) &Delta;G = &minus;&Delta;G°</button>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 7</div>
+        <p>The crossover temperature for a reaction with &Delta;H = +120 kJ/mol and &Delta;S = +240 J/(mol&middot;K) is:</p>
+        <button class="choice-btn" onclick="quizAnswer(7,this,false)">A) 288 K</button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,true)">B) 500 K</button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,false)">C) 240 K</button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,false)">D) 1200 K</button>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 8</div>
+        <p>In biological systems, ATP hydrolysis (&Delta;G° = &minus;30.5 kJ/mol) drives non-spontaneous reactions through coupling. This works because:</p>
+        <button class="choice-btn" onclick="quizAnswer(8,this,false)">A) ATP raises the temperature of the reaction</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,true)">B) Free energies of coupled reactions are additive, making &Delta;G<sub>total</sub> &lt; 0</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,false)">C) ATP acts as a catalyst, lowering activation energy</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,false)">D) ATP changes the equilibrium constant of the target reaction</button>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 9</div>
+        <p>The Carnot efficiency is &eta; = 1 &minus; T<sub>cold</sub>/T<sub>hot</sub>. This limit arises because:</p>
+        <button class="choice-btn" onclick="quizAnswer(9,this,false)">A) Friction losses are unavoidable in real engines</button>
+        <button class="choice-btn" onclick="quizAnswer(9,this,false)">B) The working fluid has nonzero heat capacity</button>
+        <button class="choice-btn" onclick="quizAnswer(9,this,true)">C) The Second Law requires &Delta;S<sub>univ</sub> &ge; 0; heat rejection to the cold reservoir generates entropy that limits work output</button>
+        <button class="choice-btn" onclick="quizAnswer(9,this,false)">D) Gibbs free energy is always negative for heat engines</button>
+      </div>
+
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 10</div>
+        <p>For a fuel cell using H<sub>2</sub> + &frac12;O<sub>2</sub> &rarr; H<sub>2</sub>O(l) with &Delta;G° = &minus;237 kJ/mol and &Delta;H° = &minus;286 kJ/mol, the maximum electrical efficiency is approximately:</p>
+        <button class="choice-btn" onclick="quizAnswer(10,this,false)">A) 50% (Carnot limit at 298 K)</button>
+        <button class="choice-btn" onclick="quizAnswer(10,this,false)">B) 100% (no heat losses)</button>
+        <button class="choice-btn" onclick="quizAnswer(10,this,true)">C) 83% (= |&Delta;G°| / |&Delta;H°| = 237/286)</button>
+        <button class="choice-btn" onclick="quizAnswer(10,this,false)">D) 67% (= 1 &minus; 298/900)</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) { markComplete(+card.getAttribute('data-section')); }
+  updateProgress();
+}
+
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Enter a number.';
+    inp.parentElement.parentElement.classList.add('shake');
+    setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+    return;
+  }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop');
+    setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(1) + ')';
+    inp.parentElement.parentElement.classList.add('shake');
+    setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop');
+    setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake');
+    setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop');
+    setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf('true') !== -1) {
+        b.classList.add('reveal-correct');
+      }
+    });
+    btn.closest('.quiz-q').classList.add('shake');
+    setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0;
+  quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) {
+    b.className = 'choice-btn';
+  });
+}
+
+/* ---- GIBBS CALCULATOR ---- */
+function updateGibbs() {
+  var dH = parseFloat(document.getElementById('dH-slider').value);
+  var dS = parseFloat(document.getElementById('dS-slider').value);
+  var T = parseFloat(document.getElementById('T-slider').value);
+
+  document.getElementById('dH-val').textContent = (dH >= 0 ? '+' : '') + dH + ' kJ/mol';
+  document.getElementById('dS-val').textContent = (dS >= 0 ? '+' : '') + dS + ' J/mol\u00b7K';
+  document.getElementById('T-val').textContent = T + ' K';
+
+  var dG = dH - T * dS / 1000;
+  var el = document.getElementById('dG-result');
+  var verdict = document.getElementById('spont-verdict');
+
+  el.textContent = '\u0394G = ' + dG.toFixed(2) + ' kJ/mol';
+  if (dG < -0.5) {
+    el.className = 'result-val result-spontaneous';
+    verdict.textContent = 'Spontaneous (\u0394G < 0)';
+    verdict.style.color = '#22c55e';
+  } else if (dG > 0.5) {
+    el.className = 'result-val result-nonspontaneous';
+    verdict.textContent = 'Non-spontaneous (\u0394G > 0)';
+    verdict.style.color = '#ec4899';
+  } else {
+    el.className = 'result-val result-neutral';
+    verdict.textContent = 'Near equilibrium (\u0394G \u2248 0)';
+    verdict.style.color = '#f59e0b';
+  }
+}
+
+/* ---- K <-> dG° CONVERTER ---- */
+function fromDG() {
+  var dG = parseFloat(document.getElementById('dG-input').value);
+  var T = parseFloat(document.getElementById('Keq-T').value);
+  if (isNaN(dG) || isNaN(T) || T <= 0) return;
+  var K = Math.exp(-dG * 1000 / (8.314 * T));
+  var el = document.getElementById('K-from-dG');
+  el.textContent = K >= 1000 ? K.toExponential(3) : K.toFixed(4);
+  updateKeqInterpretation(K, dG);
+}
+
+function fromK() {
+  var K = parseFloat(document.getElementById('K-input').value);
+  var T = parseFloat(document.getElementById('Keq-T').value);
+  if (isNaN(K) || K <= 0 || isNaN(T) || T <= 0) return;
+  var dG = -8.314 * T * Math.log(K) / 1000;
+  var el = document.getElementById('dG-from-K');
+  el.textContent = (dG >= 0 ? '+' : '') + dG.toFixed(2) + ' kJ/mol';
+  updateKeqInterpretation(K, dG);
+}
+
+function updateKeqCalc() {
+  var T = parseFloat(document.getElementById('Keq-T').value);
+  document.getElementById('Keq-T-val').textContent = T + ' K';
+  fromDG();
+}
+
+function updateKeqInterpretation(K, dG) {
+  var el = document.getElementById('keq-interpretation');
+  var msg = '';
+  if (K > 1e6) { msg = 'K = ' + K.toExponential(2) + ': Essentially complete (\u0394G\u00b0 = ' + dG.toFixed(1) + ' kJ/mol)'; el.className = 'result-val result-spontaneous'; }
+  else if (K > 100) { msg = 'K = ' + K.toFixed(0) + ': Strongly product-favored'; el.className = 'result-val result-spontaneous'; }
+  else if (K > 1) { msg = 'K = ' + K.toFixed(2) + ': Slightly product-favored'; el.className = 'result-val result-spontaneous'; }
+  else if (Math.abs(K - 1) < 0.01) { msg = 'K \u2248 1: Equal at equilibrium'; el.className = 'result-val result-neutral'; }
+  else if (K > 0.01) { msg = 'K = ' + K.toFixed(3) + ': Reactants favored'; el.className = 'result-val result-nonspontaneous'; }
+  else { msg = 'K = ' + K.toExponential(2) + ': Essentially no products'; el.className = 'result-val result-nonspontaneous'; }
+  el.textContent = msg;
+}
+
+/* ---- CROSSOVER VISUALIZATION ---- */
+function updateCrossover() {
+  var dH = parseFloat(document.getElementById('cross-dH').value);
+  var dS = parseFloat(document.getElementById('cross-dS').value);
+
+  document.getElementById('cross-dH-val').textContent = (dH >= 0 ? '+' : '') + dH + ' kJ/mol';
+  document.getElementById('cross-dS-val').textContent = (dS >= 0 ? '+' : '') + dS + ' J/mol\u00b7K';
+
+  var resultEl = document.getElementById('crossover-result');
+  var regimeEl = document.getElementById('crossover-regime');
+
+  // Draw canvas
+  var canvas = document.getElementById('crossoverCanvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.offsetWidth;
+  var H = canvas.offsetHeight;
+  canvas.width = W;
+  canvas.height = H;
+
+  // Background
+  ctx.fillStyle = '#262a33';
+  ctx.fillRect(0, 0, W, H);
+
+  var Tmin = 0, Tmax = 2000;
+  var pad = { left: 52, right: 20, top: 20, bottom: 36 };
+  var plotW = W - pad.left - pad.right;
+  var plotH = H - pad.top - pad.bottom;
+
+  // Grid lines
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1;
+  // Horizontal
+  for (var i = 0; i <= 4; i++) {
+    var y = pad.top + (i / 4) * plotH;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + plotW, y); ctx.stroke();
+  }
+  // Vertical
+  for (var i = 0; i <= 4; i++) {
+    var x = pad.left + (i / 4) * plotW;
+    ctx.beginPath(); ctx.moveTo(x, pad.top); ctx.lineTo(x, pad.top + plotH); ctx.stroke();
+  }
+
+  // Calculate dG range
+  function dGatT(T) { return dH - T * dS / 1000; }
+  var dGmin = dGatT(Tmin), dGmax = dGatT(Tmax);
+  var yMin = Math.min(dGmin, dGmax, -50);
+  var yMax = Math.max(dGmin, dGmax, 50);
+  var yPad = (yMax - yMin) * 0.1;
+  yMin -= yPad; yMax += yPad;
+
+  function toCanvasX(T) { return pad.left + ((T - Tmin) / (Tmax - Tmin)) * plotW; }
+  function toCanvasY(dG) { return pad.top + plotH - ((dG - yMin) / (yMax - yMin)) * plotH; }
+
+  // Zero line
+  if (yMin < 0 && yMax > 0) {
+    var zeroY = toCanvasY(0);
+    ctx.strokeStyle = '#4b5563';
+    ctx.setLineDash([4, 4]);
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad.left, zeroY); ctx.lineTo(pad.left + plotW, zeroY); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.fillText('\u0394G = 0', pad.left + 4, zeroY - 4);
+  }
+
+  // Spontaneous region shading
+  if (yMin < 0) {
+    var zeroYShade = yMax > 0 ? toCanvasY(0) : pad.top;
+    var bottomY = pad.top + plotH;
+    ctx.fillStyle = 'rgba(34,197,94,0.07)';
+    ctx.fillRect(pad.left, zeroYShade, plotW, bottomY - zeroYShade);
+  }
+
+  // Draw dG line
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  var started = false;
+  for (var t = Tmin; t <= Tmax; t += 10) {
+    var x = toCanvasX(t);
+    var y = toCanvasY(dGatT(t));
+    if (!started) { ctx.moveTo(x, y); started = true; } else { ctx.lineTo(x, y); }
+  }
+  ctx.stroke();
+
+  // Crossover point
+  var Tcross = (dS !== 0) ? (dH * 1000 / dS) : null;
+  if (Tcross !== null && Tcross >= Tmin && Tcross <= Tmax) {
+    var cx = toCanvasX(Tcross);
+    var cy = toCanvasY(0);
+    ctx.beginPath();
+    ctx.arc(cx, cy, 6, 0, 2 * Math.PI);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fill();
+    ctx.strokeStyle = '#fcd34d';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = '#fcd34d';
+    ctx.font = '11px JetBrains Mono, monospace';
+    var labelX = cx + 10;
+    if (labelX + 80 > pad.left + plotW) labelX = cx - 90;
+    ctx.fillText('T\u2090 = ' + Math.round(Tcross) + ' K', labelX, cy + 4);
+  }
+
+  // Axes labels
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '10px JetBrains Mono, monospace';
+  // X axis labels
+  for (var i = 0; i <= 4; i++) {
+    var T = Tmin + (i / 4) * (Tmax - Tmin);
+    var x = toCanvasX(T);
+    ctx.fillText(T, x - 12, pad.top + plotH + 16);
+  }
+  ctx.fillText('T (K)', pad.left + plotW / 2 - 15, pad.top + plotH + 30);
+
+  // Y axis labels
+  for (var i = 0; i <= 4; i++) {
+    var dG = yMin + (i / 4) * (yMax - yMin);
+    var y = toCanvasY(dG);
+    ctx.fillText(dG.toFixed(0), 2, y + 4);
+  }
+  ctx.save();
+  ctx.translate(12, pad.top + plotH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('\u0394G (kJ/mol)', -30, 0);
+  ctx.restore();
+
+  // Update text result
+  if (dS === 0) {
+    resultEl.textContent = 'T\u2090 = undefined (\u0394S = 0)';
+    resultEl.className = 'result-val result-neutral';
+    regimeEl.textContent = 'Constant \u0394G regardless of temperature.';
+  } else if (Tcross !== null && Tcross > 0 && Tcross < Tmax) {
+    resultEl.textContent = 'T\u2090 = ' + Math.round(Tcross) + ' K (' + (Math.round(Tcross) - 273) + '\u00b0C)';
+    if (dH > 0 && dS > 0) {
+      resultEl.className = 'result-val result-neutral';
+      regimeEl.textContent = 'Spontaneous above ' + Math.round(Tcross) + ' K. Entropy-driven at high T.';
+    } else {
+      resultEl.className = 'result-val result-neutral';
+      regimeEl.textContent = 'Spontaneous below ' + Math.round(Tcross) + ' K. Enthalpy-driven at low T.';
+    }
+  } else if (Tcross !== null && Tcross <= 0) {
+    if (dH < 0 && dS > 0) {
+      resultEl.textContent = 'Always spontaneous';
+      resultEl.className = 'result-val result-spontaneous';
+      regimeEl.textContent = '\u0394H < 0 and \u0394S > 0: spontaneous at all temperatures.';
+    } else {
+      resultEl.textContent = 'Never spontaneous in range';
+      resultEl.className = 'result-val result-nonspontaneous';
+      regimeEl.textContent = 'Crossover below 0 K (unphysical).';
+    }
+  } else {
+    resultEl.textContent = 'No crossover in 0\u20132000 K range';
+    resultEl.className = 'result-val result-neutral';
+    regimeEl.textContent = 'Check signs: \u0394H and \u0394S have opposite signs.';
+  }
+}
+
+/* ---- COUPLING CALCULATOR ---- */
+function updateCoupling() {
+  var dG1 = parseFloat(document.getElementById('coup-dG1').value);
+  var dG2 = parseFloat(document.getElementById('coup-dG2').value);
+  if (isNaN(dG1) || isNaN(dG2)) return;
+  var total = dG1 + dG2;
+  var el = document.getElementById('coupling-result');
+  var verdict = document.getElementById('coupling-verdict');
+  el.textContent = (total >= 0 ? '+' : '') + total.toFixed(2) + ' kJ/mol';
+  if (total < -0.5) {
+    el.className = 'result-val result-spontaneous';
+    verdict.textContent = 'Coupled system is spontaneous. Coupling works.';
+    verdict.style.color = '#22c55e';
+  } else if (total > 0.5) {
+    el.className = 'result-val result-nonspontaneous';
+    verdict.textContent = 'Coupled system is still non-spontaneous. Need a stronger driver.';
+    verdict.style.color = '#ec4899';
+  } else {
+    el.className = 'result-val result-neutral';
+    verdict.textContent = 'Near equilibrium.';
+    verdict.style.color = '#f59e0b';
+  }
+}
+
+/* ---- INIT ---- */
+window.addEventListener('load', function() {
+  updateGibbs();
+  fromDG();
+  updateCrossover();
+  updateCoupling();
+});
+
+window.addEventListener('resize', function() {
+  updateCrossover();
+});
+</script>
+</body>
+</html>

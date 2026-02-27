@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 1: Units, Measurement &amp; Vectors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --bg-card: #262a33;
+    --bg-card-hover: #2c313c;
+    --bg-input: #1a1d24;
+    --border: #3a3f4b;
+    --text: #e2e4e9;
+    --text-dim: #9ca3af;
+    --text-bright: #ffffff;
+    --indigo: #6366f1;
+    --indigo-dim: rgba(99,102,241,0.15);
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.15);
+    --pink: #ec4899;
+    --pink-dim: rgba(236,72,153,0.15);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.15);
+    --radius: 10px;
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER & PROGRESS */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(30, 33, 40, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+  }
+
+  .top-bar h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .top-bar h1 span { color: var(--indigo); }
+
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--indigo), #818cf8);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+    text-align: right;
+  }
+
+  /* CONTAINER */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color var(--transition);
+  }
+
+  .section-card.completed { border-color: var(--green); }
+  .section-card.active { border-color: var(--indigo); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--transition);
+  }
+
+  .section-header:hover { background: var(--bg-card-hover); }
+
+  .section-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--indigo-dim);
+    color: var(--indigo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all var(--transition);
+  }
+
+  .section-card.completed .section-number {
+    background: var(--green-dim);
+    color: var(--green);
+  }
+
+  .section-title {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  .section-chevron {
+    width: 20px;
+    height: 20px;
+    color: var(--text-dim);
+    transition: transform var(--transition);
+    flex-shrink: 0;
+  }
+
+  .section-card.open .section-chevron { transform: rotate(180deg); }
+
+  .section-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .section-body-inner {
+    padding: 0 20px 24px;
+  }
+
+  /* UTILITIES */
+  .subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--indigo);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  /* TABLES */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 0.78rem;
+  }
+
+  .data-table th {
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--bg);
+    color: var(--indigo);
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .data-table tr:hover td { background: var(--bg-card-hover); }
+
+  /* INPUTS & CONTROLS */
+  input[type="number"], input[type="text"], select {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-bright);
+    padding: 8px 12px;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color var(--transition);
+  }
+
+  input:focus, select:focus { border-color: var(--indigo); }
+
+  select { cursor: pointer; }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all var(--transition);
+    color: #fff;
+  }
+
+  .btn-primary { background: var(--indigo); }
+  .btn-primary:hover { background: #5558e6; }
+  .btn-green { background: var(--green); color: #000; }
+  .btn-green:hover { background: #1ea94e; }
+
+  /* SLIDER */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .slider-row label {
+    font-size: 0.76rem;
+    color: var(--text-dim);
+    min-width: 100px;
+  }
+
+  .slider-row input[type="range"] {
+    flex: 1;
+    accent-color: var(--indigo);
+    height: 4px;
+  }
+
+  .slider-row .slider-val {
+    font-size: 0.78rem;
+    color: var(--text-bright);
+    min-width: 60px;
+    text-align: right;
+    font-weight: 600;
+  }
+
+  /* SVG AREA */
+  .svg-container {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 16px 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .svg-container svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* PRACTICE PROBLEMS */
+  .problem-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  .problem-block .problem-text {
+    font-size: 0.82rem;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .problem-block .answer-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .problem-block input { max-width: 180px; }
+
+  .feedback {
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: none;
+  }
+
+  .feedback.correct {
+    display: inline-block;
+    background: var(--green-dim);
+    color: var(--green);
+  }
+
+  .feedback.incorrect {
+    display: inline-block;
+    background: var(--pink-dim);
+    color: var(--pink);
+  }
+
+  /* CONVERTER */
+  .converter-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .converter-result {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--green);
+    min-height: 28px;
+    margin-top: 4px;
+  }
+
+  /* DIM ANALYSIS */
+  .dim-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+  }
+
+  .dim-step .frac {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 10px;
+    background: var(--bg-card);
+  }
+
+  .dim-step .frac .num { border-bottom: 1px solid var(--text-dim); padding-bottom: 2px; margin-bottom: 2px; }
+
+  .dim-step .cancelled { text-decoration: line-through; color: var(--pink); opacity: 0.6; }
+  .dim-step .surviving { color: var(--green); font-weight: 600; }
+  .dim-step .times { color: var(--text-dim); }
+
+  /* FORMULA DISPLAY */
+  .formula-box {
+    background: var(--indigo-dim);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 0.85rem;
+    color: var(--text-bright);
+    line-height: 2;
+  }
+
+  .formula-box .formula-line {
+    margin-bottom: 2px;
+  }
+
+  /* QUIZ */
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .quiz-score {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .quiz-question {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .quiz-question .q-num {
+    font-size: 0.7rem;
+    color: var(--indigo);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
+  .quiz-question .q-text {
+    font-size: 0.85rem;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .quiz-option {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: all var(--transition);
+  }
+
+  .quiz-option:hover { border-color: var(--indigo); background: var(--bg-card-hover); }
+  .quiz-option.selected-correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .quiz-option.selected-wrong { border-color: var(--pink); background: var(--pink-dim); color: var(--pink); }
+  .quiz-option.reveal-correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .quiz-option.disabled { pointer-events: none; opacity: 0.7; }
+
+  .quiz-explanation {
+    margin-top: 10px;
+    font-size: 0.76rem;
+    color: var(--amber);
+    display: none;
+  }
+
+  .quiz-nav {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .quiz-final {
+    text-align: center;
+    padding: 30px;
+  }
+
+  .quiz-final .big-score {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+
+  .quiz-final .big-label {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  /* 3D-ISH CROSS PRODUCT DIAGRAM */
+  .cross-diagram text { font-family: 'JetBrains Mono', monospace; }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .top-bar { padding: 12px 16px; }
+    .top-bar h1 { font-size: 0.9rem; }
+    .container { padding: 16px 10px 60px; }
+    .section-header { padding: 12px 14px; }
+    .section-body-inner { padding: 0 14px 18px; }
+    .data-table { font-size: 0.7rem; }
+    .data-table th, .data-table td { padding: 6px 8px; }
+    .slider-row label { min-width: 70px; font-size: 0.7rem; }
+    .converter-row { flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <h1><span>Week 1</span> // Units, Measurement &amp; Vectors</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<!-- CONTAINER -->
+<div class="container">
+
+  <!-- SECTION 1: SI UNITS -->
+  <div class="section-card" data-section="1">
+    <div class="section-header" onclick="toggleSection(1)">
+      <div class="section-number">1</div>
+      <div class="section-title">SI Units &amp; Prefixes</div>
+      <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="section-body" id="body-1">
+      <div class="section-body-inner">
+
+        <p class="subtitle">The International System of Units (SI) defines seven base units from which all other units are derived.</p>
+
+        <div class="label">Base Units</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Quantity</th><th>Unit</th><th>Symbol</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Length</td><td>meter</td><td>m</td></tr>
+            <tr><td>Mass</td><td>kilogram</td><td>kg</td></tr>
+            <tr><td>Time</td><td>second</td><td>s</td></tr>
+            <tr><td>Electric Current</td><td>ampere</td><td>A</td></tr>
+            <tr><td>Temperature</td><td>kelvin</td><td>K</td></tr>
+            <tr><td>Amount of Substance</td><td>mole</td><td>mol</td></tr>
+            <tr><td>Luminous Intensity</td><td>candela</td><td>cd</td></tr>
+          </tbody>
+        </table>
+
+        <div class="label">Prefix Converter</div>
+        <p class="subtitle">Enter a value with a prefix and convert to another prefix.</p>
+        <div class="converter-row">
+          <input type="number" id="prefixVal" placeholder="Value" style="width:120px" oninput="convertPrefix()">
+          <select id="prefixFrom" onchange="convertPrefix()">
+            <option value="1e-9">nano (n)</option>
+            <option value="1e-6">micro (u)</option>
+            <option value="1e-3">milli (m)</option>
+            <option value="1" selected>base</option>
+            <option value="1e3">kilo (k)</option>
+            <option value="1e6">mega (M)</option>
+            <option value="1e9">giga (G)</option>
+          </select>
+          <span style="color:var(--text-dim)">&#10132;</span>
+          <select id="prefixTo" onchange="convertPrefix()">
+            <option value="1e-9">nano (n)</option>
+            <option value="1e-6">micro (u)</option>
+            <option value="1e-3">milli (m)</option>
+            <option value="1">base</option>
+            <option value="1e3" selected>kilo (k)</option>
+            <option value="1e6">mega (M)</option>
+            <option value="1e9">giga (G)</option>
+          </select>
+        </div>
+        <div class="converter-result" id="prefixResult">--</div>
+
+        <div class="label" style="margin-top:20px">Practice Problems</div>
+
+        <div class="problem-block">
+          <div class="problem-text">1. Convert 4,500 meters to kilometers.</div>
+          <div class="answer-row">
+            <input type="number" id="s1p1" placeholder="Answer (km)" step="any">
+            <button class="btn btn-primary" onclick="checkAnswer('s1p1', 4.5, 'km')">Check</button>
+            <span class="feedback" id="fb-s1p1"></span>
+          </div>
+        </div>
+
+        <div class="problem-block">
+          <div class="problem-text">2. Convert 0.025 kilograms to grams.</div>
+          <div class="answer-row">
+            <input type="number" id="s1p2" placeholder="Answer (g)" step="any">
+            <button class="btn btn-primary" onclick="checkAnswer('s1p2', 25, 'g')">Check</button>
+            <span class="feedback" id="fb-s1p2"></span>
+          </div>
+        </div>
+
+        <div class="problem-block">
+          <div class="problem-text">3. How many microseconds are in 3.2 milliseconds?</div>
+          <div class="answer-row">
+            <input type="number" id="s1p3" placeholder="Answer (us)" step="any">
+            <button class="btn btn-primary" onclick="checkAnswer('s1p3', 3200, 'us')">Check</button>
+            <span class="feedback" id="fb-s1p3"></span>
+          </div>
+        </div>
+
+        <button class="btn btn-green" onclick="markComplete(1)" style="margin-top:14px">Mark Section Complete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: DIMENSIONAL ANALYSIS -->
+  <div class="section-card" data-section="2">
+    <div class="section-header" onclick="toggleSection(2)">
+      <div class="section-number">2</div>
+      <div class="section-title">Dimensional Analysis</div>
+      <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="section-body" id="body-2">
+      <div class="section-body-inner">
+
+        <p class="subtitle">Dimensional analysis uses conversion factors to systematically cancel units until you reach the target unit. Think of it as building a chain of fractions where unwanted units strike through.</p>
+
+        <div class="label">Worked Example: Convert 65 mph to m/s</div>
+
+        <div style="overflow-x:auto; padding: 10px 0;">
+          <div class="dim-step">
+            <span>65</span>
+            <div class="frac">
+              <span class="num"><span class="cancelled">mi</span></span>
+              <span class="den"><span class="cancelled">hr</span></span>
+            </div>
+            <span class="times">&times;</span>
+            <div class="frac">
+              <span class="num">1609.34 <span class="surviving">m</span></span>
+              <span class="den">1 <span class="cancelled">mi</span></span>
+            </div>
+            <span class="times">&times;</span>
+            <div class="frac">
+              <span class="num">1 <span class="cancelled">hr</span></span>
+              <span class="den">3600 <span class="surviving">s</span></span>
+            </div>
+            <span class="times">=</span>
+            <span style="color:var(--green); font-weight:700;">29.06 m/s</span>
+          </div>
+        </div>
+
+        <p class="subtitle" style="margin-top:12px">Matching units on top and bottom cancel (shown in <span style="color:var(--pink)">pink strikethrough</span>). The remaining units (shown in <span style="color:var(--green)">green</span>) give your final answer.</p>
+
+        <div class="label" style="margin-top:20px">Practice Problems</div>
+
+        <div class="problem-block">
+          <div class="problem-text">1. Convert 100 km/h to m/s. (Round to 2 decimal places)</div>
+          <div class="answer-row">
+            <input type="number" id="s2p1" placeholder="Answer (m/s)" step="any">
+            <button class="btn btn-primary" onclick="checkAnswer('s2p1', 27.78, 'm/s', 0.05)">Check</button>
+            <span class="feedback" id="fb-s2p1"></span>
+          </div>
+        </div>
+
+        <div class="problem-block">
+          <div class="problem-text">2. Convert 5.0 kg/m^3 to g/cm^3. (Hint: 1 m = 100 cm)</div>
+          <div class="answer-row">
+            <input type="number" id="s2p2" placeholder="Answer (g/cm^3)" step="any">
+            <button class="btn btn-primary" onclick="checkAnswer('s2p2', 0.005, 'g/cm^3', 0.001)">Check</button>
+            <span class="feedback" id="fb-s2p2"></span>
+          </div>
+        </div>
+
+        <div class="problem-block">
+          <div class="problem-text">3. A car travels 250 miles in 4 hours. What is its speed in m/s? (1 mi = 1609.34 m, round to 1 decimal)</div>
+          <div class="answer-row">
+            <input type="number" id="s2p3" placeholder="Answer (m/s)" step="any">
+            <button class="btn btn-primary" onclick="checkAnswer('s2p3', 27.9, 'm/s', 0.2)">Check</button>
+            <span class="feedback" id="fb-s2p3"></span>
+          </div>
+        </div>
+
+        <button class="btn btn-green" onclick="markComplete(2)" style="margin-top:14px">Mark Section Complete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: VECTOR ADDITION (GRAPHICAL) -->
+  <div class="section-card" data-section="3">
+    <div class="section-header" onclick="toggleSection(3)">
+      <div class="section-number">3</div>
+      <div class="section-title">Vector Addition (Graphical)</div>
+      <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="section-body" id="body-3">
+      <div class="section-body-inner">
+
+        <p class="subtitle">Add two vectors graphically using the tip-to-tail method: place the tail of B at the tip of A. The resultant R goes from the tail of A to the tip of B.</p>
+
+        <div class="svg-container">
+          <svg id="vecAddSvg" viewBox="0 0 500 360" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arrowA" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#6366f1"/>
+              </marker>
+              <marker id="arrowB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#f59e0b"/>
+              </marker>
+              <marker id="arrowR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#22c55e"/>
+              </marker>
+            </defs>
+            <!-- Grid -->
+            <g id="vecAddGrid" stroke="#2c313c" stroke-width="0.5"></g>
+            <!-- Axes -->
+            <line x1="50" y1="310" x2="470" y2="310" stroke="#3a3f4b" stroke-width="1"/>
+            <line x1="50" y1="10" x2="50" y2="310" stroke="#3a3f4b" stroke-width="1"/>
+            <!-- Vectors drawn by JS -->
+            <line id="vecA" stroke="#6366f1" stroke-width="2.5" marker-end="url(#arrowA)"/>
+            <line id="vecB" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#arrowB)"/>
+            <line id="vecR" stroke="#22c55e" stroke-width="2.5" stroke-dasharray="6,4" marker-end="url(#arrowR)"/>
+            <!-- Labels -->
+            <text id="lblA" fill="#6366f1" font-size="13" font-family="JetBrains Mono" font-weight="600"></text>
+            <text id="lblB" fill="#f59e0b" font-size="13" font-family="JetBrains Mono" font-weight="600"></text>
+            <text id="lblR" fill="#22c55e" font-size="13" font-family="JetBrains Mono" font-weight="600"></text>
+          </svg>
+        </div>
+
+        <div class="slider-row">
+          <label>|A| magnitude</label>
+          <input type="range" id="vecA_mag" min="20" max="180" value="100" oninput="drawVecAdd()">
+          <span class="slider-val" id="vecA_mag_val">100</span>
+        </div>
+        <div class="slider-row">
+          <label>A angle</label>
+          <input type="range" id="vecA_ang" min="0" max="360" value="30" oninput="drawVecAdd()">
+          <span class="slider-val" id="vecA_ang_val">30deg</span>
+        </div>
+        <div class="slider-row">
+          <label>|B| magnitude</label>
+          <input type="range" id="vecB_mag" min="20" max="180" value="80" oninput="drawVecAdd()">
+          <span class="slider-val" id="vecB_mag_val">80</span>
+        </div>
+        <div class="slider-row">
+          <label>B angle</label>
+          <input type="range" id="vecB_ang" min="0" max="360" value="120" oninput="drawVecAdd()">
+          <span class="slider-val" id="vecB_ang_val">120deg</span>
+        </div>
+
+        <div class="formula-box" id="vecAddInfo">
+          Adjust the sliders to see tip-to-tail addition.
+        </div>
+
+        <button class="btn btn-green" onclick="markComplete(3)" style="margin-top:14px">Mark Section Complete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: VECTOR COMPONENTS -->
+  <div class="section-card" data-section="4">
+    <div class="section-header" onclick="toggleSection(4)">
+      <div class="section-number">4</div>
+      <div class="section-title">Vector Components</div>
+      <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="section-body" id="body-4">
+      <div class="section-body-inner">
+
+        <p class="subtitle">Any vector can be decomposed into perpendicular x and y components. This is the foundation for solving most physics problems involving vectors.</p>
+
+        <div class="svg-container">
+          <svg id="vecCompSvg" viewBox="0 0 500 360" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arrowComp" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#6366f1"/>
+              </marker>
+              <marker id="arrowX" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#f59e0b"/>
+              </marker>
+              <marker id="arrowY" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#ec4899"/>
+              </marker>
+            </defs>
+            <!-- Axes -->
+            <line x1="80" y1="310" x2="460" y2="310" stroke="#3a3f4b" stroke-width="1"/>
+            <line x1="80" y1="10" x2="80" y2="310" stroke="#3a3f4b" stroke-width="1"/>
+            <text x="465" y="314" fill="#3a3f4b" font-size="12" font-family="JetBrains Mono">x</text>
+            <text x="75" y="8" fill="#3a3f4b" font-size="12" font-family="JetBrains Mono">y</text>
+            <!-- Angle arc -->
+            <path id="compArc" fill="none" stroke="#6366f1" stroke-width="1.5" opacity="0.5"/>
+            <!-- Projections -->
+            <line id="compProjX" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#arrowX)"/>
+            <line id="compProjY" stroke="#ec4899" stroke-width="2.5" marker-end="url(#arrowY)"/>
+            <!-- Dashed projection lines -->
+            <line id="compDashX" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>
+            <line id="compDashY" stroke="#ec4899" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>
+            <!-- Right angle marker -->
+            <rect id="compRightAngle" width="10" height="10" fill="none" stroke="#9ca3af" stroke-width="1"/>
+            <!-- Main vector -->
+            <line id="compVec" stroke="#6366f1" stroke-width="3" marker-end="url(#arrowComp)"/>
+            <!-- Labels -->
+            <text id="compLblA" fill="#6366f1" font-size="14" font-family="JetBrains Mono" font-weight="700"></text>
+            <text id="compLblAx" fill="#f59e0b" font-size="12" font-family="JetBrains Mono" font-weight="600"></text>
+            <text id="compLblAy" fill="#ec4899" font-size="12" font-family="JetBrains Mono" font-weight="600"></text>
+            <text id="compLblTheta" fill="#6366f1" font-size="11" font-family="JetBrains Mono" opacity="0.8"></text>
+          </svg>
+        </div>
+
+        <div class="slider-row">
+          <label>|A| magnitude</label>
+          <input type="range" id="comp_mag" min="40" max="200" value="150" oninput="drawVecComp()">
+          <span class="slider-val" id="comp_mag_val">150</span>
+        </div>
+        <div class="slider-row">
+          <label>Angle (deg)</label>
+          <input type="range" id="comp_ang" min="0" max="360" value="40" oninput="drawVecComp()">
+          <span class="slider-val" id="comp_ang_val">40deg</span>
+        </div>
+
+        <div class="formula-box">
+          <div class="formula-line">A<sub>x</sub> = A cos(theta)&emsp;&emsp;A<sub>y</sub> = A sin(theta)</div>
+          <div class="formula-line">|A| = sqrt(A<sub>x</sub><sup>2</sup> + A<sub>y</sub><sup>2</sup>)&emsp;&emsp;theta = arctan(A<sub>y</sub> / A<sub>x</sub>)</div>
+        </div>
+
+        <div class="formula-box" id="compInfo" style="background:var(--bg);border-color:var(--border);">
+          Adjust the sliders to decompose the vector.
+        </div>
+
+        <div class="label" style="margin-top:20px">Practice Problems</div>
+
+        <div class="problem-block">
+          <div class="problem-text">1. A vector has magnitude 50 and angle 60 deg. What is the x-component? (Round to 1 decimal)</div>
+          <div class="answer-row">
+            <input type="number" id="s4p1" placeholder="Ax" step="any">
+            <button class="btn btn-primary" onclick="checkAnswer('s4p1', 25.0, '', 0.5)">Check</button>
+            <span class="feedback" id="fb-s4p1"></span>
+          </div>
+        </div>
+
+        <div class="problem-block">
+          <div class="problem-text">2. A vector has magnitude 50 and angle 60 deg. What is the y-component? (Round to 1 decimal)</div>
+          <div class="answer-row">
+            <input type="number" id="s4p2" placeholder="Ay" step="any">
+            <button class="btn btn-primary" onclick="checkAnswer('s4p2', 43.3, '', 0.5)">Check</button>
+            <span class="feedback" id="fb-s4p2"></span>
+          </div>
+        </div>
+
+        <div class="problem-block">
+          <div class="problem-text">3. Given A<sub>x</sub> = 12, A<sub>y</sub> = 5, find the magnitude |A|.</div>
+          <div class="answer-row">
+            <input type="number" id="s4p3" placeholder="|A|" step="any">
+            <button class="btn btn-primary" onclick="checkAnswer('s4p3', 13, '', 0.1)">Check</button>
+            <span class="feedback" id="fb-s4p3"></span>
+          </div>
+        </div>
+
+        <button class="btn btn-green" onclick="markComplete(4)" style="margin-top:14px">Mark Section Complete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: DOT & CROSS PRODUCTS -->
+  <div class="section-card" data-section="5">
+    <div class="section-header" onclick="toggleSection(5)">
+      <div class="section-number">5</div>
+      <div class="section-title">Dot &amp; Cross Products</div>
+      <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="section-body" id="body-5">
+      <div class="section-body-inner">
+
+        <p class="subtitle">Two fundamental operations on vectors. The dot product yields a scalar; the cross product yields a vector perpendicular to both inputs.</p>
+
+        <div class="label">Dot Product (Scalar Product)</div>
+        <div class="formula-box">
+          <div class="formula-line"><b>u &middot; v</b> = |u| |v| cos(theta)</div>
+          <div class="formula-line">Also: u &middot; v = u<sub>x</sub>v<sub>x</sub> + u<sub>y</sub>v<sub>y</sub> + u<sub>z</sub>v<sub>z</sub></div>
+          <div class="formula-line" style="color:var(--text-dim); font-size:0.75rem; margin-top:4px;">Result is a scalar. Measures "how much" u points along v.</div>
+        </div>
+
+        <div class="svg-container">
+          <svg id="dotSvg" viewBox="0 0 500 240" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arrowDotU" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#6366f1"/>
+              </marker>
+              <marker id="arrowDotV" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#f59e0b"/>
+              </marker>
+            </defs>
+            <!-- u along x -->
+            <line x1="80" y1="170" x2="320" y2="170" stroke="#6366f1" stroke-width="2.5" marker-end="url(#arrowDotU)"/>
+            <text x="190" y="195" fill="#6366f1" font-size="13" font-family="JetBrains Mono" font-weight="600" text-anchor="middle">u</text>
+            <!-- v at angle -->
+            <line x1="80" y1="170" x2="280" y2="70" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#arrowDotV)"/>
+            <text x="190" y="105" fill="#f59e0b" font-size="13" font-family="JetBrains Mono" font-weight="600">v</text>
+            <!-- projection -->
+            <line x1="280" y1="70" x2="280" y2="170" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <line x1="80" y1="170" x2="280" y2="170" stroke="#22c55e" stroke-width="2" opacity="0.6"/>
+            <text x="180" y="165" fill="#22c55e" font-size="11" font-family="JetBrains Mono">projection of v onto u</text>
+            <!-- angle arc -->
+            <path d="M 130,170 A 50,50 0 0,0 118,142" fill="none" stroke="#9ca3af" stroke-width="1.2"/>
+            <text x="134" y="152" fill="#9ca3af" font-size="11" font-family="JetBrains Mono">theta</text>
+          </svg>
+        </div>
+
+        <div class="label" style="margin-top:20px">Cross Product (Vector Product)</div>
+        <div class="formula-box">
+          <div class="formula-line"><b>u x v</b> = |u| |v| sin(theta) n-hat</div>
+          <div class="formula-line" style="color:var(--text-dim); font-size:0.75rem; margin-top:4px;">Result is a vector perpendicular to both u and v. Direction given by right-hand rule.</div>
+        </div>
+
+        <div class="svg-container">
+          <svg class="cross-diagram" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arrowCU" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#6366f1"/>
+              </marker>
+              <marker id="arrowCV" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#f59e0b"/>
+              </marker>
+              <marker id="arrowCR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#22c55e"/>
+              </marker>
+            </defs>
+            <!-- "3D" perspective: draw a plane -->
+            <polygon points="80,240 350,240 420,160 150,160" fill="none" stroke="#3a3f4b" stroke-width="1" opacity="0.4"/>
+            <!-- u vector in plane -->
+            <line x1="200" y1="210" x2="360" y2="210" stroke="#6366f1" stroke-width="2.5" marker-end="url(#arrowCU)"/>
+            <text x="280" y="230" fill="#6366f1" font-size="13" font-weight="600">u</text>
+            <!-- v vector in plane -->
+            <line x1="200" y1="210" x2="320" y2="160" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#arrowCV)"/>
+            <text x="270" y="175" fill="#f59e0b" font-size="13" font-weight="600">v</text>
+            <!-- u x v perpendicular (upward) -->
+            <line x1="200" y1="210" x2="200" y2="50" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrowCR)"/>
+            <text x="210" y="55" fill="#22c55e" font-size="13" font-weight="600">u x v</text>
+            <!-- right angle marker -->
+            <rect x="200" y="200" width="10" height="10" fill="none" stroke="#9ca3af" stroke-width="1"/>
+            <!-- right hand hint -->
+            <text x="80" y="50" fill="#9ca3af" font-size="11" opacity="0.7">Right-hand rule:</text>
+            <text x="80" y="68" fill="#9ca3af" font-size="11" opacity="0.7">Curl fingers u -> v,</text>
+            <text x="80" y="86" fill="#9ca3af" font-size="11" opacity="0.7">thumb = u x v direction</text>
+          </svg>
+        </div>
+
+        <div class="label" style="margin-top:20px">Practice Problems</div>
+
+        <div class="problem-block">
+          <div class="problem-text">1. u = (3, 4) and v = (1, 2). Compute u &middot; v.</div>
+          <div class="answer-row">
+            <input type="number" id="s5p1" placeholder="u . v" step="any">
+            <button class="btn btn-primary" onclick="checkAnswer('s5p1', 11, '')">Check</button>
+            <span class="feedback" id="fb-s5p1"></span>
+          </div>
+        </div>
+
+        <div class="problem-block">
+          <div class="problem-text">2. |u| = 5, |v| = 8, theta = 60 deg. What is u &middot; v?</div>
+          <div class="answer-row">
+            <input type="number" id="s5p2" placeholder="u . v" step="any">
+            <button class="btn btn-primary" onclick="checkAnswer('s5p2', 20, '', 0.5)">Check</button>
+            <span class="feedback" id="fb-s5p2"></span>
+          </div>
+        </div>
+
+        <div class="problem-block">
+          <div class="problem-text">3. |u| = 5, |v| = 8, theta = 90 deg. What is |u x v|?</div>
+          <div class="answer-row">
+            <input type="number" id="s5p3" placeholder="|u x v|" step="any">
+            <button class="btn btn-primary" onclick="checkAnswer('s5p3', 40, '')">Check</button>
+            <span class="feedback" id="fb-s5p3"></span>
+          </div>
+        </div>
+
+        <button class="btn btn-green" onclick="markComplete(5)" style="margin-top:14px">Mark Section Complete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: QUIZ -->
+  <div class="section-card" data-section="6">
+    <div class="section-header" onclick="toggleSection(6)">
+      <div class="section-number">6</div>
+      <div class="section-title">Quick Quiz (10 Questions)</div>
+      <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="section-body" id="body-6">
+      <div class="section-body-inner">
+
+        <div class="quiz-header">
+          <div class="label" style="margin:0">Mixed Topics</div>
+          <div class="quiz-score" id="quizScore">0 / 10</div>
+        </div>
+
+        <div id="quizContainer"></div>
+
+        <div class="quiz-nav">
+          <button class="btn btn-primary" id="quizPrev" onclick="quizNav(-1)" style="display:none">Prev</button>
+          <button class="btn btn-primary" id="quizNext" onclick="quizNav(1)">Next</button>
+        </div>
+
+        <div class="quiz-final" id="quizFinal" style="display:none">
+          <div class="big-score" id="quizFinalScore">0/10</div>
+          <div class="big-label">Quiz Complete</div>
+          <button class="btn btn-primary" onclick="resetQuiz()" style="margin-top:16px">Retake Quiz</button>
+          <button class="btn btn-green" onclick="markComplete(6)" style="margin-top:16px">Mark Complete</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+const TOTAL_SECTIONS = 6;
+const completed = new Set();
+
+/* ============================================================
+   SECTION TOGGLE
+   ============================================================ */
+function toggleSection(n) {
+  const card = document.querySelector(`.section-card[data-section="${n}"]`);
+  const body = document.getElementById(`body-${n}`);
+  const isOpen = card.classList.contains('open');
+
+  // Close all first
+  document.querySelectorAll('.section-card').forEach(c => {
+    c.classList.remove('open','active');
+    const b = c.querySelector('.section-body');
+    b.style.maxHeight = '0px';
+  });
+
+  if (!isOpen) {
+    card.classList.add('open','active');
+    body.style.maxHeight = body.scrollHeight + 2000 + 'px';
+
+    // Draw interactive diagrams when section opens
+    if (n === 3) setTimeout(drawVecAdd, 50);
+    if (n === 4) setTimeout(drawVecComp, 50);
+    if (n === 6 && !quizInitialized) { initQuiz(); quizInitialized = true; }
+  }
+}
+
+/* ============================================================
+   PROGRESS
+   ============================================================ */
+function markComplete(n) {
+  completed.add(n);
+  const card = document.querySelector(`.section-card[data-section="${n}"]`);
+  card.classList.add('completed');
+  const pct = (completed.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${completed.size} / ${TOTAL_SECTIONS} sections`;
+
+  // Auto-open next section
+  if (n < TOTAL_SECTIONS) {
+    setTimeout(() => toggleSection(n + 1), 400);
+  }
+}
+
+/* ============================================================
+   PREFIX CONVERTER
+   ============================================================ */
+function convertPrefix() {
+  const val = parseFloat(document.getElementById('prefixVal').value);
+  const from = parseFloat(document.getElementById('prefixFrom').value);
+  const to = parseFloat(document.getElementById('prefixTo').value);
+  const result = document.getElementById('prefixResult');
+
+  if (isNaN(val)) { result.textContent = '--'; return; }
+
+  const base = val * from;
+  const converted = base / to;
+  const prefixNames = {'1e-9':'n','1e-6':'u','1e-3':'m','1':'','1e3':'k','1e6':'M','1e9':'G'};
+  const toKey = document.getElementById('prefixTo').value;
+  const sym = prefixNames[toKey] || '';
+
+  result.textContent = `= ${formatSmart(converted)} ${sym}`;
+}
+
+function formatSmart(n) {
+  if (Math.abs(n) >= 1e6 || (Math.abs(n) < 0.001 && n !== 0)) return n.toExponential(4);
+  return parseFloat(n.toPrecision(8)).toString();
+}
+
+/* ============================================================
+   ANSWER CHECKER
+   ============================================================ */
+function checkAnswer(inputId, correct, unit, tolerance) {
+  const input = document.getElementById(inputId);
+  const fb = document.getElementById('fb-' + inputId);
+  const val = parseFloat(input.value);
+  const tol = tolerance || Math.abs(correct) * 0.02 + 0.01;
+
+  fb.className = 'feedback';
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Enter a number';
+    return;
+  }
+
+  if (Math.abs(val - correct) <= tol) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    input.style.borderColor = 'var(--green)';
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = `Incorrect. Answer: ${correct} ${unit}`;
+    input.style.borderColor = 'var(--pink)';
+  }
+}
+
+/* ============================================================
+   VECTOR ADDITION DIAGRAM
+   ============================================================ */
+function drawVecAdd() {
+  const magA = +document.getElementById('vecA_mag').value;
+  const angA = +document.getElementById('vecA_ang').value;
+  const magB = +document.getElementById('vecB_mag').value;
+  const angB = +document.getElementById('vecB_ang').value;
+
+  document.getElementById('vecA_mag_val').textContent = magA;
+  document.getElementById('vecA_ang_val').textContent = angA + 'deg';
+  document.getElementById('vecB_mag_val').textContent = magB;
+  document.getElementById('vecB_ang_val').textContent = angB + 'deg';
+
+  const ox = 80, oy = 280;
+  const scale = 1.0;
+  const radA = angA * Math.PI / 180;
+  const radB = angB * Math.PI / 180;
+
+  const ax = magA * Math.cos(radA) * scale;
+  const ay = -magA * Math.sin(radA) * scale;
+  const bx = magB * Math.cos(radB) * scale;
+  const by = -magB * Math.sin(radB) * scale;
+
+  const tipA = { x: ox + ax, y: oy + ay };
+  const tipB = { x: tipA.x + bx, y: tipA.y + by };
+
+  const vA = document.getElementById('vecA');
+  vA.setAttribute('x1', ox); vA.setAttribute('y1', oy);
+  vA.setAttribute('x2', tipA.x); vA.setAttribute('y2', tipA.y);
+
+  const vB = document.getElementById('vecB');
+  vB.setAttribute('x1', tipA.x); vB.setAttribute('y1', tipA.y);
+  vB.setAttribute('x2', tipB.x); vB.setAttribute('y2', tipB.y);
+
+  const vR = document.getElementById('vecR');
+  vR.setAttribute('x1', ox); vR.setAttribute('y1', oy);
+  vR.setAttribute('x2', tipB.x); vR.setAttribute('y2', tipB.y);
+
+  // Labels
+  const lA = document.getElementById('lblA');
+  lA.setAttribute('x', (ox + tipA.x)/2 - 10);
+  lA.setAttribute('y', (oy + tipA.y)/2 - 8);
+  lA.textContent = 'A';
+
+  const lB = document.getElementById('lblB');
+  lB.setAttribute('x', (tipA.x + tipB.x)/2 + 6);
+  lB.setAttribute('y', (tipA.y + tipB.y)/2 - 8);
+  lB.textContent = 'B';
+
+  const lR = document.getElementById('lblR');
+  lR.setAttribute('x', (ox + tipB.x)/2 - 10);
+  lR.setAttribute('y', (oy + tipB.y)/2 + 18);
+  lR.textContent = 'R';
+
+  // Info
+  const rx = ax + bx, ry = ay + by;
+  const rMag = Math.sqrt(rx*rx + ry*ry);
+  const rAng = Math.atan2(-ry, rx) * 180 / Math.PI;
+  const rAngNorm = (rAng + 360) % 360;
+
+  document.getElementById('vecAddInfo').innerHTML =
+    `<b style="color:var(--indigo)">A</b> = (${(ax).toFixed(1)}, ${(-ay).toFixed(1)})&emsp;` +
+    `<b style="color:var(--amber)">B</b> = (${(bx).toFixed(1)}, ${(-by).toFixed(1)})<br>` +
+    `<b style="color:var(--green)">R = A + B</b> = (${(rx).toFixed(1)}, ${(-ry).toFixed(1)})&emsp;` +
+    `|R| = ${rMag.toFixed(1)}&emsp;dir = ${rAngNorm.toFixed(1)} deg`;
+}
+
+/* ============================================================
+   VECTOR COMPONENTS DIAGRAM
+   ============================================================ */
+function drawVecComp() {
+  const mag = +document.getElementById('comp_mag').value;
+  const ang = +document.getElementById('comp_ang').value;
+
+  document.getElementById('comp_mag_val').textContent = mag;
+  document.getElementById('comp_ang_val').textContent = ang + 'deg';
+
+  const ox = 80, oy = 310;
+  const rad = ang * Math.PI / 180;
+  const scale = 1.1;
+
+  const vx = mag * Math.cos(rad) * scale;
+  const vy = -mag * Math.sin(rad) * scale;
+  const tipX = ox + vx;
+  const tipY = oy + vy;
+
+  // Main vector
+  const vec = document.getElementById('compVec');
+  vec.setAttribute('x1', ox); vec.setAttribute('y1', oy);
+  vec.setAttribute('x2', tipX); vec.setAttribute('y2', tipY);
+
+  // X projection
+  const projX = document.getElementById('compProjX');
+  projX.setAttribute('x1', ox); projX.setAttribute('y1', oy);
+  projX.setAttribute('x2', tipX); projX.setAttribute('y2', oy);
+
+  // Y projection
+  const projY = document.getElementById('compProjY');
+  projY.setAttribute('x1', ox); projY.setAttribute('y1', oy);
+  projY.setAttribute('x2', ox); projY.setAttribute('y2', tipY);
+
+  // Dashed lines
+  const dashX = document.getElementById('compDashX');
+  dashX.setAttribute('x1', tipX); dashX.setAttribute('y1', tipY);
+  dashX.setAttribute('x2', tipX); dashX.setAttribute('y2', oy);
+
+  const dashY = document.getElementById('compDashY');
+  dashY.setAttribute('x1', tipX); dashY.setAttribute('y1', tipY);
+  dashY.setAttribute('x2', ox); dashY.setAttribute('y2', tipY);
+
+  // Right angle marker at (tipX, oy)
+  const ra = document.getElementById('compRightAngle');
+  ra.setAttribute('x', tipX - 10);
+  ra.setAttribute('y', oy - 10);
+
+  // Angle arc
+  const arcRad = 40;
+  const arcX = ox + arcRad * Math.cos(rad);
+  const arcY = oy - arcRad * Math.sin(rad);
+  const largeArc = ang > 180 ? 1 : 0;
+  const sweep = 0;
+  const arc = document.getElementById('compArc');
+  arc.setAttribute('d', `M ${ox + arcRad},${oy} A ${arcRad},${arcRad} 0 ${largeArc},${sweep} ${arcX},${arcY}`);
+
+  // Labels
+  const lblA = document.getElementById('compLblA');
+  lblA.setAttribute('x', (ox + tipX)/2 - 20);
+  lblA.setAttribute('y', (oy + tipY)/2 - 10);
+  lblA.textContent = `A = ${mag}`;
+
+  const axVal = mag * Math.cos(rad);
+  const ayVal = mag * Math.sin(rad);
+
+  const lblAx = document.getElementById('compLblAx');
+  lblAx.setAttribute('x', (ox + tipX)/2 - 10);
+  lblAx.setAttribute('y', oy + 20);
+  lblAx.textContent = `Ax = ${axVal.toFixed(1)}`;
+
+  const lblAy = document.getElementById('compLblAy');
+  lblAy.setAttribute('x', 2);
+  lblAy.setAttribute('y', (oy + tipY)/2 + 4);
+  lblAy.textContent = `Ay = ${ayVal.toFixed(1)}`;
+
+  const lblTheta = document.getElementById('compLblTheta');
+  lblTheta.setAttribute('x', ox + 44);
+  lblTheta.setAttribute('y', oy - 6);
+  lblTheta.textContent = `${ang} deg`;
+
+  // Info panel
+  document.getElementById('compInfo').innerHTML =
+    `<span style="color:var(--amber)">A<sub>x</sub> = ${mag} cos(${ang}) = ${axVal.toFixed(2)}</span><br>` +
+    `<span style="color:var(--pink)">A<sub>y</sub> = ${mag} sin(${ang}) = ${ayVal.toFixed(2)}</span><br>` +
+    `<span style="color:var(--text-dim)">|A| = sqrt(${axVal.toFixed(1)}^2 + ${ayVal.toFixed(1)}^2) = ${mag.toFixed(1)}</span>`;
+}
+
+/* ============================================================
+   QUIZ ENGINE
+   ============================================================ */
+let quizInitialized = false;
+let quizQuestions = [];
+let quizCurrent = 0;
+let quizCorrect = 0;
+let quizAnswered = [];
+
+const questionBank = [
+  // SI Units
+  { q: "What is the SI base unit for electric current?", opts: ["volt","ampere","ohm","coulomb"], correct: 1, explain: "The ampere (A) is the SI base unit for electric current." },
+  { q: "How many milligrams are in 2.5 grams?", opts: ["25","250","2500","0.0025"], correct: 2, explain: "1 g = 1000 mg, so 2.5 g = 2500 mg." },
+  { q: "Which of these is NOT an SI base unit?", opts: ["kelvin","newton","mole","candela"], correct: 1, explain: "The newton is a derived unit (kg*m/s^2)." },
+  { q: "1 kilometer equals how many meters?", opts: ["10","100","1000","10000"], correct: 2, explain: "The prefix kilo- means 1000." },
+  // Dimensional analysis
+  { q: "Convert 90 km/h to m/s.", opts: ["25 m/s","30 m/s","9 m/s","15 m/s"], correct: 0, explain: "90 * 1000 / 3600 = 25 m/s." },
+  { q: "Which conversion factor converts hours to seconds?", opts: ["3600 s / 1 hr","1 hr / 3600 s","60 s / 1 hr","1 hr / 60 s"], correct: 0, explain: "1 hour = 3600 seconds." },
+  // Vector addition
+  { q: "Two vectors of magnitude 3 and 4 are perpendicular. What is the resultant magnitude?", opts: ["5","7","1","12"], correct: 0, explain: "sqrt(3^2 + 4^2) = sqrt(25) = 5." },
+  { q: "In tip-to-tail vector addition, the resultant goes from:", opts: ["tip of A to tail of B","tail of A to tip of B","tail of B to tip of A","tip of B to tail of A"], correct: 1, explain: "The resultant connects the starting tail to the final tip." },
+  // Vector components
+  { q: "A 10-unit vector at 0 degrees has components:", opts: ["(10, 0)","(0, 10)","(7.07, 7.07)","(5, 8.66)"], correct: 0, explain: "cos(0)=1, sin(0)=0, so (10*1, 10*0) = (10, 0)." },
+  { q: "A vector has Ax = 6, Ay = 8. Its magnitude is:", opts: ["10","14","7","100"], correct: 0, explain: "sqrt(36 + 64) = sqrt(100) = 10." },
+  // Dot & cross product
+  { q: "u = (2,3), v = (4,-1). What is u . v?", opts: ["5","11","-5","8"], correct: 0, explain: "2*4 + 3*(-1) = 8 - 3 = 5." },
+  { q: "If theta = 90 deg between u and v, what is u . v?", opts: ["0","|u||v|","1","|u|+|v|"], correct: 0, explain: "cos(90) = 0, so u.v = 0." },
+  { q: "The cross product of two parallel vectors is:", opts: ["zero","perpendicular","their sum","undefined"], correct: 0, explain: "sin(0) = 0, so the cross product magnitude is zero." },
+  { q: "What does the right-hand rule determine?", opts: ["dot product direction","cross product direction","vector magnitude","scalar projection"], correct: 1, explain: "The right-hand rule gives the direction of the cross product." },
+  // Mixed
+  { q: "A vector at 45 deg with magnitude 1 has x-component:", opts: ["0.707","0.5","1","0.866"], correct: 0, explain: "cos(45) = 1/sqrt(2) ~ 0.707." },
+  { q: "Which prefix means 10^-6?", opts: ["milli","micro","nano","pico"], correct: 1, explain: "Micro (u) = 10^-6." },
+];
+
+function initQuiz() {
+  // Shuffle and pick 10
+  const shuffled = [...questionBank].sort(() => Math.random() - 0.5);
+  quizQuestions = shuffled.slice(0, 10);
+  quizCurrent = 0;
+  quizCorrect = 0;
+  quizAnswered = new Array(10).fill(null);
+  document.getElementById('quizFinal').style.display = 'none';
+  document.getElementById('quizNext').style.display = '';
+  renderQuizQuestion();
+}
+
+function resetQuiz() {
+  quizInitialized = false;
+  initQuiz();
+  quizInitialized = true;
+}
+
+function renderQuizQuestion() {
+  const container = document.getElementById('quizContainer');
+  if (quizCurrent >= quizQuestions.length) {
+    container.innerHTML = '';
+    document.getElementById('quizFinal').style.display = 'block';
+    document.getElementById('quizFinalScore').textContent = `${quizCorrect} / 10`;
+    document.getElementById('quizFinalScore').style.color = quizCorrect >= 7 ? 'var(--green)' : quizCorrect >= 5 ? 'var(--amber)' : 'var(--pink)';
+    document.getElementById('quizNext').style.display = 'none';
+    document.getElementById('quizPrev').style.display = 'none';
+    return;
+  }
+
+  const q = quizQuestions[quizCurrent];
+  const answered = quizAnswered[quizCurrent];
+  let html = `<div class="quiz-question">
+    <div class="q-num">Question ${quizCurrent + 1} of 10</div>
+    <div class="q-text">${q.q}</div>
+    <div class="quiz-options">`;
+
+  q.opts.forEach((opt, i) => {
+    let cls = 'quiz-option';
+    if (answered !== null) {
+      cls += ' disabled';
+      if (i === answered && answered === q.correct) cls += ' selected-correct';
+      else if (i === answered && answered !== q.correct) cls += ' selected-wrong';
+      if (i === q.correct && answered !== q.correct) cls += ' reveal-correct';
+    }
+    html += `<button class="${cls}" onclick="answerQuiz(${i})">${opt}</button>`;
+  });
+
+  html += `</div>
+    <div class="quiz-explanation" id="quizExplain" style="${answered !== null ? 'display:block' : ''}">${q.explain}</div>
+  </div>`;
+
+  container.innerHTML = html;
+
+  // Nav buttons
+  document.getElementById('quizPrev').style.display = quizCurrent > 0 ? '' : 'none';
+  document.getElementById('quizNext').textContent = quizCurrent === quizQuestions.length - 1 ? 'Finish' : 'Next';
+  document.getElementById('quizScore').textContent = `${quizCorrect} / 10`;
+}
+
+function answerQuiz(idx) {
+  if (quizAnswered[quizCurrent] !== null) return;
+  quizAnswered[quizCurrent] = idx;
+  if (idx === quizQuestions[quizCurrent].correct) quizCorrect++;
+  renderQuizQuestion();
+}
+
+function quizNav(dir) {
+  quizCurrent += dir;
+  if (quizCurrent < 0) quizCurrent = 0;
+  if (quizCurrent > quizQuestions.length) quizCurrent = quizQuestions.length;
+  renderQuizQuestion();
+
+  // Re-measure section height since quiz content changes
+  const body = document.getElementById('body-6');
+  body.style.maxHeight = body.scrollHeight + 2000 + 'px';
+}
+
+/* ============================================================
+   GRID DRAWING
+   ============================================================ */
+function drawGrid(svgId, gridId, x0, y0, x1, y1, step) {
+  const g = document.getElementById(gridId);
+  let lines = '';
+  for (let x = x0; x <= x1; x += step) {
+    lines += `<line x1="${x}" y1="${y0}" x2="${x}" y2="${y1}"/>`;
+  }
+  for (let y = y0; y <= y1; y += step) {
+    lines += `<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}"/>`;
+  }
+  g.innerHTML = lines;
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', () => {
+  drawGrid('vecAddSvg', 'vecAddGrid', 50, 10, 470, 310, 40);
+
+  // Open section 1 by default
+  toggleSection(1);
+});
+</script>
+
+</body>
+</html>

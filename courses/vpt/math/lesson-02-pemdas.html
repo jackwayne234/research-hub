@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 02 -- Order of Operations (PEMDAS)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Base ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #1e2128;
+    --card:    #272d38;
+    --border:  #333a48;
+    --text:    #d4cfc4;
+    --dim:     #6b7280;
+    --indigo:  #6366f1;
+    --green:   #22c55e;
+    --pink:    #ec4899;
+    --orange:  #f59e0b;
+    --radius:  8px;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 2rem 1rem 4rem;
+    max-width: 860px;
+    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Header ───────────────────────────────────────────── */
+  .lesson-header {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .lesson-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--indigo);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+  }
+  .lesson-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--dim);
+    font-weight: 400;
+  }
+
+  /* ── Progress Bar ─────────────────────────────────────── */
+  .progress-bar {
+    display: flex;
+    gap: 6px;
+    margin: 1.5rem 0 2rem;
+  }
+  .progress-segment {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.4s ease;
+  }
+  .progress-segment.active {
+    background: var(--indigo);
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+  }
+  .progress-segment.complete {
+    background: var(--green);
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+  }
+  .progress-labels {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+    margin-bottom: 1.5rem;
+  }
+  .progress-labels span {
+    flex: 1;
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--dim);
+    font-weight: 400;
+  }
+  .progress-labels span.active-label {
+    color: var(--indigo);
+    font-weight: 600;
+  }
+  .progress-labels span.complete-label {
+    color: var(--green);
+  }
+
+  /* ── Card / Details ───────────────────────────────────── */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1.25rem;
+    transition: border-color 0.3s ease;
+  }
+  details[open] {
+    border-color: var(--indigo);
+  }
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid var(--indigo);
+    border-bottom: 2px solid var(--indigo);
+    transform: rotate(-45deg);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+  details[open] > summary::before {
+    transform: rotate(45deg);
+  }
+  .section-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--indigo);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .card-body {
+    padding: 0 1.25rem 1.5rem;
+  }
+
+  /* ── Section 1 ────────────────────────────────────────── */
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.25rem 0;
+  }
+  .eval-box {
+    padding: 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .eval-box.wrong {
+    border-color: var(--pink);
+    background: rgba(236, 72, 153, 0.06);
+  }
+  .eval-box.right {
+    border-color: var(--green);
+    background: rgba(34, 197, 94, 0.06);
+  }
+  .eval-box .label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+  .eval-box.wrong .label { color: var(--pink); }
+  .eval-box.right .label { color: var(--green); }
+  .eval-box .expr {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+  .eval-box .result {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  .eval-box.wrong .result { color: var(--pink); }
+  .eval-box.right .result { color: var(--green); }
+
+  /* Pyramid */
+  .pyramid {
+    margin: 2rem auto;
+    max-width: 480px;
+  }
+  .pyramid-level {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1rem;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 6px;
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 500;
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .pyramid-level:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .pyramid-level .priority-badge {
+    position: absolute;
+    left: 10px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .pyr-1 { width: 50%; background: rgba(99, 102, 241, 0.15); border-color: var(--indigo); color: var(--indigo); }
+  .pyr-2 { width: 60%; background: rgba(245, 158, 11, 0.12); border-color: var(--orange); color: var(--orange); }
+  .pyr-3 { width: 75%; background: rgba(236, 72, 153, 0.10); border-color: var(--pink); color: var(--pink); }
+  .pyr-4 { width: 90%; background: rgba(34, 197, 94, 0.08); border-color: var(--green); color: var(--green); }
+
+  .arrow-down {
+    text-align: center;
+    color: var(--dim);
+    font-size: 0.7rem;
+    margin: 2px 0;
+    letter-spacing: 0.1em;
+  }
+
+  .insight-box {
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    line-height: 1.8;
+  }
+  .insight-box .insight-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--indigo);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ── Section 2: Step Solver ───────────────────────────── */
+  .solver-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1.25rem;
+  }
+  .solver-nav button {
+    font-family: 'JetBrains Mono', monospace;
+    padding: 0.4rem 0.85rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--dim);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  .solver-nav button:hover {
+    border-color: var(--indigo);
+    color: var(--text);
+  }
+  .solver-nav button.active {
+    background: var(--indigo);
+    border-color: var(--indigo);
+    color: #fff;
+  }
+
+  .solver-display {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  .solver-expr {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .solver-expr .highlight {
+    color: var(--orange);
+    text-decoration: underline;
+    text-decoration-color: rgba(245, 158, 11, 0.4);
+    text-underline-offset: 4px;
+  }
+  .solver-expr .dimmed {
+    color: var(--dim);
+  }
+  .solver-rule {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--indigo);
+    background: rgba(99, 102, 241, 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    display: inline-block;
+  }
+  .solver-complete {
+    color: var(--green);
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+
+  .solver-controls {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  /* ── Section 3: Test ──────────────────────────────────── */
+  .score-display {
+    text-align: center;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+    color: var(--dim);
+  }
+  .score-display .score-num {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--indigo);
+  }
+  .test-progress {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--dim);
+    margin-bottom: 1rem;
+  }
+  .test-display {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .test-display.glow-green {
+    border-color: var(--green);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+  }
+  .test-display.glow-pink {
+    border-color: var(--pink);
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.2);
+  }
+  .test-expr {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+  }
+  .test-input-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .test-input-row span {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  .test-input {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--card);
+    border: 2px solid var(--border);
+    color: var(--text);
+    font-size: 1.3rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+    width: 100px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  .test-input:focus {
+    border-color: var(--indigo);
+  }
+  .test-input.correct {
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .test-input.incorrect {
+    border-color: var(--pink);
+    color: var(--pink);
+  }
+
+  .test-feedback {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    min-height: 1.6rem;
+  }
+  .test-feedback.correct-fb { color: var(--green); }
+  .test-feedback.incorrect-fb { color: var(--pink); }
+  .test-solution {
+    margin-top: 0.75rem;
+    font-size: 0.78rem;
+    color: var(--dim);
+    line-height: 1.8;
+  }
+  .test-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .test-summary {
+    text-align: center;
+    padding: 1.5rem;
+  }
+  .test-summary .final-score {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--indigo);
+    margin-bottom: 0.5rem;
+  }
+  .test-summary .final-msg {
+    font-size: 0.85rem;
+    color: var(--dim);
+    margin-bottom: 1rem;
+  }
+
+  /* ── Shared Button ────────────────────────────────────── */
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--indigo);
+    background: var(--indigo);
+    color: #fff;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  .btn:hover {
+    background: #5558e6;
+    border-color: #5558e6;
+  }
+  .btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--indigo);
+  }
+  .btn-ghost:hover {
+    background: rgba(99, 102, 241, 0.1);
+  }
+
+  /* ── Responsive ───────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .comparison { grid-template-columns: 1fr; }
+    .solver-expr { font-size: 1.2rem; }
+    .test-expr { font-size: 1.3rem; }
+    .pyr-1 { width: 65%; }
+    .pyr-2 { width: 75%; }
+    .pyr-3 { width: 88%; }
+    .pyr-4 { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════════════ -->
+<div class="lesson-header">
+  <h1>Lesson 02 -- Order of Operations</h1>
+  <div class="subtitle">PEMDAS -- why the order matters, not just the acronym</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PROGRESS BAR
+     ═══════════════════════════════════════════════════════ -->
+<div class="progress-bar">
+  <div class="progress-segment" id="prog-1"></div>
+  <div class="progress-segment" id="prog-2"></div>
+  <div class="progress-segment" id="prog-3"></div>
+</div>
+<div class="progress-labels">
+  <span id="prog-label-1">Why Order Matters</span>
+  <span id="prog-label-2">Step-by-Step Solver</span>
+  <span id="prog-label-3">Test Yourself</span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 1: WHY ORDER MATTERS
+     ═══════════════════════════════════════════════════════ -->
+<details id="section-1" open>
+  <summary>
+    <span class="section-number">1</span>
+    Why Order Matters
+  </summary>
+  <div class="card-body">
+
+    <p style="font-size:0.85rem; margin-bottom:0.75rem; color:var(--dim);">
+      Consider the expression <strong style="color:var(--text)">2 + 3 &times; 4</strong>.
+      Two people reading left-to-right vs. following PEMDAS get different answers:
+    </p>
+
+    <div class="comparison">
+      <div class="eval-box wrong">
+        <div class="label">Left-to-right (wrong)</div>
+        <div class="expr">(2 + 3) &times; 4</div>
+        <div class="result">= 20</div>
+      </div>
+      <div class="eval-box right">
+        <div class="label">PEMDAS (correct)</div>
+        <div class="expr">2 + (3 &times; 4)</div>
+        <div class="result">= 14</div>
+      </div>
+    </div>
+
+    <p style="font-size:0.85rem; margin:1.5rem 0 0.75rem; color:var(--text); font-weight:600;">
+      The hierarchy -- higher operations resolve first:
+    </p>
+
+    <div class="pyramid">
+      <div class="pyramid-level pyr-1">
+        <span class="priority-badge">P</span>
+        Parentheses
+      </div>
+      <div class="arrow-down">|</div>
+      <div class="pyramid-level pyr-2">
+        <span class="priority-badge">E</span>
+        Exponents
+      </div>
+      <div class="arrow-down">|</div>
+      <div class="pyramid-level pyr-3">
+        <span class="priority-badge">MD</span>
+        Multiplication &amp; Division &nbsp;(left to right)
+      </div>
+      <div class="arrow-down">|</div>
+      <div class="pyramid-level pyr-4">
+        <span class="priority-badge">AS</span>
+        Addition &amp; Subtraction &nbsp;(left to right)
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-label">Key Insight</div>
+      Multiplication is repeated addition.
+      Exponents are repeated multiplication.
+      Higher operations pack more power, so they resolve first --
+      the hierarchy is not arbitrary; it preserves mathematical consistency.
+      <br><br>
+      <span style="color:var(--dim); font-size:0.78rem;">
+        Note: M/D share a tier and evaluate left-to-right.
+        Same for A/S. The acronym makes them look sequential -- they are not.
+      </span>
+    </div>
+  </div>
+</details>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 2: STEP-BY-STEP SOLVER
+     ═══════════════════════════════════════════════════════ -->
+<details id="section-2">
+  <summary>
+    <span class="section-number">2</span>
+    Step-by-Step Solver
+  </summary>
+  <div class="card-body">
+
+    <div class="solver-nav" id="solver-nav"></div>
+
+    <div class="solver-display" id="solver-display">
+      <div class="solver-expr" id="solver-expr"></div>
+      <div class="solver-rule" id="solver-rule"></div>
+    </div>
+
+    <div class="solver-controls">
+      <button class="btn btn-ghost" id="solver-reset" onclick="solverReset()">Reset</button>
+      <button class="btn" id="solver-next" onclick="solverNext()">Next Step</button>
+    </div>
+  </div>
+</details>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 3: TEST YOURSELF
+     ═══════════════════════════════════════════════════════ -->
+<details id="section-3">
+  <summary>
+    <span class="section-number">3</span>
+    Test Yourself
+  </summary>
+  <div class="card-body">
+
+    <div class="score-display">
+      <span class="score-num" id="test-score">0</span> / <span id="test-total">8</span> correct
+    </div>
+    <div class="test-progress" id="test-progress">Problem 1 of 8</div>
+
+    <div class="test-display" id="test-display">
+      <div class="test-expr" id="test-expr"></div>
+      <div class="test-input-row">
+        <span>= </span>
+        <input type="text" class="test-input" id="test-input" autocomplete="off"
+               placeholder="?" maxlength="6">
+        <button class="btn" id="test-submit" onclick="testSubmit()">Check</button>
+      </div>
+      <div class="test-feedback" id="test-feedback"></div>
+      <div class="test-solution" id="test-solution"></div>
+      <div class="test-controls" id="test-controls" style="display:none;">
+        <button class="btn" id="test-next-btn" onclick="testNextProblem()">Next Problem</button>
+      </div>
+    </div>
+  </div>
+</details>
+
+<script>
+/* ================================================================
+   PROGRESS BAR
+   ================================================================ */
+const sectionEls = [
+  document.getElementById('section-1'),
+  document.getElementById('section-2'),
+  document.getElementById('section-3')
+];
+const progEls  = [document.getElementById('prog-1'), document.getElementById('prog-2'), document.getElementById('prog-3')];
+const labelEls = [document.getElementById('prog-label-1'), document.getElementById('prog-label-2'), document.getElementById('prog-label-3')];
+
+const sectionVisited = [false, false, false];
+
+function updateProgress() {
+  sectionEls.forEach((el, i) => {
+    if (el.open) sectionVisited[i] = true;
+  });
+  progEls.forEach((p, i) => {
+    p.classList.remove('active', 'complete');
+    labelEls[i].classList.remove('active-label', 'complete-label');
+    if (sectionEls[i].open) {
+      p.classList.add('active');
+      labelEls[i].classList.add('active-label');
+    } else if (sectionVisited[i]) {
+      p.classList.add('complete');
+      labelEls[i].classList.add('complete-label');
+    }
+  });
+}
+
+sectionEls.forEach(el => {
+  el.addEventListener('toggle', updateProgress);
+});
+
+// Init
+updateProgress();
+
+/* ================================================================
+   SECTION 2: STEP-BY-STEP SOLVER
+   ================================================================ */
+const solverProblems = [
+  {
+    steps: [
+      { expr: '3 + 4 &times; 2', hl: [4, 9], rule: 'Multiply first' },
+      { expr: '3 + <span class="highlight">4 &times; 2</span>', hl: null, rule: 'Multiply first' },
+      { expr: '3 + 8', hl: null, rule: 'Now add' },
+      { expr: '<span class="highlight">3 + 8</span>', hl: null, rule: 'Add' },
+      { expr: '11', hl: null, rule: 'Done' }
+    ]
+  },
+  {
+    steps: [
+      { expr: '(3 + 4) &times; 2', rule: 'Parentheses first' },
+      { expr: '<span class="highlight">(3 + 4)</span> <span class="dimmed">&times; 2</span>', rule: 'Parentheses first' },
+      { expr: '7 &times; 2', rule: 'Now multiply' },
+      { expr: '<span class="highlight">7 &times; 2</span>', rule: 'Multiply' },
+      { expr: '14', rule: 'Done' }
+    ]
+  },
+  {
+    steps: [
+      { expr: '8 &divide; 2 &times; (2 + 2)', rule: 'Parentheses first' },
+      { expr: '<span class="dimmed">8 &divide; 2 &times;</span> <span class="highlight">(2 + 2)</span>', rule: 'Parentheses first' },
+      { expr: '8 &divide; 2 &times; 4', rule: 'Divide and multiply left to right' },
+      { expr: '<span class="highlight">8 &divide; 2</span> <span class="dimmed">&times; 4</span>', rule: 'Divide first (left to right)' },
+      { expr: '4 &times; 4', rule: 'Now multiply' },
+      { expr: '<span class="highlight">4 &times; 4</span>', rule: 'Multiply' },
+      { expr: '16', rule: 'Done' }
+    ]
+  },
+  {
+    steps: [
+      { expr: '5 + 3&sup2; &times; 2 &minus; 1', rule: 'Exponents first' },
+      { expr: '<span class="dimmed">5 +</span> <span class="highlight">3&sup2;</span> <span class="dimmed">&times; 2 &minus; 1</span>', rule: 'Exponents first' },
+      { expr: '5 + 9 &times; 2 &minus; 1', rule: 'Now multiply' },
+      { expr: '<span class="dimmed">5 +</span> <span class="highlight">9 &times; 2</span> <span class="dimmed">&minus; 1</span>', rule: 'Multiply next' },
+      { expr: '5 + 18 &minus; 1', rule: 'Add and subtract left to right' },
+      { expr: '<span class="highlight">5 + 18</span> <span class="dimmed">&minus; 1</span>', rule: 'Add (left to right)' },
+      { expr: '23 &minus; 1', rule: 'Subtract' },
+      { expr: '<span class="highlight">23 &minus; 1</span>', rule: 'Subtract' },
+      { expr: '22', rule: 'Done' }
+    ]
+  },
+  {
+    steps: [
+      { expr: '(6 + 2)&sup2; &divide; 4 &minus; 3 &times; 2', rule: 'Parentheses first' },
+      { expr: '<span class="highlight">(6 + 2)</span><span class="dimmed">&sup2; &divide; 4 &minus; 3 &times; 2</span>', rule: 'Parentheses first' },
+      { expr: '8&sup2; &divide; 4 &minus; 3 &times; 2', rule: 'Exponents next' },
+      { expr: '<span class="highlight">8&sup2;</span> <span class="dimmed">&divide; 4 &minus; 3 &times; 2</span>', rule: 'Exponents next' },
+      { expr: '64 &divide; 4 &minus; 3 &times; 2', rule: 'Divide and multiply left to right' },
+      { expr: '<span class="highlight">64 &divide; 4</span> <span class="dimmed">&minus; 3 &times; 2</span>', rule: 'Divide (left to right)' },
+      { expr: '16 &minus; 3 &times; 2', rule: 'Multiply next (left to right)' },
+      { expr: '<span class="dimmed">16 &minus;</span> <span class="highlight">3 &times; 2</span>', rule: 'Multiply (left to right)' },
+      { expr: '16 &minus; 6', rule: 'Subtract' },
+      { expr: '<span class="highlight">16 &minus; 6</span>', rule: 'Subtract' },
+      { expr: '10', rule: 'Done' }
+    ]
+  },
+  {
+    steps: [
+      { expr: '2 &times; (1 + 3)&sup2; &divide; 8 + 5', rule: 'Parentheses first' },
+      { expr: '<span class="dimmed">2 &times;</span> <span class="highlight">(1 + 3)</span><span class="dimmed">&sup2; &divide; 8 + 5</span>', rule: 'Parentheses first' },
+      { expr: '2 &times; 4&sup2; &divide; 8 + 5', rule: 'Exponents next' },
+      { expr: '<span class="dimmed">2 &times;</span> <span class="highlight">4&sup2;</span> <span class="dimmed">&divide; 8 + 5</span>', rule: 'Exponents next' },
+      { expr: '2 &times; 16 &divide; 8 + 5', rule: 'Multiply and divide left to right' },
+      { expr: '<span class="highlight">2 &times; 16</span> <span class="dimmed">&divide; 8 + 5</span>', rule: 'Multiply (left to right)' },
+      { expr: '32 &divide; 8 + 5', rule: 'Divide next' },
+      { expr: '<span class="highlight">32 &divide; 8</span> <span class="dimmed">+ 5</span>', rule: 'Divide (left to right)' },
+      { expr: '4 + 5', rule: 'Now add' },
+      { expr: '<span class="highlight">4 + 5</span>', rule: 'Add' },
+      { expr: '9', rule: 'Done' }
+    ]
+  }
+];
+
+let currentProblem = 0;
+let currentStep   = 0;
+
+function buildSolverNav() {
+  const nav = document.getElementById('solver-nav');
+  nav.innerHTML = '';
+  solverProblems.forEach((_, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = 'Problem ' + (i + 1);
+    btn.className = i === currentProblem ? 'active' : '';
+    btn.onclick = () => { currentProblem = i; currentStep = 0; renderSolver(); buildSolverNav(); };
+    nav.appendChild(btn);
+  });
+}
+
+function renderSolver() {
+  const prob = solverProblems[currentProblem];
+  const step = prob.steps[currentStep];
+  const exprEl = document.getElementById('solver-expr');
+  const ruleEl = document.getElementById('solver-rule');
+  const nextBtn = document.getElementById('solver-next');
+
+  exprEl.innerHTML = step.expr;
+  ruleEl.textContent = step.rule;
+
+  if (step.rule === 'Done') {
+    ruleEl.style.background = 'rgba(34,197,94,0.12)';
+    ruleEl.style.color = 'var(--green)';
+    exprEl.querySelector('.highlight') || (exprEl.style.color = 'var(--green)');
+    nextBtn.disabled = true;
+  } else {
+    ruleEl.style.background = '';
+    ruleEl.style.color = '';
+    exprEl.style.color = '';
+    nextBtn.disabled = false;
+  }
+}
+
+function solverNext() {
+  const prob = solverProblems[currentProblem];
+  if (currentStep < prob.steps.length - 1) {
+    currentStep++;
+    renderSolver();
+  }
+}
+
+function solverReset() {
+  currentStep = 0;
+  renderSolver();
+}
+
+// Init solver
+buildSolverNav();
+renderSolver();
+
+
+/* ================================================================
+   SECTION 3: TEST YOURSELF
+   ================================================================ */
+const testProblems = [
+  { expr: '10 &minus; 2 &times; 3',             answer: 4,  solution: '10 - 2 &times; 3  =>  10 - 6  =>  4 &nbsp; (multiply first)' },
+  { expr: '(10 &minus; 2) &times; 3',            answer: 24, solution: '(10 - 2) &times; 3  =>  8 &times; 3  =>  24 &nbsp; (parentheses first)' },
+  { expr: '4 + 6 &divide; 2',                    answer: 7,  solution: '4 + 6 &divide; 2  =>  4 + 3  =>  7 &nbsp; (divide first)' },
+  { expr: '2&sup3; + 1',                          answer: 9,  solution: '2&sup3; + 1  =>  8 + 1  =>  9 &nbsp; (exponent first)' },
+  { expr: '3 &times; (4 + 1)&sup2;',             answer: 75, solution: '3 &times; (4+1)&sup2;  =>  3 &times; 5&sup2;  =>  3 &times; 25  =>  75' },
+  { expr: '20 &divide; 4 &times; 5',             answer: 25, solution: '20 &divide; 4 &times; 5  =>  5 &times; 5  =>  25 &nbsp; (left to right)' },
+  { expr: '(3 + 2)&sup2; &minus; 4 &times; 3',  answer: 13, solution: '(3+2)&sup2; - 4&times;3  =>  5&sup2; - 4&times;3  =>  25 - 12  =>  13' },
+  { expr: '48 &divide; (2 &times; 4) + 1',       answer: 7,  solution: '48 &divide; (2&times;4) + 1  =>  48 &divide; 8 + 1  =>  6 + 1  =>  7' }
+];
+
+let testIndex  = 0;
+let testScore  = 0;
+let testLocked = false;
+
+function renderTest() {
+  const prob = testProblems[testIndex];
+  document.getElementById('test-expr').innerHTML = prob.expr;
+  document.getElementById('test-input').value = '';
+  document.getElementById('test-input').className = 'test-input';
+  document.getElementById('test-input').disabled = false;
+  document.getElementById('test-feedback').textContent = '';
+  document.getElementById('test-feedback').className = 'test-feedback';
+  document.getElementById('test-solution').innerHTML = '';
+  document.getElementById('test-controls').style.display = 'none';
+  document.getElementById('test-display').className = 'test-display';
+  document.getElementById('test-progress').textContent = 'Problem ' + (testIndex + 1) + ' of ' + testProblems.length;
+  document.getElementById('test-submit').style.display = '';
+  testLocked = false;
+
+  // Focus input
+  setTimeout(() => document.getElementById('test-input').focus(), 100);
+}
+
+function testSubmit() {
+  if (testLocked) return;
+  const input = document.getElementById('test-input');
+  const val = parseFloat(input.value.trim());
+  if (isNaN(val)) { input.focus(); return; }
+
+  testLocked = true;
+  input.disabled = true;
+  const prob = testProblems[testIndex];
+  const correct = val === prob.answer;
+
+  if (correct) {
+    testScore++;
+    document.getElementById('test-score').textContent = testScore;
+    input.className = 'test-input correct';
+    document.getElementById('test-display').className = 'test-display glow-green';
+    document.getElementById('test-feedback').textContent = 'Correct.';
+    document.getElementById('test-feedback').className = 'test-feedback correct-fb';
+  } else {
+    input.className = 'test-input incorrect';
+    document.getElementById('test-display').className = 'test-display glow-pink';
+    document.getElementById('test-feedback').textContent = 'Incorrect. The answer is ' + prob.answer + '.';
+    document.getElementById('test-feedback').className = 'test-feedback incorrect-fb';
+    document.getElementById('test-solution').innerHTML = prob.solution;
+  }
+
+  document.getElementById('test-submit').style.display = 'none';
+
+  if (testIndex < testProblems.length - 1) {
+    document.getElementById('test-controls').style.display = '';
+    document.getElementById('test-next-btn').textContent = 'Next Problem';
+  } else {
+    // Last problem
+    document.getElementById('test-controls').style.display = '';
+    document.getElementById('test-next-btn').textContent = 'See Results';
+  }
+}
+
+function testNextProblem() {
+  testIndex++;
+  if (testIndex >= testProblems.length) {
+    showTestSummary();
+    return;
+  }
+  renderTest();
+}
+
+function showTestSummary() {
+  const display = document.getElementById('test-display');
+  const pct = Math.round((testScore / testProblems.length) * 100);
+  let msg = '';
+  if (pct === 100) msg = 'Perfect score. PEMDAS is locked in.';
+  else if (pct >= 75) msg = 'Strong showing. Review the ones you missed and try again.';
+  else if (pct >= 50) msg = 'Solid foundation. Run through the step-by-step solver, then retry.';
+  else msg = 'No worries -- revisit sections 1 and 2, then come back.';
+
+  display.className = 'test-display';
+  display.innerHTML =
+    '<div class="test-summary">' +
+      '<div class="final-score">' + testScore + ' / ' + testProblems.length + '</div>' +
+      '<div class="final-msg">' + msg + '</div>' +
+      '<button class="btn" onclick="resetTest()">Retry</button>' +
+    '</div>';
+  document.getElementById('test-progress').textContent = 'Complete';
+  document.getElementById('test-controls').style.display = 'none';
+  document.getElementById('test-feedback').textContent = '';
+  document.getElementById('test-solution').innerHTML = '';
+}
+
+function resetTest() {
+  testIndex = 0;
+  testScore = 0;
+  document.getElementById('test-score').textContent = '0';
+  renderTest();
+}
+
+// Init test
+renderTest();
+
+// Enter key submits test answer
+document.getElementById('test-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    if (!testLocked) {
+      testSubmit();
+    } else if (testIndex < testProblems.length) {
+      testNextProblem();
+    }
+  }
+});
+</script>
+
+</body>
+</html>

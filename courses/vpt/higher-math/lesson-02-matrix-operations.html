@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 2: Matrix Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1);--spring:cubic-bezier(.34,1.56,.64,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .35s var(--spring);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:120000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.btn-danger{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.btn-danger:hover{background:rgba(236,72,153,.25)}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.matrix-display{display:inline-flex;align-items:center;margin:12px 0;font-size:.9rem;font-weight:600}
+.matrix-bracket{font-size:2.2em;font-weight:200;color:var(--text-dim);line-height:1}
+.matrix-grid{display:inline-grid;gap:4px 12px;padding:4px 8px}
+.matrix-grid span{text-align:center;min-width:28px;padding:2px 4px;border-radius:3px;transition:all .3s}
+.matrix-grid span.coeff{color:var(--indigo)}
+.matrix-grid span.const{color:var(--green)}
+.matrix-grid span.highlight{background:var(--amber-dim);color:var(--amber)}
+.matrix-grid span.pivot{background:var(--indigo-dim);color:var(--indigo);font-weight:700}
+.matrix-grid span.target{background:var(--pink-dim);color:var(--pink)}
+.matrix-grid span.changed{background:var(--green-dim);color:var(--green)}
+.matrix-grid span.row-hl{background:var(--indigo-dim);color:var(--indigo)}
+.matrix-grid span.col-hl{background:var(--amber-dim);color:var(--amber)}
+.matrix-grid span.result-hl{background:var(--green-dim);color:var(--green)}
+.matrix-input-grid{display:inline-grid;gap:6px 8px;margin:8px 0}
+.matrix-input-grid input{width:50px;padding:6px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.8rem;outline:none;transition:border-color var(--transition)}
+.matrix-input-grid input:focus{border-color:var(--indigo)}
+.step-info{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:10px 16px;margin:10px 0;font-size:.78rem;color:var(--indigo);font-weight:500}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+@keyframes springPop{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.pop{animation:springPop .35s var(--spring)}
+.shake{animation:shake .4s ease}
+/* Transpose animation */
+@keyframes slideToNew{0%{opacity:1;transform:translate(var(--sx),var(--sy))}100%{opacity:1;transform:translate(0,0)}}
+.slide-entry{animation:slideToNew .6s cubic-bezier(.34,1.56,.64,1) forwards}
+/* Parallelogram SVG */
+.drag-handle{cursor:grab}
+.drag-handle:active{cursor:grabbing}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.matrix-input-grid input{width:40px;padding:4px;font-size:.72rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>02</span> Matrix Operations</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: MATRIX ADDITION & SCALAR MULTIPLICATION -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Matrix Addition &amp; Scalar Multiplication</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Matrix addition</strong> is exactly what it sounds like: add corresponding entries. If A and B are both m x n matrices, then (A + B)<sub>ij</sub> = A<sub>ij</sub> + B<sub>ij</sub>. The matrices <strong>must have the same dimensions</strong> -- you cannot add a 2x2 to a 3x3.
+    </p>
+
+    <div class="formula-box large">
+      (A + B)<sub>ij</sub> = A<sub>ij</sub> + B<sub>ij</sub>
+    </div>
+
+    <p class="concept-text">
+      <strong>Scalar multiplication</strong> multiplies every entry by the scalar: (kA)<sub>ij</sub> = k &middot; A<sub>ij</sub>. Both operations are <strong>element-wise</strong> -- they happen independently at each position in the matrix.
+    </p>
+
+    <div class="formula-box large">
+      (kA)<sub>ij</sub> = k &middot; A<sub>ij</sub>
+    </div>
+
+    <div class="key-point">Matrix addition inherits commutativity and associativity from scalar addition: A + B = B + A and (A + B) + C = A + (B + C). Scalar multiplication distributes: k(A + B) = kA + kB.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Matrix Addition (edit entries of A and B)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center">
+        <div>
+          <div class="sub-label">Matrix A</div>
+          <div class="matrix-input-grid" style="grid-template-columns:repeat(2,1fr)">
+            <input type="number" id="s1a00" value="1" oninput="s1Update()">
+            <input type="number" id="s1a01" value="3" oninput="s1Update()">
+            <input type="number" id="s1a10" value="5" oninput="s1Update()">
+            <input type="number" id="s1a11" value="7" oninput="s1Update()">
+          </div>
+        </div>
+        <span style="font-size:1.4em;color:var(--text-dim);font-weight:600">+</span>
+        <div>
+          <div class="sub-label">Matrix B</div>
+          <div class="matrix-input-grid" style="grid-template-columns:repeat(2,1fr)">
+            <input type="number" id="s1b00" value="2" oninput="s1Update()">
+            <input type="number" id="s1b01" value="4" oninput="s1Update()">
+            <input type="number" id="s1b10" value="6" oninput="s1Update()">
+            <input type="number" id="s1b11" value="8" oninput="s1Update()">
+          </div>
+        </div>
+        <span style="font-size:1.4em;color:var(--text-dim);font-weight:600">=</span>
+        <div>
+          <div class="sub-label">A + B</div>
+          <div id="s1SumDisplay" style="display:flex;align-items:center;gap:4px"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Scalar Multiplication (drag the slider)</div>
+      <div class="slider-row">
+        <label>Scalar k</label>
+        <input type="range" id="s1kSlider" min="-3" max="3" value="2" step="0.5" oninput="s1Update()">
+        <span class="slider-val" id="s1kVal">2.0</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center;margin-top:10px">
+        <div>
+          <div class="sub-label" style="color:var(--amber)">k &middot; A</div>
+          <div id="s1ScalarDisplay" style="display:flex;align-items:center;gap:4px"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Physics Context:</strong> Superposition of fields: if E<sub>1</sub> and E<sub>2</sub> are electric field vectors at points on a grid, the net field is E<sub>1</sub> + E<sub>2</sub> -- matrix addition of their component arrays. Scaling a force by a factor k is scalar multiplication applied to the force matrix.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> If A = [[2, -1], [0, 3]] and B = [[4, 5], [-2, 1]], what is the entry in row 1, column 2 of A + B?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1" step="1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s1p1',4,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s1p1',4,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> If A = [[3, 6], [-9, 12]], what is the entry in row 2, column 1 of (1/3)A?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2" step="0.1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s1p2',-3,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s1p2',-3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> Compute 2A - B where A = [[1, 0], [2, 3]] and B = [[4, -2], [1, 5]]. What is the entry in row 2, column 2?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p3" step="1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s1p3',1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s1p3',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: MATRIX MULTIPLICATION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Matrix Multiplication</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Matrix multiplication</strong> is NOT element-wise. To multiply A (m x n) by B (n x p), each entry of the result C = AB is a <strong>dot product</strong>: C<sub>ij</sub> = (row i of A) &middot; (column j of B). The inner dimensions must match: the number of columns in A must equal the number of rows in B.
+    </p>
+
+    <div class="formula-box large">
+      C<sub>ij</sub> = &Sigma;<sub>k</sub> A<sub>ik</sub> &middot; B<sub>kj</sub>
+    </div>
+
+    <p class="concept-text">
+      For 2x2 matrices: if A = [[a,b],[c,d]] and B = [[e,f],[g,h]], then AB = [[ae+bg, af+bh],[ce+dg, cf+dh]]. Each entry is a dot product of a <span style="color:var(--indigo);font-weight:600">row of A</span> with a <span style="color:var(--amber);font-weight:600">column of B</span>.
+    </p>
+
+    <div class="key-point">Matrix multiplication is NOT commutative: AB does not equal BA in general. The order matters. However, it IS associative: (AB)C = A(BC), and it distributes over addition: A(B+C) = AB + AC.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Step-by-step 2x2 Multiplication</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:12px">Enter two 2x2 matrices, then click "Multiply" to see each entry computed step by step.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:start;justify-content:center">
+        <div>
+          <div class="sub-label" style="color:var(--indigo)">Matrix A</div>
+          <div class="matrix-input-grid" style="grid-template-columns:repeat(2,1fr)">
+            <input type="number" id="s2a00" value="2" oninput="s2Reset()">
+            <input type="number" id="s2a01" value="3" oninput="s2Reset()">
+            <input type="number" id="s2a10" value="1" oninput="s2Reset()">
+            <input type="number" id="s2a11" value="0" oninput="s2Reset()">
+          </div>
+        </div>
+        <span style="font-size:1.4em;color:var(--text-dim);font-weight:600;margin-top:36px">&times;</span>
+        <div>
+          <div class="sub-label" style="color:var(--amber)">Matrix B</div>
+          <div class="matrix-input-grid" style="grid-template-columns:repeat(2,1fr)">
+            <input type="number" id="s2b00" value="4" oninput="s2Reset()">
+            <input type="number" id="s2b01" value="1" oninput="s2Reset()">
+            <input type="number" id="s2b10" value="2" oninput="s2Reset()">
+            <input type="number" id="s2b11" value="5" oninput="s2Reset()">
+          </div>
+        </div>
+        <span style="font-size:1.4em;color:var(--text-dim);font-weight:600;margin-top:36px">=</span>
+        <div>
+          <div class="sub-label" style="color:var(--green)">Result C = AB</div>
+          <div id="s2ResultGrid" style="display:inline-grid;grid-template-columns:repeat(2,1fr);gap:6px 8px;margin:8px 0"></div>
+        </div>
+      </div>
+      <div id="s2StepInfo" class="step-info" style="display:none"></div>
+      <div class="controls-row">
+        <button class="btn btn-primary" id="s2MultBtn" onclick="s2StartMultiply()">Multiply</button>
+        <button class="btn" id="s2NextBtn" onclick="s2NextStep()" style="display:none">Next Entry</button>
+        <button class="btn btn-danger" onclick="s2Reset()">Reset</button>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Why AB is not equal to BA</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:8px">Using the matrices above, here is the comparison:</p>
+      <div id="s2CommuteDisplay"></div>
+    </div>
+
+    <div class="navy-context"><strong>Physics Context: 2D Rotation Matrices.</strong> Rotating a vector by angle theta uses R(theta) = [[cos(theta), -sin(theta)],[sin(theta), cos(theta)]]. Composing two rotations (rotate by alpha then by beta) is matrix multiplication: R(beta)R(alpha) = R(alpha + beta). In 2D, rotations happen to commute since R(alpha)R(beta) = R(alpha+beta) = R(beta)R(alpha). But in 3D, rotation matrices do NOT commute -- the order of rotations matters.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A = [[1, 2], [3, 4]], B = [[0, 1], [1, 0]]. What is the entry in row 1, column 1 of AB?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1" step="1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s2p1',2,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s2p1',2,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> Same matrices. What is the entry in row 2, column 2 of AB?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" step="1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s2p2',3,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s2p2',3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> If A is 2x3 and B is 3x4, what are the dimensions of AB? Enter as "rows" (just the number of rows).</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p3" step="1" placeholder="rows?" onkeydown="if(event.key==='Enter')checkNum('s2p3',2,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s2p3',2,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p3-fb"></div>
+      </div>
+      <div class="problem" id="s2p4mc">
+        <p><strong>4.</strong> Which statement about matrix multiplication is TRUE?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p4mc','wrong')">AB = BA for all matrices</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p4mc','correct')">A(BC) = (AB)C for all compatible matrices</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p4mc','wrong')">The result of AB has the same dimensions as A</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p4mc','wrong')">Matrix multiplication is element-wise like addition</button>
+        </div>
+        <div class="feedback" id="s2p4mc-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: TRANSPOSE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Transpose</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>transpose</strong> of a matrix A, written A<sup>T</sup>, is formed by flipping it across its main diagonal. Rows become columns, columns become rows: (A<sup>T</sup>)<sub>ij</sub> = A<sub>ji</sub>. If A is m x n, then A<sup>T</sup> is n x m.
+    </p>
+
+    <div class="formula-box large">
+      (A<sup>T</sup>)<sub>ij</sub> = A<sub>ji</sub>
+    </div>
+
+    <p class="concept-text">Key properties:</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin:12px 0">
+      <div class="formula-box" style="font-size:.85rem;text-align:left">(A<sup>T</sup>)<sup>T</sup> = A &nbsp;&nbsp;(transposing twice gives back the original)</div>
+      <div class="formula-box" style="font-size:.85rem;text-align:left">(A + B)<sup>T</sup> = A<sup>T</sup> + B<sup>T</sup> &nbsp;&nbsp;(transpose distributes over addition)</div>
+      <div class="formula-box amber" style="font-size:.85rem;text-align:left">(AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup> &nbsp;&nbsp;(order reverses -- the "shoe-sock" rule)</div>
+      <div class="formula-box" style="font-size:.85rem;text-align:left">(kA)<sup>T</sup> = kA<sup>T</sup> &nbsp;&nbsp;(scalars pass through)</div>
+    </div>
+
+    <div class="key-point">The reversal property (AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup> is crucial and often tested. Think of it like putting on shoes and socks: to undo it, you remove shoes first, then socks -- reverse order.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Enter a matrix, see its transpose</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:8px">Enter a 2x3 matrix. Click "Transpose" to see entries slide to their new positions.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:start;justify-content:center">
+        <div>
+          <div class="sub-label">Matrix A (2x3)</div>
+          <div class="matrix-input-grid" style="grid-template-columns:repeat(3,1fr)">
+            <input type="number" id="s3a00" value="1" oninput="s3ClearTranspose()">
+            <input type="number" id="s3a01" value="2" oninput="s3ClearTranspose()">
+            <input type="number" id="s3a02" value="3" oninput="s3ClearTranspose()">
+            <input type="number" id="s3a10" value="4" oninput="s3ClearTranspose()">
+            <input type="number" id="s3a11" value="5" oninput="s3ClearTranspose()">
+            <input type="number" id="s3a12" value="6" oninput="s3ClearTranspose()">
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;margin-top:30px">
+          <span style="font-size:1.4em;color:var(--text-dim)">&#8594;</span>
+        </div>
+        <div>
+          <div class="sub-label">A<sup>T</sup> (3x2)</div>
+          <div id="s3TransposeDisplay"></div>
+        </div>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" onclick="s3DoTranspose()">Transpose</button>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Example: (AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup></div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:8px">Let A = [[1,2],[3,4]] and B = [[5,6],[7,8]]. Watch both sides computed:</p>
+      <div id="s3ShoesSocksDemo"></div>
+      <div class="controls-row">
+        <button class="btn btn-primary" onclick="s3ShowShoesSocks()">Compute Both Sides</button>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> If A = [[3, 1, 4], [1, 5, 9]], what is the entry in row 3, column 1 of A<sup>T</sup>?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s3p1',4,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s3p1',4,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> If A is a 4x7 matrix, what are the dimensions of A<sup>T</sup>? Enter the number of rows.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2" step="1" placeholder="rows?" onkeydown="if(event.key==='Enter')checkNum('s3p2',7,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s3p2',7,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: DETERMINANTS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Determinants</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>determinant</strong> is a scalar value computed from a square matrix. For a 2x2 matrix A = [[a,b],[c,d]], the determinant is:
+    </p>
+
+    <div class="formula-box large">
+      det(A) = ad - bc
+    </div>
+
+    <p class="concept-text">
+      Think of it as: <span style="color:var(--green);font-weight:600">main diagonal product (ad)</span> minus <span style="color:var(--pink);font-weight:600">anti-diagonal product (bc)</span>. The determinant tells you whether a matrix is invertible (nonzero det) or singular (zero det), and its absolute value gives the <strong>area scaling factor</strong> of the linear transformation.
+    </p>
+
+    <p class="concept-text">
+      For a 3x3 matrix, use <strong>cofactor expansion</strong> along the first row:
+    </p>
+
+    <div class="formula-box" style="font-size:.85rem">
+      det(A) = a<sub>11</sub>(a<sub>22</sub>a<sub>33</sub> - a<sub>23</sub>a<sub>32</sub>) - a<sub>12</sub>(a<sub>21</sub>a<sub>33</sub> - a<sub>23</sub>a<sub>31</sub>) + a<sub>13</sub>(a<sub>21</sub>a<sub>32</sub> - a<sub>22</sub>a<sub>31</sub>)
+    </div>
+
+    <div class="key-point">Geometric meaning: for a 2x2 matrix whose columns are vectors u and v, |det(A)| equals the area of the parallelogram formed by u and v. If det is negative, the transformation reverses orientation (like a mirror flip).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: 2x2 Determinant with Diagonal Visualization</div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center">
+        <div>
+          <div class="sub-label">Matrix A (2x2)</div>
+          <div class="matrix-input-grid" style="grid-template-columns:repeat(2,1fr)">
+            <input type="number" id="s4a" value="3" oninput="s4Update2x2()">
+            <input type="number" id="s4b" value="1" oninput="s4Update2x2()">
+            <input type="number" id="s4c" value="2" oninput="s4Update2x2()">
+            <input type="number" id="s4d" value="4" oninput="s4Update2x2()">
+          </div>
+        </div>
+        <div id="s4DiagViz" style="min-width:200px"></div>
+      </div>
+      <div class="readout" id="s4Det2x2Readout"></div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: 3x3 Determinant Calculator</div>
+      <div class="sub-label">Matrix A (3x3)</div>
+      <div class="matrix-input-grid" style="grid-template-columns:repeat(3,1fr)">
+        <input type="number" id="s4m00" value="1" oninput="s4Update3x3()">
+        <input type="number" id="s4m01" value="2" oninput="s4Update3x3()">
+        <input type="number" id="s4m02" value="3" oninput="s4Update3x3()">
+        <input type="number" id="s4m10" value="4" oninput="s4Update3x3()">
+        <input type="number" id="s4m11" value="5" oninput="s4Update3x3()">
+        <input type="number" id="s4m12" value="6" oninput="s4Update3x3()">
+        <input type="number" id="s4m20" value="7" oninput="s4Update3x3()">
+        <input type="number" id="s4m21" value="8" oninput="s4Update3x3()">
+        <input type="number" id="s4m22" value="9" oninput="s4Update3x3()">
+      </div>
+      <div id="s4CofactorWork" style="margin-top:12px"></div>
+      <div class="readout" id="s4Det3x3Readout"></div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Parallelogram Area (drag the vector endpoints)</div>
+      <svg id="s4ParaSvg" width="100%" viewBox="0 0 500 400" style="display:block;margin:0 auto"></svg>
+      <div class="readout" id="s4ParaReadout"></div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> det([[5, 3], [2, 4]]) = ?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s4p1',14,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s4p1',14,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> det([[1, 2], [3, 6]]) = ?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2" step="1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s4p2',0,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s4p2',0,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> det([[2, 0, 1], [3, 1, 0], [1, 2, 3]]) = ? (Use cofactor expansion along the first row.)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p3" step="1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s4p3',5,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s4p3',5,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+      <div class="problem" id="s4p4mc">
+        <p><strong>4.</strong> If det(A) = 0, what does this tell us about matrix A?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p4mc','wrong')">A is the identity matrix</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p4mc','correct')">A is singular (not invertible)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p4mc','wrong')">A has all zero entries</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p4mc','wrong')">A is a diagonal matrix</button>
+        </div>
+        <div class="feedback" id="s4p4mc-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: MATRIX INVERSE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Matrix Inverse</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>inverse</strong> of a square matrix A, written A<sup>-1</sup>, satisfies AA<sup>-1</sup> = A<sup>-1</sup>A = I (the identity matrix). Not every matrix has an inverse -- only those with <strong>nonzero determinant</strong>.
+    </p>
+
+    <p class="concept-text">For a 2x2 matrix A = [[a,b],[c,d]]:</p>
+
+    <div class="formula-box large">
+      A<sup>-1</sup> = (1/det) &middot; [[d, -b], [-c, a]]
+    </div>
+
+    <p class="concept-text">
+      The matrix [[d,-b],[-c,a]] is called the <strong>adjugate</strong> (swap the diagonal entries, negate the off-diagonal entries). Then divide everything by the determinant.
+    </p>
+
+    <div class="key-point">If det(A) = 0, the matrix is <strong>singular</strong> and has no inverse. Geometrically, a singular matrix collapses space into a lower dimension -- you cannot undo that transformation.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: 2x2 Inverse Calculator</div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:start;justify-content:center">
+        <div>
+          <div class="sub-label">Matrix A</div>
+          <div class="matrix-input-grid" style="grid-template-columns:repeat(2,1fr)">
+            <input type="number" id="s5a" value="4" oninput="s5Update()">
+            <input type="number" id="s5b" value="7" oninput="s5Update()">
+            <input type="number" id="s5c" value="2" oninput="s5Update()">
+            <input type="number" id="s5d" value="6" oninput="s5Update()">
+          </div>
+        </div>
+      </div>
+      <div id="s5WorkArea" style="margin-top:16px"></div>
+    </div>
+
+    <div class="navy-context"><strong>Physics Context:</strong> Solving Ax = b for an unknown vector x. If A is invertible, multiply both sides on the left by A<sup>-1</sup>: x = A<sup>-1</sup>b. This is the matrix equivalent of "divide both sides" -- essential for solving coupled equations in circuit analysis, structural mechanics, and quantum mechanics.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A = [[2, 1], [5, 3]]. What is det(A)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1" step="1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s5p1',1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s5p1',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> Same A = [[2, 1], [5, 3]]. What is the entry in row 1, column 1 of A<sup>-1</sup>?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p2" step="1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s5p2',3,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s5p2',3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> A = [[1, 2], [2, 4]]. Does A<sup>-1</sup> exist? Enter 1 for yes, 0 for no.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p3" step="1" placeholder="0 or 1?" onkeydown="if(event.key==='Enter')checkNum('s5p3',0,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s5p3',0,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s5p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUICK QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quick Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text" id="quizScoreText">Score: 0 / 8</span>
+      <button class="btn btn-danger" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-q" id="qq1">
+      <div class="q-num">Question 1 of 8</div>
+      <div class="q-text">A = [[3, -1], [0, 2]], B = [[1, 4], [5, -3]]. What is the entry in row 1, column 2 of A + B?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(1,this,0)">-4</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,1)">3</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,2)">5</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,3)">2</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q" id="qq2">
+      <div class="q-num">Question 2 of 8</div>
+      <div class="q-text">A = [[2, 0], [1, 3]], B = [[1, 4], [2, 1]]. What is the entry in row 1, column 1 of AB?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(2,this,0)">2</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,1)">6</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,2)">4</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,3)">3</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q" id="qq3">
+      <div class="q-num">Question 3 of 8</div>
+      <div class="q-text">What is the transpose of [[1, 2, 3], [4, 5, 6]]? What are its dimensions?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(3,this,0)">2 x 3</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,1)">3 x 2</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,2)">3 x 3</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,3)">2 x 2</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q" id="qq4">
+      <div class="q-num">Question 4 of 8</div>
+      <div class="q-text">det([[6, 2], [3, 1]]) = ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(4,this,0)">0</button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,1)">4</button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,2)">6</button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,3)">12</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q" id="qq5">
+      <div class="q-num">Question 5 of 8</div>
+      <div class="q-text">If A is 3x2 and B is 2x5, what are the dimensions of AB?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(5,this,0)">3 x 5</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,1)">2 x 2</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,2)">3 x 2</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,3)">5 x 3</button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q" id="qq6">
+      <div class="q-num">Question 6 of 8</div>
+      <div class="q-text">A = [[4, 3], [2, 1]]. What is A<sup>-1</sup>, entry at row 1, column 1?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(6,this,0)">1/2</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,1)">-1/2</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,2)">4</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,3)">-1</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q" id="qq7">
+      <div class="q-num">Question 7 of 8</div>
+      <div class="q-text">(AB)<sup>T</sup> equals which of the following?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(7,this,0)">A<sup>T</sup>B<sup>T</sup></button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,1)">B<sup>T</sup>A<sup>T</sup></button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,2)">(BA)<sup>T</sup></button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,3)">AB</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q" id="qq8">
+      <div class="q-num">Question 8 of 8</div>
+      <div class="q-text">A = [[1, 0, 2], [0, 1, -1], [3, 2, 0]]. Using cofactor expansion along row 1, what is the cofactor C<sub>11</sub> (the 2x2 determinant you multiply a<sub>11</sub> by)?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(8,this,0)">2</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,1)">-2</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,2)">0</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,3)">-6</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== GLOBALS ==================== */
+var completedSections = new Set();
+var totalSections = 6;
+
+function fmtNum(n) {
+  if (Number.isInteger(n)) return String(n);
+  return n.toFixed(2).replace(/\.?0+$/, '');
+}
+
+function updateProgress() {
+  var pct = (completedSections.size / totalSections) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + totalSections + ' sections';
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  var wasOpen = card.classList.contains('open');
+  card.classList.toggle('open');
+  if (!wasOpen) {
+    var sec = card.getAttribute('data-section');
+    completedSections.add(sec);
+    card.classList.add('completed');
+    updateProgress();
+  }
+}
+
+function checkNum(id, correct, tolerance) {
+  var input = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(input.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; input.classList.add('shake'); setTimeout(function(){input.classList.remove('shake')},500); return; }
+  if (Math.abs(val - correct) <= tolerance) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    input.classList.add('pop');
+    setTimeout(function(){input.classList.remove('pop')},400);
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. The answer is ' + fmtNum(correct) + '.';
+    input.classList.add('shake');
+    setTimeout(function(){input.classList.remove('shake')},500);
+  }
+}
+
+function checkMC(btn, containerId, result) {
+  var container = document.getElementById(containerId);
+  var fb = document.getElementById(containerId + '-fb');
+  var allBtns = container.querySelectorAll('.mc-btn');
+  allBtns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    btn.classList.add('pop');
+    setTimeout(function(){btn.classList.remove('pop')},400);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Incorrect.';
+    btn.classList.add('shake');
+    setTimeout(function(){btn.classList.remove('shake')},500);
+    // reveal correct
+    allBtns.forEach(function(b) {
+      if (b !== btn && b.getAttribute('onclick') && b.getAttribute('onclick').indexOf("'correct'") !== -1) {
+        b.classList.add('correct');
+      }
+    });
+  }
+}
+
+/* ==================== SECTION 1: ADDITION & SCALAR ==================== */
+var s1PrevSum = [0,0,0,0];
+var s1PrevScalar = [0,0,0,0];
+
+function s1Update() {
+  var A = [
+    [parseFloat(document.getElementById('s1a00').value)||0, parseFloat(document.getElementById('s1a01').value)||0],
+    [parseFloat(document.getElementById('s1a10').value)||0, parseFloat(document.getElementById('s1a11').value)||0]
+  ];
+  var B = [
+    [parseFloat(document.getElementById('s1b00').value)||0, parseFloat(document.getElementById('s1b01').value)||0],
+    [parseFloat(document.getElementById('s1b10').value)||0, parseFloat(document.getElementById('s1b11').value)||0]
+  ];
+  var k = parseFloat(document.getElementById('s1kSlider').value) || 0;
+  document.getElementById('s1kVal').textContent = k.toFixed(1);
+
+  // Sum
+  var sum = [[A[0][0]+B[0][0], A[0][1]+B[0][1]], [A[1][0]+B[1][0], A[1][1]+B[1][1]]];
+  var flatSum = [sum[0][0], sum[0][1], sum[1][0], sum[1][1]];
+  var sumHtml = '<span class="matrix-bracket">[</span><div class="matrix-grid" style="grid-template-columns:repeat(2,1fr)">';
+  for (var i = 0; i < 4; i++) {
+    var cls = (flatSum[i] !== s1PrevSum[i]) ? 'changed' : 'const';
+    sumHtml += '<span class="' + cls + '">' + fmtNum(flatSum[i]) + '</span>';
+  }
+  sumHtml += '</div><span class="matrix-bracket">]</span>';
+  document.getElementById('s1SumDisplay').innerHTML = sumHtml;
+  s1PrevSum = flatSum.slice();
+
+  // Scalar
+  var sc = [[k*A[0][0], k*A[0][1]], [k*A[1][0], k*A[1][1]]];
+  var flatSc = [sc[0][0], sc[0][1], sc[1][0], sc[1][1]];
+  var scHtml = '<span class="matrix-bracket">[</span><div class="matrix-grid" style="grid-template-columns:repeat(2,1fr)">';
+  for (var j = 0; j < 4; j++) {
+    var cls2 = (flatSc[j] !== s1PrevScalar[j]) ? 'changed' : 'coeff';
+    scHtml += '<span class="' + cls2 + '">' + fmtNum(flatSc[j]) + '</span>';
+  }
+  scHtml += '</div><span class="matrix-bracket">]</span>';
+  document.getElementById('s1ScalarDisplay').innerHTML = scHtml;
+  s1PrevScalar = flatSc.slice();
+}
+
+/* ==================== SECTION 2: MATRIX MULTIPLICATION ==================== */
+var s2Step = -1;
+var s2Steps = [];
+var s2ResultCells = ['?','?','?','?'];
+
+function s2GetA() {
+  return [
+    [parseFloat(document.getElementById('s2a00').value)||0, parseFloat(document.getElementById('s2a01').value)||0],
+    [parseFloat(document.getElementById('s2a10').value)||0, parseFloat(document.getElementById('s2a11').value)||0]
+  ];
+}
+function s2GetB() {
+  return [
+    [parseFloat(document.getElementById('s2b00').value)||0, parseFloat(document.getElementById('s2b01').value)||0],
+    [parseFloat(document.getElementById('s2b10').value)||0, parseFloat(document.getElementById('s2b11').value)||0]
+  ];
+}
+
+function s2RenderResult() {
+  var html = '';
+  for (var idx = 0; idx < 4; idx++) {
+    var val = s2ResultCells[idx];
+    var cls = (val === '?') ? '' : 'style="background:var(--green-dim);color:var(--green);font-weight:700"';
+    html += '<div ' + cls + ' style="width:50px;padding:6px;text-align:center;background:' + (val==='?'?'var(--bg-card)':'var(--green-dim)') + ';border:1px solid ' + (val==='?'?'var(--border)':'rgba(34,197,94,.3)') + ';border-radius:4px;color:' + (val==='?'?'var(--text-dim)':'var(--green)') + ';font-family:JetBrains Mono,monospace;font-size:.8rem;font-weight:' + (val==='?'?'400':'700') + '">' + val + '</div>';
+  }
+  document.getElementById('s2ResultGrid').innerHTML = html;
+}
+
+function s2Reset() {
+  s2Step = -1;
+  s2Steps = [];
+  s2ResultCells = ['?','?','?','?'];
+  s2RenderResult();
+  document.getElementById('s2StepInfo').style.display = 'none';
+  document.getElementById('s2MultBtn').style.display = '';
+  document.getElementById('s2NextBtn').style.display = 'none';
+  document.getElementById('s2CommuteDisplay').innerHTML = '';
+  // Clear highlights on input grids
+  var allInputs = document.querySelectorAll('#s2a00,#s2a01,#s2a10,#s2a11,#s2b00,#s2b01,#s2b10,#s2b11');
+  allInputs.forEach(function(inp){ inp.style.borderColor = ''; });
+}
+
+function s2StartMultiply() {
+  var A = s2GetA(), B = s2GetB();
+  s2Steps = [];
+  // Entry order: (0,0), (0,1), (1,0), (1,1)
+  var order = [[0,0],[0,1],[1,0],[1,1]];
+  order.forEach(function(pos) {
+    var r = pos[0], c = pos[1];
+    var val = A[r][0]*B[0][c] + A[r][1]*B[1][c];
+    s2Steps.push({
+      row: r, col: c,
+      a: [A[r][0], A[r][1]],
+      b: [B[0][c], B[1][c]],
+      products: [A[r][0]*B[0][c], A[r][1]*B[1][c]],
+      result: val,
+      cellIdx: r*2+c
+    });
+  });
+  s2Step = 0;
+  s2ResultCells = ['?','?','?','?'];
+  document.getElementById('s2MultBtn').style.display = 'none';
+  document.getElementById('s2NextBtn').style.display = '';
+  s2ShowStep();
+}
+
+function s2ShowStep() {
+  if (s2Step >= s2Steps.length) {
+    document.getElementById('s2StepInfo').innerHTML = '<span style="color:var(--green)">Done! All entries computed.</span>';
+    document.getElementById('s2NextBtn').style.display = 'none';
+    // clear highlights
+    var allInputs = document.querySelectorAll('#s2a00,#s2a01,#s2a10,#s2a11,#s2b00,#s2b01,#s2b10,#s2b11');
+    allInputs.forEach(function(inp){ inp.style.borderColor = ''; });
+    s2ShowCommute();
+    return;
+  }
+  var step = s2Steps[s2Step];
+
+  // Highlight row of A (indigo) and column of B (amber)
+  var allInputs = document.querySelectorAll('#s2a00,#s2a01,#s2a10,#s2a11,#s2b00,#s2b01,#s2b10,#s2b11');
+  allInputs.forEach(function(inp){ inp.style.borderColor = ''; });
+
+  // Highlight A row
+  document.getElementById('s2a' + step.row + '0').style.borderColor = 'var(--indigo)';
+  document.getElementById('s2a' + step.row + '1').style.borderColor = 'var(--indigo)';
+  // Highlight B column
+  document.getElementById('s2b0' + step.col).style.borderColor = 'var(--amber)';
+  document.getElementById('s2b1' + step.col).style.borderColor = 'var(--amber)';
+
+  var info = '<span style="color:var(--text-bright)">C[' + (step.row+1) + ',' + (step.col+1) + ']</span> = ';
+  info += '<span style="color:var(--indigo)">' + fmtNum(step.a[0]) + '</span>&middot;<span style="color:var(--amber)">' + fmtNum(step.b[0]) + '</span>';
+  info += ' + <span style="color:var(--indigo)">' + fmtNum(step.a[1]) + '</span>&middot;<span style="color:var(--amber)">' + fmtNum(step.b[1]) + '</span>';
+  info += ' = ' + fmtNum(step.products[0]) + ' + ' + fmtNum(step.products[1]);
+  info += ' = <span style="color:var(--green);font-weight:700">' + fmtNum(step.result) + '</span>';
+
+  document.getElementById('s2StepInfo').style.display = '';
+  document.getElementById('s2StepInfo').innerHTML = info;
+
+  s2ResultCells[step.cellIdx] = fmtNum(step.result);
+  s2RenderResult();
+}
+
+function s2NextStep() {
+  s2Step++;
+  s2ShowStep();
+}
+
+function s2ShowCommute() {
+  var A = s2GetA(), B = s2GetB();
+  var AB = [[A[0][0]*B[0][0]+A[0][1]*B[1][0], A[0][0]*B[0][1]+A[0][1]*B[1][1]],
+            [A[1][0]*B[0][0]+A[1][1]*B[1][0], A[1][0]*B[0][1]+A[1][1]*B[1][1]]];
+  var BA = [[B[0][0]*A[0][0]+B[0][1]*A[1][0], B[0][0]*A[0][1]+B[0][1]*A[1][1]],
+            [B[1][0]*A[0][0]+B[1][1]*A[1][0], B[1][0]*A[0][1]+B[1][1]*A[1][1]]];
+  var equal = (AB[0][0]===BA[0][0] && AB[0][1]===BA[0][1] && AB[1][0]===BA[1][0] && AB[1][1]===BA[1][1]);
+
+  var html = '<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-top:8px">';
+  html += '<div><div class="sub-label" style="color:var(--indigo)">AB</div>';
+  html += renderSmallMatrix(AB);
+  html += '</div>';
+  html += '<div style="font-size:1.2em;color:' + (equal ? 'var(--green)' : 'var(--pink)') + ';font-weight:700;margin-top:20px">' + (equal ? '=' : '&#8800;') + '</div>';
+  html += '<div><div class="sub-label" style="color:var(--amber)">BA</div>';
+  html += renderSmallMatrix(BA);
+  html += '</div>';
+  html += '</div>';
+  if (!equal) {
+    html += '<p style="font-size:.76rem;color:var(--pink);margin-top:8px;font-weight:500">AB does not equal BA -- matrix multiplication is NOT commutative.</p>';
+  } else {
+    html += '<p style="font-size:.76rem;color:var(--green);margin-top:8px;font-weight:500">These happen to be equal, but that is special -- not the general case.</p>';
+  }
+  document.getElementById('s2CommuteDisplay').innerHTML = html;
+}
+
+function renderSmallMatrix(M) {
+  var html = '<div style="display:inline-flex;align-items:center;gap:4px">';
+  html += '<span class="matrix-bracket" style="font-size:1.8em">[</span>';
+  html += '<div class="matrix-grid" style="grid-template-columns:repeat(' + M[0].length + ',1fr);gap:4px 10px">';
+  for (var i = 0; i < M.length; i++) {
+    for (var j = 0; j < M[0].length; j++) {
+      html += '<span class="coeff">' + fmtNum(M[i][j]) + '</span>';
+    }
+  }
+  html += '</div><span class="matrix-bracket" style="font-size:1.8em">]</span></div>';
+  return html;
+}
+
+/* ==================== SECTION 3: TRANSPOSE ==================== */
+function s3ClearTranspose() {
+  document.getElementById('s3TransposeDisplay').innerHTML = '';
+}
+
+function s3DoTranspose() {
+  var A = [];
+  for (var i = 0; i < 2; i++) {
+    A[i] = [];
+    for (var j = 0; j < 3; j++) {
+      A[i][j] = parseFloat(document.getElementById('s3a' + i + j).value) || 0;
+    }
+  }
+  // Transpose: 3x2
+  var AT = [];
+  for (var j2 = 0; j2 < 3; j2++) {
+    AT[j2] = [];
+    for (var i2 = 0; i2 < 2; i2++) {
+      AT[j2][i2] = A[i2][j2];
+    }
+  }
+
+  // Build with animation classes
+  // Each entry AT[j][i] came from A[i][j]
+  // In the original grid: row i, col j -> position (i, j)
+  // In the transposed grid: row j, col i -> position (j, i)
+  // Approximate pixel offset for animation: each cell is ~58px wide, ~32px tall
+  var cellW = 58, cellH = 32;
+  var html = '<div style="display:inline-grid;grid-template-columns:repeat(2,1fr);gap:6px 8px;margin:8px 0">';
+  for (var r = 0; r < 3; r++) {
+    for (var c = 0; c < 2; c++) {
+      // This entry AT[r][c] = A[c][r]
+      // It moved from grid position (c, r) to (r, c)
+      var origRow = c, origCol = r;
+      var newRow = r, newCol = c;
+      var dx = (origCol - newCol) * cellW;
+      var dy = (origRow - newRow) * cellH;
+      html += '<div class="slide-entry" style="--sx:' + dx + 'px;--sy:' + dy + 'px;width:50px;padding:6px;text-align:center;background:var(--green-dim);border:1px solid rgba(34,197,94,.3);border-radius:4px;color:var(--green);font-family:JetBrains Mono,monospace;font-size:.8rem;font-weight:600">' + fmtNum(AT[r][c]) + '</div>';
+    }
+  }
+  html += '</div>';
+  document.getElementById('s3TransposeDisplay').innerHTML = html;
+}
+
+function s3ShowShoesSocks() {
+  var A = [[1,2],[3,4]], B = [[5,6],[7,8]];
+  // AB
+  var AB = [[1*5+2*7, 1*6+2*8],[3*5+4*7, 3*6+4*8]]; // [[19,22],[43,50]]
+  // (AB)^T
+  var ABT = [[AB[0][0],AB[1][0]],[AB[0][1],AB[1][1]]]; // [[19,43],[22,50]]
+  // A^T
+  var AT = [[1,3],[2,4]];
+  // B^T
+  var BT = [[5,7],[6,8]];
+  // B^T A^T
+  var BTAT = [[BT[0][0]*AT[0][0]+BT[0][1]*AT[1][0], BT[0][0]*AT[0][1]+BT[0][1]*AT[1][1]],
+              [BT[1][0]*AT[0][0]+BT[1][1]*AT[1][0], BT[1][0]*AT[0][1]+BT[1][1]*AT[1][1]]];
+
+  var html = '';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin:8px 0">';
+  html += '<div><div class="sub-label" style="color:var(--indigo)">AB</div>' + renderSmallMatrix(AB) + '</div>';
+  html += '<div style="margin-top:20px;color:var(--text-dim);font-size:1.2em">&#8594;</div>';
+  html += '<div><div class="sub-label" style="color:var(--green)">(AB)<sup>T</sup></div>' + renderSmallMatrix(ABT) + '</div>';
+  html += '</div>';
+
+  html += '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin:8px 0">';
+  html += '<div><div class="sub-label" style="color:var(--amber)">B<sup>T</sup></div>' + renderSmallMatrix(BT) + '</div>';
+  html += '<span style="font-size:1.2em;color:var(--text-dim);margin-top:20px">&times;</span>';
+  html += '<div><div class="sub-label" style="color:var(--indigo)">A<sup>T</sup></div>' + renderSmallMatrix(AT) + '</div>';
+  html += '<span style="font-size:1.2em;color:var(--text-dim);margin-top:20px">=</span>';
+  html += '<div><div class="sub-label" style="color:var(--green)">B<sup>T</sup>A<sup>T</sup></div>' + renderSmallMatrix(BTAT) + '</div>';
+  html += '</div>';
+
+  html += '<div class="formula-box green" style="margin-top:12px">(AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup> = ' + renderSmallMatrixInline(ABT) + ' -- They match!</div>';
+
+  document.getElementById('s3ShoesSocksDemo').innerHTML = html;
+}
+
+function renderSmallMatrixInline(M) {
+  return '[[' + fmtNum(M[0][0]) + ',' + fmtNum(M[0][1]) + '],[' + fmtNum(M[1][0]) + ',' + fmtNum(M[1][1]) + ']]';
+}
+
+/* ==================== SECTION 4: DETERMINANTS ==================== */
+function s4Update2x2() {
+  var a = parseFloat(document.getElementById('s4a').value)||0;
+  var b = parseFloat(document.getElementById('s4b').value)||0;
+  var c = parseFloat(document.getElementById('s4c').value)||0;
+  var d = parseFloat(document.getElementById('s4d').value)||0;
+  var det = a*d - b*c;
+
+  // Diagonal visualization
+  var viz = '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">';
+  viz += '<div style="text-align:center">';
+  viz += '<div style="font-size:.7rem;color:var(--green);margin-bottom:4px">Main diagonal</div>';
+  viz += '<div style="font-size:1.1rem;font-weight:700;color:var(--green)">' + fmtNum(a) + ' &times; ' + fmtNum(d) + ' = ' + fmtNum(a*d) + '</div>';
+  viz += '</div>';
+  viz += '<div style="font-size:1.4em;color:var(--text-dim);font-weight:700">-</div>';
+  viz += '<div style="text-align:center">';
+  viz += '<div style="font-size:.7rem;color:var(--pink);margin-bottom:4px">Anti-diagonal</div>';
+  viz += '<div style="font-size:1.1rem;font-weight:700;color:var(--pink)">' + fmtNum(b) + ' &times; ' + fmtNum(c) + ' = ' + fmtNum(b*c) + '</div>';
+  viz += '</div>';
+  viz += '</div>';
+  document.getElementById('s4DiagViz').innerHTML = viz;
+
+  var readout = '<div class="readout-item"><span class="label">ad</span><br><span class="value green">' + fmtNum(a*d) + '</span></div>';
+  readout += '<div class="readout-item"><span class="label">bc</span><br><span class="value pink">' + fmtNum(b*c) + '</span></div>';
+  readout += '<div class="readout-item"><span class="label">det(A) = ad - bc</span><br><span class="value' + (det===0?' pink':' indigo') + '">' + fmtNum(det) + '</span></div>';
+  if (det === 0) {
+    readout += '<div class="readout-item"><span class="label">Status</span><br><span class="value pink">Singular (no inverse)</span></div>';
+  } else {
+    readout += '<div class="readout-item"><span class="label">Status</span><br><span class="value green">Invertible</span></div>';
+  }
+  document.getElementById('s4Det2x2Readout').innerHTML = readout;
+}
+
+function s4Update3x3() {
+  var m = [];
+  for (var i = 0; i < 3; i++) {
+    m[i] = [];
+    for (var j = 0; j < 3; j++) {
+      m[i][j] = parseFloat(document.getElementById('s4m' + i + j).value) || 0;
+    }
+  }
+  // Cofactor expansion along first row
+  var c11 = m[1][1]*m[2][2] - m[1][2]*m[2][1];
+  var c12 = m[1][0]*m[2][2] - m[1][2]*m[2][0];
+  var c13 = m[1][0]*m[2][1] - m[1][1]*m[2][0];
+  var det = m[0][0]*c11 - m[0][1]*c12 + m[0][2]*c13;
+
+  var work = '<div style="font-size:.78rem;color:var(--text);line-height:2">';
+  work += 'det = <span style="color:var(--indigo);font-weight:600">' + fmtNum(m[0][0]) + '</span>';
+  work += '(<span style="color:var(--green)">' + fmtNum(m[1][1]) + '&middot;' + fmtNum(m[2][2]) + ' - ' + fmtNum(m[1][2]) + '&middot;' + fmtNum(m[2][1]) + '</span>)';
+  work += ' - <span style="color:var(--indigo);font-weight:600">' + fmtNum(m[0][1]) + '</span>';
+  work += '(<span style="color:var(--amber)">' + fmtNum(m[1][0]) + '&middot;' + fmtNum(m[2][2]) + ' - ' + fmtNum(m[1][2]) + '&middot;' + fmtNum(m[2][0]) + '</span>)';
+  work += ' + <span style="color:var(--indigo);font-weight:600">' + fmtNum(m[0][2]) + '</span>';
+  work += '(<span style="color:var(--pink)">' + fmtNum(m[1][0]) + '&middot;' + fmtNum(m[2][1]) + ' - ' + fmtNum(m[1][1]) + '&middot;' + fmtNum(m[2][0]) + '</span>)';
+  work += '<br>';
+  work += '= ' + fmtNum(m[0][0]) + '(' + fmtNum(c11) + ') - ' + fmtNum(m[0][1]) + '(' + fmtNum(c12) + ') + ' + fmtNum(m[0][2]) + '(' + fmtNum(c13) + ')';
+  work += '<br>';
+  work += '= ' + fmtNum(m[0][0]*c11) + ' + ' + fmtNum(-m[0][1]*c12) + ' + ' + fmtNum(m[0][2]*c13);
+  work += ' = <span style="color:var(--green);font-weight:700">' + fmtNum(det) + '</span>';
+  work += '</div>';
+  document.getElementById('s4CofactorWork').innerHTML = work;
+
+  var readout = '<div class="readout-item"><span class="label">det(A)</span><br><span class="value' + (det===0?' pink':' green') + '">' + fmtNum(det) + '</span></div>';
+  readout += '<div class="readout-item"><span class="label">Status</span><br><span class="value ' + (det===0?'pink':'green') + '">' + (det===0?'Singular':'Invertible') + '</span></div>';
+  document.getElementById('s4Det3x3Readout').innerHTML = readout;
+}
+
+/* Parallelogram SVG with draggable vectors */
+var s4Vectors = {u: {x:3, y:1}, v: {x:1, y:2.5}};
+var s4Dragging = null;
+
+function s4InitPara() {
+  var svg = document.getElementById('s4ParaSvg');
+  svg.innerHTML = '';
+  s4DrawPara();
+  svg.addEventListener('mousedown', s4MouseDown);
+  svg.addEventListener('mousemove', s4MouseMove);
+  svg.addEventListener('mouseup', s4MouseUp);
+  svg.addEventListener('mouseleave', s4MouseUp);
+  svg.addEventListener('touchstart', s4TouchStart, {passive:false});
+  svg.addEventListener('touchmove', s4TouchMove, {passive:false});
+  svg.addEventListener('touchend', s4MouseUp);
+}
+
+function s4SvgCoord(clientX, clientY) {
+  var svg = document.getElementById('s4ParaSvg');
+  var rect = svg.getBoundingClientRect();
+  var vb = svg.viewBox.baseVal;
+  var x = ((clientX - rect.left) / rect.width) * vb.width;
+  var y = ((clientY - rect.top) / rect.height) * vb.height;
+  // Convert from SVG pixel to grid: origin at (250, 250), scale 50px/unit, y flipped
+  var gx = (x - 250) / 50;
+  var gy = (250 - y) / 50;
+  return {x: gx, y: gy};
+}
+
+function s4MouseDown(e) {
+  var pt = s4SvgCoord(e.clientX, e.clientY);
+  var du = Math.hypot(pt.x - s4Vectors.u.x, pt.y - s4Vectors.u.y);
+  var dv = Math.hypot(pt.x - s4Vectors.v.x, pt.y - s4Vectors.v.y);
+  if (du < 0.6) s4Dragging = 'u';
+  else if (dv < 0.6) s4Dragging = 'v';
+}
+function s4TouchStart(e) {
+  e.preventDefault();
+  var t = e.touches[0];
+  var pt = s4SvgCoord(t.clientX, t.clientY);
+  var du = Math.hypot(pt.x - s4Vectors.u.x, pt.y - s4Vectors.u.y);
+  var dv = Math.hypot(pt.x - s4Vectors.v.x, pt.y - s4Vectors.v.y);
+  if (du < 0.8) s4Dragging = 'u';
+  else if (dv < 0.8) s4Dragging = 'v';
+}
+function s4MouseMove(e) {
+  if (!s4Dragging) return;
+  var pt = s4SvgCoord(e.clientX, e.clientY);
+  s4Vectors[s4Dragging].x = Math.round(pt.x * 4) / 4;
+  s4Vectors[s4Dragging].y = Math.round(pt.y * 4) / 4;
+  s4Vectors[s4Dragging].x = Math.max(-4.5, Math.min(4.5, s4Vectors[s4Dragging].x));
+  s4Vectors[s4Dragging].y = Math.max(-2.5, Math.min(2.5, s4Vectors[s4Dragging].y));
+  s4DrawPara();
+}
+function s4TouchMove(e) {
+  e.preventDefault();
+  if (!s4Dragging) return;
+  var t = e.touches[0];
+  var pt = s4SvgCoord(t.clientX, t.clientY);
+  s4Vectors[s4Dragging].x = Math.round(pt.x * 4) / 4;
+  s4Vectors[s4Dragging].y = Math.round(pt.y * 4) / 4;
+  s4Vectors[s4Dragging].x = Math.max(-4.5, Math.min(4.5, s4Vectors[s4Dragging].x));
+  s4Vectors[s4Dragging].y = Math.max(-2.5, Math.min(2.5, s4Vectors[s4Dragging].y));
+  s4DrawPara();
+}
+function s4MouseUp() { s4Dragging = null; }
+
+function s4DrawPara() {
+  var svg = document.getElementById('s4ParaSvg');
+  var ox = 250, oy = 250, sc = 50;
+  var u = s4Vectors.u, v = s4Vectors.v;
+  var ux = ox + u.x*sc, uy = oy - u.y*sc;
+  var vx = ox + v.x*sc, vy = oy - v.y*sc;
+  var px = ox + (u.x+v.x)*sc, py = oy - (u.y+v.y)*sc;
+  var det = u.x*v.y - u.y*v.x;
+  var area = Math.abs(det);
+
+  var html = '';
+  // Grid
+  html += '<rect width="500" height="400" fill="var(--bg-input)" rx="6"/>';
+  for (var gx = -4; gx <= 4; gx++) {
+    var x = ox + gx*sc;
+    html += '<line x1="'+x+'" y1="0" x2="'+x+'" y2="400" stroke="var(--border)" stroke-width="0.5"/>';
+  }
+  for (var gy = -4; gy <= 4; gy++) {
+    var y = oy + gy*sc;
+    html += '<line x1="0" y1="'+y+'" x2="500" y2="'+y+'" stroke="var(--border)" stroke-width="0.5"/>';
+  }
+  // Axes
+  html += '<line x1="0" y1="'+oy+'" x2="500" y2="'+oy+'" stroke="var(--text-dim)" stroke-width="1" opacity=".4"/>';
+  html += '<line x1="'+ox+'" y1="0" x2="'+ox+'" y2="400" stroke="var(--text-dim)" stroke-width="1" opacity=".4"/>';
+
+  // Parallelogram fill
+  var fillColor = det >= 0 ? 'rgba(34,197,94,.12)' : 'rgba(236,72,153,.12)';
+  var strokeColor = det >= 0 ? 'var(--green)' : 'var(--pink)';
+  html += '<polygon points="'+ox+','+oy+' '+ux+','+uy+' '+px+','+py+' '+vx+','+vy+'" fill="'+fillColor+'" stroke="'+strokeColor+'" stroke-width="1.5" stroke-dasharray="4 2"/>';
+
+  // Vector u (indigo)
+  html += '<line x1="'+ox+'" y1="'+oy+'" x2="'+ux+'" y2="'+uy+'" stroke="var(--indigo)" stroke-width="2.5" stroke-linecap="round"/>';
+  html += '<circle cx="'+ux+'" cy="'+uy+'" r="8" fill="var(--indigo)" class="drag-handle" style="cursor:grab"/>';
+  html += '<text x="'+(ux+(u.x>=0?12:-20))+'" y="'+(uy-12)+'" fill="var(--indigo)" font-size="12" font-weight="600">u('+fmtNum(u.x)+','+fmtNum(u.y)+')</text>';
+
+  // Vector v (amber)
+  html += '<line x1="'+ox+'" y1="'+oy+'" x2="'+vx+'" y2="'+vy+'" stroke="var(--amber)" stroke-width="2.5" stroke-linecap="round"/>';
+  html += '<circle cx="'+vx+'" cy="'+vy+'" r="8" fill="var(--amber)" class="drag-handle" style="cursor:grab"/>';
+  html += '<text x="'+(vx+(v.x>=0?12:-20))+'" y="'+(vy-12)+'" fill="var(--amber)" font-size="12" font-weight="600">v('+fmtNum(v.x)+','+fmtNum(v.y)+')</text>';
+
+  // Area label
+  html += '<text x="250" y="390" fill="var(--text-dim)" font-size="11" text-anchor="middle">Drag the circles to move vectors</text>';
+
+  svg.innerHTML = html;
+
+  // Readout
+  var ro = '<div class="readout-item"><span class="label">u</span><br><span class="value indigo">(' + fmtNum(u.x) + ', ' + fmtNum(u.y) + ')</span></div>';
+  ro += '<div class="readout-item"><span class="label">v</span><br><span class="value amber">(' + fmtNum(v.x) + ', ' + fmtNum(v.y) + ')</span></div>';
+  ro += '<div class="readout-item"><span class="label">det [u|v]</span><br><span class="value ' + (det>=0?'green':'pink') + '">' + fmtNum(det) + '</span></div>';
+  ro += '<div class="readout-item"><span class="label">|Area|</span><br><span class="value green">' + fmtNum(area) + '</span></div>';
+  ro += '<div class="readout-item"><span class="label">Orientation</span><br><span class="value ' + (det>=0?'green':'pink') + '">' + (det>0?'Counter-clockwise':(det<0?'Clockwise':'Degenerate')) + '</span></div>';
+  document.getElementById('s4ParaReadout').innerHTML = ro;
+}
+
+/* ==================== SECTION 5: MATRIX INVERSE ==================== */
+function s5Update() {
+  var a = parseFloat(document.getElementById('s5a').value)||0;
+  var b = parseFloat(document.getElementById('s5b').value)||0;
+  var c = parseFloat(document.getElementById('s5c').value)||0;
+  var d = parseFloat(document.getElementById('s5d').value)||0;
+  var det = a*d - b*c;
+
+  var html = '';
+
+  // Step 1: determinant
+  html += '<div class="sub-label">Step 1: Compute determinant</div>';
+  html += '<div class="formula-box" style="text-align:left;font-size:.85rem">det(A) = (' + fmtNum(a) + ')(' + fmtNum(d) + ') - (' + fmtNum(b) + ')(' + fmtNum(c) + ') = ' + fmtNum(a*d) + ' - ' + fmtNum(b*c) + ' = <strong>' + fmtNum(det) + '</strong></div>';
+
+  if (Math.abs(det) < 1e-10) {
+    html += '<div class="formula-box pink" style="text-align:left"><strong>Singular Matrix!</strong> det = 0, so A has no inverse. The columns are linearly dependent -- one is a scalar multiple of the other.</div>';
+    document.getElementById('s5WorkArea').innerHTML = html;
+    return;
+  }
+
+  // Step 2: adjugate
+  html += '<div class="sub-label" style="margin-top:12px">Step 2: Form the adjugate (swap diagonal, negate off-diagonal)</div>';
+  html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0">';
+  html += '<div>adj(A) = </div>';
+  html += renderSmallMatrix([[d, -b],[-c, a]]);
+  html += '</div>';
+
+  // Step 3: inverse
+  html += '<div class="sub-label" style="margin-top:12px">Step 3: A<sup>-1</sup> = (1/det) &times; adj(A)</div>';
+  var inv = [[d/det, -b/det],[-c/det, a/det]];
+  html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0">';
+  html += '<div>A<sup>-1</sup> = (1/' + fmtNum(det) + ') &times;</div>';
+  html += renderSmallMatrix([[d, -b],[-c, a]]);
+  html += '<div>=</div>';
+  html += '<div style="display:inline-flex;align-items:center;gap:4px"><span class="matrix-bracket" style="font-size:1.8em">[</span><div class="matrix-grid" style="grid-template-columns:repeat(2,1fr);gap:4px 10px">';
+  html += '<span style="color:var(--green);font-weight:700">' + fmtNum(inv[0][0]) + '</span>';
+  html += '<span style="color:var(--green);font-weight:700">' + fmtNum(inv[0][1]) + '</span>';
+  html += '<span style="color:var(--green);font-weight:700">' + fmtNum(inv[1][0]) + '</span>';
+  html += '<span style="color:var(--green);font-weight:700">' + fmtNum(inv[1][1]) + '</span>';
+  html += '</div><span class="matrix-bracket" style="font-size:1.8em">]</span></div>';
+  html += '</div>';
+
+  // Step 4: verify
+  var prod = [
+    [a*inv[0][0]+b*inv[1][0], a*inv[0][1]+b*inv[1][1]],
+    [c*inv[0][0]+d*inv[1][0], c*inv[0][1]+d*inv[1][1]]
+  ];
+  // Clean near-zero/near-one
+  for (var i=0;i<2;i++) for(var j=0;j<2;j++){
+    if(Math.abs(prod[i][j])<1e-10) prod[i][j]=0;
+    if(Math.abs(prod[i][j]-1)<1e-10) prod[i][j]=1;
+  }
+  html += '<div class="sub-label" style="margin-top:12px">Step 4: Verify AA<sup>-1</sup> = I</div>';
+  html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0">';
+  html += renderSmallMatrix([[a,b],[c,d]]);
+  html += '<span style="color:var(--text-dim);font-size:1.2em">&times;</span>';
+  html += '<div style="display:inline-flex;align-items:center;gap:4px"><span class="matrix-bracket" style="font-size:1.8em">[</span><div class="matrix-grid" style="grid-template-columns:repeat(2,1fr);gap:4px 10px"><span style="color:var(--green)">' + fmtNum(inv[0][0]) + '</span><span style="color:var(--green)">' + fmtNum(inv[0][1]) + '</span><span style="color:var(--green)">' + fmtNum(inv[1][0]) + '</span><span style="color:var(--green)">' + fmtNum(inv[1][1]) + '</span></div><span class="matrix-bracket" style="font-size:1.8em">]</span></div>';
+  html += '<span style="color:var(--text-dim);font-size:1.2em">=</span>';
+  var identityOk = (prod[0][0]===1 && prod[0][1]===0 && prod[1][0]===0 && prod[1][1]===1);
+  html += '<div style="display:inline-flex;align-items:center;gap:4px"><span class="matrix-bracket" style="font-size:1.8em">[</span><div class="matrix-grid" style="grid-template-columns:repeat(2,1fr);gap:4px 10px">';
+  html += '<span style="color:' + (identityOk?'var(--green)':'var(--text)') + ';font-weight:700">' + fmtNum(prod[0][0]) + '</span>';
+  html += '<span style="color:' + (identityOk?'var(--green)':'var(--text)') + ';font-weight:700">' + fmtNum(prod[0][1]) + '</span>';
+  html += '<span style="color:' + (identityOk?'var(--green)':'var(--text)') + ';font-weight:700">' + fmtNum(prod[1][0]) + '</span>';
+  html += '<span style="color:' + (identityOk?'var(--green)':'var(--text)') + ';font-weight:700">' + fmtNum(prod[1][1]) + '</span>';
+  html += '</div><span class="matrix-bracket" style="font-size:1.8em">]</span></div>';
+  html += '</div>';
+  if (identityOk) {
+    html += '<div class="formula-box green" style="text-align:left">AA<sup>-1</sup> = I -- Verified! The identity matrix confirms the inverse is correct.</div>';
+  }
+
+  document.getElementById('s5WorkArea').innerHTML = html;
+}
+
+/* ==================== SECTION 6: QUIZ ==================== */
+var quizScore = 0;
+var quizAnswered = new Set();
+// Correct answers: Q1=1(3), Q2=0(2), Q3=1(3x2), Q4=0(0), Q5=0(3x5), Q6=1(-1/2), Q7=1(B^TA^T), Q8=0(2)
+var quizCorrect = {1:1, 2:0, 3:1, 4:0, 5:0, 6:1, 7:1, 8:0};
+
+function quizAnswer(qNum, btn, choiceIdx) {
+  if (quizAnswered.has(qNum)) return;
+  quizAnswered.add(qNum);
+  var qDiv = document.getElementById('qq' + qNum);
+  var allBtns = qDiv.querySelectorAll('.choice-btn');
+  allBtns.forEach(function(b) { b.classList.add('disabled'); });
+
+  if (choiceIdx === quizCorrect[qNum]) {
+    btn.classList.add('selected-correct');
+    btn.classList.add('pop');
+    setTimeout(function(){btn.classList.remove('pop')},400);
+    quizScore++;
+  } else {
+    btn.classList.add('selected-wrong');
+    btn.classList.add('shake');
+    setTimeout(function(){btn.classList.remove('shake')},500);
+    // reveal correct
+    allBtns[quizCorrect[qNum]].classList.add('reveal-correct');
+  }
+  document.getElementById('quizScoreText').textContent = 'Score: ' + quizScore + ' / 8';
+}
+
+function resetQuiz() {
+  quizScore = 0;
+  quizAnswered.clear();
+  document.getElementById('quizScoreText').textContent = 'Score: 0 / 8';
+  for (var q = 1; q <= 8; q++) {
+    var qDiv = document.getElementById('qq' + q);
+    var btns = qDiv.querySelectorAll('.choice-btn');
+    btns.forEach(function(b) {
+      b.className = 'choice-btn';
+    });
+  }
+}
+
+/* ==================== INIT ==================== */
+completedSections.add('1');
+updateProgress();
+s1Update();
+s2Reset();
+s4Update2x2();
+s4Update3x3();
+s4InitPara();
+s5Update();
+</script>
+</body>
+</html>

@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 27: Quantum Physics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --bg-card: #262a33;
+    --bg-card-hover: #2c313c;
+    --bg-input: #1a1d24;
+    --border: #363b47;
+    --text: #e2e4e9;
+    --text-dim: #9ca3af;
+    --text-bright: #fff;
+    --indigo: #6366f1;
+    --indigo-dim: rgba(99,102,241,0.15);
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.15);
+    --pink: #ec4899;
+    --pink-dim: rgba(236,72,153,0.15);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.15);
+    --radius: 10px;
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(30,33,40,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+  }
+
+  .top-bar-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .top-bar h1 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .top-bar h1 span { color: var(--indigo); }
+
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--indigo), #818cf8);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 5px;
+    text-align: right;
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  /* ── SECTION CARDS ── */
+  .section-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color var(--transition);
+  }
+
+  .section-card.completed { border-color: var(--green); }
+  .section-card.open { border-color: var(--indigo); }
+  .section-card.completed.open { border-color: var(--green); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--transition);
+  }
+
+  .section-header:hover { background: var(--bg-card-hover); }
+
+  .section-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--indigo-dim);
+    color: var(--indigo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all var(--transition);
+  }
+
+  .section-card.completed .section-num {
+    background: var(--green-dim);
+    color: var(--green);
+  }
+
+  .section-title {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  .section-chevron {
+    width: 20px;
+    height: 20px;
+    color: var(--text-dim);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+  }
+
+  .section-card.open .section-chevron { transform: rotate(180deg); }
+
+  .section-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .section-body-inner { padding: 0 20px 28px; }
+
+  /* ── TYPOGRAPHY ── */
+  .subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    line-height: 1.7;
+  }
+
+  .label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--indigo);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin: 20px 0 8px;
+  }
+
+  /* ── FORMULA BOXES ── */
+  .formula-box {
+    background: var(--indigo-dim);
+    border: 1px solid var(--indigo);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    font-size: 0.85rem;
+    color: var(--text-bright);
+    line-height: 1.8;
+  }
+
+  .formula-box.green {
+    background: var(--green-dim);
+    border-color: var(--green);
+  }
+
+  .formula-box.pink {
+    background: var(--pink-dim);
+    border-color: var(--pink);
+  }
+
+  .formula-box.amber {
+    background: var(--amber-dim);
+    border-color: var(--amber);
+  }
+
+  .formula-box .f-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--indigo);
+    margin-bottom: 6px;
+  }
+
+  .formula-box.green .f-title { color: var(--green); }
+  .formula-box.pink .f-title { color: var(--pink); }
+  .formula-box.amber .f-title { color: var(--amber); }
+
+  /* ── KEY POINTS ── */
+  .key-point {
+    border-left: 3px solid var(--amber);
+    background: var(--amber-dim);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 10px 16px;
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── INPUTS ── */
+  input[type="number"], input[type="text"], select {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-bright);
+    padding: 8px 12px;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color var(--transition);
+    width: 100%;
+  }
+
+  input:focus, select:focus { border-color: var(--indigo); }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--indigo);
+    cursor: pointer;
+    height: 4px;
+    background: none;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all var(--transition);
+    color: #fff;
+  }
+
+  .btn-primary { background: var(--indigo); }
+  .btn-primary:hover { background: #5558e6; transform: translateY(-1px); }
+  .btn-green { background: var(--green); color: #000; }
+  .btn-green:hover { background: #1da34a; }
+
+  /* ── SLIDER ROW ── */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .slider-row label {
+    font-size: 0.74rem;
+    color: var(--text-dim);
+    min-width: 130px;
+    flex-shrink: 0;
+  }
+
+  .slider-row .slider-val {
+    font-size: 0.78rem;
+    color: var(--text-bright);
+    min-width: 90px;
+    text-align: right;
+    font-weight: 600;
+  }
+
+  /* ── PRACTICE PROBLEMS ── */
+  .problems-grid {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .problem {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+
+  .problem-text {
+    font-size: 0.8rem;
+    color: var(--text);
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .input-row input { max-width: 180px; flex: 1; }
+
+  .feedback {
+    font-size: 0.76rem;
+    font-weight: 600;
+    margin-top: 8px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    display: none;
+  }
+
+  .feedback.correct {
+    display: block;
+    background: var(--green-dim);
+    color: var(--green);
+    animation: springPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .feedback.incorrect {
+    display: block;
+    background: var(--pink-dim);
+    color: var(--pink);
+    animation: shake 0.35s ease;
+  }
+
+  /* ── MC CHOICES ── */
+  .mc-choices {
+    display: grid;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .mc-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    text-align: left;
+    padding: 9px 14px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .mc-btn:hover { border-color: var(--indigo); color: var(--text-bright); background: var(--indigo-dim); }
+  .mc-btn.correct-ans { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .mc-btn.wrong-ans { border-color: var(--pink); background: var(--pink-dim); color: var(--pink); }
+
+  /* ── SIMULATORS ── */
+  .sim-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 16px 0;
+  }
+
+  .sim-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--indigo);
+    margin-bottom: 14px;
+  }
+
+  .sim-output {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 0.8rem;
+    line-height: 1.9;
+  }
+
+  .sim-output .out-label { color: var(--text-dim); }
+  .sim-output .out-val { color: var(--text-bright); font-weight: 600; }
+  .sim-output .out-status-on { color: var(--green); font-weight: 700; }
+  .sim-output .out-status-off { color: var(--pink); font-weight: 700; }
+
+  canvas {
+    display: block;
+    border-radius: 8px;
+    margin-top: 10px;
+  }
+
+  /* ── ENERGY DIAGRAM ── */
+  .energy-diagram {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+  }
+
+  /* ── QUIZ ── */
+  .quiz-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .quiz-q {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+
+  .quiz-score-board {
+    background: var(--indigo-dim);
+    border: 1px solid var(--indigo);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .score-display {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--indigo);
+  }
+
+  .score-label { font-size: 0.76rem; color: var(--text-dim); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes springPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.15); }
+    70%  { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-6px); }
+    40%       { transform: translateX(6px); }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px); }
+  }
+
+  /* ── TWO-COL GRID ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  /* ── DATA TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    margin-bottom: 14px;
+  }
+
+  .data-table th {
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--bg);
+    color: var(--indigo);
+    font-weight: 600;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .data-table tr:hover td { background: var(--bg-card-hover); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .top-bar { padding: 12px 16px; }
+    .top-bar h1 { font-size: 0.9rem; }
+    .content { padding: 16px 12px 60px; }
+    .section-body-inner { padding: 0 14px 20px; }
+    .two-col { grid-template-columns: 1fr; }
+    .slider-row { flex-wrap: wrap; }
+    .slider-row label { min-width: 100%; }
+    .slider-row .slider-val { min-width: auto; }
+    .input-row { flex-direction: column; }
+    .input-row input { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <h1><span>Lesson 27</span> — Quantum Physics</h1>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 5 sections</div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 1: PHOTOELECTRIC EFFECT
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" id="sec1">
+    <div class="section-header" onclick="toggleSection('sec1')">
+      <div class="section-num">1</div>
+      <div class="section-title">Photoelectric Effect</div>
+      <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
+      </svg>
+    </div>
+    <div class="section-body" id="sec1-body">
+      <div class="section-body-inner">
+        <p class="subtitle">Einstein's 1905 explanation of the photoelectric effect introduced the photon — a quantum of light — and earned him the Nobel Prize. Light ejects electrons from metal surfaces only when photon energy exceeds the metal's work function, regardless of intensity.</p>
+
+        <div class="formula-box">
+          <div class="f-title">Photon Energy</div>
+          E = hf &nbsp;=&nbsp; hc/λ<br>
+          <span style="color:var(--text-dim);font-size:0.76rem">h = 6.626 × 10⁻³⁴ J·s &nbsp;|&nbsp; c = 3 × 10⁸ m/s</span>
+        </div>
+
+        <div class="two-col">
+          <div class="formula-box green">
+            <div class="f-title">Maximum Kinetic Energy</div>
+            KE<sub>max</sub> = hf − φ<br>
+            <span style="color:var(--text-dim);font-size:0.76rem">φ = work function (J or eV)</span>
+          </div>
+          <div class="formula-box pink">
+            <div class="f-title">Threshold Frequency</div>
+            f₀ = φ / h<br>
+            <span style="color:var(--text-dim);font-size:0.76rem">Below f₀: NO emission</span>
+          </div>
+        </div>
+
+        <div class="formula-box amber">
+          <div class="f-title">Stopping Voltage</div>
+          eV<sub>stop</sub> = KE<sub>max</sub> &nbsp;→&nbsp; V<sub>stop</sub> = KE<sub>max</sub> / e<br>
+          <span style="color:var(--text-dim);font-size:0.76rem">e = 1.602 × 10⁻¹⁹ C</span>
+        </div>
+
+        <div class="key-point">Key: Increasing light INTENSITY increases the number of ejected electrons (current), but NOT their kinetic energy. Only increasing FREQUENCY increases KE<sub>max</sub>.</div>
+        <div class="key-point">Key: If f &lt; f₀, no electrons are emitted no matter how bright the light — classical wave theory cannot explain this.</div>
+
+        <!-- SIMULATOR -->
+        <div class="sim-box">
+          <div class="sim-title">Photoelectric Effect Simulator</div>
+
+          <div class="slider-row">
+            <label>Frequency (×10¹⁴ Hz)</label>
+            <input type="range" id="peFreq" min="3" max="15" step="0.1" value="7" oninput="updatePE()">
+            <span class="slider-val" id="peFreqVal">7.0 ×10¹⁴ Hz</span>
+          </div>
+          <div class="slider-row">
+            <label>Work Function (eV)</label>
+            <input type="range" id="pePhi" min="1" max="6" step="0.1" value="2.3" oninput="updatePE()">
+            <span class="slider-val" id="pePhiVal">2.3 eV</span>
+          </div>
+
+          <canvas id="peCanvas" width="600" height="160" style="width:100%;background:#1a1d24;border-radius:8px;border:1px solid var(--border);"></canvas>
+
+          <div class="sim-output" id="peOutput"></div>
+        </div>
+
+        <!-- PRACTICE PROBLEMS -->
+        <h3>Practice Problems</h3>
+        <div class="problems-grid">
+
+          <div class="problem">
+            <div class="problem-text">1. Light of frequency 8.0 × 10¹⁴ Hz strikes sodium (φ = 2.36 eV). Find KE<sub>max</sub> in eV.<br><span style="color:var(--text-dim);font-size:0.74rem">Hint: E = hf. Convert J → eV by dividing by 1.602×10⁻¹⁹</span></div>
+            <div class="input-row">
+              <input type="number" id="p1_1" placeholder="eV" step="0.01">
+              <button class="btn btn-primary" onclick="checkNum('p1_1', 0.95, 0.05, 'f1_1')">Check</button>
+            </div>
+            <div class="feedback" id="f1_1"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">2. The stopping voltage for a metal is 1.40 V when illuminated at 6.5 × 10¹⁴ Hz. Find the work function in eV.</div>
+            <div class="input-row">
+              <input type="number" id="p1_2" placeholder="eV" step="0.01">
+              <button class="btn btn-primary" onclick="checkNum('p1_2', 1.29, 0.05, 'f1_2')">Check</button>
+            </div>
+            <div class="feedback" id="f1_2"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">3. Gold has a work function of 5.10 eV. What is its threshold frequency in Hz? (×10¹⁵ Hz)</div>
+            <div class="input-row">
+              <input type="number" id="p1_3" placeholder="×10¹⁵ Hz" step="0.001">
+              <button class="btn btn-primary" onclick="checkNum('p1_3', 1.233, 0.01, 'f1_3')">Check</button>
+            </div>
+            <div class="feedback" id="f1_3"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">4. UV light (λ = 200 nm) hits aluminum (φ = 4.08 eV). Calculate the stopping voltage in volts.</div>
+            <div class="input-row">
+              <input type="number" id="p1_4" placeholder="V" step="0.01">
+              <button class="btn btn-primary" onclick="checkNum('p1_4', 2.12, 0.05, 'f1_4')">Check</button>
+            </div>
+            <div class="feedback" id="f1_4"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 2: COMPTON SCATTERING
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" id="sec2">
+    <div class="section-header" onclick="toggleSection('sec2')">
+      <div class="section-num">2</div>
+      <div class="section-title">Compton Scattering</div>
+      <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
+      </svg>
+    </div>
+    <div class="section-body" id="sec2-body">
+      <div class="section-body-inner">
+        <p class="subtitle">Arthur Compton (1923) demonstrated that X-rays scatter off electrons with a wavelength shift that depends on scattering angle — impossible to explain with waves. The photon transfers momentum to the electron exactly like a billiard ball collision.</p>
+
+        <div class="formula-box">
+          <div class="f-title">Compton Wavelength Shift</div>
+          Δλ = λ' − λ = (h / m<sub>e</sub>c)(1 − cosθ)<br>
+          <span style="color:var(--text-dim);font-size:0.76rem">h/m<sub>e</sub>c = 2.426 × 10⁻¹² m &nbsp;(Compton wavelength λ<sub>C</sub>)</span>
+        </div>
+
+        <div class="two-col">
+          <div class="formula-box green">
+            <div class="f-title">Photon Momentum</div>
+            p = h/λ = E/c<br>
+            <span style="color:var(--text-dim);font-size:0.76rem">Massless photon carries momentum!</span>
+          </div>
+          <div class="formula-box pink">
+            <div class="f-title">Maximum Shift (θ = 180°)</div>
+            Δλ<sub>max</sub> = 2h/m<sub>e</sub>c = 4.85 pm<br>
+            <span style="color:var(--text-dim);font-size:0.76rem">Head-on backscatter</span>
+          </div>
+        </div>
+
+        <div class="key-point">Key: Δλ depends ONLY on scattering angle θ, not on the incident wavelength. The shift is tiny (~pm) — only detectable with X-rays or gamma rays.</div>
+        <div class="key-point">Key: Compton scattering definitively confirmed that photons carry momentum p = h/λ, cementing the particle nature of electromagnetic radiation.</div>
+
+        <table class="data-table">
+          <tr><th>θ</th><th>1−cosθ</th><th>Δλ (pm)</th></tr>
+          <tr><td>0°</td><td>0</td><td>0</td></tr>
+          <tr><td>45°</td><td>0.293</td><td>0.71</td></tr>
+          <tr><td>90°</td><td>1.000</td><td>2.43</td></tr>
+          <tr><td>135°</td><td>1.707</td><td>4.14</td></tr>
+          <tr><td>180°</td><td>2.000</td><td>4.85</td></tr>
+        </table>
+
+        <h3>Practice Problems</h3>
+        <div class="problems-grid">
+
+          <div class="problem">
+            <div class="problem-text">5. X-rays (λ = 0.0710 nm) scatter at θ = 90°. Find Δλ in pm (picometers).</div>
+            <div class="input-row">
+              <input type="number" id="p2_1" placeholder="pm" step="0.01">
+              <button class="btn btn-primary" onclick="checkNum('p2_1', 2.43, 0.05, 'f2_1')">Check</button>
+            </div>
+            <div class="feedback" id="f2_1"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">6. Find the wavelength of scattered X-rays (pm) when λ₀ = 71.0 pm and θ = 180°.</div>
+            <div class="input-row">
+              <input type="number" id="p2_2" placeholder="pm" step="0.1">
+              <button class="btn btn-primary" onclick="checkNum('p2_2', 75.85, 0.1, 'f2_2')">Check</button>
+            </div>
+            <div class="feedback" id="f2_2"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">7. A photon scatters at θ = 45° from an electron. If λ₀ = 0.200 nm, find the momentum of the scattered photon in kg·m/s. (×10⁻²⁴)</div>
+            <div class="input-row">
+              <input type="number" id="p2_3" placeholder="×10⁻²⁴ kg·m/s" step="0.01">
+              <button class="btn btn-primary" onclick="checkNum('p2_3', 3.29, 0.05, 'f2_3')">Check</button>
+            </div>
+            <div class="feedback" id="f2_3"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">8. A 0.500 nm X-ray scatters at θ = 135°. What is the fractional change Δλ/λ₀? (×10⁻³)</div>
+            <div class="input-row">
+              <input type="number" id="p2_4" placeholder="×10⁻³" step="0.1">
+              <button class="btn btn-primary" onclick="checkNum('p2_4', 8.28, 0.1, 'f2_4')">Check</button>
+            </div>
+            <div class="feedback" id="f2_4"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 3: DE BROGLIE WAVELENGTH
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" id="sec3">
+    <div class="section-header" onclick="toggleSection('sec3')">
+      <div class="section-num">3</div>
+      <div class="section-title">de Broglie Wavelength</div>
+      <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
+      </svg>
+    </div>
+    <div class="section-body" id="sec3-body">
+      <div class="section-body-inner">
+        <p class="subtitle">Louis de Broglie (1924) proposed that all matter — not just photons — has a wave nature. His hypothesis was confirmed by Davisson and Germer (1927) who observed electron diffraction from a nickel crystal, proving electrons interfere like waves.</p>
+
+        <div class="formula-box">
+          <div class="f-title">de Broglie Wavelength</div>
+          λ = h / p = h / (mv)<br>
+          <span style="color:var(--text-dim);font-size:0.76rem">Larger momentum → shorter wavelength → less "quantum" behavior</span>
+        </div>
+
+        <div class="two-col">
+          <div class="formula-box green">
+            <div class="f-title">Relativistic Momentum</div>
+            p = γmv = mv / √(1 − v²/c²)<br>
+            <span style="color:var(--text-dim);font-size:0.76rem">For v ≪ c: p ≈ mv</span>
+          </div>
+          <div class="formula-box amber">
+            <div class="f-title">KE-based form</div>
+            λ = h / √(2mKE)<br>
+            <span style="color:var(--text-dim);font-size:0.76rem">Useful when given accelerating voltage</span>
+          </div>
+        </div>
+
+        <div class="key-point">Key: A baseball (0.145 kg, 40 m/s) has λ ≈ 1.1 × 10⁻³⁴ m — far smaller than any atom. Quantum effects are completely undetectable for macroscopic objects.</div>
+        <div class="key-point">Key: An electron accelerated through 100 V has λ ≈ 0.123 nm — comparable to atomic spacing. This is why electron microscopes can image atoms.</div>
+
+        <!-- DE BROGLIE CALCULATOR -->
+        <div class="sim-box">
+          <div class="sim-title">de Broglie Wavelength Calculator</div>
+
+          <div class="slider-row">
+            <label>Particle type</label>
+            <select id="dbParticle" onchange="updateDB()" style="flex:1;max-width:220px;">
+              <option value="electron">Electron (9.109×10⁻³¹ kg)</option>
+              <option value="proton">Proton (1.673×10⁻²⁷ kg)</option>
+              <option value="neutron">Neutron (1.675×10⁻²⁷ kg)</option>
+              <option value="baseball">Baseball (0.145 kg)</option>
+            </select>
+          </div>
+
+          <div class="slider-row">
+            <label>Speed (m/s)</label>
+            <input type="range" id="dbSpeed" min="1" max="7" step="0.05" value="4" oninput="updateDB()">
+            <span class="slider-val" id="dbSpeedVal">10,000 m/s</span>
+          </div>
+
+          <div class="sim-output" id="dbOutput"></div>
+        </div>
+
+        <h3>Practice Problems</h3>
+        <div class="problems-grid">
+
+          <div class="problem">
+            <div class="problem-text">9. An electron moves at 2.00 × 10⁶ m/s. Find its de Broglie wavelength in nm.<br><span style="color:var(--text-dim);font-size:0.74rem">m_e = 9.109 × 10⁻³¹ kg</span></div>
+            <div class="input-row">
+              <input type="number" id="p3_1" placeholder="nm" step="0.001">
+              <button class="btn btn-primary" onclick="checkNum('p3_1', 0.364, 0.005, 'f3_1')">Check</button>
+            </div>
+            <div class="feedback" id="f3_1"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">10. A proton is accelerated through 1000 V. Find its de Broglie wavelength in pm.<br><span style="color:var(--text-dim);font-size:0.74rem">Use λ = h/√(2mKE), KE = eV = 1.602×10⁻¹⁶ J</span></div>
+            <div class="input-row">
+              <input type="number" id="p3_2" placeholder="pm" step="0.1">
+              <button class="btn btn-primary" onclick="checkNum('p3_2', 0.904, 0.02, 'f3_2')">Check</button>
+            </div>
+            <div class="feedback" id="f3_2"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">11. A 0.050 kg golf ball moves at 30 m/s. Find its de Broglie wavelength in meters. (×10⁻³⁴ m)</div>
+            <div class="input-row">
+              <input type="number" id="p3_3" placeholder="×10⁻³⁴ m" step="0.01">
+              <button class="btn btn-primary" onclick="checkNum('p3_3', 4.42, 0.05, 'f3_3')">Check</button>
+            </div>
+            <div class="feedback" id="f3_3"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">12. An electron has a de Broglie wavelength of 0.200 nm. What is its kinetic energy in eV?</div>
+            <div class="input-row">
+              <input type="number" id="p3_4" placeholder="eV" step="0.01">
+              <button class="btn btn-primary" onclick="checkNum('p3_4', 37.6, 0.5, 'f3_4')">Check</button>
+            </div>
+            <div class="feedback" id="f3_4"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 4: HEISENBERG UNCERTAINTY PRINCIPLE
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" id="sec4">
+    <div class="section-header" onclick="toggleSection('sec4')">
+      <div class="section-num">4</div>
+      <div class="section-title">Heisenberg Uncertainty Principle</div>
+      <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
+      </svg>
+    </div>
+    <div class="section-body" id="sec4-body">
+      <div class="section-body-inner">
+        <p class="subtitle">Werner Heisenberg (1927) showed that the wave nature of matter places fundamental limits on simultaneous measurements. This is not a limitation of instruments — it is a fundamental feature of reality. A perfectly localized particle would require infinite momentum uncertainty.</p>
+
+        <div class="formula-box">
+          <div class="f-title">Position–Momentum Uncertainty</div>
+          Δx · Δp ≥ ℏ/2<br>
+          <span style="color:var(--text-dim);font-size:0.76rem">ℏ = h/2π = 1.055 × 10⁻³⁴ J·s &nbsp;(reduced Planck constant)</span>
+        </div>
+
+        <div class="two-col">
+          <div class="formula-box green">
+            <div class="f-title">Energy–Time Uncertainty</div>
+            ΔE · Δt ≥ ℏ/2<br>
+            <span style="color:var(--text-dim);font-size:0.76rem">Short-lived states have broad energy</span>
+          </div>
+          <div class="formula-box pink">
+            <div class="f-title">Minimum Uncertainty (equality)</div>
+            Δp<sub>min</sub> = ℏ / (2·Δx)<br>
+            <span style="color:var(--text-dim);font-size:0.76rem">Gaussian wave packet achieves this</span>
+          </div>
+        </div>
+
+        <div class="key-point">Key: Zero-point energy — a particle in a box CANNOT have zero kinetic energy, because that would mean Δp = 0, which requires Δx → ∞ (delocalized everywhere).</div>
+        <div class="key-point">Key: The uncertainty principle explains why electrons don't spiral into the nucleus. A tightly confined electron (small Δx) would have enormous Δp and kinetic energy — this stabilizes the atom.</div>
+
+        <!-- UNCERTAINTY VISUALIZER -->
+        <div class="sim-box">
+          <div class="sim-title">Wave Packet Uncertainty Visualizer</div>
+          <p style="font-size:0.76rem;color:var(--text-dim);margin-bottom:12px;">Narrow packet in position space → broad spread in momentum space (Fourier transform relationship)</p>
+
+          <div class="slider-row">
+            <label>Position uncertainty Δx</label>
+            <input type="range" id="hupDx" min="0.1" max="3.0" step="0.05" value="1.0" oninput="updateHUP()">
+            <span class="slider-val" id="hupDxVal">1.00 (arb.)</span>
+          </div>
+
+          <canvas id="hupCanvas" width="600" height="200" style="width:100%;background:#1a1d24;border-radius:8px;border:1px solid var(--border);"></canvas>
+
+          <div class="sim-output" id="hupOutput"></div>
+        </div>
+
+        <h3>Practice Problems</h3>
+        <div class="problems-grid">
+
+          <div class="problem">
+            <div class="problem-text">13. An electron is confined to a region of width Δx = 1.00 × 10⁻¹⁰ m (≈ 1 Å). Find the minimum momentum uncertainty in kg·m/s. (×10⁻²⁴)</div>
+            <div class="input-row">
+              <input type="number" id="p4_1" placeholder="×10⁻²⁴ kg·m/s" step="0.01">
+              <button class="btn btn-primary" onclick="checkNum('p4_1', 5.27, 0.05, 'f4_1')">Check</button>
+            </div>
+            <div class="feedback" id="f4_1"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">14. A particle has Δp = 1.50 × 10⁻²⁸ kg·m/s. What is the minimum position uncertainty in nm?</div>
+            <div class="input-row">
+              <input type="number" id="p4_2" placeholder="nm" step="0.01">
+              <button class="btn btn-primary" onclick="checkNum('p4_2', 0.352, 0.005, 'f4_2')">Check</button>
+            </div>
+            <div class="feedback" id="f4_2"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">15. An excited atomic state has a lifetime of Δt = 2.0 × 10⁻⁸ s. Find the minimum energy uncertainty ΔE in eV. (×10⁻⁸)</div>
+            <div class="input-row">
+              <input type="number" id="p4_3" placeholder="×10⁻⁸ eV" step="0.01">
+              <button class="btn btn-primary" onclick="checkNum('p4_3', 3.29, 0.05, 'f4_3')">Check</button>
+            </div>
+            <div class="feedback" id="f4_3"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">16. An electron is localized to Δx = 0.050 nm. What is the minimum kinetic energy uncertainty in eV?<br><span style="color:var(--text-dim);font-size:0.74rem">Use KE = Δp²/2m with Δp = ℏ/(2·Δx)</span></div>
+            <div class="input-row">
+              <input type="number" id="p4_4" placeholder="eV" step="0.1">
+              <button class="btn btn-primary" onclick="checkNum('p4_4', 3.02, 0.1, 'f4_4')">Check</button>
+            </div>
+            <div class="feedback" id="f4_4"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 5: WAVE FUNCTIONS & PROBABILITY
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" id="sec5">
+    <div class="section-header" onclick="toggleSection('sec5')">
+      <div class="section-num">5</div>
+      <div class="section-title">Wave Functions &amp; Probability</div>
+      <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
+      </svg>
+    </div>
+    <div class="section-body" id="sec5-body">
+      <div class="section-body-inner">
+        <p class="subtitle">Erwin Schrödinger (1926) developed the wave equation for quantum mechanics. The wave function ψ(x,t) contains all information about a quantum system. Its squared magnitude |ψ|² gives the probability density of finding the particle at position x.</p>
+
+        <div class="formula-box">
+          <div class="f-title">Probability Density</div>
+          P(x) = |ψ(x)|² &nbsp;(probability per unit length)<br>
+          <span style="color:var(--text-dim);font-size:0.76rem">∫|ψ|² dx = 1 &nbsp;(normalization — particle must be somewhere)</span>
+        </div>
+
+        <div class="two-col">
+          <div class="formula-box green">
+            <div class="f-title">Particle in a Box — Energy Levels</div>
+            E<sub>n</sub> = n²h² / (8mL²)<br>
+            <span style="color:var(--text-dim);font-size:0.76rem">n = 1, 2, 3, ... &nbsp;(quantum number)<br>L = box length</span>
+          </div>
+          <div class="formula-box pink">
+            <div class="f-title">Wave Functions (in box)</div>
+            ψ<sub>n</sub>(x) = √(2/L) sin(nπx/L)<br>
+            <span style="color:var(--text-dim);font-size:0.76rem">Nodes at x=0 and x=L (walls)</span>
+          </div>
+        </div>
+
+        <div class="formula-box amber">
+          <div class="f-title">Quantum Tunneling</div>
+          Particles can pass through classically forbidden barriers — probability decays exponentially with barrier width and height. Explains: nuclear fusion in stars, alpha decay, tunnel diodes, scanning tunneling microscopes.
+        </div>
+
+        <div class="key-point">Key: Ground state (n=1) energy E₁ = h²/(8mL²) is the zero-point energy — a consequence of the uncertainty principle. The particle can never be at rest.</div>
+        <div class="key-point">Key: Energy levels scale as n², so E₂ = 4E₁, E₃ = 9E₁, E₄ = 16E₁. The gap between levels grows with n.</div>
+
+        <!-- PARTICLE IN A BOX VISUALIZER -->
+        <div class="sim-box">
+          <div class="sim-title">Particle in a Box — Energy Level Diagram</div>
+
+          <div class="slider-row">
+            <label>Box length L (nm)</label>
+            <input type="range" id="pibL" min="0.05" max="2.0" step="0.05" value="0.5" oninput="updatePIB()">
+            <span class="slider-val" id="pibLVal">0.50 nm</span>
+          </div>
+          <div class="slider-row">
+            <label>Particle</label>
+            <select id="pibParticle" onchange="updatePIB()" style="flex:1;max-width:200px;">
+              <option value="electron">Electron</option>
+              <option value="proton">Proton</option>
+            </select>
+          </div>
+
+          <canvas id="pibCanvas" width="600" height="280" style="width:100%;background:#1a1d24;border-radius:8px;border:1px solid var(--border);"></canvas>
+
+          <div class="sim-output" id="pibOutput"></div>
+        </div>
+
+        <h3>Practice Problems</h3>
+        <div class="problems-grid">
+
+          <div class="problem">
+            <div class="problem-text">17. An electron is in a 1D box of length L = 0.250 nm. Find the ground state energy E₁ in eV.</div>
+            <div class="input-row">
+              <input type="number" id="p5_1" placeholder="eV" step="0.01">
+              <button class="btn btn-primary" onclick="checkNum('p5_1', 6.02, 0.1, 'f5_1')">Check</button>
+            </div>
+            <div class="feedback" id="f5_1"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">18. For the same box (L = 0.250 nm), find E₃ in eV.</div>
+            <div class="input-row">
+              <input type="number" id="p5_2" placeholder="eV" step="0.1">
+              <button class="btn btn-primary" onclick="checkNum('p5_2', 54.2, 1.0, 'f5_2')">Check</button>
+            </div>
+            <div class="feedback" id="f5_2"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">19. A photon is emitted when an electron drops from n=3 to n=2 in a 1.00 nm box. Find the photon wavelength in nm.<br><span style="color:var(--text-dim);font-size:0.74rem">E₁ = 0.376 eV for L=1.00 nm</span></div>
+            <div class="input-row">
+              <input type="number" id="p5_3" placeholder="nm" step="0.1">
+              <button class="btn btn-primary" onclick="checkNum('p5_3', 665, 10, 'f5_3')">Check</button>
+            </div>
+            <div class="feedback" id="f5_3"></div>
+          </div>
+
+          <div class="problem">
+            <div class="problem-text">20. What box length L (in nm) would give an electron a first excited state (n=2) energy of exactly 1.00 eV?</div>
+            <div class="input-row">
+              <input type="number" id="p5_4" placeholder="nm" step="0.01">
+              <button class="btn btn-primary" onclick="checkNum('p5_4', 1.23, 0.02, 'f5_4')">Check</button>
+            </div>
+            <div class="feedback" id="f5_4"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 6: QUIZ
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" id="sec6">
+    <div class="section-header" onclick="toggleSection('sec6')">
+      <div class="section-num" style="background:var(--pink-dim);color:var(--pink);">Q</div>
+      <div class="section-title">10-Question Quiz — All Topics</div>
+      <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
+      </svg>
+    </div>
+    <div class="section-body" id="sec6-body">
+      <div class="section-body-inner">
+
+        <div class="quiz-score-board">
+          <div>
+            <div class="score-label">Current Score</div>
+            <div class="score-display" id="quizScore">0 / 10</div>
+          </div>
+          <button class="btn btn-primary" onclick="resetQuiz()">Reset Quiz</button>
+        </div>
+
+        <!-- Q1 -->
+        <div class="quiz-card" id="qcard1">
+          <div class="quiz-q">Q1. Light strikes a metal and ejects electrons. If the light intensity is doubled but the frequency stays the same, which of the following is true?</div>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb1','A')">A) The maximum kinetic energy of ejected electrons doubles</button>
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb1','B')">B) The number of ejected electrons doubles but KE<sub>max</sub> stays the same</button>
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb1','C')">C) No electrons are ejected because frequency hasn't changed</button>
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb1','D')">D) The stopping voltage doubles</button>
+          </div>
+          <div class="feedback" id="qfb1"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card" id="qcard2">
+          <div class="quiz-q">Q2. What is the work function of a metal whose threshold frequency is 1.10 × 10¹⁵ Hz?</div>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb2','A')">A) 2.36 eV</button>
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb2','B')">B) 3.58 eV</button>
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb2','C')">C) 4.55 eV</button>
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb2','D')">D) 5.12 eV</button>
+          </div>
+          <div class="feedback" id="qfb2"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card" id="qcard3">
+          <div class="quiz-q">Q3. In Compton scattering, the wavelength shift Δλ = (h/m<sub>e</sub>c)(1 − cosθ) is maximum when θ equals:</div>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'D','qfb3','A')">A) 0°</button>
+            <button class="mc-btn" onclick="checkMC(this,'D','qfb3','B')">B) 45°</button>
+            <button class="mc-btn" onclick="checkMC(this,'D','qfb3','C')">C) 90°</button>
+            <button class="mc-btn" onclick="checkMC(this,'D','qfb3','D')">D) 180°</button>
+          </div>
+          <div class="feedback" id="qfb3"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card" id="qcard4">
+          <div class="quiz-q">Q4. A photon has momentum p = h/λ. What is the momentum of a photon with wavelength 500 nm? (×10⁻²⁷ kg·m/s)</div>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb4','A')">A) 0.663 × 10⁻²⁷ kg·m/s</button>
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb4','B')">B) 1.326 × 10⁻²⁷ kg·m/s</button>
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb4','C')">C) 3.315 × 10⁻²⁷ kg·m/s</button>
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb4','D')">D) 6.63 × 10⁻²⁷ kg·m/s</button>
+          </div>
+          <div class="feedback" id="qfb4"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card" id="qcard5">
+          <div class="quiz-q">Q5. An electron and a proton have the same kinetic energy. Which has the longer de Broglie wavelength?</div>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'A','qfb5','A')">A) The electron, because λ = h/√(2mKE) and m<sub>e</sub> &lt; m<sub>p</sub></button>
+            <button class="mc-btn" onclick="checkMC(this,'A','qfb5','B')">B) The proton, because it is heavier and has more momentum</button>
+            <button class="mc-btn" onclick="checkMC(this,'A','qfb5','C')">C) They have the same wavelength since KE is equal</button>
+            <button class="mc-btn" onclick="checkMC(this,'A','qfb5','D')">D) The electron, because it moves faster and λ = h/(mv)</button>
+          </div>
+          <div class="feedback" id="qfb5"></div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-card" id="qcard6">
+          <div class="quiz-q">Q6. The Heisenberg Uncertainty Principle states that ΔxΔp ≥ ℏ/2. If the position of an electron is known to within 0.010 nm, the minimum momentum uncertainty is approximately:</div>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb6','A')">A) 1.055 × 10⁻²⁴ kg·m/s</button>
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb6','B')">B) 3.15 × 10⁻²⁴ kg·m/s</button>
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb6','C')">C) 5.27 × 10⁻²⁴ kg·m/s</button>
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb6','D')">D) 10.55 × 10⁻²⁴ kg·m/s</button>
+          </div>
+          <div class="feedback" id="qfb6"></div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="quiz-card" id="qcard7">
+          <div class="quiz-q">Q7. For a particle in a 1D infinite square well (box), what happens to the ground state energy if the box length is doubled?</div>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb7','A')">A) Energy doubles (E ∝ L)</button>
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb7','B')">B) Energy decreases to ¼ of its original value (E ∝ 1/L²)</button>
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb7','C')">C) Energy halves (E ∝ 1/L)</button>
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb7','D')">D) Energy stays the same</button>
+          </div>
+          <div class="feedback" id="qfb7"></div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="quiz-card" id="qcard8">
+          <div class="quiz-q">Q8. Wave-particle duality for electrons was first experimentally confirmed by:</div>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb8','A')">A) Compton (1923) — X-ray scattering off electrons</button>
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb8','B')">B) Einstein (1905) — photoelectric effect explanation</button>
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb8','C')">C) Davisson and Germer (1927) — electron diffraction from nickel</button>
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb8','D')">D) Bohr (1913) — hydrogen energy level model</button>
+          </div>
+          <div class="feedback" id="qfb8"></div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="quiz-card" id="qcard9">
+          <div class="quiz-q">Q9. Quantum tunneling is the phenomenon where a particle:</div>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb9','A')">A) Gains enough energy to classically overcome a barrier</button>
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb9','B')">B) Has a nonzero probability of passing through a classically forbidden barrier</button>
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb9','C')">C) Creates a tunnel through space by high-frequency oscillation</button>
+            <button class="mc-btn" onclick="checkMC(this,'B','qfb9','D')">D) Violates conservation of energy to cross a barrier</button>
+          </div>
+          <div class="feedback" id="qfb9"></div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="quiz-card" id="qcard10">
+          <div class="quiz-q">Q10. The n=3 energy level of an electron in a 0.500 nm box is closest to:</div>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb10','A')">A) 1.51 eV</button>
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb10','B')">B) 6.78 eV</button>
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb10','C')">C) 13.6 eV</button>
+            <button class="mc-btn" onclick="checkMC(this,'C','qfb10','D')">D) 27.2 eV</button>
+          </div>
+          <div class="feedback" id="qfb10"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+// ═══════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════
+const h    = 6.626e-34;   // Planck constant
+const hbar = h / (2 * Math.PI);
+const c    = 3e8;
+const me   = 9.109e-31;
+const mp   = 1.673e-27;
+const mn   = 1.675e-27;
+const e    = 1.602e-19;
+const lC   = h / (me * c); // Compton wavelength 2.426e-12
+
+// ═══════════════════════════════════════════════
+// SECTION TOGGLE
+// ═══════════════════════════════════════════════
+function toggleSection(id) {
+  const card = document.getElementById(id);
+  const body = document.getElementById(id + '-body');
+  const isOpen = card.classList.contains('open');
+  card.classList.toggle('open', !isOpen);
+  if (!isOpen) {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    // trigger simulators on first open
+    if (id === 'sec1') { setTimeout(updatePE, 100); }
+    if (id === 'sec3') { setTimeout(updateDB, 100); }
+    if (id === 'sec4') { setTimeout(updateHUP, 100); }
+    if (id === 'sec5') { setTimeout(updatePIB, 100); }
+  } else {
+    body.style.maxHeight = '0';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════════════════
+const sectionCount = 5;
+const completedSections = new Set();
+
+function updateProgress() {
+  const n = completedSections.size;
+  const pct = (n / sectionCount) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = n + ' / ' + sectionCount + ' sections';
+}
+
+// Track correct answers per section
+const sectionAnswers = {
+  sec1: { total: 4, correct: new Set() },
+  sec2: { total: 4, correct: new Set() },
+  sec3: { total: 4, correct: new Set() },
+  sec4: { total: 4, correct: new Set() },
+  sec5: { total: 4, correct: new Set() },
+};
+
+function markCorrect(sectionId, problemId) {
+  const s = sectionAnswers[sectionId];
+  if (!s) return;
+  s.correct.add(problemId);
+  if (s.correct.size >= s.total && !completedSections.has(sectionId)) {
+    completedSections.add(sectionId);
+    document.getElementById(sectionId).classList.add('completed');
+    // update body height in case content changed
+    const body = document.getElementById(sectionId + '-body');
+    if (body.style.maxHeight !== '0px' && body.style.maxHeight !== '') {
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+    updateProgress();
+  }
+}
+
+// ═══════════════════════════════════════════════
+// NUMERIC CHECK
+// ═══════════════════════════════════════════════
+// feedbackId-to-section mapping
+const fbToSection = {
+  f1_1:'sec1',f1_2:'sec1',f1_3:'sec1',f1_4:'sec1',
+  f2_1:'sec2',f2_2:'sec2',f2_3:'sec2',f2_4:'sec2',
+  f3_1:'sec3',f3_2:'sec3',f3_3:'sec3',f3_4:'sec3',
+  f4_1:'sec4',f4_2:'sec4',f4_3:'sec4',f4_4:'sec4',
+  f5_1:'sec5',f5_2:'sec5',f5_3:'sec5',f5_4:'sec5',
+};
+
+function checkNum(inputId, answer, tolerance, feedbackId) {
+  const val = parseFloat(document.getElementById(inputId).value);
+  const fb  = document.getElementById(feedbackId);
+  if (isNaN(val)) { showFeedback(fb, false, 'Enter a number first.'); return; }
+  const ok = Math.abs(val - answer) <= tolerance;
+  showFeedback(fb, ok, ok
+    ? 'Correct! ' + answer.toString()
+    : 'Not quite. Expected ≈ ' + answer + ' (tolerance ±' + tolerance + ')');
+  if (ok) markCorrect(fbToSection[feedbackId], inputId);
+}
+
+function showFeedback(el, correct, msg) {
+  el.textContent = correct ? '✓ ' + msg : '✗ ' + msg;
+  el.className = 'feedback ' + (correct ? 'correct' : 'incorrect');
+}
+
+// ═══════════════════════════════════════════════
+// MULTIPLE CHOICE CHECK
+// ═══════════════════════════════════════════════
+let quizScore = 0;
+const quizAnswered = new Set();
+
+function checkMC(btn, correct, feedbackId, chosen) {
+  const fb = document.getElementById(feedbackId);
+  const qNum = feedbackId.replace('qfb','');
+  if (quizAnswered.has(feedbackId)) return;
+  quizAnswered.add(feedbackId);
+
+  // disable all buttons in this card
+  const card = btn.closest('.quiz-card');
+  card.querySelectorAll('.mc-btn').forEach(b => {
+    b.style.pointerEvents = 'none';
+    const bChoice = b.getAttribute('onclick').match(/'([A-D])'\)$/)[1];
+    if (bChoice === correct) b.classList.add('correct-ans');
+  });
+
+  if (chosen === correct) {
+    btn.classList.add('correct-ans');
+    showFeedback(fb, true, 'Correct!');
+    quizScore++;
+  } else {
+    btn.classList.add('wrong-ans');
+    showFeedback(fb, false, 'Incorrect. The correct answer is ' + correct + '.');
+  }
+  document.getElementById('quizScore').textContent = quizScore + ' / 10';
+}
+
+function resetQuiz() {
+  quizScore = 0;
+  quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0 / 10';
+  for (let i = 1; i <= 10; i++) {
+    const fb = document.getElementById('qfb' + i);
+    if (fb) { fb.className = 'feedback'; fb.textContent = ''; }
+    const card = document.getElementById('qcard' + i);
+    if (card) {
+      card.querySelectorAll('.mc-btn').forEach(b => {
+        b.classList.remove('correct-ans', 'wrong-ans');
+        b.style.pointerEvents = '';
+      });
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+// SIMULATOR 1: PHOTOELECTRIC EFFECT
+// ═══════════════════════════════════════════════
+function updatePE() {
+  const freq = parseFloat(document.getElementById('peFreq').value) * 1e14;
+  const phi_eV = parseFloat(document.getElementById('pePhi').value);
+  document.getElementById('peFreqVal').textContent = (freq/1e14).toFixed(1) + ' ×10¹⁴ Hz';
+  document.getElementById('pePhiVal').textContent = phi_eV.toFixed(1) + ' eV';
+
+  const phi_J  = phi_eV * e;
+  const E_J    = h * freq;
+  const E_eV   = E_J / e;
+  const f0     = phi_J / h;
+  const emits  = E_J > phi_J;
+  const KE_eV  = emits ? (E_eV - phi_eV) : 0;
+  const Vstop  = emits ? KE_eV : 0;
+
+  // Draw
+  const canvas = document.getElementById('peCanvas');
+  const ctx    = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // Metal block
+  const metalX = 60, metalY = 40, metalW = 120, metalH = H - 60;
+  ctx.fillStyle = '#363b47';
+  ctx.fillRect(metalX, metalY, metalW, metalH);
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(metalX, metalY, metalW, metalH);
+  ctx.fillStyle = '#e2e4e9';
+  ctx.font = '11px JetBrains Mono,monospace';
+  ctx.fillText('Metal', metalX + metalW/2 - 18, H/2);
+  ctx.fillText('φ = ' + phi_eV.toFixed(1) + ' eV', metalX + metalW/2 - 30, H/2 + 16);
+
+  // Incoming photon beam (wave)
+  const waveColors = freq < 4.5e14 ? '#ef4444' : freq < 5.5e14 ? '#f59e0b' : freq < 7e14 ? '#22c55e' : '#6366f1';
+  ctx.strokeStyle = waveColors;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  const beamY = H/2;
+  for (let x = 5; x < metalX; x++) {
+    const y = beamY + 12 * Math.sin((x / 12) * Math.PI * 2);
+    x === 5 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Arrow on beam
+  ctx.fillStyle = waveColors;
+  ctx.beginPath();
+  ctx.moveTo(metalX - 2, beamY);
+  ctx.lineTo(metalX - 12, beamY - 5);
+  ctx.lineTo(metalX - 12, beamY + 5);
+  ctx.fill();
+
+  ctx.fillStyle = waveColors;
+  ctx.font = '10px JetBrains Mono,monospace';
+  ctx.fillText('E = ' + E_eV.toFixed(2) + ' eV', 8, 18);
+  ctx.fillText('f = ' + (freq/1e14).toFixed(1) + '×10¹⁴ Hz', 8, 32);
+
+  // Electrons or X
+  const eX = metalX + metalW + 10;
+  if (emits) {
+    // Draw emitted electrons
+    const numElec = Math.min(5, Math.ceil(KE_eV * 1.5 + 1));
+    for (let i = 0; i < numElec; i++) {
+      const ang = (-40 + i * 20) * Math.PI / 180;
+      const dist = 60 + i * 15;
+      const ex = eX + dist * Math.cos(ang);
+      const ey = beamY + dist * Math.sin(ang);
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath();
+      ctx.arc(ex, ey, 5, 0, 2*Math.PI);
+      ctx.fill();
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(eX, beamY);
+      ctx.lineTo(ex, ey);
+      ctx.stroke();
+      ctx.fillStyle = '#e2e4e9';
+      ctx.font = '9px JetBrains Mono,monospace';
+      if (i === 0) ctx.fillText('e⁻', ex + 7, ey + 4);
+    }
+    ctx.fillStyle = '#22c55e';
+    ctx.font = '11px JetBrains Mono,monospace';
+    ctx.fillText('EMISSION', W - 120, 20);
+  } else {
+    // X mark
+    ctx.strokeStyle = '#ec4899';
+    ctx.lineWidth = 3;
+    const cx = eX + 40, cy = beamY;
+    ctx.beginPath(); ctx.moveTo(cx-15,cy-15); ctx.lineTo(cx+15,cy+15); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx+15,cy-15); ctx.lineTo(cx-15,cy+15); ctx.stroke();
+    ctx.fillStyle = '#ec4899';
+    ctx.font = '11px JetBrains Mono,monospace';
+    ctx.fillText('NO EMISSION', W - 130, 20);
+    ctx.fillText('f < f₀', W - 80, 36);
+  }
+
+  // Work function bar
+  const barX = metalX + metalW + 10;
+  const barY = 12;
+  const barH = H - 28;
+  const phi_frac = phi_eV / 8;
+  const E_frac   = Math.min(E_eV / 8, 1);
+
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(barX + 150, barY, 30, barH);
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(barX + 150, barY, 30, barH);
+
+  // phi bar
+  ctx.fillStyle = 'rgba(245,158,11,0.4)';
+  ctx.fillRect(barX+150, barY + barH*(1-phi_frac), 30, barH*phi_frac);
+
+  // E bar
+  const eBarH = barH * E_frac;
+  ctx.fillStyle = emits ? 'rgba(34,197,94,0.4)' : 'rgba(236,72,153,0.4)';
+  ctx.fillRect(barX+152, barY + barH - eBarH, 26, eBarH);
+
+  ctx.fillStyle = '#f59e0b';
+  ctx.font = '9px JetBrains Mono,monospace';
+  ctx.fillText('φ', barX+156, barY + barH*(1-phi_frac) - 3);
+  ctx.fillStyle = emits ? '#22c55e' : '#ec4899';
+  ctx.fillText('E', barX+156, barY + 14);
+
+  // Output text
+  document.getElementById('peOutput').innerHTML = `
+    <span class="out-label">Photon energy:</span> <span class="out-val">${E_eV.toFixed(3)} eV</span> &nbsp;|&nbsp;
+    <span class="out-label">Work function:</span> <span class="out-val">${phi_eV.toFixed(2)} eV</span><br>
+    <span class="out-label">Threshold freq f₀:</span> <span class="out-val">${(f0/1e14).toFixed(2)} ×10¹⁴ Hz</span> &nbsp;|&nbsp;
+    <span class="out-label">Emission:</span> <span class="${emits?'out-status-on':'out-status-off'}">${emits?'YES':'NO'}</span><br>
+    ${emits ? `<span class="out-label">KE<sub>max</sub>:</span> <span class="out-val">${KE_eV.toFixed(4)} eV</span> &nbsp;|&nbsp; <span class="out-label">V<sub>stop</sub>:</span> <span class="out-val">${Vstop.toFixed(4)} V</span>` : '<span class="out-label" style="color:var(--pink)">Photon energy is below the work function — no electrons emitted.</span>'}
+  `;
+}
+
+// ═══════════════════════════════════════════════
+// SIMULATOR 2: DE BROGLIE
+// ═══════════════════════════════════════════════
+function updateDB() {
+  const particle = document.getElementById('dbParticle').value;
+  const logV = parseFloat(document.getElementById('dbSpeed').value);
+  const speed = Math.pow(10, logV); // 10^logV m/s
+
+  // Format speed display
+  let speedStr;
+  if (speed >= 1e6) speedStr = (speed/1e6).toFixed(2) + ' ×10⁶ m/s';
+  else if (speed >= 1e3) speedStr = (speed/1e3).toFixed(1) + ' km/s';
+  else speedStr = speed.toFixed(0) + ' m/s';
+  document.getElementById('dbSpeedVal').textContent = speedStr;
+
+  let mass;
+  switch(particle) {
+    case 'electron': mass = me; break;
+    case 'proton':   mass = mp; break;
+    case 'neutron':  mass = mn; break;
+    case 'baseball': mass = 0.145; break;
+  }
+
+  const p  = mass * speed;
+  const lm = h / p; // in meters
+  let lambdaStr, comparison;
+
+  if (lm > 1e-6) {
+    lambdaStr = (lm*1e6).toExponential(3) + ' μm';
+  } else if (lm > 1e-9) {
+    lambdaStr = (lm*1e9).toExponential(3) + ' nm';
+  } else if (lm > 1e-12) {
+    lambdaStr = (lm*1e12).toExponential(3) + ' pm';
+  } else {
+    lambdaStr = lm.toExponential(3) + ' m';
+  }
+
+  // Compare to atomic scale (0.1 nm = 1e-10 m)
+  const ratio = lm / 1e-10;
+  if (ratio > 100) comparison = 'Much LARGER than an atom — strong quantum behavior';
+  else if (ratio > 0.1) comparison = 'Similar to atomic scale — quantum effects significant';
+  else if (ratio > 1e-10) comparison = 'Much smaller than an atom — quantum effects negligible';
+  else comparison = 'Immeasurably small — purely classical object';
+
+  let quantumLevel, qColor;
+  if (lm > 1e-9) { quantumLevel = 'Very Quantum'; qColor = 'var(--green)'; }
+  else if (lm > 1e-12) { quantumLevel = 'Quantum'; qColor = 'var(--indigo)'; }
+  else if (lm > 1e-20) { quantumLevel = 'Barely Quantum'; qColor = 'var(--amber)'; }
+  else { quantumLevel = 'Classical'; qColor = 'var(--pink)'; }
+
+  document.getElementById('dbOutput').innerHTML = `
+    <span class="out-label">Mass:</span> <span class="out-val">${mass.toExponential(3)} kg</span> &nbsp;|&nbsp;
+    <span class="out-label">Speed:</span> <span class="out-val">${speedStr}</span><br>
+    <span class="out-label">Momentum p = mv:</span> <span class="out-val">${p.toExponential(3)} kg·m/s</span><br>
+    <span class="out-label">de Broglie λ = h/p:</span> <span class="out-val">${lambdaStr}</span><br>
+    <span class="out-label">Regime:</span> <span class="out-val" style="color:${qColor}">${quantumLevel}</span> — ${comparison}
+  `;
+}
+
+// ═══════════════════════════════════════════════
+// SIMULATOR 3: UNCERTAINTY PRINCIPLE WAVE PACKET
+// ═══════════════════════════════════════════════
+function updateHUP() {
+  const dx = parseFloat(document.getElementById('hupDx').value);
+  document.getElementById('hupDxVal').textContent = dx.toFixed(2) + ' (arb.)';
+
+  const dp_min = 0.5 / dx; // ℏ/2 / Δx in arbitrary units
+
+  const canvas = document.getElementById('hupCanvas');
+  const ctx    = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // Draw two panels
+  const panW = W/2 - 10;
+
+  // Labels
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '11px JetBrains Mono,monospace';
+  ctx.fillText('Position Space ψ(x)', 10, 18);
+  ctx.fillText('Momentum Space φ(p)', W/2 + 10, 18);
+
+  // Divider
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(W/2, 0); ctx.lineTo(W/2, H); ctx.stroke();
+
+  function drawGaussian(xOffset, sigma, color, label, panelW) {
+    const cx = xOffset + panelW/2;
+    const cy = H/2 + 10;
+    const amp = (H/2 - 40) * Math.min(1/sigma, 2.5);
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = color;
+    ctx.beginPath();
+    for (let px = xOffset + 4; px < xOffset + panelW - 4; px++) {
+      const xr = (px - cx) / (panelW * sigma * 0.18);
+      const y = cy - amp * Math.exp(-0.5 * xr * xr);
+      px === xOffset + 4 ? ctx.moveTo(px, y) : ctx.lineTo(px, y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Baseline
+    ctx.strokeStyle = '#363b47';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(xOffset+4, cy); ctx.lineTo(xOffset+panelW-4, cy); ctx.stroke();
+
+    // Width indicator
+    const halfW = panelW * sigma * 0.18 * 1.0;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4,3]);
+    ctx.beginPath();
+    ctx.moveTo(cx - halfW, cy - 10);
+    ctx.lineTo(cx - halfW, cy + 10);
+    ctx.moveTo(cx + halfW, cy - 10);
+    ctx.lineTo(cx + halfW, cy + 10);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(cx - halfW, cy);
+    ctx.lineTo(cx + halfW, cy);
+    ctx.stroke();
+
+    ctx.fillStyle = color;
+    ctx.font = '10px JetBrains Mono,monospace';
+    ctx.fillText(label, cx - 20, cy + 24);
+  }
+
+  drawGaussian(0,    dx,      '#6366f1', 'Δx = ' + dx.toFixed(2),          panW);
+  drawGaussian(W/2+10, 1/dx,  '#22c55e', 'Δp = ' + dp_min.toFixed(2),     panW);
+
+  document.getElementById('hupOutput').innerHTML = `
+    <span class="out-label">Position uncertainty Δx:</span> <span class="out-val">${dx.toFixed(2)} (arb. units)</span><br>
+    <span class="out-label">Minimum momentum uncertainty Δp:</span> <span class="out-val" style="color:var(--green)">${dp_min.toFixed(3)} (arb. units)</span><br>
+    <span class="out-label">Δx × Δp:</span> <span class="out-val">${(dx * dp_min).toFixed(3)}</span> &nbsp;≥&nbsp; <span style="color:var(--amber)">ℏ/2 = 0.500</span> ✓<br>
+    <span style="color:var(--text-dim);font-size:0.74rem">Narrow position → broad momentum | Narrow momentum → broad position</span>
+  `;
+}
+
+// ═══════════════════════════════════════════════
+// SIMULATOR 4: PARTICLE IN A BOX
+// ═══════════════════════════════════════════════
+function updatePIB() {
+  const L_nm   = parseFloat(document.getElementById('pibL').value);
+  const ptcl   = document.getElementById('pibParticle').value;
+  document.getElementById('pibLVal').textContent = L_nm.toFixed(2) + ' nm';
+
+  const L  = L_nm * 1e-9;
+  const m  = ptcl === 'electron' ? me : mp;
+  const E1 = (h * h) / (8 * m * L * L);
+  const E1_eV = E1 / e;
+
+  const energies = [1,2,3,4].map(n => ({ n, eV: n*n * E1_eV }));
+
+  const canvas = document.getElementById('pibCanvas');
+  const ctx    = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // Energy axis
+  const leftPad = 90, rightPad = 40, topPad = 20, botPad = 40;
+  const plotH = H - topPad - botPad;
+  const plotW = W - leftPad - rightPad;
+
+  // Max energy for scale
+  const maxE = energies[3].eV * 1.15;
+
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '10px JetBrains Mono,monospace';
+  ctx.fillText('Energy (eV)', 4, topPad + plotH/2);
+
+  // Axis
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(leftPad, topPad);
+  ctx.lineTo(leftPad, topPad + plotH);
+  ctx.lineTo(leftPad + plotW, topPad + plotH);
+  ctx.stroke();
+
+  // Box walls
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(leftPad + 40, topPad);
+  ctx.lineTo(leftPad + 40, topPad + plotH);
+  ctx.moveTo(leftPad + plotW - 40, topPad);
+  ctx.lineTo(leftPad + plotW - 40, topPad + plotH);
+  ctx.stroke();
+
+  ctx.fillStyle = '#6366f1';
+  ctx.font = '9px JetBrains Mono,monospace';
+  ctx.fillText('x=0', leftPad + 28, topPad + plotH + 16);
+  ctx.fillText('x=L', leftPad + plotW - 52, topPad + plotH + 16);
+  ctx.fillText('L = ' + L_nm.toFixed(2) + ' nm', leftPad + plotW/2 - 30, topPad + plotH + 30);
+
+  const colors = ['#6366f1','#22c55e','#ec4899','#f59e0b'];
+
+  energies.forEach(({ n, eV }) => {
+    const yE = topPad + plotH * (1 - eV / maxE);
+    const boxLeft  = leftPad + 40;
+    const boxRight = leftPad + plotW - 40;
+    const boxW     = boxRight - boxLeft;
+
+    // Energy level line
+    ctx.strokeStyle = colors[n-1];
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5,3]);
+    ctx.beginPath();
+    ctx.moveTo(boxLeft, yE);
+    ctx.lineTo(boxRight, yE);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Wave function ψ_n
+    ctx.strokeStyle = colors[n-1];
+    ctx.lineWidth = 1.5;
+    const wfAmp = Math.min(plotH * 0.08, (plotH / maxE) * E1_eV * 2);
+    ctx.beginPath();
+    for (let px = 0; px <= boxW; px++) {
+      const xFrac = px / boxW;
+      const y = yE - wfAmp * Math.sin(n * Math.PI * xFrac);
+      px === 0 ? ctx.moveTo(boxLeft + px, y) : ctx.lineTo(boxLeft + px, y);
+    }
+    ctx.stroke();
+
+    // Label
+    ctx.fillStyle = colors[n-1];
+    ctx.font = '10px JetBrains Mono,monospace';
+    ctx.fillText('n=' + n, leftPad + 4, yE + 4);
+    ctx.fillText(eV.toFixed(2) + ' eV', leftPad + 20, yE - 4);
+  });
+
+  document.getElementById('pibOutput').innerHTML = `
+    <span class="out-label">Particle:</span> <span class="out-val">${ptcl} (m = ${m.toExponential(3)} kg)</span><br>
+    <span class="out-label">Box length L:</span> <span class="out-val">${L_nm.toFixed(3)} nm</span><br>
+    <span class="out-label">E₁ (ground):</span> <span class="out-val" style="color:#6366f1">${energies[0].eV.toFixed(4)} eV</span> &nbsp;|&nbsp;
+    <span class="out-label">E₂:</span> <span class="out-val" style="color:#22c55e">${energies[1].eV.toFixed(4)} eV</span> &nbsp;|&nbsp;
+    <span class="out-label">E₃:</span> <span class="out-val" style="color:#ec4899">${energies[2].eV.toFixed(4)} eV</span> &nbsp;|&nbsp;
+    <span class="out-label">E₄:</span> <span class="out-val" style="color:#f59e0b">${energies[3].eV.toFixed(4)} eV</span><br>
+    <span style="color:var(--text-dim);font-size:0.74rem">Note: E_n = n² × E₁ — energy levels grow quadratically with quantum number</span>
+  `;
+}
+
+// ═══════════════════════════════════════════════
+// CANVAS RESIZE OBSERVER
+// ═══════════════════════════════════════════════
+function resizeCanvas(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  if (rect.width > 0) {
+    canvas.width  = rect.width * dpr;
+    canvas.height = parseInt(canvas.style.height || canvas.height) * dpr;
+    canvas.getContext('2d').scale(dpr, dpr);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  updateProgress();
+  // Open first section by default
+  toggleSection('sec1');
+});
+
+window.addEventListener('resize', () => {
+  // Redraw open simulators
+  const sec1open = document.getElementById('sec1').classList.contains('open');
+  const sec3open = document.getElementById('sec3').classList.contains('open');
+  const sec4open = document.getElementById('sec4').classList.contains('open');
+  const sec5open = document.getElementById('sec5').classList.contains('open');
+  if (sec1open) updatePE();
+  if (sec3open) updateDB();
+  if (sec4open) updateHUP();
+  if (sec5open) updatePIB();
+});
+</script>
+</body>
+</html>

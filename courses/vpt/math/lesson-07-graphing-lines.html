@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 07 -- Graphing Lines</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #262a33;
+    --border: #333a48;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── Progress Bar ── */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* ── Header ── */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── Collapsible Cards ── */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details[open] { border-color: var(--accent); }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .section-body {
+    padding: 1.25rem;
+  }
+
+  /* ── Typography ── */
+  h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent); }
+  h3 { font-size: 0.95rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: var(--text); }
+  p { margin-bottom: 0.75rem; font-size: 0.85rem; }
+  .dim { color: var(--text-dim); }
+  .accent { color: var(--accent); }
+  .green { color: var(--green); }
+  .pink { color: var(--pink); }
+  .orange { color: var(--orange); }
+
+  /* ── Math Display ── */
+  .math-block {
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    margin: 0.75rem 0;
+    font-size: 0.9rem;
+    text-align: center;
+    font-weight: 500;
+  }
+  .inline-code {
+    background: rgba(99,102,241,0.12);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: var(--accent);
+  }
+
+  /* ── SVG Graphs ── */
+  .graph-container {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 1rem 0;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .graph-container svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* ── Sliders ── */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.5rem 0;
+    font-size: 0.85rem;
+  }
+  .slider-row label {
+    min-width: 30px;
+    font-weight: 600;
+  }
+  .slider-row input[type="range"] {
+    flex: 1;
+    max-width: 300px;
+    accent-color: var(--accent);
+    height: 6px;
+  }
+  .slider-val {
+    min-width: 40px;
+    text-align: right;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  /* ── Controls ── */
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin: 0.75rem 0;
+  }
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+  }
+  .input-group label {
+    font-weight: 600;
+    min-width: 20px;
+  }
+  .input-group input[type="number"] {
+    width: 60px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    padding: 4px 6px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  .input-group input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  /* ── Practice Problems ── */
+  .practice-block {
+    background: rgba(0,0,0,0.15);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  .practice-block h3 {
+    margin-top: 0;
+  }
+  .q-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(51,58,72,0.5);
+  }
+  .q-item:last-child { border-bottom: none; }
+  .q-text {
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+  }
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .input-row input[type="text"] {
+    width: 120px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    padding: 4px 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+  .input-row input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .check-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .check-btn:hover { opacity: 0.85; }
+  .check-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .feedback {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    min-height: 1.2em;
+  }
+  .correct-fb { color: var(--green); }
+  .incorrect-fb { color: var(--pink); }
+
+  /* ── Examples Grid ── */
+  .examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .example-card {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    text-align: center;
+  }
+  .example-card .example-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    color: var(--text-dim);
+  }
+
+  /* ── Quiz ── */
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .quiz-score {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .quiz-problem {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: rgba(0,0,0,0.15);
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem.q-correct { border-color: var(--green); }
+  .quiz-problem.q-incorrect { border-color: var(--pink); }
+  #quizFinal {
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    background: rgba(99,102,241,0.08);
+    border-radius: var(--radius);
+    border: 1px solid rgba(99,102,241,0.3);
+  }
+  #finalScoreDisplay {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 6px 16px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 0.75rem;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* ── Step Animation ── */
+  .step-list {
+    list-style: none;
+    margin: 0.75rem 0;
+  }
+  .step-list li {
+    padding: 0.4rem 0 0.4rem 1.5rem;
+    position: relative;
+    font-size: 0.85rem;
+    opacity: 0.35;
+    transition: opacity 0.4s;
+  }
+  .step-list li.active { opacity: 1; }
+  .step-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.4s;
+  }
+  .step-list li.active::before { background: var(--accent); }
+
+  /* ── Info tag ── */
+  .info-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(99,102,241,0.15);
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.15rem; }
+    summary { font-size: 0.9rem; padding: 0.85rem 1rem; }
+    .section-body { padding: 1rem; }
+    .examples-grid { grid-template-columns: repeat(2, 1fr); }
+    .slider-row input[type="range"] { max-width: 180px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar">
+  <div class="seg" data-section="0"></div>
+  <div class="seg" data-section="1"></div>
+  <div class="seg" data-section="2"></div>
+  <div class="seg" data-section="3"></div>
+  <div class="seg" data-section="4"></div>
+  <div class="seg" data-section="5"></div>
+</div>
+
+<h1>Week 4: Graphing Lines</h1>
+<p class="subtitle">Lesson 07 -- Slope, intercepts, and the many forms of linear equations</p>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 1: What Is Slope? -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<details id="section0" open>
+  <summary>1. What Is Slope?</summary>
+  <div class="section-body">
+    <p>Slope measures the <strong class="accent">steepness</strong> of a line. It tells you how much a line rises (or falls) for every unit it moves to the right.</p>
+
+    <div class="math-block">
+      slope = rise / run = &Delta;y / &Delta;x = (y&#8322; &minus; y&#8321;) / (x&#8322; &minus; x&#8321;)
+    </div>
+
+    <p class="dim">Drag the two points below to explore how slope changes.</p>
+
+    <div class="graph-container" id="slopeGraphWrap">
+      <svg id="slopeGraph" viewBox="0 0 400 400" width="400" height="400"></svg>
+    </div>
+
+    <div class="math-block" id="slopeReadout">
+      Slope = rise/run = <span class="green">0</span> / <span class="orange">0</span> = <span class="accent">0</span>
+    </div>
+
+    <h3>Visual Examples</h3>
+    <div class="examples-grid" id="slopeExamples">
+      <!-- Filled by JS -->
+    </div>
+
+    <div class="practice-block">
+      <h3>Practice</h3>
+      <div id="slopePractice"></div>
+    </div>
+  </div>
+</details>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 2: Slope-Intercept Form -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<details id="section1">
+  <summary>2. Slope-Intercept Form: y = mx + b</summary>
+  <div class="section-body">
+    <p>The most common way to write a linear equation. <span class="inline-code">m</span> is the slope, <span class="inline-code">b</span> is the y-intercept (where the line crosses the y-axis).</p>
+
+    <div class="math-block" id="sifEquation">y = 1.0x + 0.0</div>
+
+    <div class="slider-row">
+      <label>m:</label>
+      <input type="range" id="sifM" min="-5" max="5" step="0.5" value="1">
+      <span class="slider-val" id="sifMVal">1.0</span>
+    </div>
+    <div class="slider-row">
+      <label>b:</label>
+      <input type="range" id="sifB" min="-5" max="5" step="0.5" value="0">
+      <span class="slider-val" id="sifBVal">0.0</span>
+    </div>
+
+    <div class="graph-container">
+      <svg id="sifGraph" viewBox="0 0 400 400" width="400" height="400"></svg>
+    </div>
+
+    <div class="practice-block">
+      <h3>Practice</h3>
+      <div id="sifPractice"></div>
+    </div>
+  </div>
+</details>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 3: Point-Slope Form -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<details id="section2">
+  <summary>3. Point-Slope Form</summary>
+  <div class="section-body">
+    <p>When you know one point and the slope, use point-slope form:</p>
+
+    <div class="math-block">y &minus; y&#8321; = m(x &minus; x&#8321;)</div>
+
+    <p class="dim">Click anywhere on the grid to place a point, then adjust the slope slider. The line will pivot around your chosen point.</p>
+
+    <div class="slider-row">
+      <label>m:</label>
+      <input type="range" id="psM" min="-5" max="5" step="0.5" value="1">
+      <span class="slider-val" id="psMVal">1.0</span>
+    </div>
+
+    <div class="math-block" id="psEquation">y &minus; 0 = 1.0(x &minus; 0)</div>
+
+    <div class="graph-container">
+      <svg id="psGraph" viewBox="0 0 400 400" width="400" height="400"></svg>
+    </div>
+
+    <h3>Converting Point-Slope to Slope-Intercept</h3>
+    <p class="dim">Watch the step-by-step conversion. The values update based on the point and slope above.</p>
+
+    <ul class="step-list" id="psSteps">
+      <li class="active" id="psStep0">Start: y &minus; y&#8321; = m(x &minus; x&#8321;)</li>
+      <li id="psStep1">Distribute: y &minus; y&#8321; = mx &minus; mx&#8321;</li>
+      <li id="psStep2">Add y&#8321;: y = mx &minus; mx&#8321; + y&#8321;</li>
+      <li id="psStep3">Simplify: y = mx + b</li>
+    </ul>
+    <button class="check-btn" id="psAnimBtn" style="margin-top:0.5rem;">Animate Steps</button>
+
+    <div class="practice-block">
+      <h3>Practice</h3>
+      <div id="psPractice"></div>
+    </div>
+  </div>
+</details>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 4: Standard Form -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<details id="section3">
+  <summary>4. Standard Form: Ax + By = C</summary>
+  <div class="section-body">
+    <p>Standard form is written as <span class="inline-code">Ax + By = C</span>, where A, B, and C are integers and A is non-negative.</p>
+
+    <div class="controls-row">
+      <div class="input-group">
+        <label>A:</label>
+        <input type="number" id="sfA" value="2" step="1">
+      </div>
+      <div class="input-group">
+        <label>B:</label>
+        <input type="number" id="sfB" value="3" step="1">
+      </div>
+      <div class="input-group">
+        <label>C:</label>
+        <input type="number" id="sfC" value="6" step="1">
+      </div>
+    </div>
+
+    <div class="math-block" id="sfDisplay">
+      <div>Standard: 2x + 3y = 6</div>
+      <div style="margin-top:0.3rem;font-size:0.8rem;color:var(--text-dim);">Slope-Intercept: y = -0.67x + 2.00</div>
+    </div>
+
+    <div class="graph-container">
+      <svg id="sfGraph" viewBox="0 0 400 400" width="400" height="400"></svg>
+    </div>
+
+    <div class="practice-block">
+      <h3>Practice</h3>
+      <div id="sfPractice"></div>
+    </div>
+  </div>
+</details>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 5: Parallel & Perpendicular Lines -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<details id="section4">
+  <summary>5. Parallel & Perpendicular Lines</summary>
+  <div class="section-body">
+    <h3>Parallel Lines</h3>
+    <p>Parallel lines have the <strong class="green">same slope</strong> but different y-intercepts. They never intersect.</p>
+
+    <div class="slider-row">
+      <label>m:</label>
+      <input type="range" id="parM" min="-5" max="5" step="0.5" value="1">
+      <span class="slider-val" id="parMVal">1.0</span>
+    </div>
+    <div class="slider-row">
+      <label>b&#8321;:</label>
+      <input type="range" id="parB1" min="-5" max="5" step="0.5" value="2">
+      <span class="slider-val" id="parB1Val">2.0</span>
+    </div>
+    <div class="slider-row">
+      <label>b&#8322;:</label>
+      <input type="range" id="parB2" min="-5" max="5" step="0.5" value="-1">
+      <span class="slider-val" id="parB2Val">-1.0</span>
+    </div>
+
+    <div class="graph-container">
+      <svg id="parGraph" viewBox="0 0 400 400" width="400" height="400"></svg>
+    </div>
+
+    <h3>Perpendicular Lines</h3>
+    <p>Perpendicular lines meet at a <strong class="pink">right angle</strong>. Their slopes are negative reciprocals: <span class="inline-code">m&#8321; &times; m&#8322; = &minus;1</span></p>
+
+    <div class="slider-row">
+      <label>m&#8321;:</label>
+      <input type="range" id="perpM" min="-5" max="5" step="0.5" value="2">
+      <span class="slider-val" id="perpMVal">2.0</span>
+    </div>
+
+    <div class="math-block" id="perpReadout">
+      m&#8321; = 2.0 &rarr; m&#8322; = -0.5 &nbsp; (m&#8321; &times; m&#8322; = -1)
+    </div>
+
+    <div class="graph-container">
+      <svg id="perpGraph" viewBox="0 0 400 400" width="400" height="400"></svg>
+    </div>
+
+    <div class="practice-block">
+      <h3>Practice</h3>
+      <div id="ppPractice"></div>
+    </div>
+  </div>
+</details>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 6: Quick Quiz -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<details id="section5">
+  <summary>6. Quick Quiz</summary>
+  <div class="section-body">
+    <div class="quiz-header">
+      <div>
+        <span class="info-tag">10 Problems</span>
+        <p class="dim" id="quizProgressText" style="margin:0;">Answer all 10 to see your final score.</p>
+      </div>
+      <div class="quiz-score">Score: <span id="quizScore">0</span></div>
+    </div>
+    <div id="quizContainer"></div>
+    <div id="quizFinal" style="display:none;">
+      <div id="finalScoreDisplay"></div>
+      <div id="finalMsg" style="font-size:0.85rem;color:var(--text-dim);"></div>
+      <button class="reset-btn" onclick="resetQuiz()">Retake Quiz</button>
+    </div>
+  </div>
+</details>
+
+<script>
+// ═══════════════════════════════════════════════
+// UTILITY: SVG Graph Builder
+// ═══════════════════════════════════════════════
+const NS = 'http://www.w3.org/2000/svg';
+
+function createGrid(svgId, opts = {}) {
+  const svg = document.getElementById(svgId);
+  svg.innerHTML = '';
+  const size = 400;
+  const range = opts.range || 10;
+  const step = size / (range * 2);
+  const cx = size / 2, cy = size / 2;
+
+  // Background
+  const bg = document.createElementNS(NS, 'rect');
+  bg.setAttribute('width', size);
+  bg.setAttribute('height', size);
+  bg.setAttribute('fill', '#1a1d24');
+  svg.appendChild(bg);
+
+  // Grid lines
+  for (let i = -range; i <= range; i++) {
+    const x = cx + i * step;
+    const y = cy - i * step;
+    // Vertical
+    const vl = document.createElementNS(NS, 'line');
+    vl.setAttribute('x1', x); vl.setAttribute('y1', 0);
+    vl.setAttribute('x2', x); vl.setAttribute('y2', size);
+    vl.setAttribute('stroke', i === 0 ? '#555d6e' : '#2a2e38');
+    vl.setAttribute('stroke-width', i === 0 ? 1.5 : 0.5);
+    svg.appendChild(vl);
+    // Horizontal
+    const hl = document.createElementNS(NS, 'line');
+    hl.setAttribute('x1', 0); hl.setAttribute('y1', y);
+    hl.setAttribute('x2', size); hl.setAttribute('y2', y);
+    hl.setAttribute('stroke', i === 0 ? '#555d6e' : '#2a2e38');
+    hl.setAttribute('stroke-width', i === 0 ? 1.5 : 0.5);
+    svg.appendChild(hl);
+
+    // Labels
+    if (i !== 0 && i % 2 === 0) {
+      const xl = document.createElementNS(NS, 'text');
+      xl.setAttribute('x', x); xl.setAttribute('y', cy + 14);
+      xl.setAttribute('text-anchor', 'middle');
+      xl.setAttribute('fill', '#5a6270'); xl.setAttribute('font-size', '9');
+      xl.setAttribute('font-family', 'JetBrains Mono, monospace');
+      xl.textContent = i;
+      svg.appendChild(xl);
+
+      const yl = document.createElementNS(NS, 'text');
+      yl.setAttribute('x', cx - 10); yl.setAttribute('y', y + 3);
+      yl.setAttribute('text-anchor', 'end');
+      yl.setAttribute('fill', '#5a6270'); yl.setAttribute('font-size', '9');
+      yl.setAttribute('font-family', 'JetBrains Mono, monospace');
+      yl.textContent = i;
+      svg.appendChild(yl);
+    }
+  }
+
+  return { svg, size, range, step, cx, cy };
+}
+
+function toSvg(grid, x, y) {
+  return { x: grid.cx + x * grid.step, y: grid.cy - y * grid.step };
+}
+
+function toGrid(grid, sx, sy) {
+  return { x: (sx - grid.cx) / grid.step, y: (grid.cy - sy) / grid.step };
+}
+
+function snapTo(val, snap) {
+  return Math.round(val / snap) * snap;
+}
+
+function drawLine(grid, m, b, color, width, id) {
+  const { svg, size, range } = grid;
+  let x1 = -range, y1 = m * x1 + b;
+  let x2 = range, y2 = m * x2 + b;
+  const p1 = toSvg(grid, x1, y1);
+  const p2 = toSvg(grid, x2, y2);
+  const line = document.createElementNS(NS, 'line');
+  line.setAttribute('x1', p1.x); line.setAttribute('y1', p1.y);
+  line.setAttribute('x2', p2.x); line.setAttribute('y2', p2.y);
+  line.setAttribute('stroke', color);
+  line.setAttribute('stroke-width', width || 2);
+  if (id) line.setAttribute('id', id);
+  svg.appendChild(line);
+  return line;
+}
+
+function drawVerticalLine(grid, x, color, width, id) {
+  const { svg } = grid;
+  const p1 = toSvg(grid, x, -grid.range);
+  const p2 = toSvg(grid, x, grid.range);
+  const line = document.createElementNS(NS, 'line');
+  line.setAttribute('x1', p1.x); line.setAttribute('y1', p1.y);
+  line.setAttribute('x2', p2.x); line.setAttribute('y2', p2.y);
+  line.setAttribute('stroke', color);
+  line.setAttribute('stroke-width', width || 2);
+  if (id) line.setAttribute('id', id);
+  svg.appendChild(line);
+  return line;
+}
+
+function drawPoint(grid, x, y, color, radius, label) {
+  const { svg } = grid;
+  const p = toSvg(grid, x, y);
+  const c = document.createElementNS(NS, 'circle');
+  c.setAttribute('cx', p.x); c.setAttribute('cy', p.y);
+  c.setAttribute('r', radius || 5);
+  c.setAttribute('fill', color);
+  svg.appendChild(c);
+
+  if (label) {
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', p.x + 10); t.setAttribute('y', p.y - 10);
+    t.setAttribute('fill', color);
+    t.setAttribute('font-size', '11');
+    t.setAttribute('font-family', 'JetBrains Mono, monospace');
+    t.setAttribute('font-weight', '600');
+    t.textContent = label;
+    svg.appendChild(t);
+  }
+  return c;
+}
+
+// ═══════════════════════════════════════════════
+// PROGRESS TRACKING
+// ═══════════════════════════════════════════════
+const sectionInteracted = [false, false, false, false, false, false];
+
+function trackInteraction(section) {
+  if (!sectionInteracted[section]) {
+    sectionInteracted[section] = true;
+    updateProgress();
+  }
+}
+
+function updateProgress() {
+  const segs = document.querySelectorAll('.progress-bar .seg');
+  segs.forEach((seg, i) => {
+    if (sectionInteracted[i]) seg.classList.add('done');
+  });
+}
+
+// ═══════════════════════════════════════════════
+// SECTION 1: What Is Slope?
+// ═══════════════════════════════════════════════
+let slopeGrid, dragPoint = null;
+let slopePt1 = { x: -3, y: -2 }, slopePt2 = { x: 4, y: 3 };
+
+function initSlopeGraph() {
+  slopeGrid = createGrid('slopeGraph');
+  renderSlope();
+}
+
+function renderSlope() {
+  // Clear and redraw grid
+  slopeGrid = createGrid('slopeGraph');
+  const g = slopeGrid;
+
+  const rise = slopePt2.y - slopePt1.y;
+  const run = slopePt2.x - slopePt1.x;
+
+  // Rise segment (vertical, green)
+  const riseStart = toSvg(g, slopePt2.x, slopePt1.y);
+  const riseEnd = toSvg(g, slopePt2.x, slopePt2.y);
+  const riseLine = document.createElementNS(NS, 'line');
+  riseLine.setAttribute('x1', riseStart.x); riseLine.setAttribute('y1', riseStart.y);
+  riseLine.setAttribute('x2', riseEnd.x); riseLine.setAttribute('y2', riseEnd.y);
+  riseLine.setAttribute('stroke', '#22c55e');
+  riseLine.setAttribute('stroke-width', 2.5);
+  riseLine.setAttribute('stroke-dasharray', '6,3');
+  g.svg.appendChild(riseLine);
+
+  // Run segment (horizontal, amber)
+  const runStart = toSvg(g, slopePt1.x, slopePt1.y);
+  const runEnd = toSvg(g, slopePt2.x, slopePt1.y);
+  const runLine = document.createElementNS(NS, 'line');
+  runLine.setAttribute('x1', runStart.x); runLine.setAttribute('y1', runStart.y);
+  runLine.setAttribute('x2', runEnd.x); runLine.setAttribute('y2', runEnd.y);
+  runLine.setAttribute('stroke', '#f59e0b');
+  runLine.setAttribute('stroke-width', 2.5);
+  runLine.setAttribute('stroke-dasharray', '6,3');
+  g.svg.appendChild(runLine);
+
+  // Rise label
+  if (Math.abs(rise) > 0.5) {
+    const rMid = toSvg(g, slopePt2.x, (slopePt1.y + slopePt2.y) / 2);
+    const rLabel = document.createElementNS(NS, 'text');
+    rLabel.setAttribute('x', rMid.x + 10); rLabel.setAttribute('y', rMid.y + 4);
+    rLabel.setAttribute('fill', '#22c55e'); rLabel.setAttribute('font-size', '11');
+    rLabel.setAttribute('font-family', 'JetBrains Mono, monospace');
+    rLabel.setAttribute('font-weight', '600');
+    rLabel.textContent = 'rise=' + rise;
+    g.svg.appendChild(rLabel);
+  }
+
+  // Run label
+  if (Math.abs(run) > 0.5) {
+    const rnMid = toSvg(g, (slopePt1.x + slopePt2.x) / 2, slopePt1.y);
+    const rnLabel = document.createElementNS(NS, 'text');
+    rnLabel.setAttribute('x', rnMid.x); rnLabel.setAttribute('y', rnMid.y + 16);
+    rnLabel.setAttribute('text-anchor', 'middle');
+    rnLabel.setAttribute('fill', '#f59e0b'); rnLabel.setAttribute('font-size', '11');
+    rnLabel.setAttribute('font-family', 'JetBrains Mono, monospace');
+    rnLabel.setAttribute('font-weight', '600');
+    rnLabel.textContent = 'run=' + run;
+    g.svg.appendChild(rnLabel);
+  }
+
+  // Main line through both points
+  if (run !== 0) {
+    const m = rise / run;
+    const b = slopePt1.y - m * slopePt1.x;
+    drawLine(g, m, b, '#6366f1', 2);
+  } else {
+    drawVerticalLine(g, slopePt1.x, '#6366f1', 2);
+  }
+
+  // Draggable point 1
+  const dp1 = drawPoint(g, slopePt1.x, slopePt1.y, '#ec4899', 8,
+    '(' + slopePt1.x + ',' + slopePt1.y + ')');
+  dp1.style.cursor = 'grab';
+  dp1.setAttribute('data-point', '1');
+
+  // Draggable point 2
+  const dp2 = drawPoint(g, slopePt2.x, slopePt2.y, '#ec4899', 8,
+    '(' + slopePt2.x + ',' + slopePt2.y + ')');
+  dp2.style.cursor = 'grab';
+  dp2.setAttribute('data-point', '2');
+
+  // Update readout
+  let slopeStr;
+  if (run === 0) {
+    slopeStr = 'Slope = rise/run = <span class="green">' + rise + '</span> / <span class="orange">0</span> = <span class="pink">undefined</span>';
+  } else {
+    const sVal = rise / run;
+    const sDisp = Number.isInteger(sVal) ? sVal : sVal.toFixed(2);
+    slopeStr = 'Slope = rise/run = <span class="green">' + rise + '</span> / <span class="orange">' + run + '</span> = <span class="accent">' + sDisp + '</span>';
+  }
+  document.getElementById('slopeReadout').innerHTML = slopeStr;
+}
+
+function initSlopeDrag() {
+  const svg = document.getElementById('slopeGraph');
+
+  function getCoords(e) {
+    const rect = svg.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const scale = 400 / rect.width;
+    const sx = (clientX - rect.left) * scale;
+    const sy = (clientY - rect.top) * scale;
+    return toGrid(slopeGrid, sx, sy);
+  }
+
+  function onDown(e) {
+    const target = e.target;
+    if (target.tagName === 'circle' && target.getAttribute('data-point')) {
+      dragPoint = target.getAttribute('data-point');
+      e.preventDefault();
+      trackInteraction(0);
+    }
+  }
+
+  function onMove(e) {
+    if (!dragPoint) return;
+    e.preventDefault();
+    const gp = getCoords(e);
+    const snapped = { x: snapTo(gp.x, 1), y: snapTo(gp.y, 1) };
+    snapped.x = Math.max(-9, Math.min(9, snapped.x));
+    snapped.y = Math.max(-9, Math.min(9, snapped.y));
+
+    if (dragPoint === '1') { slopePt1 = snapped; }
+    else { slopePt2 = snapped; }
+    renderSlope();
+  }
+
+  function onUp() { dragPoint = null; }
+
+  svg.addEventListener('mousedown', onDown);
+  svg.addEventListener('mousemove', onMove);
+  svg.addEventListener('mouseup', onUp);
+  svg.addEventListener('mouseleave', onUp);
+  svg.addEventListener('touchstart', onDown, { passive: false });
+  svg.addEventListener('touchmove', onMove, { passive: false });
+  svg.addEventListener('touchend', onUp);
+}
+
+function initSlopeExamples() {
+  const examples = [
+    { label: 'Positive Slope', m: 2, b: -1, color: '#22c55e' },
+    { label: 'Negative Slope', m: -1.5, b: 3, color: '#ec4899' },
+    { label: 'Zero Slope', m: 0, b: 1, color: '#f59e0b' },
+    { label: 'Undefined Slope', m: null, b: null, color: '#6366f1' }
+  ];
+
+  const container = document.getElementById('slopeExamples');
+  examples.forEach((ex, i) => {
+    const card = document.createElement('div');
+    card.className = 'example-card';
+    const svgId = 'slopeEx' + i;
+    card.innerHTML = '<div class="graph-container" style="margin:0;border:none;"><svg id="' + svgId + '" viewBox="0 0 160 160" width="160" height="160"></svg></div><div class="example-label">' + ex.label + '</div>';
+    container.appendChild(card);
+
+    setTimeout(() => {
+      const g = createMiniGrid(svgId, 160);
+      if (ex.m === null) {
+        // Vertical line
+        drawMiniVertical(g, 0, ex.color);
+      } else {
+        drawMiniLine(g, ex.m, ex.m === 0 ? ex.b : ex.b, ex.color);
+      }
+    }, 0);
+  });
+}
+
+function createMiniGrid(svgId, sz) {
+  const svg = document.getElementById(svgId);
+  svg.innerHTML = '';
+  const range = 5;
+  const step = sz / (range * 2);
+  const cx = sz / 2, cy = sz / 2;
+
+  const bg = document.createElementNS(NS, 'rect');
+  bg.setAttribute('width', sz); bg.setAttribute('height', sz);
+  bg.setAttribute('fill', '#1a1d24');
+  svg.appendChild(bg);
+
+  // Axes only
+  const xAxis = document.createElementNS(NS, 'line');
+  xAxis.setAttribute('x1', 0); xAxis.setAttribute('y1', cy);
+  xAxis.setAttribute('x2', sz); xAxis.setAttribute('y2', cy);
+  xAxis.setAttribute('stroke', '#444b58'); xAxis.setAttribute('stroke-width', 1);
+  svg.appendChild(xAxis);
+
+  const yAxis = document.createElementNS(NS, 'line');
+  yAxis.setAttribute('x1', cx); yAxis.setAttribute('y1', 0);
+  yAxis.setAttribute('x2', cx); yAxis.setAttribute('y2', sz);
+  yAxis.setAttribute('stroke', '#444b58'); yAxis.setAttribute('stroke-width', 1);
+  svg.appendChild(yAxis);
+
+  return { svg, size: sz, range, step, cx, cy };
+}
+
+function drawMiniLine(g, m, b, color) {
+  const x1 = -g.range, y1 = m * x1 + b;
+  const x2 = g.range, y2 = m * x2 + b;
+  const p1 = { x: g.cx + x1 * g.step, y: g.cy - y1 * g.step };
+  const p2 = { x: g.cx + x2 * g.step, y: g.cy - y2 * g.step };
+  const line = document.createElementNS(NS, 'line');
+  line.setAttribute('x1', p1.x); line.setAttribute('y1', p1.y);
+  line.setAttribute('x2', p2.x); line.setAttribute('y2', p2.y);
+  line.setAttribute('stroke', color); line.setAttribute('stroke-width', 2.5);
+  g.svg.appendChild(line);
+}
+
+function drawMiniVertical(g, x, color) {
+  const px = g.cx + x * g.step;
+  const line = document.createElementNS(NS, 'line');
+  line.setAttribute('x1', px); line.setAttribute('y1', 0);
+  line.setAttribute('x2', px); line.setAttribute('y2', g.size);
+  line.setAttribute('stroke', color); line.setAttribute('stroke-width', 2.5);
+  g.svg.appendChild(line);
+}
+
+// Slope practice problems
+const slopePracticeProblems = [
+  { q: 'Find the slope between (1, 2) and (4, 8)', a: '2', hint: '(8-2)/(4-1) = 6/3 = 2' },
+  { q: 'Find the slope between (-2, 5) and (3, -5)', a: '-2', hint: '(-5-5)/(3-(-2)) = -10/5 = -2' },
+  { q: 'Find the slope between (4, 3) and (4, 7)', a: 'undefined', hint: 'x values are the same: (7-3)/(4-4) = 4/0 = undefined' }
+];
+
+function initSlopePractice() {
+  const container = document.getElementById('slopePractice');
+  slopePracticeProblems.forEach((prob, i) => {
+    const div = document.createElement('div');
+    div.className = 'q-item';
+    div.innerHTML = '<div class="q-text">' + (i + 1) + '. ' + prob.q + '</div>' +
+      '<div class="input-row"><span>slope =</span> ' +
+      '<input type="text" id="slope-p-' + i + '" placeholder="?">' +
+      '<button class="check-btn" onclick="checkSlopePractice(' + i + ')">Check</button></div>' +
+      '<div class="feedback" id="slope-fb-' + i + '"></div>';
+    container.appendChild(div);
+  });
+}
+
+function checkSlopePractice(i) {
+  const input = document.getElementById('slope-p-' + i);
+  const fb = document.getElementById('slope-fb-' + i);
+  const val = input.value.trim().toLowerCase();
+  const correct = slopePracticeProblems[i].a;
+
+  if (!val) { fb.textContent = 'Enter a value.'; fb.className = 'feedback incorrect-fb'; return; }
+
+  input.disabled = true;
+  input.closest('.input-row').querySelector('.check-btn').disabled = true;
+  trackInteraction(0);
+
+  if (val === correct || (correct !== 'undefined' && Math.abs(parseFloat(val) - parseFloat(correct)) < 0.01)) {
+    fb.textContent = 'Correct!';
+    fb.className = 'feedback correct-fb';
+  } else {
+    fb.textContent = 'Incorrect. ' + slopePracticeProblems[i].hint;
+    fb.className = 'feedback incorrect-fb';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// SECTION 2: Slope-Intercept Form
+// ═══════════════════════════════════════════════
+let sifGrid;
+
+function initSIF() {
+  sifGrid = createGrid('sifGraph');
+  renderSIF();
+
+  document.getElementById('sifM').addEventListener('input', renderSIF);
+  document.getElementById('sifB').addEventListener('input', renderSIF);
+}
+
+function renderSIF() {
+  const m = parseFloat(document.getElementById('sifM').value);
+  const b = parseFloat(document.getElementById('sifB').value);
+  document.getElementById('sifMVal').textContent = m.toFixed(1);
+  document.getElementById('sifBVal').textContent = b.toFixed(1);
+
+  // Equation display
+  const bStr = b >= 0 ? ' + ' + b.toFixed(1) : ' - ' + Math.abs(b).toFixed(1);
+  document.getElementById('sifEquation').textContent = 'y = ' + m.toFixed(1) + 'x' + bStr;
+
+  sifGrid = createGrid('sifGraph');
+  drawLine(sifGrid, m, b, '#6366f1', 2.5);
+  drawPoint(sifGrid, 0, b, '#22c55e', 7, 'b=' + b.toFixed(1));
+
+  trackInteraction(1);
+}
+
+// SIF practice
+const sifPracticeProblems = [
+  { q: 'y = 3x + 2. What is the slope (m)?', a: '3', field: 'm' },
+  { q: 'y = 3x + 2. What is the y-intercept (b)?', a: '2', field: 'b' },
+  { q: 'y = -2x + 5. What is m?', a: '-2', field: 'm' },
+  { q: 'A line has slope 4 and y-intercept -1. Write the equation (format: y=mx+b, no spaces).', a: 'y=4x-1', field: 'eq' },
+  { q: 'A line has slope -1 and passes through (0, 3). Write the equation.', a: 'y=-1x+3', alt: 'y=-x+3', field: 'eq' }
+];
+
+function initSIFPractice() {
+  const container = document.getElementById('sifPractice');
+  sifPracticeProblems.forEach((prob, i) => {
+    const div = document.createElement('div');
+    div.className = 'q-item';
+    div.innerHTML = '<div class="q-text">' + (i + 1) + '. ' + prob.q + '</div>' +
+      '<div class="input-row">' +
+      '<input type="text" id="sif-p-' + i + '" placeholder="?">' +
+      '<button class="check-btn" onclick="checkSIFPractice(' + i + ')">Check</button></div>' +
+      '<div class="feedback" id="sif-fb-' + i + '"></div>';
+    container.appendChild(div);
+  });
+}
+
+function checkSIFPractice(i) {
+  const input = document.getElementById('sif-p-' + i);
+  const fb = document.getElementById('sif-fb-' + i);
+  const val = input.value.trim().replace(/\s/g, '');
+  const prob = sifPracticeProblems[i];
+
+  if (!val) { fb.textContent = 'Enter a value.'; fb.className = 'feedback incorrect-fb'; return; }
+
+  input.disabled = true;
+  input.closest('.input-row').querySelector('.check-btn').disabled = true;
+  trackInteraction(1);
+
+  const isCorrect = val === prob.a || val === prob.alt ||
+    (prob.field !== 'eq' && Math.abs(parseFloat(val) - parseFloat(prob.a)) < 0.01);
+
+  if (isCorrect) {
+    fb.textContent = 'Correct!';
+    fb.className = 'feedback correct-fb';
+  } else {
+    fb.textContent = 'Incorrect. The answer is ' + prob.a;
+    fb.className = 'feedback incorrect-fb';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// SECTION 3: Point-Slope Form
+// ═══════════════════════════════════════════════
+let psGrid;
+let psPoint = { x: 2, y: 3 };
+
+function initPS() {
+  psGrid = createGrid('psGraph');
+  renderPS();
+
+  document.getElementById('psM').addEventListener('input', renderPS);
+
+  // Click to place point
+  const svg = document.getElementById('psGraph');
+  svg.addEventListener('click', function(e) {
+    const rect = svg.getBoundingClientRect();
+    const scale = 400 / rect.width;
+    const sx = (e.clientX - rect.left) * scale;
+    const sy = (e.clientY - rect.top) * scale;
+    const gp = toGrid(psGrid, sx, sy);
+    psPoint = { x: Math.round(gp.x), y: Math.round(gp.y) };
+    psPoint.x = Math.max(-9, Math.min(9, psPoint.x));
+    psPoint.y = Math.max(-9, Math.min(9, psPoint.y));
+    renderPS();
+    trackInteraction(2);
+  });
+
+  document.getElementById('psAnimBtn').addEventListener('click', animatePSSteps);
+}
+
+function renderPS() {
+  psGrid = createGrid('psGraph');
+  const m = parseFloat(document.getElementById('psM').value);
+  document.getElementById('psMVal').textContent = m.toFixed(1);
+
+  const b = psPoint.y - m * psPoint.x;
+  drawLine(psGrid, m, b, '#6366f1', 2.5);
+  drawPoint(psGrid, psPoint.x, psPoint.y, '#ec4899', 8,
+    '(' + psPoint.x + ',' + psPoint.y + ')');
+
+  // Equation display
+  const y1Str = psPoint.y >= 0 ? psPoint.y : '(' + psPoint.y + ')';
+  const x1Str = psPoint.x >= 0 ? psPoint.x : '(' + psPoint.x + ')';
+  document.getElementById('psEquation').innerHTML =
+    'y &minus; ' + y1Str + ' = ' + m.toFixed(1) + '(x &minus; ' + x1Str + ')';
+
+  // Update step-by-step display
+  const mx1 = m * psPoint.x;
+  const bCalc = psPoint.y - mx1;
+  const mx1Str = mx1 >= 0 ? mx1.toFixed(1) : '(' + mx1.toFixed(1) + ')';
+  const y1Val = psPoint.y;
+  const bStr = bCalc >= 0 ? ' + ' + bCalc.toFixed(1) : ' - ' + Math.abs(bCalc).toFixed(1);
+
+  document.getElementById('psStep0').innerHTML =
+    'Start: y &minus; ' + y1Str + ' = ' + m.toFixed(1) + '(x &minus; ' + x1Str + ')';
+  document.getElementById('psStep1').innerHTML =
+    'Distribute: y &minus; ' + y1Val + ' = ' + m.toFixed(1) + 'x &minus; ' + mx1.toFixed(1);
+  document.getElementById('psStep2').innerHTML =
+    'Add ' + y1Val + ': y = ' + m.toFixed(1) + 'x &minus; ' + mx1.toFixed(1) + ' + ' + y1Val;
+  document.getElementById('psStep3').innerHTML =
+    'Simplify: y = ' + m.toFixed(1) + 'x' + bStr;
+
+  trackInteraction(2);
+}
+
+function animatePSSteps() {
+  const steps = document.querySelectorAll('#psSteps li');
+  steps.forEach(s => s.classList.remove('active'));
+
+  let idx = 0;
+  steps[0].classList.add('active');
+
+  const interval = setInterval(() => {
+    idx++;
+    if (idx < steps.length) {
+      steps[idx].classList.add('active');
+    } else {
+      clearInterval(interval);
+    }
+  }, 600);
+}
+
+// PS practice
+const psPracticeProblems = [
+  { q: 'Write in slope-intercept form: point (1,3), slope 2. Format: y=mx+b', a: 'y=2x+1' },
+  { q: 'Write in slope-intercept form: point (2,-1), slope -3. Format: y=mx+b', a: 'y=-3x+5' },
+  { q: 'Write in slope-intercept form: point (-1,4), slope 1. Format: y=mx+b', a: 'y=1x+5', alt: 'y=x+5' },
+  { q: 'A line passes through (0,5) with slope -2. What is b?', a: '5' }
+];
+
+function initPSPractice() {
+  const container = document.getElementById('psPractice');
+  psPracticeProblems.forEach((prob, i) => {
+    const div = document.createElement('div');
+    div.className = 'q-item';
+    div.innerHTML = '<div class="q-text">' + (i + 1) + '. ' + prob.q + '</div>' +
+      '<div class="input-row">' +
+      '<input type="text" id="ps-p-' + i + '" placeholder="?">' +
+      '<button class="check-btn" onclick="checkPSPractice(' + i + ')">Check</button></div>' +
+      '<div class="feedback" id="ps-fb-' + i + '"></div>';
+    container.appendChild(div);
+  });
+}
+
+function checkPSPractice(i) {
+  const input = document.getElementById('ps-p-' + i);
+  const fb = document.getElementById('ps-fb-' + i);
+  const val = input.value.trim().replace(/\s/g, '');
+  const prob = psPracticeProblems[i];
+
+  if (!val) { fb.textContent = 'Enter a value.'; fb.className = 'feedback incorrect-fb'; return; }
+
+  input.disabled = true;
+  input.closest('.input-row').querySelector('.check-btn').disabled = true;
+  trackInteraction(2);
+
+  const isCorrect = val === prob.a || val === prob.alt ||
+    (!prob.a.includes('x') && Math.abs(parseFloat(val) - parseFloat(prob.a)) < 0.01);
+
+  if (isCorrect) {
+    fb.textContent = 'Correct!';
+    fb.className = 'feedback correct-fb';
+  } else {
+    fb.textContent = 'Incorrect. The answer is ' + prob.a;
+    fb.className = 'feedback incorrect-fb';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// SECTION 4: Standard Form
+// ═══════════════════════════════════════════════
+let sfGrid;
+
+function initSF() {
+  sfGrid = createGrid('sfGraph');
+  renderSF();
+
+  document.getElementById('sfA').addEventListener('input', renderSF);
+  document.getElementById('sfB').addEventListener('input', renderSF);
+  document.getElementById('sfC').addEventListener('input', renderSF);
+}
+
+function renderSF() {
+  const A = parseFloat(document.getElementById('sfA').value) || 0;
+  const B = parseFloat(document.getElementById('sfB').value) || 0;
+  const C = parseFloat(document.getElementById('sfC').value) || 0;
+
+  sfGrid = createGrid('sfGraph');
+
+  // Display
+  const aStr = A >= 0 ? A : '(' + A + ')';
+  const bSign = B >= 0 ? ' + ' : ' - ';
+  const bAbs = Math.abs(B);
+
+  let sifStr = '';
+  let xInt = null, yInt = null;
+
+  if (B !== 0) {
+    const m = -A / B;
+    const b = C / B;
+    const bSignSIF = b >= 0 ? ' + ' : ' - ';
+    sifStr = 'Slope-Intercept: y = ' + m.toFixed(2) + 'x' + bSignSIF + Math.abs(b).toFixed(2);
+    drawLine(sfGrid, m, b, '#6366f1', 2.5);
+    yInt = b;
+  } else if (A !== 0) {
+    // Vertical line x = C/A
+    const xVal = C / A;
+    sifStr = 'Vertical line: x = ' + xVal.toFixed(2) + ' (no slope-intercept form)';
+    drawVerticalLine(sfGrid, xVal, '#6366f1', 2.5);
+  } else {
+    sifStr = 'Degenerate equation (A=0, B=0)';
+  }
+
+  // Intercepts
+  if (A !== 0) {
+    xInt = C / A;
+    drawPoint(sfGrid, xInt, 0, '#f59e0b', 6, 'x-int (' + xInt.toFixed(1) + ',0)');
+  }
+  if (B !== 0) {
+    yInt = C / B;
+    drawPoint(sfGrid, 0, yInt, '#22c55e', 6, 'y-int (0,' + yInt.toFixed(1) + ')');
+  }
+
+  document.getElementById('sfDisplay').innerHTML =
+    '<div>Standard: ' + A + 'x' + bSign + bAbs + 'y = ' + C + '</div>' +
+    '<div style="margin-top:0.3rem;font-size:0.8rem;color:var(--text-dim);">' + sifStr + '</div>';
+
+  trackInteraction(3);
+}
+
+// SF practice
+const sfPracticeProblems = [
+  { q: 'Convert 2x + y = 8 to slope-intercept form. Write as y=mx+b.', a: 'y=-2x+8' },
+  { q: 'For 3x + 2y = 12, what is the y-intercept? (just the number)', a: '6' },
+  { q: 'For 3x + 2y = 12, what is the x-intercept? (just the number)', a: '4' }
+];
+
+function initSFPractice() {
+  const container = document.getElementById('sfPractice');
+  sfPracticeProblems.forEach((prob, i) => {
+    const div = document.createElement('div');
+    div.className = 'q-item';
+    div.innerHTML = '<div class="q-text">' + (i + 1) + '. ' + prob.q + '</div>' +
+      '<div class="input-row">' +
+      '<input type="text" id="sf-p-' + i + '" placeholder="?">' +
+      '<button class="check-btn" onclick="checkSFPractice(' + i + ')">Check</button></div>' +
+      '<div class="feedback" id="sf-fb-' + i + '"></div>';
+    container.appendChild(div);
+  });
+}
+
+function checkSFPractice(i) {
+  const input = document.getElementById('sf-p-' + i);
+  const fb = document.getElementById('sf-fb-' + i);
+  const val = input.value.trim().replace(/\s/g, '');
+  const prob = sfPracticeProblems[i];
+
+  if (!val) { fb.textContent = 'Enter a value.'; fb.className = 'feedback incorrect-fb'; return; }
+
+  input.disabled = true;
+  input.closest('.input-row').querySelector('.check-btn').disabled = true;
+  trackInteraction(3);
+
+  const isCorrect = val === prob.a ||
+    (!prob.a.includes('x') && Math.abs(parseFloat(val) - parseFloat(prob.a)) < 0.01);
+
+  if (isCorrect) {
+    fb.textContent = 'Correct!';
+    fb.className = 'feedback correct-fb';
+  } else {
+    fb.textContent = 'Incorrect. The answer is ' + prob.a;
+    fb.className = 'feedback incorrect-fb';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// SECTION 5: Parallel & Perpendicular Lines
+// ═══════════════════════════════════════════════
+let parGrid, perpGrid;
+
+function initParallel() {
+  parGrid = createGrid('parGraph');
+  renderParallel();
+
+  document.getElementById('parM').addEventListener('input', renderParallel);
+  document.getElementById('parB1').addEventListener('input', renderParallel);
+  document.getElementById('parB2').addEventListener('input', renderParallel);
+}
+
+function renderParallel() {
+  const m = parseFloat(document.getElementById('parM').value);
+  const b1 = parseFloat(document.getElementById('parB1').value);
+  const b2 = parseFloat(document.getElementById('parB2').value);
+  document.getElementById('parMVal').textContent = m.toFixed(1);
+  document.getElementById('parB1Val').textContent = b1.toFixed(1);
+  document.getElementById('parB2Val').textContent = b2.toFixed(1);
+
+  parGrid = createGrid('parGraph');
+  drawLine(parGrid, m, b1, '#6366f1', 2.5);
+  drawLine(parGrid, m, b2, '#22c55e', 2.5);
+
+  // Labels
+  drawPoint(parGrid, 0, b1, '#6366f1', 5, 'y=' + m.toFixed(1) + 'x+' + b1.toFixed(1));
+  drawPoint(parGrid, 0, b2, '#22c55e', 5, 'y=' + m.toFixed(1) + 'x+' + b2.toFixed(1));
+
+  trackInteraction(4);
+}
+
+function initPerpendicular() {
+  perpGrid = createGrid('perpGraph');
+  renderPerpendicular();
+
+  document.getElementById('perpM').addEventListener('input', renderPerpendicular);
+}
+
+function renderPerpendicular() {
+  const m1 = parseFloat(document.getElementById('perpM').value);
+  document.getElementById('perpMVal').textContent = m1.toFixed(1);
+
+  perpGrid = createGrid('perpGraph');
+
+  if (m1 === 0) {
+    // Horizontal and vertical
+    drawLine(perpGrid, 0, 0, '#6366f1', 2.5);
+    drawVerticalLine(perpGrid, 0, '#ec4899', 2.5);
+    document.getElementById('perpReadout').innerHTML =
+      'm&#8321; = 0 (horizontal) &rarr; m&#8322; = undefined (vertical)';
+  } else {
+    const m2 = -1 / m1;
+    drawLine(perpGrid, m1, 0, '#6366f1', 2.5);
+    drawLine(perpGrid, m2, 0, '#ec4899', 2.5);
+
+    // Right-angle marker at origin
+    const markerSize = 0.6;
+    const p1 = toSvg(perpGrid, markerSize, 0);
+    const p2 = toSvg(perpGrid, markerSize, markerSize);
+    const p3 = toSvg(perpGrid, 0, markerSize);
+    const path = document.createElementNS(NS, 'polyline');
+    path.setAttribute('points', p1.x+','+p1.y + ' ' + p2.x+','+p2.y + ' ' + p3.x+','+p3.y);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#f59e0b');
+    path.setAttribute('stroke-width', 1.5);
+    perpGrid.svg.appendChild(path);
+
+    const product = (m1 * m2).toFixed(1);
+    document.getElementById('perpReadout').innerHTML =
+      'm&#8321; = ' + m1.toFixed(1) + ' &rarr; m&#8322; = ' + m2.toFixed(2) +
+      ' &nbsp; (m&#8321; &times; m&#8322; = ' + product + ')';
+  }
+
+  drawPoint(perpGrid, 0, 0, '#f59e0b', 4);
+  trackInteraction(4);
+}
+
+// PP practice
+const ppPracticeProblems = [
+  { q: 'A line has slope 3. What is the slope of a parallel line?', a: '3' },
+  { q: 'A line has slope 2. What is the slope of a perpendicular line? (use fractions like -1/2)', a: '-1/2', alt: '-0.5' },
+  { q: 'A line has slope -4. What is the slope of a perpendicular line?', a: '1/4', alt: '0.25' },
+  { q: 'Are y=2x+1 and y=2x-5 parallel, perpendicular, or neither?', a: 'parallel' }
+];
+
+function initPPPractice() {
+  const container = document.getElementById('ppPractice');
+  ppPracticeProblems.forEach((prob, i) => {
+    const div = document.createElement('div');
+    div.className = 'q-item';
+    div.innerHTML = '<div class="q-text">' + (i + 1) + '. ' + prob.q + '</div>' +
+      '<div class="input-row">' +
+      '<input type="text" id="pp-p-' + i + '" placeholder="?">' +
+      '<button class="check-btn" onclick="checkPPPractice(' + i + ')">Check</button></div>' +
+      '<div class="feedback" id="pp-fb-' + i + '"></div>';
+    container.appendChild(div);
+  });
+}
+
+function checkPPPractice(i) {
+  const input = document.getElementById('pp-p-' + i);
+  const fb = document.getElementById('pp-fb-' + i);
+  const val = input.value.trim().replace(/\s/g, '').toLowerCase();
+  const prob = ppPracticeProblems[i];
+
+  if (!val) { fb.textContent = 'Enter a value.'; fb.className = 'feedback incorrect-fb'; return; }
+
+  input.disabled = true;
+  input.closest('.input-row').querySelector('.check-btn').disabled = true;
+  trackInteraction(4);
+
+  // Evaluate fractions
+  let numVal = null;
+  if (val.includes('/')) {
+    const parts = val.split('/');
+    if (parts.length === 2) numVal = parseFloat(parts[0]) / parseFloat(parts[1]);
+  } else {
+    numVal = parseFloat(val);
+  }
+
+  let correctVal = null;
+  if (prob.a.includes('/')) {
+    const parts = prob.a.split('/');
+    correctVal = parseFloat(parts[0]) / parseFloat(parts[1]);
+  } else if (!isNaN(parseFloat(prob.a))) {
+    correctVal = parseFloat(prob.a);
+  }
+
+  const isCorrect = val === prob.a || val === prob.alt ||
+    (numVal !== null && correctVal !== null && Math.abs(numVal - correctVal) < 0.01);
+
+  if (isCorrect) {
+    fb.textContent = 'Correct!';
+    fb.className = 'feedback correct-fb';
+  } else {
+    fb.textContent = 'Incorrect. The answer is ' + prob.a;
+    fb.className = 'feedback incorrect-fb';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// SECTION 6: Quick Quiz
+// ═══════════════════════════════════════════════
+const quizProblems = [
+  { q: 'What is the slope between (0, 0) and (3, 9)?', a: '3', type: 'num' },
+  { q: 'In y = -4x + 7, what is the y-intercept?', a: '7', type: 'num' },
+  { q: 'In y = -4x + 7, what is the slope?', a: '-4', type: 'num' },
+  { q: 'Convert to slope-intercept: y - 5 = 2(x - 1). Write as y=mx+b.', a: 'y=2x+3', type: 'eq' },
+  { q: 'What is the slope of a line parallel to y = 3x - 2?', a: '3', type: 'num' },
+  { q: 'What is the slope of a line perpendicular to y = 2x + 1? (fraction ok)', a: '-1/2', alt: '-0.5', type: 'frac' },
+  { q: 'For 4x + 2y = 10, what is the y-intercept?', a: '5', type: 'num' },
+  { q: 'For 4x + 2y = 10, what is the slope?', a: '-2', type: 'num' },
+  { q: 'A horizontal line has slope = ?', a: '0', type: 'num' },
+  { q: 'Write the equation of a line through (0,-3) with slope 5. Format: y=mx+b.', a: 'y=5x-3', alt: 'y=5x+-3', type: 'eq' }
+];
+
+let quizScore = 0;
+let quizAnswered = 0;
+
+function initQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  quizScore = 0;
+  quizAnswered = 0;
+  document.getElementById('quizScore').textContent = '0';
+  document.getElementById('quizFinal').style.display = 'none';
+  document.getElementById('quizProgressText').textContent = 'Answer all 10 to see your final score.';
+
+  quizProblems.forEach((prob, idx) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-problem';
+    div.id = 'quiz-q' + idx;
+    div.innerHTML =
+      '<div class="q-text">' + (idx + 1) + '. ' + prob.q + '</div>' +
+      '<div class="input-row">' +
+      '<input type="text" placeholder="?" id="quiz-input-' + idx + '">' +
+      '<button class="check-btn" onclick="checkQuiz(' + idx + ')">Check</button></div>' +
+      '<div class="feedback" id="quiz-fb-' + idx + '"></div>';
+    container.appendChild(div);
+  });
+}
+
+function checkQuiz(idx) {
+  const input = document.getElementById('quiz-input-' + idx);
+  const fb = document.getElementById('quiz-fb-' + idx);
+  const problem = document.getElementById('quiz-q' + idx);
+  const btn = problem.querySelector('.check-btn');
+  const val = input.value.trim().replace(/\s/g, '').toLowerCase();
+  const prob = quizProblems[idx];
+
+  if (!val) { fb.textContent = 'Enter a value.'; fb.className = 'feedback incorrect-fb'; return; }
+
+  btn.disabled = true;
+  input.disabled = true;
+  quizAnswered++;
+
+  // Evaluate answer
+  let isCorrect = false;
+
+  if (prob.type === 'eq') {
+    isCorrect = val === prob.a || val === prob.alt;
+  } else if (prob.type === 'frac') {
+    let numVal = null;
+    if (val.includes('/')) {
+      const parts = val.split('/');
+      numVal = parseFloat(parts[0]) / parseFloat(parts[1]);
+    } else {
+      numVal = parseFloat(val);
+    }
+    let correctVal = null;
+    if (prob.a.includes('/')) {
+      const parts = prob.a.split('/');
+      correctVal = parseFloat(parts[0]) / parseFloat(parts[1]);
+    } else {
+      correctVal = parseFloat(prob.a);
+    }
+    isCorrect = (numVal !== null && correctVal !== null && Math.abs(numVal - correctVal) < 0.01) ||
+                val === prob.a || val === prob.alt;
+  } else {
+    isCorrect = Math.abs(parseFloat(val) - parseFloat(prob.a)) < 0.01 ||
+                val === prob.a;
+  }
+
+  if (isCorrect) {
+    problem.classList.add('q-correct');
+    fb.textContent = 'Correct!';
+    fb.className = 'feedback correct-fb';
+    quizScore++;
+  } else {
+    problem.classList.add('q-incorrect');
+    fb.textContent = 'Incorrect. The answer is ' + prob.a;
+    fb.className = 'feedback incorrect-fb';
+  }
+
+  document.getElementById('quizScore').textContent = quizScore;
+  trackInteraction(5);
+
+  if (quizAnswered >= quizProblems.length) {
+    showQuizResults();
+  } else {
+    document.getElementById('quizProgressText').textContent = quizAnswered + ' of 10 answered.';
+  }
+}
+
+function showQuizResults() {
+  const finalDiv = document.getElementById('quizFinal');
+  const scoreDisp = document.getElementById('finalScoreDisplay');
+  const msgDisp = document.getElementById('finalMsg');
+  const pctg = Math.round((quizScore / quizProblems.length) * 100);
+
+  finalDiv.style.display = 'block';
+  scoreDisp.textContent = quizScore + ' / ' + quizProblems.length + ' (' + pctg + '%)';
+  document.getElementById('quizProgressText').textContent = 'Quiz complete!';
+
+  if (pctg === 100) {
+    msgDisp.textContent = 'Perfect score! You have mastered graphing lines.';
+    scoreDisp.style.color = 'var(--green)';
+  } else if (pctg >= 80) {
+    msgDisp.textContent = 'Great job! You have a strong understanding of graphing lines.';
+    scoreDisp.style.color = 'var(--green)';
+  } else if (pctg >= 60) {
+    msgDisp.textContent = 'Good effort. Review the sections where you struggled and try again.';
+    scoreDisp.style.color = 'var(--orange)';
+  } else {
+    msgDisp.textContent = 'Keep practicing. Go back through the lessons and try the quiz again.';
+    scoreDisp.style.color = 'var(--pink)';
+  }
+
+  finalDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function resetQuiz() {
+  initQuiz();
+  document.getElementById('quizContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  // Section 1
+  initSlopeGraph();
+  initSlopeDrag();
+  initSlopeExamples();
+  initSlopePractice();
+
+  // Section 2
+  initSIF();
+  initSIFPractice();
+
+  // Section 3
+  initPS();
+  initPSPractice();
+
+  // Section 4
+  initSF();
+  initSFPractice();
+
+  // Section 5
+  initParallel();
+  initPerpendicular();
+  initPPPractice();
+
+  // Section 6
+  initQuiz();
+
+  // Allow Enter key to submit
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const input = e.target;
+      if (input.tagName === 'INPUT' && input.type === 'text') {
+        const row = input.closest('.input-row');
+        if (row) {
+          const btn = row.querySelector('.check-btn');
+          if (btn && !btn.disabled) btn.click();
+        }
+      }
+    }
+  });
+});
+</script>
+
+</body>
+</html>

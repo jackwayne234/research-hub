@@ -1,0 +1,2147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 8: Chemical Reactions</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  background: #1e2128;
+  color: #c9cdd5;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.65;
+  min-height: 100vh;
+  padding: 0 0 4rem;
+}
+
+/* ── Palette ──────────────────────────────────────── */
+:root {
+  --bg: #1e2128;
+  --surface: #262a33;
+  --surface2: #2e323d;
+  --border: #363b47;
+  --text: #c9cdd5;
+  --text-dim: #8b90a0;
+  --primary: #6366f1;
+  --primary-dim: rgba(99,102,241,.15);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,.15);
+  --pink: #ec4899;
+  --pink-dim: rgba(236,72,153,.15);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,.15);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,.15);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,.15);
+  --cyan: #06b6d4;
+  --cyan-dim: rgba(6,182,212,.15);
+}
+
+/* ── Header ───────────────────────────────────────── */
+.page-header {
+  text-align: center;
+  padding: 2.5rem 1rem 1rem;
+}
+.page-header h1 {
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.page-header .subtitle {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-top: .3rem;
+}
+
+/* ── Progress Bar ─────────────────────────────────── */
+.progress-wrap {
+  max-width: 740px;
+  margin: 1.2rem auto .5rem;
+  padding: 0 1rem;
+}
+.progress-bar-outer {
+  background: var(--surface);
+  border-radius: 8px;
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-bar-inner {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), #818cf8);
+  border-radius: 8px;
+  transition: width .5s cubic-bezier(.34,1.56,.64,1);
+}
+.progress-label {
+  font-size: .7rem;
+  color: var(--text-dim);
+  text-align: right;
+  margin-top: .3rem;
+}
+
+/* ── Container ────────────────────────────────────── */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ── Collapsible Card ─────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: border-color .3s;
+}
+.card.completed { border-color: var(--green); }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background .2s;
+}
+.card-header:hover { background: var(--surface2); }
+.card-header .num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--primary-dim);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: .8rem;
+  flex-shrink: 0;
+}
+.card.completed .card-header .num {
+  background: var(--green-dim);
+  color: var(--green);
+}
+.card-header .title {
+  flex: 1;
+  font-weight: 600;
+  font-size: .9rem;
+  color: #eee;
+}
+.card-header .chevron {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.card.open .card-header .chevron { transform: rotate(180deg); }
+.card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .5s ease, padding .3s ease;
+}
+.card.open .card-body {
+  max-height: 80000px;
+  padding: 0 1.2rem 1.5rem;
+}
+
+/* ── Section Internals ────────────────────────────── */
+.section-desc {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+h3.sub-heading {
+  font-size: .85rem;
+  color: var(--primary);
+  margin: 1.5rem 0 .8rem;
+  font-weight: 600;
+}
+h3.sub-heading:first-of-type { margin-top: .5rem; }
+
+/* ── Interactive Box ──────────────────────────────── */
+.interactive-box {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid var(--border);
+}
+.interactive-box h4 {
+  font-size: .82rem;
+  color: var(--primary);
+  margin-bottom: .8rem;
+}
+
+/* ── Buttons ──────────────────────────────────────── */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: .8rem;
+}
+.btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  padding: .45rem .9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn:hover { border-color: var(--primary); color: #fff; }
+.btn.active {
+  background: var(--primary-dim);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.btn.correct {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+.btn.incorrect {
+  background: var(--pink-dim);
+  border-color: var(--pink);
+  color: var(--pink);
+}
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  font-weight: 600;
+}
+.btn-primary:hover { background: #5558e6; }
+
+/* ── Feedback ─────────────────────────────────────── */
+.feedback {
+  font-size: .75rem;
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  margin-top: .6rem;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity .3s cubic-bezier(.34,1.56,.64,1), transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none;
+}
+.feedback.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.feedback.correct-fb { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+.feedback.incorrect-fb { background: var(--pink-dim); color: var(--pink); border: 1px solid var(--pink); }
+
+/* ── Explanation Block ────────────────────────────── */
+.explanation {
+  font-size: .78rem;
+  color: var(--text);
+  background: var(--surface2);
+  border-left: 3px solid var(--primary);
+  padding: .8rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 1.2rem;
+  line-height: 1.7;
+}
+
+/* ── Formula Display ─────────────────────────────── */
+.formula-display {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+}
+
+/* ── Data Table ──────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .72rem;
+  margin-bottom: 1.2rem;
+}
+.data-table th {
+  background: var(--surface2);
+  color: var(--primary);
+  font-weight: 600;
+  text-align: left;
+  padding: .6rem .7rem;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: .5rem .7rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.data-table tr:hover td { background: rgba(99,102,241,.05); }
+
+/* ── Input ────────────────────────────────────────── */
+.text-input {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .8rem;
+  padding: .5rem .8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: #fff;
+  outline: none;
+  width: 100%;
+  max-width: 320px;
+  transition: border-color .2s;
+}
+.text-input:focus { border-color: var(--primary); }
+.text-input.correct-input { border-color: var(--green); background: var(--green-dim); }
+.text-input.incorrect-input { border-color: var(--pink); background: var(--pink-dim); }
+
+.input-row {
+  display: flex;
+  gap: .6rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: .5rem;
+}
+
+/* ── Problem Counter ─────────────────────────────── */
+.problem-counter {
+  font-size: .7rem;
+  color: var(--text-dim);
+  margin-bottom: .8rem;
+}
+.problem-counter span { color: var(--primary); font-weight: 600; }
+
+/* ── Score Display ───────────────────────────────── */
+.score-display {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .75rem;
+  color: var(--green);
+  background: var(--green-dim);
+  padding: .3rem .7rem;
+  border-radius: 6px;
+  margin-left: .5rem;
+}
+
+/* ── Chemical Formula Formatting ─────────────────── */
+.chem { font-weight: 600; color: #fff; }
+.chem sub { font-size: .75em; }
+.chem sup { font-size: .7em; color: var(--amber); }
+
+/* ── Section Score Bar ───────────────────────────── */
+.section-score {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-top: 1rem;
+  padding: .6rem .8rem;
+  background: var(--surface2);
+  border-radius: 8px;
+  font-size: .75rem;
+}
+.section-score .score-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.section-score .score-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 3px;
+  transition: width .4s cubic-bezier(.34,1.56,.64,1);
+  width: 0%;
+}
+.section-score .score-text {
+  color: var(--text-dim);
+  min-width: 50px;
+  text-align: right;
+}
+
+/* ── Equation Balancer ──────────────────────────── */
+.equation-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+  font-size: .9rem;
+  color: #fff;
+}
+.coeff-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .2rem;
+}
+.coeff-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+}
+.coeff-btn:hover { border-color: var(--primary); color: #fff; }
+.coeff-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--amber);
+  min-width: 24px;
+  text-align: center;
+}
+.eq-compound { font-weight: 600; }
+.eq-arrow { color: var(--text-dim); font-size: 1.2rem; }
+.eq-plus { color: var(--text-dim); }
+.atom-count-table {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: .8rem 0 1rem;
+  flex-wrap: wrap;
+}
+.atom-count-side {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .6rem .8rem;
+  font-size: .72rem;
+  min-width: 120px;
+}
+.atom-count-side .side-label {
+  font-size: .6rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: .4rem;
+  text-align: center;
+}
+.atom-row {
+  display: flex;
+  justify-content: space-between;
+  gap: .8rem;
+  padding: .15rem 0;
+}
+.atom-row .atom-sym { color: #fff; font-weight: 600; }
+.atom-row .atom-num { font-weight: 600; }
+.atom-row .atom-num.balanced { color: var(--green); }
+.atom-row .atom-num.unbalanced { color: var(--pink); }
+.balanced-badge {
+  text-align: center;
+  font-size: .8rem;
+  color: var(--green);
+  font-weight: 600;
+  padding: .5rem;
+  display: none;
+}
+.balanced-badge.show { display: block; }
+
+/* ── Reaction Type Cards ──────────────────────────── */
+.rxn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: .8rem;
+  margin-bottom: 1.2rem;
+}
+.rxn-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  transition: border-color .3s, transform .2s;
+}
+.rxn-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+.rxn-card .rxn-icon {
+  font-size: 2rem;
+  margin-bottom: .5rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rxn-card .rxn-name {
+  font-size: .82rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: .3rem;
+}
+.rxn-card .rxn-pattern {
+  font-size: .72rem;
+  color: var(--amber);
+  font-weight: 600;
+  margin-bottom: .4rem;
+}
+.rxn-card .rxn-example {
+  font-size: .68rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* ── Animated Diagram Pieces ──────────────────────── */
+.anim-container {
+  position: relative;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.anim-piece {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  position: absolute;
+  transition: all 1.5s cubic-bezier(.34,1.56,.64,1);
+}
+.anim-piece.a { background: var(--primary); }
+.anim-piece.b { background: var(--amber); }
+.anim-piece.c { background: var(--green); }
+.anim-piece.d { background: var(--pink); }
+
+/* Synthesis: two pieces combine */
+.rxn-card:nth-child(1) .anim-piece.a { left: 25%; top: 50%; transform: translateY(-50%); }
+.rxn-card:nth-child(1) .anim-piece.b { right: 25%; top: 50%; transform: translateY(-50%); }
+.rxn-card:nth-child(1):hover .anim-piece.a { left: calc(50% - 11px); }
+.rxn-card:nth-child(1):hover .anim-piece.b { right: calc(50% - 11px); }
+
+/* Decomposition: one splits */
+.rxn-card:nth-child(2) .anim-piece.a { left: calc(50% - 11px); top: 50%; transform: translateY(-50%); }
+.rxn-card:nth-child(2) .anim-piece.b { left: calc(50% + 1px); top: 50%; transform: translateY(-50%); opacity: 0; }
+.rxn-card:nth-child(2):hover .anim-piece.a { left: 25%; }
+.rxn-card:nth-child(2):hover .anim-piece.b { right: 25%; left: auto; opacity: 1; }
+
+/* Single Replacement */
+.rxn-card:nth-child(3) .anim-piece.a { left: 20%; top: 50%; transform: translateY(-50%); }
+.rxn-card:nth-child(3) .anim-piece.b { left: calc(50% - 16px); top: 50%; transform: translateY(-50%); }
+.rxn-card:nth-child(3) .anim-piece.c { left: calc(50% + 6px); top: 50%; transform: translateY(-50%); }
+.rxn-card:nth-child(3):hover .anim-piece.a { left: calc(50% - 16px); }
+.rxn-card:nth-child(3):hover .anim-piece.b { left: 20%; }
+
+/* Double Replacement */
+.rxn-card:nth-child(4) .anim-piece.a { left: 20%; top: 50%; transform: translateY(-50%); }
+.rxn-card:nth-child(4) .anim-piece.b { left: 35%; top: 50%; transform: translateY(-50%); }
+.rxn-card:nth-child(4) .anim-piece.c { left: 55%; top: 50%; transform: translateY(-50%); }
+.rxn-card:nth-child(4) .anim-piece.d { left: 70%; top: 50%; transform: translateY(-50%); }
+.rxn-card:nth-child(4):hover .anim-piece.a { left: 20%; }
+.rxn-card:nth-child(4):hover .anim-piece.b { left: 70%; }
+.rxn-card:nth-child(4):hover .anim-piece.c { left: 55%; }
+.rxn-card:nth-child(4):hover .anim-piece.d { left: 35%; }
+
+/* Combustion flame */
+.flame-icon {
+  display: inline-block;
+  width: 30px;
+  height: 40px;
+  position: relative;
+}
+.flame-icon::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 30px;
+  background: radial-gradient(ellipse at bottom, var(--amber) 0%, var(--red) 50%, transparent 70%);
+  border-radius: 50% 50% 20% 20%;
+  animation: flicker 1s ease-in-out infinite alternate;
+}
+@keyframes flicker {
+  0% { height: 26px; width: 18px; opacity: .9; }
+  50% { height: 32px; width: 22px; opacity: 1; }
+  100% { height: 28px; width: 16px; opacity: .85; }
+}
+
+/* ── Net Ionic Stepper ────────────────────────────── */
+.ionic-step {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .8rem 1rem;
+  margin-bottom: .6rem;
+  font-size: .78rem;
+  color: var(--text);
+  line-height: 1.7;
+}
+.ionic-step .step-label {
+  font-size: .65rem;
+  color: var(--primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: .3rem;
+}
+.ionic-step .ion {
+  display: inline-block;
+  padding: .1rem .4rem;
+  border-radius: 4px;
+  margin: .1rem .05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .3s;
+}
+.ionic-step .ion.spectator {
+  background: var(--pink-dim);
+  border: 1px solid var(--pink);
+  color: var(--pink);
+}
+.ionic-step .ion.active-ion {
+  background: var(--green-dim);
+  border: 1px solid var(--green);
+  color: var(--green);
+}
+.ionic-step .ion.faded {
+  opacity: .15;
+  text-decoration: line-through;
+  transform: scale(.9);
+}
+.ionic-step .ion.clickable {
+  border: 1px dashed var(--text-dim);
+  background: transparent;
+  color: var(--text);
+}
+.ionic-step .ion.clickable:hover {
+  border-color: var(--primary);
+  background: var(--primary-dim);
+}
+.ionic-step .ion.clicked-correct {
+  background: var(--green-dim);
+  border: 1px solid var(--green);
+  color: var(--green);
+}
+.ionic-step .ion.clicked-wrong {
+  background: var(--pink-dim);
+  border: 1px solid var(--pink);
+  color: var(--pink);
+}
+
+/* ── Oxidation Number Display ─────────────────────── */
+.ox-formula {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: .1rem;
+  margin: 1.2rem 0;
+  flex-wrap: wrap;
+}
+.ox-atom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .1rem;
+  margin: 0 .15rem;
+}
+.ox-num {
+  font-size: .65rem;
+  font-weight: 700;
+  padding: .15rem .35rem;
+  border-radius: 4px;
+  min-width: 28px;
+  text-align: center;
+}
+.ox-num.pos { background: var(--pink-dim); color: var(--pink); }
+.ox-num.neg { background: var(--blue-dim); color: var(--blue); }
+.ox-num.zero { background: var(--surface2); color: var(--text-dim); }
+.ox-sym {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+.ox-sub {
+  font-size: .7rem;
+  color: var(--text-dim);
+}
+
+/* ── OIL RIG Mnemonic ─────────────────────────────── */
+.mnemonic-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .8rem;
+  margin: 1rem 0;
+}
+.mnemonic-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+}
+.mnemonic-card .mnemonic-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin-bottom: .4rem;
+}
+.mnemonic-card .mnemonic-sub {
+  font-size: .72rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+.mnemonic-card.oil { border-color: var(--pink); }
+.mnemonic-card.oil .mnemonic-title { color: var(--pink); }
+.mnemonic-card.rig { border-color: var(--blue); }
+.mnemonic-card.rig .mnemonic-title { color: var(--blue); }
+
+/* ── Reference Card ───────────────────────────────── */
+.ref-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .8rem 1rem;
+  margin-bottom: .8rem;
+  font-size: .72rem;
+  line-height: 1.7;
+}
+.ref-card .ref-title {
+  font-size: .75rem;
+  color: var(--amber);
+  font-weight: 600;
+  margin-bottom: .4rem;
+}
+.ref-card ul { padding-left: 1rem; }
+.ref-card li { margin-bottom: .2rem; }
+
+/* ── Select (Dropdown) ────────────────────────────── */
+.select-input {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem;
+  padding: .45rem .6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.select-input:focus { border-color: var(--primary); }
+
+/* ── Quiz ─────────────────────────────────────────── */
+.quiz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.quiz-score {
+  font-size: .85rem;
+  color: var(--green);
+  font-weight: 600;
+}
+.quiz-problem {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: .8rem;
+}
+.quiz-problem .q-num {
+  font-size: .65rem;
+  color: var(--text-dim);
+  margin-bottom: .4rem;
+}
+.quiz-problem .q-text {
+  font-size: .82rem;
+  color: #eee;
+  margin-bottom: .6rem;
+  line-height: 1.6;
+}
+
+/* ── Navy Context Box ────────────────────────────── */
+.navy-context {
+  background: var(--blue-dim);
+  border: 1px solid var(--blue);
+  border-radius: 8px;
+  padding: .8rem 1rem;
+  margin-bottom: 1.2rem;
+  font-size: .75rem;
+  color: var(--blue);
+  line-height: 1.6;
+}
+.navy-context strong { color: #fff; }
+
+/* ── Decision Tree ────────────────────────────────── */
+.decision-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .3rem;
+  margin: 1rem 0;
+}
+.dt-node {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .6rem 1rem;
+  font-size: .75rem;
+  color: #fff;
+  text-align: center;
+  max-width: 300px;
+}
+.dt-arrow {
+  font-size: .8rem;
+  color: var(--text-dim);
+}
+.dt-branch {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.dt-branch .dt-node {
+  font-size: .7rem;
+  padding: .5rem .8rem;
+  border-color: var(--primary);
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 600px) {
+  .page-header { padding: 1.5rem .8rem .8rem; }
+  .card-header { padding: .8rem 1rem; }
+  .card.open .card-body { padding: 0 1rem 1.2rem; }
+  .interactive-box { padding: .8rem; }
+  .formula-display { font-size: .95rem; padding: .8rem; }
+  .text-input { max-width: 100%; }
+  .data-table { font-size: .65rem; }
+  .data-table th, .data-table td { padding: .4rem .5rem; }
+  .quiz-problem { padding: .8rem; }
+  .rxn-grid { grid-template-columns: 1fr; }
+  .mnemonic-grid { grid-template-columns: 1fr; }
+  .equation-display { font-size: .75rem; gap: .4rem; }
+  .atom-count-table { gap: .8rem; }
+  .ox-sym { font-size: .9rem; }
+  .ox-num { font-size: .58rem; min-width: 24px; }
+  .dt-branch { flex-direction: column; align-items: center; gap: .5rem; }
+}
+
+/* ── Shake Animation ─────────────────────────────── */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.shake { animation: shake .4s ease; }
+
+/* ── Spring Pop ──────────────────────────────────── */
+@keyframes springPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+  70% { transform: scale(.97); }
+  100% { transform: scale(1); }
+}
+.spring-pop { animation: springPop .4s cubic-bezier(.34,1.56,.64,1); }
+
+/* ── Completion Badge ────────────────────────────── */
+.completion-badge {
+  display: none;
+  align-items: center;
+  gap: .4rem;
+  font-size: .7rem;
+  color: var(--green);
+  margin-top: .6rem;
+}
+.completion-badge.show { display: flex; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  HEADER                                            -->
+<!-- ═══════════════════════════════════════════════════ -->
+<header class="page-header">
+  <h1>Week 8: Chemical Reactions</h1>
+  <div class="subtitle">Balancing equations, reaction types, predicting products, net ionic equations, and redox intro</div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 32 problems completed</div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SECTION 1: BALANCING CHEMICAL EQUATIONS           -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="card open" id="card1">
+  <div class="card-header" onclick="toggleCard('card1')">
+    <div class="num">1</div>
+    <div class="title">Balancing Chemical Equations</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      The <strong style="color:#fff">law of conservation of mass</strong> demands that atoms are neither created nor destroyed in a reaction.
+      Balancing means adjusting <strong style="color:var(--amber)">coefficients</strong> (never subscripts!) so every element has equal atoms on both sides.
+    </p>
+
+    <div class="explanation">
+      <strong>Strategy:</strong> Balance metals first, then nonmetals, then hydrogen, and oxygen last. If you get fractions, multiply everything through.
+    </div>
+
+    <div class="interactive-box" id="s1-balancer">
+      <h4>Interactive Equation Balancer</h4>
+      <div class="problem-counter">Equation <span id="s1-current">1</span> / <span>5</span></div>
+      <div class="equation-display" id="s1-equation"></div>
+      <div class="atom-count-table" id="s1-atoms"></div>
+      <div class="balanced-badge" id="s1-badge">Balanced!</div>
+      <div class="btn-row">
+        <button class="btn" onclick="resetS1()">Reset</button>
+        <button class="btn" onclick="skipS1()">Skip</button>
+      </div>
+      <div class="feedback" id="s1-feedback"></div>
+    </div>
+
+    <div class="section-score">
+      <div class="score-bar"><div class="score-fill" id="s1-fill"></div></div>
+      <div class="score-text" id="s1-score-text">0 / 5</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SECTION 2: TYPES OF CHEMICAL REACTIONS            -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="card" id="card2">
+  <div class="card-header" onclick="toggleCard('card2')">
+    <div class="num">2</div>
+    <div class="title">Types of Chemical Reactions</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Millions of reactions fit into <strong style="color:#fff">five major categories</strong>. Recognizing the pattern lets you predict products before you ever mix chemicals.
+    </p>
+
+    <div class="rxn-grid">
+      <div class="rxn-card">
+        <div class="rxn-icon">
+          <div class="anim-container">
+            <div class="anim-piece a" style="left:25%;top:50%;transform:translateY(-50%)"></div>
+            <div class="anim-piece b" style="right:25%;top:50%;transform:translateY(-50%)"></div>
+          </div>
+        </div>
+        <div class="rxn-name">Synthesis</div>
+        <div class="rxn-pattern">A + B &rarr; AB</div>
+        <div class="rxn-example">2 Na + Cl<sub>2</sub> &rarr; 2 NaCl</div>
+      </div>
+      <div class="rxn-card">
+        <div class="rxn-icon">
+          <div class="anim-container">
+            <div class="anim-piece a" style="left:calc(50% - 13px);top:50%;transform:translateY(-50%)"></div>
+            <div class="anim-piece b" style="left:calc(50% + 3px);top:50%;transform:translateY(-50%);opacity:0"></div>
+          </div>
+        </div>
+        <div class="rxn-name">Decomposition</div>
+        <div class="rxn-pattern">AB &rarr; A + B</div>
+        <div class="rxn-example">2 H<sub>2</sub>O &rarr; 2 H<sub>2</sub> + O<sub>2</sub></div>
+      </div>
+      <div class="rxn-card">
+        <div class="rxn-icon">
+          <div class="anim-container">
+            <div class="anim-piece a" style="left:20%;top:50%;transform:translateY(-50%)"></div>
+            <div class="anim-piece b" style="left:calc(50% - 16px);top:50%;transform:translateY(-50%)"></div>
+            <div class="anim-piece c" style="left:calc(50% + 6px);top:50%;transform:translateY(-50%)"></div>
+          </div>
+        </div>
+        <div class="rxn-name">Single Replacement</div>
+        <div class="rxn-pattern">A + BC &rarr; AC + B</div>
+        <div class="rxn-example">Zn + CuSO<sub>4</sub> &rarr; ZnSO<sub>4</sub> + Cu</div>
+      </div>
+      <div class="rxn-card">
+        <div class="rxn-icon">
+          <div class="anim-container">
+            <div class="anim-piece a" style="left:20%;top:50%;transform:translateY(-50%)"></div>
+            <div class="anim-piece b" style="left:35%;top:50%;transform:translateY(-50%)"></div>
+            <div class="anim-piece c" style="left:55%;top:50%;transform:translateY(-50%)"></div>
+            <div class="anim-piece d" style="left:70%;top:50%;transform:translateY(-50%)"></div>
+          </div>
+        </div>
+        <div class="rxn-name">Double Replacement</div>
+        <div class="rxn-pattern">AB + CD &rarr; AD + CB</div>
+        <div class="rxn-example">AgNO<sub>3</sub> + NaCl &rarr; AgCl + NaNO<sub>3</sub></div>
+      </div>
+      <div class="rxn-card">
+        <div class="rxn-icon">
+          <div class="flame-icon"></div>
+        </div>
+        <div class="rxn-name">Combustion</div>
+        <div class="rxn-pattern">C<sub>x</sub>H<sub>y</sub> + O<sub>2</sub> &rarr; CO<sub>2</sub> + H<sub>2</sub>O</div>
+        <div class="rxn-example">CH<sub>4</sub> + 2 O<sub>2</sub> &rarr; CO<sub>2</sub> + 2 H<sub>2</sub>O</div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Classify the Reaction</h3>
+    <div class="interactive-box" id="s2-classify">
+      <h4>Reaction Classification</h4>
+      <div class="problem-counter">Problem <span id="s2-current">1</span> / <span>5</span></div>
+      <div class="formula-display" id="s2-equation"></div>
+      <div class="btn-row" id="s2-buttons">
+        <button class="btn" onclick="checkS2('synthesis')">Synthesis</button>
+        <button class="btn" onclick="checkS2('decomposition')">Decomposition</button>
+        <button class="btn" onclick="checkS2('single')">Single Replacement</button>
+        <button class="btn" onclick="checkS2('double')">Double Replacement</button>
+        <button class="btn" onclick="checkS2('combustion')">Combustion</button>
+      </div>
+      <div class="feedback" id="s2-feedback"></div>
+    </div>
+
+    <div class="section-score">
+      <div class="score-bar"><div class="score-fill" id="s2-fill"></div></div>
+      <div class="score-text" id="s2-score-text">0 / 5</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SECTION 3: PREDICTING PRODUCTS                    -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="card" id="card3">
+  <div class="card-header" onclick="toggleCard('card3')">
+    <div class="num">3</div>
+    <div class="title">Predicting Products</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Once you identify the reaction type, you can <strong style="color:#fff">predict the products</strong>. Two key references help:
+      the <strong style="color:var(--amber)">activity series</strong> for single replacement and <strong style="color:var(--amber)">solubility rules</strong> for double replacement.
+    </p>
+
+    <div class="ref-card">
+      <div class="ref-title">Activity Series (metals, most to least reactive)</div>
+      <div style="font-size:.72rem;color:var(--text);line-height:1.8;">
+        Li > K > Ba > Ca > Na > Mg > Al > Zn > Fe > Ni > Sn > Pb > <span style="color:var(--pink);font-weight:600">H<sub>2</sub></span> > Cu > Ag > Pt > Au<br>
+        <span style="color:var(--text-dim)">A metal will replace any metal below it. Metals above H<sub>2</sub> react with acids.</span>
+      </div>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-title">Solubility Rules (common precipitates)</div>
+      <ul>
+        <li>Most <strong style="color:#fff">Na<sup>+</sup>, K<sup>+</sup>, NH<sub>4</sub><sup>+</sup></strong> salts are <span style="color:var(--green)">soluble</span></li>
+        <li>Most <strong style="color:#fff">NO<sub>3</sub><sup>-</sup></strong> and <strong style="color:#fff">CH<sub>3</sub>COO<sup>-</sup></strong> salts are <span style="color:var(--green)">soluble</span></li>
+        <li>Most <strong style="color:#fff">Cl<sup>-</sup>, Br<sup>-</sup>, I<sup>-</sup></strong> are <span style="color:var(--green)">soluble</span>, EXCEPT with Ag<sup>+</sup>, Pb<sup>2+</sup>, Hg<sub>2</sub><sup>2+</sup></li>
+        <li>Most <strong style="color:#fff">SO<sub>4</sub><sup>2-</sup></strong> are <span style="color:var(--green)">soluble</span>, EXCEPT with Ba<sup>2+</sup>, Pb<sup>2+</sup>, Ca<sup>2+</sup></li>
+        <li>Most <strong style="color:#fff">OH<sup>-</sup>, S<sup>2-</sup>, CO<sub>3</sub><sup>2-</sup>, PO<sub>4</sub><sup>3-</sup></strong> are <span style="color:var(--pink)">insoluble</span></li>
+      </ul>
+    </div>
+
+    <h3 class="sub-heading">Predict the Products</h3>
+    <div class="interactive-box" id="s3-predict">
+      <h4>Product Prediction</h4>
+      <div class="problem-counter">Problem <span id="s3-current">1</span> / <span>4</span></div>
+      <div class="formula-display" id="s3-equation"></div>
+      <div id="s3-hint" style="font-size:.72rem;color:var(--text-dim);margin-bottom:.8rem;"></div>
+      <div class="input-row">
+        <input type="text" class="text-input" id="s3-input" placeholder="Enter products (e.g., NaCl + H2O)">
+        <button class="btn btn-primary" onclick="checkS3()">Check</button>
+        <button class="btn" onclick="skipS3()">Skip</button>
+      </div>
+      <div class="feedback" id="s3-feedback"></div>
+    </div>
+
+    <div class="section-score">
+      <div class="score-bar"><div class="score-fill" id="s3-fill"></div></div>
+      <div class="score-text" id="s3-score-text">0 / 4</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SECTION 4: NET IONIC EQUATIONS                    -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="card" id="card4">
+  <div class="card-header" onclick="toggleCard('card4')">
+    <div class="num">4</div>
+    <div class="title">Net Ionic Equations</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      A <strong style="color:#fff">net ionic equation</strong> strips away the spectator ions to show only the species that actually react.
+      Three steps: write the <strong style="color:var(--amber)">molecular equation</strong>, expand to the <strong style="color:var(--amber)">total ionic equation</strong> (split all strong electrolytes),
+      then cancel <strong style="color:var(--pink)">spectator ions</strong> that appear on both sides.
+    </p>
+
+    <div class="navy-context">
+      <strong>Navy Connection:</strong> Hull corrosion is a net ionic process. When steel (Fe) contacts saltwater,
+      the net ionic equation Fe(s) &rarr; Fe<sup>2+</sup>(aq) + 2 e<sup>-</sup> drives structural damage. Understanding which ions are spectators vs. active
+      is crucial for corrosion engineering.
+    </div>
+
+    <h3 class="sub-heading">Step-by-Step Transformer</h3>
+    <div class="interactive-box" id="s4-ionic">
+      <h4>Identify the Spectator Ions</h4>
+      <div class="problem-counter">Problem <span id="s4-current">1</span> / <span>4</span></div>
+      <div id="s4-molecular" class="ionic-step">
+        <div class="step-label">Molecular Equation</div>
+        <div id="s4-mol-eq"></div>
+      </div>
+      <div id="s4-total" class="ionic-step">
+        <div class="step-label">Total Ionic Equation -- click the spectator ions</div>
+        <div id="s4-total-eq"></div>
+      </div>
+      <div id="s4-net" class="ionic-step" style="opacity:0.3;">
+        <div class="step-label">Net Ionic Equation</div>
+        <div id="s4-net-eq"></div>
+      </div>
+      <div class="btn-row" style="margin-top:.8rem;">
+        <button class="btn btn-primary" onclick="checkS4()">Check Spectators</button>
+        <button class="btn" onclick="skipS4()">Skip</button>
+      </div>
+      <div class="feedback" id="s4-feedback"></div>
+    </div>
+
+    <div class="section-score">
+      <div class="score-bar"><div class="score-fill" id="s4-fill"></div></div>
+      <div class="score-text" id="s4-score-text">0 / 4</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SECTION 5: OXIDATION-REDUCTION INTRO              -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="card" id="card5">
+  <div class="card-header" onclick="toggleCard('card5')">
+    <div class="num">5</div>
+    <div class="title">Oxidation-Reduction Intro</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      <strong style="color:#fff">Redox reactions</strong> involve the transfer of electrons. One species is <strong style="color:var(--pink)">oxidized</strong> (loses electrons, oxidation number goes up)
+      and another is <strong style="color:var(--blue)">reduced</strong> (gains electrons, oxidation number goes down).
+    </p>
+
+    <div class="mnemonic-grid">
+      <div class="mnemonic-card oil">
+        <div class="mnemonic-title">OIL</div>
+        <div class="mnemonic-sub">Oxidation<br>Is<br>Loss (of electrons)</div>
+      </div>
+      <div class="mnemonic-card rig">
+        <div class="mnemonic-title">RIG</div>
+        <div class="mnemonic-sub">Reduction<br>Is<br>Gain (of electrons)</div>
+      </div>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-title">Oxidation Number Rules</div>
+      <ul>
+        <li>Free elements = <strong style="color:#fff">0</strong> (e.g., Fe, O<sub>2</sub>, S<sub>8</sub>)</li>
+        <li>Monatomic ions = <strong style="color:#fff">charge</strong> (e.g., Na<sup>+</sup> = +1, Cl<sup>-</sup> = -1)</li>
+        <li>H = <strong style="color:#fff">+1</strong> in most compounds (except metal hydrides: -1)</li>
+        <li>O = <strong style="color:#fff">-2</strong> in most compounds (except peroxides: -1)</li>
+        <li>F = always <strong style="color:#fff">-1</strong></li>
+        <li>Sum of oxidation numbers = <strong style="color:#fff">charge of species</strong></li>
+      </ul>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy Connection:</strong> Rust (Fe<sub>2</sub>O<sub>3</sub>) forms when iron is oxidized: Fe &rarr; Fe<sup>3+</sup> + 3 e<sup>-</sup>.
+      Sacrificial anodes (zinc blocks welded to hulls) work because Zn is oxidized preferentially (Zn &rarr; Zn<sup>2+</sup> + 2 e<sup>-</sup>),
+      protecting the steel. The anode "sacrifices" itself so the hull doesn't corrode.
+    </div>
+
+    <h3 class="sub-heading">Oxidation Number Visualizer</h3>
+    <div class="interactive-box">
+      <h4>Assign Oxidation Numbers</h4>
+      <div id="s5-ox-display" class="ox-formula"></div>
+      <div class="btn-row" style="justify-content:center;margin-top:.8rem;">
+        <button class="btn" onclick="showOxFormula('H2O')">H<sub>2</sub>O</button>
+        <button class="btn" onclick="showOxFormula('NaCl')">NaCl</button>
+        <button class="btn" onclick="showOxFormula('H2SO4')">H<sub>2</sub>SO<sub>4</sub></button>
+        <button class="btn" onclick="showOxFormula('KMnO4')">KMnO<sub>4</sub></button>
+        <button class="btn" onclick="showOxFormula('Fe2O3')">Fe<sub>2</sub>O<sub>3</sub></button>
+        <button class="btn" onclick="showOxFormula('CO2')">CO<sub>2</sub></button>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Identify Oxidized &amp; Reduced</h3>
+    <div class="interactive-box" id="s5-redox">
+      <h4>Redox Identification</h4>
+      <div class="problem-counter">Problem <span id="s5-current">1</span> / <span>4</span></div>
+      <div class="formula-display" id="s5-equation"></div>
+      <div id="s5-prompt" style="font-size:.78rem;color:var(--text);margin-bottom:.8rem;"></div>
+      <div class="input-row">
+        <input type="text" class="text-input" id="s5-input" placeholder="Enter element symbol">
+        <button class="btn btn-primary" onclick="checkS5()">Check</button>
+        <button class="btn" onclick="skipS5()">Skip</button>
+      </div>
+      <div class="feedback" id="s5-feedback"></div>
+    </div>
+
+    <div class="section-score">
+      <div class="score-bar"><div class="score-fill" id="s5-fill"></div></div>
+      <div class="score-text" id="s5-score-text">0 / 4</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SECTION 6: QUICK QUIZ                             -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="card" id="card6">
+  <div class="card-header" onclick="toggleCard('card6')">
+    <div class="num">6</div>
+    <div class="title">Quick Quiz</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <div class="quiz-header">
+      <div class="problem-counter">Question <span id="quiz-current">1</span> / <span>10</span></div>
+      <div class="quiz-score" id="quiz-score">Score: 0 / 0</div>
+    </div>
+
+    <div class="quiz-problem" id="quiz-problem">
+      <div class="q-num" id="quiz-qnum">Question 1</div>
+      <div class="q-text" id="quiz-qtext"></div>
+      <div class="input-row">
+        <input type="text" class="text-input" id="quiz-input" placeholder="Your answer">
+        <button class="btn btn-primary" onclick="checkQuiz()">Check</button>
+        <button class="btn" onclick="skipQuiz()">Skip</button>
+      </div>
+    </div>
+    <div class="feedback" id="quiz-feedback"></div>
+
+    <div class="section-score">
+      <div class="score-bar"><div class="score-fill" id="quiz-fill"></div></div>
+      <div class="score-text" id="quiz-score-text">0 / 10</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- .container -->
+
+<script>
+/* ═══════════════════════════════════════════════════ */
+/*  UTILITY FUNCTIONS                                  */
+/* ═══════════════════════════════════════════════════ */
+const TOTAL_PROBLEMS = 32; // 5+5+4+4+4+10
+let solvedTotal = 0;
+
+function updateProgress() {
+  const pct = Math.min(100, (solvedTotal / TOTAL_PROBLEMS) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = solvedTotal + ' / ' + TOTAL_PROBLEMS + ' problems completed';
+}
+
+function toggleCard(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function markSectionComplete(cardId, prefix) {
+  document.getElementById(cardId).classList.add('completed');
+  document.getElementById(cardId).classList.add('spring-pop');
+}
+
+function showFeedback(id, correct, msg) {
+  const el = document.getElementById(id);
+  el.className = 'feedback show ' + (correct ? 'correct-fb' : 'incorrect-fb');
+  el.innerHTML = (correct ? '&#10003; ' : '&#10007; ') + msg;
+}
+
+function clearFeedback(id) {
+  const el = document.getElementById(id);
+  el.className = 'feedback';
+  el.innerHTML = '';
+}
+
+function markInput(el, correct) {
+  el.classList.remove('correct-input', 'incorrect-input');
+  el.classList.add(correct ? 'correct-input' : 'incorrect-input');
+  if (correct) {
+    el.classList.add('spring-pop');
+  } else {
+    el.classList.add('shake');
+  }
+  setTimeout(() => { el.classList.remove('spring-pop', 'shake'); }, 500);
+}
+
+function updateSectionScore(fillId, textId, correct, total) {
+  const pct = (correct / total) * 100;
+  document.getElementById(fillId).style.width = pct + '%';
+  document.getElementById(textId).textContent = correct + ' / ' + total;
+}
+
+function norm(s) { return s.toLowerCase().replace(/[^a-z0-9+\-().]/g, ''); }
+
+function springPopEl(el) {
+  el.classList.add('spring-pop');
+  setTimeout(() => el.classList.remove('spring-pop'), 500);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  SECTION 1: BALANCING CHEMICAL EQUATIONS            */
+/* ═══════════════════════════════════════════════════ */
+const balancerProblems = [
+  {
+    // H2 + O2 -> H2O
+    reactants: [
+      { formula: 'H<sub>2</sub>', atoms: { H: 2 } },
+      { formula: 'O<sub>2</sub>', atoms: { O: 2 } }
+    ],
+    products: [
+      { formula: 'H<sub>2</sub>O', atoms: { H: 2, O: 1 } }
+    ],
+    answer: [2, 1, 2] // 2H2 + O2 -> 2H2O
+  },
+  {
+    // N2 + H2 -> NH3
+    reactants: [
+      { formula: 'N<sub>2</sub>', atoms: { N: 2 } },
+      { formula: 'H<sub>2</sub>', atoms: { H: 2 } }
+    ],
+    products: [
+      { formula: 'NH<sub>3</sub>', atoms: { N: 1, H: 3 } }
+    ],
+    answer: [1, 3, 2] // N2 + 3H2 -> 2NH3
+  },
+  {
+    // Fe + O2 -> Fe2O3
+    reactants: [
+      { formula: 'Fe', atoms: { Fe: 1 } },
+      { formula: 'O<sub>2</sub>', atoms: { O: 2 } }
+    ],
+    products: [
+      { formula: 'Fe<sub>2</sub>O<sub>3</sub>', atoms: { Fe: 2, O: 3 } }
+    ],
+    answer: [4, 3, 2] // 4Fe + 3O2 -> 2Fe2O3
+  },
+  {
+    // CH4 + O2 -> CO2 + H2O
+    reactants: [
+      { formula: 'CH<sub>4</sub>', atoms: { C: 1, H: 4 } },
+      { formula: 'O<sub>2</sub>', atoms: { O: 2 } }
+    ],
+    products: [
+      { formula: 'CO<sub>2</sub>', atoms: { C: 1, O: 2 } },
+      { formula: 'H<sub>2</sub>O', atoms: { H: 2, O: 1 } }
+    ],
+    answer: [1, 2, 1, 2] // CH4 + 2O2 -> CO2 + 2H2O
+  },
+  {
+    // C3H8 + O2 -> CO2 + H2O
+    reactants: [
+      { formula: 'C<sub>3</sub>H<sub>8</sub>', atoms: { C: 3, H: 8 } },
+      { formula: 'O<sub>2</sub>', atoms: { O: 2 } }
+    ],
+    products: [
+      { formula: 'CO<sub>2</sub>', atoms: { C: 1, O: 2 } },
+      { formula: 'H<sub>2</sub>O', atoms: { H: 2, O: 1 } }
+    ],
+    answer: [1, 5, 3, 4] // C3H8 + 5O2 -> 3CO2 + 4H2O
+  }
+];
+
+let s1Idx = 0, s1Correct = 0;
+let s1Coeffs = [];
+
+function loadS1() {
+  if (s1Idx >= balancerProblems.length) {
+    markSectionComplete('card1', 's1');
+    document.getElementById('s1-balancer').innerHTML = '<h4>All equations balanced!</h4><p style="font-size:.78rem;color:var(--green);">You completed all 5 equations.</p>';
+    return;
+  }
+  const p = balancerProblems[s1Idx];
+  const totalCompounds = p.reactants.length + p.products.length;
+  s1Coeffs = new Array(totalCompounds).fill(1);
+  document.getElementById('s1-current').textContent = s1Idx + 1;
+  clearFeedback('s1-feedback');
+  document.getElementById('s1-badge').classList.remove('show');
+  renderS1();
+}
+
+function renderS1() {
+  const p = balancerProblems[s1Idx];
+  let html = '';
+  let idx = 0;
+
+  // Reactants
+  p.reactants.forEach((comp, i) => {
+    if (i > 0) html += '<span class="eq-plus">+</span>';
+    html += buildCoeffControl(idx, comp.formula);
+    idx++;
+  });
+
+  html += '<span class="eq-arrow">&rarr;</span>';
+
+  // Products
+  p.products.forEach((comp, i) => {
+    if (i > 0) html += '<span class="eq-plus">+</span>';
+    html += buildCoeffControl(idx, comp.formula);
+    idx++;
+  });
+
+  document.getElementById('s1-equation').innerHTML = html;
+  renderAtomCounts();
+  checkBalance();
+}
+
+function buildCoeffControl(idx, formula) {
+  return `<div class="coeff-control">
+    <button class="coeff-btn" onclick="changeCoeff(${idx}, 1)">+</button>
+    <span class="coeff-value" id="coeff-${idx}">${s1Coeffs[idx]}</span>
+    <button class="coeff-btn" onclick="changeCoeff(${idx}, -1)">&minus;</button>
+  </div>
+  <span class="eq-compound">${formula}</span>`;
+}
+
+function changeCoeff(idx, delta) {
+  s1Coeffs[idx] = Math.max(1, Math.min(10, s1Coeffs[idx] + delta));
+  document.getElementById('coeff-' + idx).textContent = s1Coeffs[idx];
+  renderAtomCounts();
+  checkBalance();
+}
+
+function renderAtomCounts() {
+  const p = balancerProblems[s1Idx];
+  // Gather all atoms
+  const allAtoms = new Set();
+  [...p.reactants, ...p.products].forEach(c => Object.keys(c.atoms).forEach(a => allAtoms.add(a)));
+
+  // Count left side
+  const left = {};
+  const right = {};
+  allAtoms.forEach(a => { left[a] = 0; right[a] = 0; });
+
+  let idx = 0;
+  p.reactants.forEach(c => {
+    Object.entries(c.atoms).forEach(([a, n]) => { left[a] += n * s1Coeffs[idx]; });
+    idx++;
+  });
+  p.products.forEach(c => {
+    Object.entries(c.atoms).forEach(([a, n]) => { right[a] += n * s1Coeffs[idx]; });
+    idx++;
+  });
+
+  let leftHtml = '<div class="side-label">Reactants</div>';
+  let rightHtml = '<div class="side-label">Products</div>';
+
+  allAtoms.forEach(a => {
+    const bal = left[a] === right[a];
+    const cls = bal ? 'balanced' : 'unbalanced';
+    leftHtml += `<div class="atom-row"><span class="atom-sym">${a}</span><span class="atom-num ${cls}">${left[a]}</span></div>`;
+    rightHtml += `<div class="atom-row"><span class="atom-sym">${a}</span><span class="atom-num ${cls}">${right[a]}</span></div>`;
+  });
+
+  document.getElementById('s1-atoms').innerHTML =
+    `<div class="atom-count-side">${leftHtml}</div><div class="atom-count-side">${rightHtml}</div>`;
+}
+
+function checkBalance() {
+  const p = balancerProblems[s1Idx];
+  const allAtoms = new Set();
+  [...p.reactants, ...p.products].forEach(c => Object.keys(c.atoms).forEach(a => allAtoms.add(a)));
+
+  const left = {};
+  const right = {};
+  allAtoms.forEach(a => { left[a] = 0; right[a] = 0; });
+
+  let idx = 0;
+  p.reactants.forEach(c => {
+    Object.entries(c.atoms).forEach(([a, n]) => { left[a] += n * s1Coeffs[idx]; });
+    idx++;
+  });
+  p.products.forEach(c => {
+    Object.entries(c.atoms).forEach(([a, n]) => { right[a] += n * s1Coeffs[idx]; });
+    idx++;
+  });
+
+  let balanced = true;
+  allAtoms.forEach(a => { if (left[a] !== right[a]) balanced = false; });
+
+  // Check it is not all 1's if answer is not all 1's
+  const allOnes = s1Coeffs.every(c => c === 1);
+  const answerAllOnes = p.answer.every(c => c === 1);
+  if (allOnes && !answerAllOnes) balanced = false;
+
+  if (balanced) {
+    const badge = document.getElementById('s1-badge');
+    badge.classList.add('show');
+    springPopEl(badge);
+    showFeedback('s1-feedback', true, 'Equation balanced! Coefficients: ' + s1Coeffs.join(', '));
+    s1Correct++;
+    solvedTotal++;
+    updateProgress();
+    updateSectionScore('s1-fill', 's1-score-text', s1Correct, balancerProblems.length);
+    s1Idx++;
+    setTimeout(() => loadS1(), 1800);
+  }
+}
+
+function resetS1() {
+  const p = balancerProblems[s1Idx];
+  const totalCompounds = p.reactants.length + p.products.length;
+  s1Coeffs = new Array(totalCompounds).fill(1);
+  clearFeedback('s1-feedback');
+  document.getElementById('s1-badge').classList.remove('show');
+  renderS1();
+}
+
+function skipS1() {
+  const p = balancerProblems[s1Idx];
+  showFeedback('s1-feedback', false, 'Skipped. Answer: ' + p.answer.join(', '));
+  solvedTotal++;
+  updateProgress();
+  updateSectionScore('s1-fill', 's1-score-text', s1Correct, balancerProblems.length);
+  s1Idx++;
+  setTimeout(() => loadS1(), 1500);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  SECTION 2: TYPES OF CHEMICAL REACTIONS             */
+/* ═══════════════════════════════════════════════════ */
+const classifyProblems = [
+  {
+    equation: '2 Mg + O<sub>2</sub> &rarr; 2 MgO',
+    answer: 'synthesis',
+    explanation: 'Two elements combine to form one compound (A + B &rarr; AB).'
+  },
+  {
+    equation: '2 KClO<sub>3</sub> &rarr; 2 KCl + 3 O<sub>2</sub>',
+    answer: 'decomposition',
+    explanation: 'One compound breaks into simpler substances (AB &rarr; A + B).'
+  },
+  {
+    equation: 'Zn + 2 HCl &rarr; ZnCl<sub>2</sub> + H<sub>2</sub>',
+    answer: 'single',
+    explanation: 'Zinc replaces hydrogen: A + BC &rarr; AC + B.'
+  },
+  {
+    equation: 'NaOH + HCl &rarr; NaCl + H<sub>2</sub>O',
+    answer: 'double',
+    explanation: 'Partners swap: AB + CD &rarr; AD + CB (acid-base neutralization).'
+  },
+  {
+    equation: '2 C<sub>2</sub>H<sub>6</sub> + 7 O<sub>2</sub> &rarr; 4 CO<sub>2</sub> + 6 H<sub>2</sub>O',
+    answer: 'combustion',
+    explanation: 'Hydrocarbon + O<sub>2</sub> produces CO<sub>2</sub> and H<sub>2</sub>O.'
+  }
+];
+
+let s2Idx = 0, s2Correct = 0;
+
+function loadS2() {
+  if (s2Idx >= classifyProblems.length) {
+    markSectionComplete('card2', 's2');
+    document.getElementById('s2-classify').innerHTML = '<h4>All classified!</h4><p style="font-size:.78rem;color:var(--green);">You identified all 5 reaction types.</p>';
+    return;
+  }
+  const p = classifyProblems[s2Idx];
+  document.getElementById('s2-current').textContent = s2Idx + 1;
+  document.getElementById('s2-equation').innerHTML = p.equation;
+  clearFeedback('s2-feedback');
+  // Reset buttons
+  document.querySelectorAll('#s2-buttons .btn').forEach(b => {
+    b.className = 'btn';
+    b.disabled = false;
+  });
+}
+
+function checkS2(answer) {
+  const p = classifyProblems[s2Idx];
+  const buttons = document.querySelectorAll('#s2-buttons .btn');
+  buttons.forEach(b => b.disabled = true);
+
+  // Highlight correct/incorrect
+  buttons.forEach(b => {
+    const type = b.textContent.toLowerCase().replace(' replacement', '');
+    const btnAnswer = b.onclick.toString().match(/'([^']+)'/)[1];
+    if (btnAnswer === p.answer) {
+      b.classList.add('correct');
+    } else if (btnAnswer === answer && answer !== p.answer) {
+      b.classList.add('incorrect');
+    }
+  });
+
+  const correct = answer === p.answer;
+  solvedTotal++;
+  updateProgress();
+
+  if (correct) {
+    s2Correct++;
+    showFeedback('s2-feedback', true, p.explanation);
+  } else {
+    showFeedback('s2-feedback', false, p.explanation);
+  }
+  updateSectionScore('s2-fill', 's2-score-text', s2Correct, classifyProblems.length);
+  s2Idx++;
+  setTimeout(() => loadS2(), 2000);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  SECTION 3: PREDICTING PRODUCTS                     */
+/* ═══════════════════════════════════════════════════ */
+const predictProblems = [
+  {
+    equation: 'Na + Cl<sub>2</sub> &rarr; ?',
+    hint: 'Synthesis: a metal + a nonmetal. What compound forms?',
+    answer: ['nacl', '2nacl'],
+    display: '2 NaCl',
+    explanation: 'Synthesis: Na + Cl<sub>2</sub> &rarr; 2 NaCl. Sodium and chlorine combine.'
+  },
+  {
+    equation: 'Zn + CuSO<sub>4</sub> &rarr; ?',
+    hint: 'Single replacement. Is Zn above Cu in the activity series?',
+    answer: ['znso4+cu', 'znso4 + cu', 'cuso4 becomes znso4', 'znso4+cu'],
+    display: 'ZnSO4 + Cu',
+    explanation: 'Zn is above Cu in the activity series, so it displaces Cu: Zn + CuSO<sub>4</sub> &rarr; ZnSO<sub>4</sub> + Cu'
+  },
+  {
+    equation: 'AgNO<sub>3</sub> + NaCl &rarr; ?',
+    hint: 'Double replacement. Check solubility: is AgCl soluble?',
+    answer: ['agcl+nano3', 'agcl + nano3', 'nano3+agcl', 'nano3 + agcl'],
+    display: 'AgCl (s) + NaNO3 (aq)',
+    explanation: 'Partners swap: AgNO<sub>3</sub> + NaCl &rarr; AgCl (precipitate!) + NaNO<sub>3</sub>. AgCl is insoluble per solubility rules.'
+  },
+  {
+    equation: 'C<sub>2</sub>H<sub>5</sub>OH + O<sub>2</sub> &rarr; ?',
+    hint: 'Combustion of an organic compound (contains C and H). Products are always the same two.',
+    answer: ['co2+h2o', 'co2 + h2o', 'h2o+co2', 'h2o + co2'],
+    display: 'CO2 + H2O',
+    explanation: 'Combustion: C<sub>2</sub>H<sub>5</sub>OH + 3 O<sub>2</sub> &rarr; 2 CO<sub>2</sub> + 3 H<sub>2</sub>O'
+  }
+];
+
+let s3Idx = 0, s3Correct = 0;
+
+function loadS3() {
+  if (s3Idx >= predictProblems.length) {
+    markSectionComplete('card3', 's3');
+    document.getElementById('s3-predict').innerHTML = '<h4>All products predicted!</h4><p style="font-size:.78rem;color:var(--green);">You completed all 4 problems.</p>';
+    return;
+  }
+  const p = predictProblems[s3Idx];
+  document.getElementById('s3-current').textContent = s3Idx + 1;
+  document.getElementById('s3-equation').innerHTML = p.equation;
+  document.getElementById('s3-hint').textContent = p.hint;
+  document.getElementById('s3-input').value = '';
+  document.getElementById('s3-input').classList.remove('correct-input', 'incorrect-input');
+  clearFeedback('s3-feedback');
+  document.getElementById('s3-input').focus();
+}
+
+function checkS3() {
+  const input = document.getElementById('s3-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const p = predictProblems[s3Idx];
+  const normVal = norm(val);
+  const correct = p.answer.some(a => norm(a) === normVal);
+
+  solvedTotal++;
+  updateProgress();
+
+  if (correct) {
+    s3Correct++;
+    showFeedback('s3-feedback', true, p.explanation);
+    markInput(input, true);
+  } else {
+    showFeedback('s3-feedback', false, 'Answer: <strong>' + p.display + '</strong>. ' + p.explanation);
+    markInput(input, false);
+  }
+  updateSectionScore('s3-fill', 's3-score-text', s3Correct, predictProblems.length);
+  s3Idx++;
+  setTimeout(() => loadS3(), 2000);
+}
+
+function skipS3() {
+  const p = predictProblems[s3Idx];
+  solvedTotal++;
+  updateProgress();
+  showFeedback('s3-feedback', false, 'Skipped. Answer: <strong>' + p.display + '</strong>. ' + p.explanation);
+  updateSectionScore('s3-fill', 's3-score-text', s3Correct, predictProblems.length);
+  s3Idx++;
+  setTimeout(() => loadS3(), 1800);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  SECTION 4: NET IONIC EQUATIONS                     */
+/* ═══════════════════════════════════════════════════ */
+const ionicProblems = [
+  {
+    molecular: 'AgNO<sub>3</sub>(aq) + NaCl(aq) &rarr; AgCl(s) + NaNO<sub>3</sub>(aq)',
+    totalIons: [
+      { text: 'Ag<sup>+</sup>', spectator: false },
+      { text: 'NO<sub>3</sub><sup>-</sup>', spectator: true },
+      { text: 'Na<sup>+</sup>', spectator: true },
+      { text: 'Cl<sup>-</sup>', spectator: false },
+      { text: 'AgCl(s)', spectator: false },
+      { text: 'Na<sup>+</sup>', spectator: true },
+      { text: 'NO<sub>3</sub><sup>-</sup>', spectator: true }
+    ],
+    spectatorNames: ['NO3-', 'Na+'],
+    netIonic: 'Ag<sup>+</sup>(aq) + Cl<sup>-</sup>(aq) &rarr; AgCl(s)'
+  },
+  {
+    molecular: 'BaCl<sub>2</sub>(aq) + Na<sub>2</sub>SO<sub>4</sub>(aq) &rarr; BaSO<sub>4</sub>(s) + 2 NaCl(aq)',
+    totalIons: [
+      { text: 'Ba<sup>2+</sup>', spectator: false },
+      { text: 'Cl<sup>-</sup>', spectator: true },
+      { text: 'Na<sup>+</sup>', spectator: true },
+      { text: 'SO<sub>4</sub><sup>2-</sup>', spectator: false },
+      { text: 'BaSO<sub>4</sub>(s)', spectator: false },
+      { text: 'Na<sup>+</sup>', spectator: true },
+      { text: 'Cl<sup>-</sup>', spectator: true }
+    ],
+    spectatorNames: ['Cl-', 'Na+'],
+    netIonic: 'Ba<sup>2+</sup>(aq) + SO<sub>4</sub><sup>2-</sup>(aq) &rarr; BaSO<sub>4</sub>(s)'
+  },
+  {
+    molecular: 'HCl(aq) + NaOH(aq) &rarr; NaCl(aq) + H<sub>2</sub>O(l)',
+    totalIons: [
+      { text: 'H<sup>+</sup>', spectator: false },
+      { text: 'Cl<sup>-</sup>', spectator: true },
+      { text: 'Na<sup>+</sup>', spectator: true },
+      { text: 'OH<sup>-</sup>', spectator: false },
+      { text: 'Na<sup>+</sup>', spectator: true },
+      { text: 'Cl<sup>-</sup>', spectator: true },
+      { text: 'H<sub>2</sub>O(l)', spectator: false }
+    ],
+    spectatorNames: ['Na+', 'Cl-'],
+    netIonic: 'H<sup>+</sup>(aq) + OH<sup>-</sup>(aq) &rarr; H<sub>2</sub>O(l)'
+  },
+  {
+    molecular: 'Pb(NO<sub>3</sub>)<sub>2</sub>(aq) + 2 KI(aq) &rarr; PbI<sub>2</sub>(s) + 2 KNO<sub>3</sub>(aq)',
+    totalIons: [
+      { text: 'Pb<sup>2+</sup>', spectator: false },
+      { text: 'NO<sub>3</sub><sup>-</sup>', spectator: true },
+      { text: 'K<sup>+</sup>', spectator: true },
+      { text: 'I<sup>-</sup>', spectator: false },
+      { text: 'PbI<sub>2</sub>(s)', spectator: false },
+      { text: 'K<sup>+</sup>', spectator: true },
+      { text: 'NO<sub>3</sub><sup>-</sup>', spectator: true }
+    ],
+    spectatorNames: ['K+', 'NO3-'],
+    netIonic: 'Pb<sup>2+</sup>(aq) + 2 I<sup>-</sup>(aq) &rarr; PbI<sub>2</sub>(s)'
+  }
+];
+
+let s4Idx = 0, s4Correct = 0;
+let s4Clicked = [];
+
+function loadS4() {
+  if (s4Idx >= ionicProblems.length) {
+    markSectionComplete('card4', 's4');
+    document.getElementById('s4-ionic').innerHTML = '<h4>All net ionic equations complete!</h4><p style="font-size:.78rem;color:var(--green);">You identified spectators in all 4 problems.</p>';
+    return;
+  }
+  const p = ionicProblems[s4Idx];
+  document.getElementById('s4-current').textContent = s4Idx + 1;
+  document.getElementById('s4-mol-eq').innerHTML = p.molecular;
+
+  // Build clickable total ionic equation
+  s4Clicked = new Array(p.totalIons.length).fill(false);
+  let html = '';
+  const arrowIdx = p.totalIons.findIndex((ion, i) => {
+    // First product: ions after all reactant ions
+    // For simplicity, insert arrow before the solid/first product
+    return ion.text.includes('(s)') || ion.text.includes('(l)');
+  });
+
+  p.totalIons.forEach((ion, i) => {
+    if (i === arrowIdx) html += ' <span class="eq-arrow">&rarr;</span> ';
+    else if (i > 0 && i < arrowIdx) html += ' <span class="eq-plus">+</span> ';
+    else if (i > arrowIdx) html += ' <span class="eq-plus">+</span> ';
+
+    // Only make non-solid/liquid ions clickable
+    const isCompound = ion.text.includes('(s)') || ion.text.includes('(l)');
+    if (isCompound) {
+      html += `<span class="ion active-ion">${ion.text}</span>`;
+    } else {
+      html += `<span class="ion clickable" id="s4-ion-${i}" onclick="toggleS4Ion(${i})">${ion.text}</span>`;
+    }
+  });
+
+  document.getElementById('s4-total-eq').innerHTML = html;
+  document.getElementById('s4-net-eq').innerHTML = '(click spectator ions above, then press Check)';
+  document.getElementById('s4-net').style.opacity = '0.3';
+  clearFeedback('s4-feedback');
+}
+
+function toggleS4Ion(idx) {
+  s4Clicked[idx] = !s4Clicked[idx];
+  const el = document.getElementById('s4-ion-' + idx);
+  if (s4Clicked[idx]) {
+    el.classList.add('clicked-correct');
+    el.classList.remove('clickable');
+  } else {
+    el.classList.remove('clicked-correct', 'clicked-wrong');
+    el.classList.add('clickable');
+  }
+}
+
+function checkS4() {
+  const p = ionicProblems[s4Idx];
+  let allCorrect = true;
+
+  p.totalIons.forEach((ion, i) => {
+    const isCompound = ion.text.includes('(s)') || ion.text.includes('(l)');
+    if (isCompound) return;
+
+    const el = document.getElementById('s4-ion-' + i);
+    if (!el) return;
+
+    if (ion.spectator && s4Clicked[i]) {
+      el.className = 'ion clicked-correct';
+    } else if (ion.spectator && !s4Clicked[i]) {
+      el.className = 'ion clicked-wrong';
+      allCorrect = false;
+    } else if (!ion.spectator && s4Clicked[i]) {
+      el.className = 'ion clicked-wrong';
+      allCorrect = false;
+    } else {
+      el.className = 'ion active-ion';
+    }
+  });
+
+  solvedTotal++;
+  updateProgress();
+
+  if (allCorrect) {
+    s4Correct++;
+    showFeedback('s4-feedback', true, 'Correct! Spectators: ' + p.spectatorNames.join(', '));
+    // Animate: fade spectators, reveal net ionic
+    setTimeout(() => {
+      p.totalIons.forEach((ion, i) => {
+        if (ion.spectator) {
+          const el = document.getElementById('s4-ion-' + i);
+          if (el) el.classList.add('faded');
+        }
+      });
+      document.getElementById('s4-net').style.opacity = '1';
+      document.getElementById('s4-net-eq').innerHTML = p.netIonic;
+      springPopEl(document.getElementById('s4-net'));
+    }, 600);
+  } else {
+    showFeedback('s4-feedback', false, 'Not quite. Spectators are: <strong>' + p.spectatorNames.join(', ') + '</strong>');
+    // Show correct anyway
+    setTimeout(() => {
+      p.totalIons.forEach((ion, i) => {
+        if (ion.spectator) {
+          const el = document.getElementById('s4-ion-' + i);
+          if (el) { el.className = 'ion spectator faded'; }
+        }
+      });
+      document.getElementById('s4-net').style.opacity = '1';
+      document.getElementById('s4-net-eq').innerHTML = p.netIonic;
+    }, 800);
+  }
+
+  updateSectionScore('s4-fill', 's4-score-text', s4Correct, ionicProblems.length);
+  s4Idx++;
+  setTimeout(() => loadS4(), 3000);
+}
+
+function skipS4() {
+  const p = ionicProblems[s4Idx];
+  solvedTotal++;
+  updateProgress();
+  showFeedback('s4-feedback', false, 'Skipped. Spectators: <strong>' + p.spectatorNames.join(', ') + '</strong>. Net ionic: ' + p.netIonic);
+  document.getElementById('s4-net').style.opacity = '1';
+  document.getElementById('s4-net-eq').innerHTML = p.netIonic;
+  updateSectionScore('s4-fill', 's4-score-text', s4Correct, ionicProblems.length);
+  s4Idx++;
+  setTimeout(() => loadS4(), 2500);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  SECTION 5: OXIDATION-REDUCTION INTRO               */
+/* ═══════════════════════════════════════════════════ */
+const oxFormulas = {
+  'H2O': [
+    { sym: 'H', sub: '2', ox: +1 },
+    { sym: 'O', sub: '', ox: -2 }
+  ],
+  'NaCl': [
+    { sym: 'Na', sub: '', ox: +1 },
+    { sym: 'Cl', sub: '', ox: -1 }
+  ],
+  'H2SO4': [
+    { sym: 'H', sub: '2', ox: +1 },
+    { sym: 'S', sub: '', ox: +6 },
+    { sym: 'O', sub: '4', ox: -2 }
+  ],
+  'KMnO4': [
+    { sym: 'K', sub: '', ox: +1 },
+    { sym: 'Mn', sub: '', ox: +7 },
+    { sym: 'O', sub: '4', ox: -2 }
+  ],
+  'Fe2O3': [
+    { sym: 'Fe', sub: '2', ox: +3 },
+    { sym: 'O', sub: '3', ox: -2 }
+  ],
+  'CO2': [
+    { sym: 'C', sub: '', ox: +4 },
+    { sym: 'O', sub: '2', ox: -2 }
+  ]
+};
+
+function showOxFormula(key) {
+  const atoms = oxFormulas[key];
+  let html = '';
+  atoms.forEach(a => {
+    const cls = a.ox > 0 ? 'pos' : (a.ox < 0 ? 'neg' : 'zero');
+    const sign = a.ox > 0 ? '+' + a.ox : (a.ox === 0 ? '0' : String(a.ox));
+    html += `<div class="ox-atom">
+      <span class="ox-num ${cls}">${sign}</span>
+      <span class="ox-sym">${a.sym}</span>
+      ${a.sub ? '<span class="ox-sub">' + a.sub + '</span>' : ''}
+    </div>`;
+  });
+  const display = document.getElementById('s5-ox-display');
+  display.innerHTML = html;
+  springPopEl(display);
+}
+
+const redoxProblems = [
+  {
+    equation: '2 Mg + O<sub>2</sub> &rarr; 2 MgO',
+    prompt: 'What element is OXIDIZED (loses electrons)?',
+    answer: ['mg', 'magnesium'],
+    explanation: 'Mg goes from 0 to +2 (loses 2 e<sup>-</sup>). O goes from 0 to -2 (gains 2 e<sup>-</sup>).'
+  },
+  {
+    equation: 'Fe<sub>2</sub>O<sub>3</sub> + 3 CO &rarr; 2 Fe + 3 CO<sub>2</sub>',
+    prompt: 'What element is REDUCED (gains electrons)?',
+    answer: ['fe', 'iron'],
+    explanation: 'Fe goes from +3 to 0 (gains electrons = reduced). C goes from +2 to +4 (oxidized).'
+  },
+  {
+    equation: 'Zn + Cu<sup>2+</sup> &rarr; Zn<sup>2+</sup> + Cu',
+    prompt: 'What element is OXIDIZED?',
+    answer: ['zn', 'zinc'],
+    explanation: 'Zn goes from 0 to +2 (oxidized, loses 2 e<sup>-</sup>). Cu goes from +2 to 0 (reduced).'
+  },
+  {
+    equation: '2 Na + Cl<sub>2</sub> &rarr; 2 NaCl',
+    prompt: 'What element is REDUCED?',
+    answer: ['cl', 'chlorine', 'cl2'],
+    explanation: 'Cl goes from 0 to -1 (gains 1 e<sup>-</sup> each = reduced). Na goes from 0 to +1 (oxidized).'
+  }
+];
+
+let s5Idx = 0, s5Correct = 0;
+
+function loadS5() {
+  if (s5Idx >= redoxProblems.length) {
+    markSectionComplete('card5', 's5');
+    document.getElementById('s5-redox').innerHTML = '<h4>All redox problems complete!</h4><p style="font-size:.78rem;color:var(--green);">You identified all 4 correctly.</p>';
+    return;
+  }
+  const p = redoxProblems[s5Idx];
+  document.getElementById('s5-current').textContent = s5Idx + 1;
+  document.getElementById('s5-equation').innerHTML = p.equation;
+  document.getElementById('s5-prompt').innerHTML = p.prompt;
+  document.getElementById('s5-input').value = '';
+  document.getElementById('s5-input').classList.remove('correct-input', 'incorrect-input');
+  clearFeedback('s5-feedback');
+  document.getElementById('s5-input').focus();
+}
+
+function checkS5() {
+  const input = document.getElementById('s5-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const p = redoxProblems[s5Idx];
+  const normVal = norm(val);
+  const correct = p.answer.some(a => norm(a) === normVal);
+
+  solvedTotal++;
+  updateProgress();
+
+  if (correct) {
+    s5Correct++;
+    showFeedback('s5-feedback', true, p.explanation);
+    markInput(input, true);
+  } else {
+    showFeedback('s5-feedback', false, 'Answer: <strong>' + p.answer[0].toUpperCase() + '</strong>. ' + p.explanation);
+    markInput(input, false);
+  }
+  updateSectionScore('s5-fill', 's5-score-text', s5Correct, redoxProblems.length);
+  s5Idx++;
+  setTimeout(() => loadS5(), 2000);
+}
+
+function skipS5() {
+  const p = redoxProblems[s5Idx];
+  solvedTotal++;
+  updateProgress();
+  showFeedback('s5-feedback', false, 'Skipped. Answer: <strong>' + p.answer[0].toUpperCase() + '</strong>. ' + p.explanation);
+  updateSectionScore('s5-fill', 's5-score-text', s5Correct, redoxProblems.length);
+  s5Idx++;
+  setTimeout(() => loadS5(), 1800);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  SECTION 6: QUICK QUIZ                              */
+/* ═══════════════════════════════════════════════════ */
+const quizProblems = [
+  {
+    text: 'Balance: _Al + _O<sub>2</sub> &rarr; _Al<sub>2</sub>O<sub>3</sub>. What coefficient goes in front of Al?',
+    answer: ['4'],
+    explanation: '4 Al + 3 O<sub>2</sub> &rarr; 2 Al<sub>2</sub>O<sub>3</sub>'
+  },
+  {
+    text: 'What type of reaction is: 2 H<sub>2</sub>O &rarr; 2 H<sub>2</sub> + O<sub>2</sub>?',
+    answer: ['decomposition'],
+    explanation: 'One compound breaks into simpler substances.'
+  },
+  {
+    text: 'In a combustion reaction, what are the two products?',
+    answer: ['co2 and h2o', 'co2+h2o', 'co2 + h2o', 'carbon dioxide and water', 'h2o and co2', 'h2o+co2', 'water and carbon dioxide'],
+    explanation: 'Hydrocarbon + O<sub>2</sub> always yields CO<sub>2</sub> + H<sub>2</sub>O.'
+  },
+  {
+    text: 'Will Cu replace Ag in AgNO<sub>3</sub>? (yes/no)',
+    answer: ['yes'],
+    explanation: 'Cu is above Ag in the activity series, so yes: Cu + 2 AgNO<sub>3</sub> &rarr; Cu(NO<sub>3</sub>)<sub>2</sub> + 2 Ag'
+  },
+  {
+    text: 'Will Cu replace Zn in ZnCl<sub>2</sub>? (yes/no)',
+    answer: ['no'],
+    explanation: 'Cu is BELOW Zn in the activity series. No reaction occurs.'
+  },
+  {
+    text: 'What is the net ionic equation for: HCl(aq) + NaOH(aq) &rarr; NaCl(aq) + H<sub>2</sub>O(l)? (write it as: H+ + OH- -> H2O)',
+    answer: ['h+ + oh- -> h2o', 'h+ + oh- = h2o', 'h++oh-=h2o', 'h++oh-->h2o', 'h+ + oh- --> h2o'],
+    explanation: 'Na<sup>+</sup> and Cl<sup>-</sup> are spectators. Net: H<sup>+</sup> + OH<sup>-</sup> &rarr; H<sub>2</sub>O'
+  },
+  {
+    text: 'In the reaction 2 Fe + 3 Cl<sub>2</sub> &rarr; 2 FeCl<sub>3</sub>, what is the oxidation number of Fe in FeCl<sub>3</sub>?',
+    answer: ['+3', '3'],
+    explanation: 'Each Cl is -1, three Cl = -3, so Fe must be +3 to balance.'
+  },
+  {
+    text: 'What does OIL RIG stand for?',
+    answer: ['oxidation is loss reduction is gain', 'oxidation is loss, reduction is gain'],
+    explanation: 'OIL = Oxidation Is Loss (of electrons). RIG = Reduction Is Gain (of electrons).'
+  },
+  {
+    text: 'Balance: _C<sub>3</sub>H<sub>8</sub> + _O<sub>2</sub> &rarr; _CO<sub>2</sub> + _H<sub>2</sub>O. What coefficient goes in front of O<sub>2</sub>?',
+    answer: ['5'],
+    explanation: 'C<sub>3</sub>H<sub>8</sub> + 5 O<sub>2</sub> &rarr; 3 CO<sub>2</sub> + 4 H<sub>2</sub>O'
+  },
+  {
+    text: 'In the reaction Zn + CuSO<sub>4</sub> &rarr; ZnSO<sub>4</sub> + Cu, which element is reduced?',
+    answer: ['cu', 'copper'],
+    explanation: 'Cu<sup>2+</sup> gains 2 e<sup>-</sup> to become Cu(s). Reduction is gain of electrons.'
+  }
+];
+
+let quizIdx = 0, quizCorrectCount = 0, quizAttempted = 0;
+
+function loadQuiz() {
+  if (quizIdx >= quizProblems.length) {
+    markSectionComplete('card6', 's6');
+    document.getElementById('quiz-qnum').textContent = 'Complete!';
+    document.getElementById('quiz-qtext').innerHTML = 'You scored <strong>' + quizCorrectCount + ' / ' + quizProblems.length + '</strong>. ' +
+      (quizCorrectCount >= 8 ? 'Excellent work!' : quizCorrectCount >= 6 ? 'Good job! Review the ones you missed.' : 'Keep practicing -- revisit the sections above.');
+    document.getElementById('quiz-input').style.display = 'none';
+    document.querySelector('#quiz-problem .btn-primary').style.display = 'none';
+    document.querySelector('#quiz-problem .btn:last-of-type').style.display = 'none';
+    return;
+  }
+  const p = quizProblems[quizIdx];
+  document.getElementById('quiz-current').textContent = quizIdx + 1;
+  document.getElementById('quiz-qnum').textContent = 'Question ' + (quizIdx + 1);
+  document.getElementById('quiz-qtext').innerHTML = p.text;
+  document.getElementById('quiz-input').value = '';
+  document.getElementById('quiz-input').style.display = '';
+  document.getElementById('quiz-input').classList.remove('correct-input', 'incorrect-input');
+  clearFeedback('quiz-feedback');
+  document.getElementById('quiz-input').focus();
+}
+
+function checkQuiz() {
+  const input = document.getElementById('quiz-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const p = quizProblems[quizIdx];
+
+  const normVal = norm(val).replace(/\s/g, '');
+  const correct = p.answer.some(a => norm(a).replace(/\s/g, '') === normVal);
+
+  quizAttempted++;
+  solvedTotal++;
+  updateProgress();
+
+  if (correct) {
+    quizCorrectCount++;
+    showFeedback('quiz-feedback', true, 'Correct! ' + p.explanation);
+    markInput(input, true);
+  } else {
+    showFeedback('quiz-feedback', false, 'Answer: <strong>' + p.answer[0] + '</strong>. ' + p.explanation);
+    markInput(input, false);
+  }
+  document.getElementById('quiz-score').textContent = 'Score: ' + quizCorrectCount + ' / ' + quizAttempted;
+  updateSectionScore('quiz-fill', 'quiz-score-text', quizCorrectCount, quizProblems.length);
+  quizIdx++;
+  setTimeout(() => loadQuiz(), 1800);
+}
+
+function skipQuiz() {
+  const p = quizProblems[quizIdx];
+  quizAttempted++;
+  solvedTotal++;
+  updateProgress();
+  showFeedback('quiz-feedback', false, 'Skipped. Answer: <strong>' + p.answer[0] + '</strong>. ' + p.explanation);
+  document.getElementById('quiz-score').textContent = 'Score: ' + quizCorrectCount + ' / ' + quizAttempted;
+  updateSectionScore('quiz-fill', 'quiz-score-text', quizCorrectCount, quizProblems.length);
+  quizIdx++;
+  setTimeout(() => loadQuiz(), 1500);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  ENTER KEY HANDLERS                                 */
+/* ═══════════════════════════════════════════════════ */
+document.getElementById('s3-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkS3(); });
+document.getElementById('s5-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkS5(); });
+document.getElementById('quiz-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkQuiz(); });
+
+/* ═══════════════════════════════════════════════════ */
+/*  INIT                                               */
+/* ═══════════════════════════════════════════════════ */
+showOxFormula('H2O');
+loadS1();
+loadS2();
+loadS3();
+loadS4();
+loadS5();
+loadQuiz();
+
+</script>
+</body>
+</html>

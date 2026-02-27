@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 25: Wave Optics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+canvas{display:block;border-radius:6px;background:var(--bg)}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:130px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:130px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:80px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:4px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.formula-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.formula-grid .formula-box{margin:0}
+.diagram-label{font-size:.68rem;color:var(--text-dim);text-align:center;margin-top:6px}
+@keyframes springPop{0%{transform:scale(1)}40%{transform:scale(1.15)}70%{transform:scale(0.95)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:springPop .45s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shake .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.formula-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>Lesson <span>25</span> — Wave Optics</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: HUYGENS & SUPERPOSITION -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Huygens' Principle &amp; Superposition</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Huygens' Principle</strong> states that every point on a wavefront can be treated as a point source of secondary spherical wavelets. The new wavefront at a later time is the envelope (tangent surface) of all these secondary wavelets. This explains why waves bend around corners and spread after passing through small openings.
+    </p>
+    <p class="concept-text">
+      <strong>Principle of Superposition:</strong> When two or more waves overlap in space, the resultant displacement at any point is the algebraic sum of the individual displacements. This gives rise to interference — the reinforcement or cancellation of waves.
+    </p>
+    <p class="concept-text">
+      Consider two coherent sources separated by distance d. At a distant point P, the waves travel different path lengths. The <strong>path difference</strong> &Delta;L = |r&sub;1; &minus; r&sub;2;| determines whether the waves arrive in phase or out of phase.
+    </p>
+
+    <div class="formula-grid">
+      <div class="formula-box green">
+        Constructive: &Delta;L = m&lambda;<br>
+        <span style="font-size:.72rem;opacity:.8">(m = 0, &plusmn;1, &plusmn;2, ...)</span>
+      </div>
+      <div class="formula-box pink">
+        Destructive: &Delta;L = (m + &frac12;)&lambda;<br>
+        <span style="font-size:.72rem;opacity:.8">(m = 0, &plusmn;1, &plusmn;2, ...)</span>
+      </div>
+    </div>
+
+    <div class="key-point">
+      Interference requires <strong>coherent</strong> sources — same frequency and stable phase relationship. Ordinary light sources are incoherent; lasers and light from the same source split by slits are coherent.
+    </div>
+
+    <p class="concept-text">
+      When &Delta;L = 0, 1&lambda;, 2&lambda;, ... the crests of one wave align with crests of the other: <strong>constructive interference</strong>, amplitude doubles. When &Delta;L = &frac12;&lambda;, 1&frac12;&lambda;, ... crests align with troughs: <strong>destructive interference</strong>, amplitude cancels.
+    </p>
+
+    <!-- Practice Problems -->
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s1p1">
+        <p>Two coherent sources produce waves with &lambda; = 500 nm. At point P, the path difference is 1250 nm. Is the interference constructive or destructive?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'b','s1p1fb',1,1)">A) Constructive — &Delta;L is an integer multiple of &lambda;</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s1p1fb',1,1)">B) Destructive — &Delta;L = 2.5&lambda;, a half-integer multiple</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s1p1fb',1,1)">C) Neither — the sources are incoherent</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s1p1fb',1,1)">D) Constructive — &Delta;L is less than 2&lambda;</button>
+        </div>
+        <div class="feedback" id="s1p1fb"></div>
+      </div>
+
+      <div class="problem" id="s1p2">
+        <p>Two coherent sources emit &lambda; = 600 nm light. What is the smallest path difference that produces constructive interference (other than &Delta;L = 0)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2in" placeholder="nm">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s1p2in',600,1,'s1p2fb',1,1)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2fb"></div>
+      </div>
+
+      <div class="problem" id="s1p3">
+        <p>At a point where &Delta;L = 3&lambda;/2, two coherent waves of amplitude A = 4 cm each interfere. What is the resultant amplitude?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p3in" placeholder="cm">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s1p3in',0,0.1,'s1p3fb',1,1)">Check</button>
+        </div>
+        <div class="feedback" id="s1p3fb"></div>
+      </div>
+
+      <div class="problem" id="s1p4">
+        <p>Which of the following best describes why a laser is required for most interference demonstrations with light?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'b','s1p4fb',1,1)">A) Lasers emit only a single photon at a time</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s1p4fb',1,1)">B) Lasers are coherent — stable phase relationship and narrow wavelength</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s1p4fb',1,1)">C) Lasers travel faster than ordinary light</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s1p4fb',1,1)">D) Ordinary light cannot produce path differences</button>
+        </div>
+        <div class="feedback" id="s1p4fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: DOUBLE-SLIT INTERFERENCE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Double-Slit Interference (Young's Experiment)</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      In Young's double-slit experiment (1801), monochromatic light passes through two narrow slits separated by distance <strong>d</strong>, then hits a screen at distance <strong>L</strong>. Each slit acts as a coherent secondary source per Huygens' principle, and the waves from the two slits interfere on the screen.
+    </p>
+    <p class="concept-text">
+      For a point at angle &theta; from the central axis, the path difference from the two slits is <strong>&Delta;L = d&middot;sin&theta;</strong>. For small angles (tan&theta; &asymp; sin&theta; &asymp; &theta;), the position y on the screen is related by sin&theta; &asymp; y/L.
+    </p>
+
+    <div class="formula-box large">
+      Bright fringes: d&middot;sin&theta; = m&lambda; &nbsp;&nbsp; (m = 0, &plusmn;1, &plusmn;2, ...)
+    </div>
+    <div class="formula-box pink">
+      Dark fringes: d&middot;sin&theta; = (m + &frac12;)&lambda;
+    </div>
+    <div class="formula-box green">
+      Fringe spacing: &Delta;y = &lambda;L / d
+    </div>
+
+    <div class="key-point">
+      Fringe spacing &Delta;y increases when: &lambda; increases (longer wavelength), L increases (screen farther away), or d decreases (slits closer together). The central fringe (m=0) is always a bright fringe.
+    </div>
+
+    <!-- Interactive Double-Slit Simulator -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive Simulator — Double-Slit Interference Pattern</div>
+      <canvas id="dsCanvas" width="840" height="200" style="width:100%;border-radius:6px"></canvas>
+      <div class="diagram-label">Interference pattern on screen — bright = constructive, dark = destructive</div>
+      <div class="slider-row">
+        <label>Slit separation d (&mu;m)</label>
+        <input type="range" id="dsD" min="5" max="50" value="20" step="1" oninput="drawDoubleSlitSim()">
+        <span class="slider-val" id="dsDVal">20 &mu;m</span>
+      </div>
+      <div class="slider-row">
+        <label>Wavelength &lambda; (nm)</label>
+        <input type="range" id="dsLambda" min="380" max="700" value="550" step="5" oninput="drawDoubleSlitSim()">
+        <span class="slider-val" id="dsLambdaVal">550 nm</span>
+      </div>
+      <div class="slider-row">
+        <label>Screen distance L (cm)</label>
+        <input type="range" id="dsL" min="10" max="100" value="50" step="5" oninput="drawDoubleSlitSim()">
+        <span class="slider-val" id="dsLVal">50 cm</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Fringe spacing &Delta;y</span><br><span class="value indigo" id="dsDeltaY">—</span></div>
+        <div class="readout-item"><span class="label">1st bright fringe y&sub;1;</span><br><span class="value green" id="dsY1">—</span></div>
+        <div class="readout-item"><span class="label">1st dark fringe y</span><br><span class="value pink" id="dsYd">—</span></div>
+        <div class="readout-item"><span class="label">Color</span><br><span class="value amber" id="dsColor">—</span></div>
+      </div>
+    </div>
+
+    <!-- Practice Problems -->
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s2p1">
+        <p>In a double-slit experiment, d = 0.10 mm, &lambda; = 500 nm, and L = 2.0 m. Calculate the fringe spacing &Delta;y in mm.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1in" placeholder="mm" step="0.01">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s2p1in',10,0.2,'s2p1fb',2,1)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1fb"></div>
+      </div>
+
+      <div class="problem" id="s2p2">
+        <p>For m = 3 bright fringe: d = 0.20 mm, &lambda; = 600 nm, L = 1.5 m. What is the position y&sub;3; from center (in mm)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2in" placeholder="mm" step="0.01">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s2p2in',13.5,0.3,'s2p2fb',2,2)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2fb"></div>
+      </div>
+
+      <div class="problem" id="s2p3">
+        <p>Fringe spacing is measured to be 4.0 mm with L = 1.0 m and d = 0.15 mm. What wavelength (in nm) is the light?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p3in" placeholder="nm" step="1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s2p3in',600,5,'s2p3fb',2,3)">Check</button>
+        </div>
+        <div class="feedback" id="s2p3fb"></div>
+      </div>
+
+      <div class="problem" id="s2p4">
+        <p>In a double-slit setup, the 2nd dark fringe appears at y = 6.0 mm from center. Given d = 0.25 mm and L = 2.0 m, what is the wavelength in nm? (Use: dark fringe y = (m + 1/2)&lambda;L/d, m = 1 for 2nd dark)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p4in" placeholder="nm" step="1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s2p4in',500,10,'s2p4fb',2,4)">Check</button>
+        </div>
+        <div class="feedback" id="s2p4fb"></div>
+      </div>
+
+      <div class="problem" id="s2p5">
+        <p>If the screen distance L is doubled while everything else stays the same, the fringe spacing:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'b','s2p5fb',2,5)">A) Halves</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s2p5fb',2,5)">B) Doubles — &Delta;y = &lambda;L/d, so doubling L doubles &Delta;y</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s2p5fb',2,5)">C) Stays the same — only &lambda; and d matter</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s2p5fb',2,5)">D) Quadruples</button>
+        </div>
+        <div class="feedback" id="s2p5fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: SINGLE-SLIT DIFFRACTION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Single-Slit Diffraction</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Even a single slit produces an interference pattern — called a <strong>diffraction pattern</strong> — because different parts of the same wavefront travel different path lengths to reach the screen. The slit of width <strong>a</strong> is treated as many infinitesimal Huygens sources spread across its width.
+    </p>
+    <p class="concept-text">
+      Minima (dark fringes) occur when the contributions from the top and bottom halves of the slit cancel pairwise. The condition for <strong>diffraction minima</strong> is:
+    </p>
+
+    <div class="formula-box large">
+      a&middot;sin&theta; = m&lambda; &nbsp;&nbsp; (m = &plusmn;1, &plusmn;2, &plusmn;3, ... &nbsp; m &ne; 0)
+    </div>
+
+    <div class="key-point">
+      Note: for single-slit, the center (m = 0) is a BRIGHT maximum, not a minimum. Minima start at m = &plusmn;1. This is opposite to the role of m in double-slit bright fringes.
+    </div>
+
+    <p class="concept-text">
+      The <strong>central maximum</strong> has width 2&lambda;L/a (twice the width of the secondary maxima). Diffraction becomes significant when the slit width a is comparable to or smaller than the wavelength &lambda;. When a &gt;&gt; &lambda;, the beam barely spreads (geometrical optics regime).
+    </p>
+
+    <div class="formula-box amber">
+      Central max half-width: &theta;&sub;1; = arcsin(&lambda;/a) &asymp; &lambda;/a (small angles)
+    </div>
+
+    <!-- Interactive Single-Slit Pattern -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive — Single-Slit Diffraction Envelope</div>
+      <canvas id="ssCanvas" width="840" height="200" style="width:100%;border-radius:6px"></canvas>
+      <div class="diagram-label">Intensity vs position — single-slit diffraction pattern</div>
+      <div class="slider-row">
+        <label>Slit width a (&mu;m)</label>
+        <input type="range" id="ssA" min="1" max="30" value="10" step="0.5" oninput="drawSingleSlitSim()">
+        <span class="slider-val" id="ssAVal">10.0 &mu;m</span>
+      </div>
+      <div class="slider-row">
+        <label>Wavelength &lambda; (nm)</label>
+        <input type="range" id="ssLambda" min="380" max="700" value="550" step="5" oninput="drawSingleSlitSim()">
+        <span class="slider-val" id="ssLambdaVal">550 nm</span>
+      </div>
+      <div class="slider-row">
+        <label>Screen distance L (cm)</label>
+        <input type="range" id="ssL" min="10" max="100" value="50" step="5" oninput="drawSingleSlitSim()">
+        <span class="slider-val" id="ssLVal">50 cm</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">1st min angle &theta;&sub;1;</span><br><span class="value indigo" id="ssTheta1">—</span></div>
+        <div class="readout-item"><span class="label">Central max half-width y</span><br><span class="value green" id="ssCentralWidth">—</span></div>
+        <div class="readout-item"><span class="label">2nd min position</span><br><span class="value pink" id="ssMin2">—</span></div>
+        <div class="readout-item"><span class="label">&lambda;/a ratio</span><br><span class="value amber" id="ssRatio">—</span></div>
+      </div>
+    </div>
+
+    <!-- Practice Problems -->
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s3p1">
+        <p>A single slit of width a = 0.050 mm is illuminated with &lambda; = 500 nm light. Find the angle (in degrees) to the first diffraction minimum.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1in" placeholder="degrees" step="0.001">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s3p1in',0.573,0.05,'s3p1fb',3,1)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1fb"></div>
+      </div>
+
+      <div class="problem" id="s3p2">
+        <p>A single slit produces its 2nd minimum at &theta; = 1.2&deg;. If &lambda; = 630 nm, what is the slit width a in &mu;m?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2in" placeholder="&mu;m" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s3p2in',60.2,1.5,'s3p2fb',3,2)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2fb"></div>
+      </div>
+
+      <div class="problem" id="s3p3">
+        <p>The central maximum from a single slit (a = 0.10 mm, L = 2.0 m, &lambda; = 500 nm) has a full width of how many mm on the screen? (Full width = 2 &times; y&sub;1; = 2&lambda;L/a)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p3in" placeholder="mm" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s3p3in',20,0.5,'s3p3fb',3,3)">Check</button>
+        </div>
+        <div class="feedback" id="s3p3fb"></div>
+      </div>
+
+      <div class="problem" id="s3p4">
+        <p>Diffraction effects are most pronounced when:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'c','s3p4fb',3,4)">A) The slit width is much larger than the wavelength</button>
+          <button class="mc-btn" onclick="checkMC(this,'c','s3p4fb',3,4)">B) The screen is very close to the slit</button>
+          <button class="mc-btn" onclick="checkMC(this,'c','s3p4fb',3,4)">C) The slit width is comparable to or smaller than the wavelength</button>
+          <button class="mc-btn" onclick="checkMC(this,'c','s3p4fb',3,4)">D) The wavelength is much shorter than the slit width</button>
+        </div>
+        <div class="feedback" id="s3p4fb"></div>
+      </div>
+
+      <div class="problem" id="s3p5">
+        <p>How does the central maximum width change if the slit is made narrower (a decreases)?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'b','s3p5fb',3,5)">A) It becomes narrower — less slit means less spread</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s3p5fb',3,5)">B) It becomes wider — &theta;&sub;1; = &lambda;/a increases as a decreases</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s3p5fb',3,5)">C) It stays the same — width only depends on &lambda;</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s3p5fb',3,5)">D) It disappears entirely</button>
+        </div>
+        <div class="feedback" id="s3p5fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: THIN FILM INTERFERENCE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Thin Film Interference</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When light hits a thin transparent film (soap bubble, oil slick, anti-reflection coating), part is reflected from the top surface and part from the bottom. These two reflections interfere. The total path difference comes from the extra path <strong>2t</strong> traveled through the film (thickness t), plus any phase shifts on reflection.
+    </p>
+    <p class="concept-text">
+      <strong>Phase shift on reflection rule:</strong> When light reflects off a surface going from a medium of lower index (n&sub;1;) into higher index (n&sub;2;), it undergoes a <strong>half-wavelength phase shift</strong> (equivalent to adding &lambda;/2 to the path). No phase shift occurs when reflecting from a lower-index medium.
+    </p>
+
+    <div class="key-point">
+      Count the number of phase-shift reflections. If <strong>one</strong> reflection has a phase shift (odd number), the conditions for constructive and destructive flip relative to no-shift case.
+    </div>
+
+    <div class="formula-box large">
+      Wavelength in film: &lambda;&sub;n; = &lambda; / n
+    </div>
+
+    <p class="concept-text">
+      For a soap film (n&sub;film; &gt; n&sub;air; on both sides): one phase shift at top, none at bottom. Net effect = one half-wavelength phase difference.
+    </p>
+
+    <div class="formula-grid">
+      <div class="formula-box green">
+        Constructive (1 shift):<br>
+        2t = (m + &frac12;)&lambda;/n<br>
+        <span style="font-size:.7rem;opacity:.8">m = 0, 1, 2, ...</span>
+      </div>
+      <div class="formula-box pink">
+        Destructive (1 shift):<br>
+        2t = m&lambda;/n<br>
+        <span style="font-size:.7rem;opacity:.8">m = 0, 1, 2, ...</span>
+      </div>
+    </div>
+    <div class="formula-box amber">
+      Zero or two phase shifts: 2t = m&lambda;/n (constructive), 2t = (m+&frac12;)&lambda;/n (destructive)
+    </div>
+
+    <div class="key-point">
+      A soap film that is very thin (t &rarr; 0) appears <strong>dark</strong> in reflection (not bright), because both paths are nearly equal but one has a &lambda;/2 phase shift — giving destructive interference at all visible wavelengths.
+    </div>
+
+    <!-- Interactive Thin Film Calculator -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive — Thin Film Color Calculator</div>
+      <canvas id="tfCanvas" width="840" height="120" style="width:100%;border-radius:6px"></canvas>
+      <div class="diagram-label">Reflected color spectrum — which wavelengths are constructively reinforced (1 phase shift assumed)</div>
+      <div class="slider-row">
+        <label>Film thickness t (nm)</label>
+        <input type="range" id="tfT" min="50" max="800" value="200" step="5" oninput="drawThinFilmSim()">
+        <span class="slider-val" id="tfTVal">200 nm</span>
+      </div>
+      <div class="slider-row">
+        <label>Refractive index n</label>
+        <input type="range" id="tfN" min="1.1" max="2.5" value="1.5" step="0.05" oninput="drawThinFilmSim()">
+        <span class="slider-val" id="tfNVal">1.50</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">m=0 constructive &lambda;</span><br><span class="value indigo" id="tfLambda0">—</span></div>
+        <div class="readout-item"><span class="label">m=1 constructive &lambda;</span><br><span class="value green" id="tfLambda1">—</span></div>
+        <div class="readout-item"><span class="label">m=0 destructive &lambda;</span><br><span class="value pink" id="tfDestr0">—</span></div>
+        <div class="readout-item"><span class="label">Optical path 2nt</span><br><span class="value amber" id="tfOPD">—</span></div>
+      </div>
+    </div>
+
+    <!-- Practice Problems -->
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s4p1">
+        <p>A soap film (n = 1.33) in air is 95.0 nm thick. Using 2t = (m+&frac12;)&lambda;/n with m = 0, which visible wavelength (in nm) is most strongly reflected?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1in" placeholder="nm" step="1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s4p1in',505,15,'s4p1fb',4,1)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1fb"></div>
+      </div>
+
+      <div class="problem" id="s4p2">
+        <p>An anti-reflection coating (n = 1.38) on glass (n = 1.5) must eliminate &lambda; = 550 nm light. Both surfaces cause a phase shift, so 2 phase shifts (same as 0) &rarr; destructive: 2t = (m+&frac12;)&lambda;/n. Find minimum thickness t (in nm) for m=0.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2in" placeholder="nm" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s4p2in',99.6,3,'s4p2fb',4,2)">Check</button>
+        </div>
+        <div class="feedback" id="s4p2fb"></div>
+      </div>
+
+      <div class="problem" id="s4p3">
+        <p>An oil film (n = 1.45) floating on water (n = 1.33). Light enters from air (n = 1.00). How many of the two reflections undergo a half-wavelength phase shift?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'b','s4p3fb',4,3)">A) Zero — neither interface has n increasing</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s4p3fb',4,3)">B) One — only at the air-to-oil interface (n increases); oil-to-water has n decreasing</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s4p3fb',4,3)">C) Two — both interfaces have n increasing</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s4p3fb',4,3)">D) Depends on the angle of incidence</button>
+        </div>
+        <div class="feedback" id="s4p3fb"></div>
+      </div>
+
+      <div class="problem" id="s4p4">
+        <p>A glass lens (n = 1.5) is coated with MgF&sub;2; (n = 1.38). Using 2t = &lambda;/(2n) for the minimum thickness to constructively reflect &lambda; = 500 nm (one net phase shift scenario where destructive = 2t = m&lambda;/n): actually find minimum t for DESTRUCTIVE reflection of 550 nm (anti-reflection). With two phase shifts, destructive: 2t = &lambda;/n gives t (in nm)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p4in" placeholder="nm" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s4p4in',99.6,4,'s4p4fb',4,4)">Check</button>
+        </div>
+        <div class="feedback" id="s4p4fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: DIFFRACTION GRATINGS & RESOLUTION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Diffraction Gratings &amp; Resolution</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>diffraction grating</strong> has thousands of slits (lines per mm). Each slit spacing is d = 1/(lines per mm) mm. All slits produce Huygens wavelets; bright fringes (principal maxima) appear only where all N slits interfere constructively simultaneously. This produces extremely sharp, bright maxima because any slight deviation causes partial cancellation among the N sources.
+    </p>
+
+    <div class="formula-box large">
+      Grating equation: d&middot;sin&theta; = m&lambda; &nbsp;&nbsp; (m = 0, &plusmn;1, &plusmn;2, ...)
+    </div>
+
+    <p class="concept-text">
+      The same equation as double-slit bright fringes, but the maxima are far sharper because N &gt;&gt; 2 slits must all constructively interfere. Gratings are used in <strong>spectrometers</strong> to precisely measure wavelengths. Different &lambda; values appear at different angles for the same order m.
+    </p>
+
+    <div class="key-point">
+      Grating resolving power: R = mN, where N is the total number of slits illuminated. Higher order (m) and more slits (N) &rarr; sharper resolution of closely spaced wavelengths.
+    </div>
+
+    <div class="formula-box amber">
+      Rayleigh criterion (circular aperture): &theta;&sub;min; = 1.22&lambda;/D
+    </div>
+
+    <p class="concept-text">
+      The <strong>Rayleigh criterion</strong> defines the minimum angular separation at which two point sources can just be resolved. For a circular aperture of diameter D, the central diffraction maximum of one source falls on the first minimum of the other. Larger aperture D or shorter wavelength &lambda; improves resolution — this is why large telescope mirrors and shorter wavelengths (electron microscopes) give finer detail.
+    </p>
+
+    <!-- Practice Problems -->
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s5p1">
+        <p>A grating has 500 lines/mm. Find d in nm, then find the angle (in degrees) for the m = 1 maximum for &lambda; = 589 nm.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1in" placeholder="degrees" step="0.01">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s5p1in',17.1,0.5,'s5p1fb',5,1)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1fb"></div>
+      </div>
+
+      <div class="problem" id="s5p2">
+        <p>A grating with d = 2000 nm is illuminated with light containing &lambda;&sub;1; = 450 nm and &lambda;&sub;2; = 600 nm. Find the angular separation between their m = 1 maxima (in degrees).</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p2in" placeholder="degrees" step="0.01">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s5p2in',4.86,0.3,'s5p2fb',5,2)">Check</button>
+        </div>
+        <div class="feedback" id="s5p2fb"></div>
+      </div>
+
+      <div class="problem" id="s5p3">
+        <p>A telescope has a 2.4 m diameter mirror. What is the Rayleigh resolution limit &theta;&sub;min; (in arcseconds) for &lambda; = 550 nm? (1 rad = 206265 arcsec)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p3in" placeholder="arcsec" step="0.001">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s5p3in',0.058,0.005,'s5p3fb',5,3)">Check</button>
+        </div>
+        <div class="feedback" id="s5p3fb"></div>
+      </div>
+
+      <div class="problem" id="s5p4">
+        <p>Which order maximum is NOT possible for d = 400 nm and &lambda; = 500 nm? (sin&theta; cannot exceed 1)</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'c','s5p4fb',5,4)">A) m = 0</button>
+          <button class="mc-btn" onclick="checkMC(this,'c','s5p4fb',5,4)">B) m = &plusmn;1 (sin&theta; = 0.83 — just barely possible)</button>
+          <button class="mc-btn" onclick="checkMC(this,'c','s5p4fb',5,4)">C) m = &plusmn;2 (would require sin&theta; = 2.5 &gt; 1 — impossible)</button>
+          <button class="mc-btn" onclick="checkMC(this,'c','s5p4fb',5,4)">D) m = &plusmn;1 is also impossible</button>
+        </div>
+        <div class="feedback" id="s5p4fb"></div>
+      </div>
+
+      <div class="problem" id="s5p5">
+        <p>Doubling the diameter of a telescope objective lens changes the Rayleigh angular resolution limit by a factor of:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'b','s5p5fb',5,5)">A) 2 (gets worse by factor 2)</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s5p5fb',5,5)">B) 1/2 (improves by factor 2 — &theta;&sub;min; = 1.22&lambda;/D)</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s5p5fb',5,5)">C) 4 (gets worse by factor 4)</button>
+          <button class="mc-btn" onclick="checkMC(this,'b','s5p5fb',5,5)">D) No change — resolution depends only on &lambda;</button>
+        </div>
+        <div class="feedback" id="s5p5fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> 10-Question Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Quiz Score</span>
+      <span class="score-text" id="quizScore">0 / 10</span>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-q" id="qq1">
+      <div class="q-num">Question 1 of 10</div>
+      <div class="q-text">According to Huygens' Principle, every point on a wavefront acts as:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,1,'b')">A) A detector of incoming waves</button>
+        <button class="choice-btn" onclick="quizAnswer(this,1,'b')">B) A source of secondary spherical wavelets</button>
+        <button class="choice-btn" onclick="quizAnswer(this,1,'b')">C) A node of standing wave amplitude</button>
+        <button class="choice-btn" onclick="quizAnswer(this,1,'b')">D) A point where wavelength doubles</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q" id="qq2">
+      <div class="q-num">Question 2 of 10</div>
+      <div class="q-text">In Young's double-slit experiment, increasing the slit separation d (while keeping &lambda; and L constant) will:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,2,'a')">A) Decrease the fringe spacing (&Delta;y = &lambda;L/d decreases)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,2,'a')">B) Increase the fringe spacing</button>
+        <button class="choice-btn" onclick="quizAnswer(this,2,'a')">C) Have no effect on fringe spacing</button>
+        <button class="choice-btn" onclick="quizAnswer(this,2,'a')">D) Eliminate the central maximum</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q" id="qq3">
+      <div class="q-num">Question 3 of 10</div>
+      <div class="q-text">The condition for single-slit diffraction MINIMA is a&middot;sin&theta; = m&lambda;. Which value of m is excluded?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,3,'c')">A) m = 1</button>
+        <button class="choice-btn" onclick="quizAnswer(this,3,'c')">B) m = &minus;2</button>
+        <button class="choice-btn" onclick="quizAnswer(this,3,'c')">C) m = 0 (would be the central maximum, not a minimum)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,3,'c')">D) m = 3</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q" id="qq4">
+      <div class="q-num">Question 4 of 10</div>
+      <div class="q-text">Light reflects off a thin soap film (n = 1.33) in air. How many of the two reflections experience a half-wavelength phase shift?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,4,'b')">A) Zero — soap has lower n than air</button>
+        <button class="choice-btn" onclick="quizAnswer(this,4,'b')">B) One — only at the air-to-soap surface where n increases</button>
+        <button class="choice-btn" onclick="quizAnswer(this,4,'b')">C) Two — both surfaces cause phase shifts</button>
+        <button class="choice-btn" onclick="quizAnswer(this,4,'b')">D) Depends on film thickness</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q" id="qq5">
+      <div class="q-num">Question 5 of 10</div>
+      <div class="q-text">A diffraction grating has 600 lines/mm. What is d in micrometers?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,5,'c')">A) 600 &mu;m</button>
+        <button class="choice-btn" onclick="quizAnswer(this,5,'c')">B) 0.600 &mu;m</button>
+        <button class="choice-btn" onclick="quizAnswer(this,5,'c')">C) 1.67 &mu;m (d = 1/600 mm = 1667 nm = 1.67 &mu;m)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,5,'c')">D) 6000 &mu;m</button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q" id="qq6">
+      <div class="q-num">Question 6 of 10</div>
+      <div class="q-text">The Rayleigh criterion says two sources are just resolved when the central maximum of one falls on the first _____ of the other.</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,6,'b')">A) Central maximum</button>
+        <button class="choice-btn" onclick="quizAnswer(this,6,'b')">B) Diffraction minimum</button>
+        <button class="choice-btn" onclick="quizAnswer(this,6,'b')">C) Secondary maximum</button>
+        <button class="choice-btn" onclick="quizAnswer(this,6,'b')">D) Bright fringe</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q" id="qq7">
+      <div class="q-num">Question 7 of 10</div>
+      <div class="q-text">Light of wavelength 480 nm in air enters glass (n = 1.6). What is the wavelength inside the glass?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,7,'b')">A) 768 nm</button>
+        <button class="choice-btn" onclick="quizAnswer(this,7,'b')">B) 300 nm (&lambda;&sub;n; = &lambda;/n = 480/1.6)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,7,'b')">C) 480 nm (unchanged)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,7,'b')">D) 400 nm</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q" id="qq8">
+      <div class="q-num">Question 8 of 10</div>
+      <div class="q-text">An extremely thin soap film (t &asymp; 0) viewed in reflection appears dark. Why?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,8,'c')">A) The film absorbs all incoming light</button>
+        <button class="choice-btn" onclick="quizAnswer(this,8,'c')">B) Constructive interference amplifies all wavelengths equally</button>
+        <button class="choice-btn" onclick="quizAnswer(this,8,'c')">C) With t &asymp; 0, path difference &asymp; 0, but one reflection has &lambda;/2 shift — destructive interference at all visible wavelengths</button>
+        <button class="choice-btn" onclick="quizAnswer(this,8,'c')">D) Total internal reflection prevents any reflection</button>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-q" id="qq9">
+      <div class="q-num">Question 9 of 10</div>
+      <div class="q-text">A double-slit experiment uses &lambda; = 700 nm (red), then switches to &lambda; = 400 nm (violet) with the same d and L. The fringe spacing:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,9,'b')">A) Increases — violet light diffracts more</button>
+        <button class="choice-btn" onclick="quizAnswer(this,9,'b')">B) Decreases — &Delta;y = &lambda;L/d, shorter &lambda; gives smaller &Delta;y</button>
+        <button class="choice-btn" onclick="quizAnswer(this,9,'b')">C) Stays the same — fringes don't depend on wavelength</button>
+        <button class="choice-btn" onclick="quizAnswer(this,9,'b')">D) The pattern disappears</button>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="quiz-q" id="qq10">
+      <div class="q-num">Question 10 of 10</div>
+      <div class="q-text">For a grating with d = 1500 nm, which is the highest order maximum observable for &lambda; = 500 nm?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,10,'c')">A) m = 1 (sin&theta; = 0.33)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,10,'c')">B) m = 2 (sin&theta; = 0.67)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,10,'c')">C) m = 3 (sin&theta; = 1.00 — just at 90&deg;, the highest possible)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,10,'c')">D) m = 4 (sin&theta; = 1.33 — exceeds 1, impossible)</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ============================================================
+// GLOBAL STATE
+// ============================================================
+const TOTAL_SECTIONS = 6;
+const sectionCorrect = {}; // sectionId -> Set of problem keys that are correct
+const problemCount = {1:4, 2:5, 3:5, 4:4, 5:5}; // not counting quiz
+let quizScore = 0;
+const quizAnswered = {};
+
+// ============================================================
+// TOGGLE SECTION
+// ============================================================
+function toggleSection(header) {
+  const card = header.closest('.section-card');
+  card.classList.toggle('open');
+}
+
+// ============================================================
+// PROGRESS
+// ============================================================
+function updateProgress() {
+  let completed = 0;
+  for (let s = 1; s <= 5; s++) {
+    const card = document.querySelector(`.section-card[data-section="${s}"]`);
+    const needed = problemCount[s];
+    const done = (sectionCorrect[s] || new Set()).size;
+    if (done >= needed) {
+      card.classList.add('completed');
+      completed++;
+    }
+  }
+  // Quiz section — mark complete if score >= 7
+  const quizCard = document.querySelector('.section-card[data-section="6"]');
+  if (quizScore >= 7) {
+    quizCard.classList.add('completed');
+    completed++;
+  }
+  const pct = (completed / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${completed} / ${TOTAL_SECTIONS} sections`;
+}
+
+// ============================================================
+// CHECK NUMERIC ANSWER
+// ============================================================
+function checkNum(inputId, answer, tolerance, feedbackId, sectionId, problemId) {
+  const input = document.getElementById(inputId);
+  const fb = document.getElementById(feedbackId);
+  const val = parseFloat(input.value);
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Enter a numeric value.';
+    return;
+  }
+  const probEl = input.closest('.problem');
+  if (Math.abs(val - answer) <= tolerance) {
+    fb.className = 'feedback correct';
+    fb.textContent = `Correct! ${answer} is right.`;
+    if (probEl) { probEl.classList.remove('shake'); void probEl.offsetWidth; probEl.classList.add('pop'); }
+    if (!sectionCorrect[sectionId]) sectionCorrect[sectionId] = new Set();
+    sectionCorrect[sectionId].add(problemId);
+    updateProgress();
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = `Not quite. Got ${val.toFixed(3)}, expected ~${answer}. Check your setup and units.`;
+    if (probEl) { probEl.classList.remove('pop'); void probEl.offsetWidth; probEl.classList.add('shake'); }
+  }
+}
+
+// ============================================================
+// CHECK MULTIPLE CHOICE (practice)
+// ============================================================
+function checkMC(btn, correctLetter, feedbackId, sectionId, problemId) {
+  const container = btn.closest('.problem') || btn.closest('.quiz-q');
+  const allBtns = container.querySelectorAll('.mc-btn');
+  const fb = document.getElementById(feedbackId);
+
+  // Map: figure out which letter this button is
+  const letters = ['a','b','c','d'];
+  let chosen = '';
+  allBtns.forEach((b, i) => { if (b === btn) chosen = letters[i]; });
+
+  allBtns.forEach(b => b.classList.add('disabled'));
+
+  if (chosen === correctLetter) {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    btn.classList.remove('shake'); void btn.offsetWidth; btn.classList.add('pop');
+    if (!sectionCorrect[sectionId]) sectionCorrect[sectionId] = new Set();
+    sectionCorrect[sectionId].add(problemId);
+    updateProgress();
+  } else {
+    btn.classList.add('wrong');
+    // Reveal correct
+    allBtns[letters.indexOf(correctLetter)].classList.add('correct');
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Incorrect. The correct answer is highlighted.';
+    btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('shake');
+  }
+}
+
+// ============================================================
+// QUIZ ANSWER
+// ============================================================
+function quizAnswer(btn, qNum, correctLetter) {
+  if (quizAnswered[qNum]) return;
+  quizAnswered[qNum] = true;
+
+  const container = btn.closest('.quiz-q');
+  const allBtns = container.querySelectorAll('.choice-btn');
+  const letters = ['a','b','c','d'];
+  let chosen = '';
+  allBtns.forEach((b, i) => { if (b === btn) chosen = letters[i]; });
+
+  allBtns.forEach(b => b.classList.add('disabled'));
+
+  if (chosen === correctLetter) {
+    btn.classList.add('selected-correct');
+    quizScore++;
+    btn.classList.remove('shake'); void btn.offsetWidth; btn.classList.add('pop');
+  } else {
+    btn.classList.add('selected-wrong');
+    allBtns[letters.indexOf(correctLetter)].classList.add('reveal-correct');
+    btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('shake');
+  }
+
+  document.getElementById('quizScore').textContent = `${quizScore} / 10`;
+  updateProgress();
+}
+
+// ============================================================
+// WAVELENGTH TO RGB COLOR
+// ============================================================
+function wavelengthToRGB(wl) {
+  let r, g, b;
+  if (wl >= 380 && wl < 440) { r = -(wl - 440) / 60; g = 0; b = 1; }
+  else if (wl >= 440 && wl < 490) { r = 0; g = (wl - 440) / 50; b = 1; }
+  else if (wl >= 490 && wl < 510) { r = 0; g = 1; b = -(wl - 510) / 20; }
+  else if (wl >= 510 && wl < 580) { r = (wl - 510) / 70; g = 1; b = 0; }
+  else if (wl >= 580 && wl < 645) { r = 1; g = -(wl - 645) / 65; b = 0; }
+  else if (wl >= 645 && wl <= 750) { r = 1; g = 0; b = 0; }
+  else { r = 0; g = 0; b = 0; }
+
+  let factor = 1;
+  if (wl >= 380 && wl < 420) factor = 0.3 + 0.7 * (wl - 380) / 40;
+  else if (wl > 700 && wl <= 750) factor = 0.3 + 0.7 * (750 - wl) / 50;
+
+  r = Math.round(255 * Math.pow(r * factor, 0.8));
+  g = Math.round(255 * Math.pow(g * factor, 0.8));
+  b = Math.round(255 * Math.pow(b * factor, 0.8));
+  return `rgb(${r},${g},${b})`;
+}
+
+function wavelengthName(wl) {
+  if (wl < 380) return 'UV';
+  if (wl < 450) return 'Violet';
+  if (wl < 495) return 'Blue';
+  if (wl < 530) return 'Green';
+  if (wl < 590) return 'Yellow';
+  if (wl < 625) return 'Orange';
+  if (wl <= 700) return 'Red';
+  return 'IR';
+}
+
+// ============================================================
+// DOUBLE-SLIT SIMULATOR
+// ============================================================
+function drawDoubleSlitSim() {
+  const canvas = document.getElementById('dsCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const d_um = parseFloat(document.getElementById('dsD').value);
+  const lambda_nm = parseFloat(document.getElementById('dsLambda').value);
+  const L_cm = parseFloat(document.getElementById('dsL').value);
+
+  document.getElementById('dsDVal').textContent = d_um + ' \u03bcm';
+  document.getElementById('dsLambdaVal').textContent = lambda_nm + ' nm';
+  document.getElementById('dsLVal').textContent = L_cm + ' cm';
+
+  const d = d_um * 1e-6;       // meters
+  const lambda = lambda_nm * 1e-9;
+  const L = L_cm * 1e-2;
+
+  const fringe_m = (lambda * L / d) * 1e3; // mm
+  const y1_m = fringe_m;      // mm
+  const yd_m = fringe_m * 0.5; // mm first dark
+
+  document.getElementById('dsDeltaY').textContent = fringe_m.toFixed(2) + ' mm';
+  document.getElementById('dsY1').textContent = y1_m.toFixed(2) + ' mm';
+  document.getElementById('dsYd').textContent = yd_m.toFixed(2) + ' mm';
+  document.getElementById('dsColor').textContent = wavelengthName(lambda_nm);
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  const halfH = H / 2;
+  // Physical extent on screen: show +/- 5 fringe spacings
+  const screenSpan_m = 5.5 * fringe_m * 1e-3; // meters
+  const scale = (H * 0.9) / (2 * screenSpan_m); // px per meter
+
+  const baseColor = wavelengthToRGB(lambda_nm);
+
+  // Draw intensity pattern
+  const imgData = ctx.createImageData(W, H);
+  for (let px = 0; px < W; px++) {
+    const y_screen = ((px - W / 2) / scale); // position in meters from center
+    const delta = Math.PI * d * y_screen / (lambda * L);
+    const intensity = Math.pow(Math.cos(delta), 2);
+
+    // parse color components
+    const match = baseColor.match(/\d+/g);
+    const cr = parseInt(match[0]);
+    const cg = parseInt(match[1]);
+    const cb = parseInt(match[2]);
+
+    for (let py = 0; py < H; py++) {
+      const idx = (py * W + px) * 4;
+      imgData.data[idx]   = Math.round(cr * intensity);
+      imgData.data[idx+1] = Math.round(cg * intensity);
+      imgData.data[idx+2] = Math.round(cb * intensity);
+      imgData.data[idx+3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  // Draw fringe position labels
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  // m = 0 label
+  ctx.fillText('m=0', W/2, H - 6);
+  // m = 1, 2
+  for (let m = 1; m <= 3; m++) {
+    const y_m = m * lambda * L / d;
+    const pxPos = W/2 + y_m * scale;
+    if (pxPos < W - 10) {
+      ctx.fillText(`m=${m}`, pxPos, H - 6);
+      ctx.fillText(`m=-${m}`, W - pxPos, H - 6);
+    }
+  }
+
+  // center line
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(W/2, 0); ctx.lineTo(W/2, H - 20); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+// ============================================================
+// SINGLE-SLIT SIMULATOR
+// ============================================================
+function drawSingleSlitSim() {
+  const canvas = document.getElementById('ssCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const a_um = parseFloat(document.getElementById('ssA').value);
+  const lambda_nm = parseFloat(document.getElementById('ssLambda').value);
+  const L_cm = parseFloat(document.getElementById('ssL').value);
+
+  document.getElementById('ssAVal').textContent = a_um.toFixed(1) + ' \u03bcm';
+  document.getElementById('ssLambdaVal').textContent = lambda_nm + ' nm';
+  document.getElementById('ssLVal').textContent = L_cm + ' cm';
+
+  const a = a_um * 1e-6;
+  const lambda = lambda_nm * 1e-9;
+  const L = L_cm * 1e-2;
+
+  const theta1_rad = Math.asin(Math.min(lambda / a, 1));
+  const theta1_deg = theta1_rad * 180 / Math.PI;
+  const y1_m = L * Math.tan(theta1_rad);
+  const y1_mm = y1_m * 1e3;
+  const y2_mm = (2 * lambda * L / a) * 1e3;
+  const ratio = lambda / a;
+
+  document.getElementById('ssTheta1').textContent = theta1_deg.toFixed(3) + '\u00b0';
+  document.getElementById('ssCentralWidth').textContent = y1_mm.toFixed(2) + ' mm';
+  document.getElementById('ssMin2').textContent = y2_mm.toFixed(2) + ' mm';
+  document.getElementById('ssRatio').textContent = ratio.toFixed(4);
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  const screenSpan_m = Math.max(3 * y1_m, 0.002);
+  const scale = (W * 0.45) / screenSpan_m;
+
+  const baseColor = wavelengthToRGB(lambda_nm);
+  const match = baseColor.match(/\d+/g);
+  const cr = parseInt(match[0]);
+  const cg = parseInt(match[1]);
+  const cb = parseInt(match[2]);
+
+  // Draw intensity as vertical bars
+  const imgData = ctx.createImageData(W, H);
+  for (let px = 0; px < W; px++) {
+    const y_screen = (px - W / 2) / scale;
+    const beta = Math.PI * a * y_screen / (lambda * L);
+    let intensity = 1;
+    if (Math.abs(beta) > 1e-10) {
+      intensity = Math.pow(Math.sin(beta) / beta, 2);
+    }
+    intensity = Math.max(0, intensity);
+
+    for (let py = 0; py < H; py++) {
+      const idx = (py * W + px) * 4;
+      imgData.data[idx]   = Math.round(cr * intensity);
+      imgData.data[idx+1] = Math.round(cg * intensity);
+      imgData.data[idx+2] = Math.round(cb * intensity);
+      imgData.data[idx+3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  // Intensity envelope curve overlay
+  ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  const plotH = H - 20;
+  for (let px = 0; px < W; px++) {
+    const y_screen = (px - W / 2) / scale;
+    const beta = Math.PI * a * y_screen / (lambda * L);
+    let intensity = 1;
+    if (Math.abs(beta) > 1e-10) intensity = Math.pow(Math.sin(beta) / beta, 2);
+    intensity = Math.max(0, intensity);
+    const py = plotH - intensity * plotH * 0.95;
+    if (px === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Label minima
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('m=0 (max)', W/2, H - 4);
+  for (let m = 1; m <= 3; m++) {
+    const yMin = m * lambda * L / a;
+    const pxMin = W/2 + yMin * scale;
+    if (pxMin < W - 5) {
+      ctx.fillStyle = 'rgba(236,72,153,0.7)';
+      ctx.fillText(`min ${m}`, pxMin, H - 4);
+      ctx.fillText(`min -${m}`, W - pxMin, H - 4);
+    }
+  }
+  ctx.setLineDash([]);
+}
+
+// ============================================================
+// THIN FILM SIMULATOR
+// ============================================================
+function drawThinFilmSim() {
+  const canvas = document.getElementById('tfCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const t_nm = parseFloat(document.getElementById('tfT').value);
+  const n = parseFloat(document.getElementById('tfN').value);
+
+  document.getElementById('tfTVal').textContent = t_nm + ' nm';
+  document.getElementById('tfNVal').textContent = n.toFixed(2);
+
+  const t = t_nm; // nm units for calculation
+  const opd = 2 * n * t; // nm
+
+  // Constructive (1 phase shift): 2nt = (m+0.5)*lambda => lambda = 2nt/(m+0.5)
+  const lambda0 = opd / 0.5;   // m=0
+  const lambda1 = opd / 1.5;   // m=1
+  const lambda2 = opd / 2.5;   // m=2
+  // Destructive (1 shift): 2nt = m*lambda => lambda = 2nt/m
+  const lambdaD1 = opd / 1;    // m=1
+  const lambdaD2 = opd / 2;    // m=2
+
+  const formatWL = v => (v >= 380 && v <= 700) ? v.toFixed(0) + ' nm (' + wavelengthName(v) + ')' : v.toFixed(0) + ' nm (out of visible)';
+
+  document.getElementById('tfLambda0').textContent = formatWL(lambda0);
+  document.getElementById('tfLambda1').textContent = formatWL(lambda1);
+  document.getElementById('tfDestr0').textContent = formatWL(lambdaD1);
+  document.getElementById('tfOPD').textContent = opd.toFixed(1) + ' nm';
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  // Draw spectrum bar showing constructive reinforcement intensity vs wavelength
+  const specH = H - 30;
+  const barH = specH * 0.6;
+  const barY = (specH - barH) / 2;
+
+  for (let px = 0; px < W; px++) {
+    const wl = 380 + (px / W) * (700 - 380);
+    // Constructive with 1 phase shift: 2nt = (m+0.5)*wl => effective intensity
+    let maxI = 0;
+    for (let m = 0; m <= 5; m++) {
+      const constructive_wl = opd / (m + 0.5);
+      const fwhm = constructive_wl * 0.1;
+      const gauss = Math.exp(-0.5 * Math.pow((wl - constructive_wl) / fwhm, 2));
+      if (gauss > maxI) maxI = gauss;
+    }
+
+    const baseColor = wavelengthToRGB(wl);
+    const bm = baseColor.match(/\d+/g);
+    const r = parseInt(bm[0]);
+    const g = parseInt(bm[1]);
+    const b = parseInt(bm[2]);
+
+    const alpha = maxI;
+    ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+    ctx.fillRect(px, barY, 1, barH);
+
+    // Background dim spectrum
+    ctx.fillStyle = `rgba(${r},${g},${b},0.15)`;
+    ctx.fillRect(px, barY, 1, barH);
+  }
+
+  // Draw wavelength axis labels
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  const axisY = specH + 14;
+  [400, 450, 500, 550, 600, 650, 700].forEach(wl => {
+    const px = ((wl - 380) / 320) * W;
+    ctx.fillText(wl, px, axisY);
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    ctx.fillRect(px, barY + barH, 1, 6);
+    ctx.fillStyle = '#9ca3af';
+  });
+
+  // Mark constructive wavelengths
+  [lambda0, lambda1, lambda2].forEach((wl, i) => {
+    if (wl >= 380 && wl <= 700) {
+      const px = ((wl - 380) / 320) * W;
+      ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(px, barY - 2); ctx.lineTo(px, barY + barH + 2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#fff';
+      ctx.font = '9px JetBrains Mono, monospace';
+      ctx.fillText(`m=${i}`, px, barY - 5);
+    }
+  });
+
+  // Label
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText('Wavelength (nm) \u2192', 4, axisY);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', () => {
+  drawDoubleSlitSim();
+  drawSingleSlitSim();
+  drawThinFilmSim();
+  updateProgress();
+});
+
+window.addEventListener('resize', () => {
+  drawDoubleSlitSim();
+  drawSingleSlitSim();
+  drawThinFilmSim();
+});
+</script>
+</body>
+</html>

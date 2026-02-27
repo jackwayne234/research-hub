@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lesson 14 — Chemical Equilibrium</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #1e2128;
+  --bg-card: #262a33;
+  --bg-input: #1a1d24;
+  --border: #363b47;
+  --text: #e2e4e9;
+  --indigo: #6366f1;
+  --green: #22c55e;
+  --pink: #ec4899;
+  --amber: #f59e0b;
+  --indigo-dim: rgba(99,102,241,0.12);
+  --green-dim: rgba(34,197,94,0.12);
+  --pink-dim: rgba(236,72,153,0.12);
+  --amber-dim: rgba(245,158,11,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.12);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  padding-bottom: 60px;
+}
+
+/* TOP BAR */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.lesson-badge {
+  background: var(--indigo);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.lesson-title {
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  color: var(--text);
+}
+.progress-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.4s ease;
+}
+.progress-label {
+  font-size: 11px;
+  color: #8a8f9c;
+  white-space: nowrap;
+}
+
+/* MAIN CONTENT */
+.content {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+.page-intro {
+  margin-bottom: 28px;
+  padding: 18px 20px;
+  background: var(--indigo-dim);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 10px;
+  font-size: 13px;
+  color: #c4c6d0;
+}
+.page-intro strong { color: var(--indigo); }
+
+/* SECTION CARDS */
+.section-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+.section-card.completed { border-color: rgba(34,197,94,0.5); }
+.section-card.completed .section-header { border-left: 3px solid var(--green); }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+  border-left: 3px solid transparent;
+}
+.section-header:hover { background: rgba(255,255,255,0.03); }
+.section-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8a8f9c;
+  min-width: 24px;
+}
+.section-title {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+}
+.chevron {
+  width: 18px;
+  height: 18px;
+  color: #8a8f9c;
+  transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+  flex-shrink: 0;
+}
+.section-card.open .chevron { transform: rotate(180deg); }
+.section-body {
+  display: none;
+  padding: 0 20px 20px;
+  border-top: 1px solid var(--border);
+}
+.section-card.open .section-body { display: block; }
+
+/* FORMULA BOXES */
+.formula-box {
+  background: var(--indigo-dim);
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  font-size: 13px;
+}
+.formula-box.green {
+  background: var(--green-dim);
+  border-color: rgba(34,197,94,0.35);
+}
+.formula-box.amber {
+  background: var(--amber-dim);
+  border-color: rgba(245,158,11,0.35);
+}
+.formula-box.pink {
+  background: var(--pink-dim);
+  border-color: rgba(236,72,153,0.35);
+}
+.formula-box.red {
+  background: var(--red-dim);
+  border-color: rgba(239,68,68,0.35);
+}
+.formula-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+  color: var(--indigo);
+}
+.formula-box.green .formula-label { color: var(--green); }
+.formula-box.amber .formula-label { color: var(--amber); }
+.formula-box.pink .formula-label { color: var(--pink); }
+.formula-box.red .formula-label { color: var(--red); }
+.formula-box .eq {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.03em;
+}
+.formula-box p { color: #c4c6d0; margin-top: 6px; font-size: 12px; }
+.formula-box ul { margin-top: 6px; padding-left: 16px; color: #c4c6d0; font-size: 12px; }
+.formula-box li { margin-bottom: 2px; }
+
+/* KEY POINT */
+.key-point {
+  background: var(--amber-dim);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-size: 12px;
+  color: #d4b896;
+}
+.key-point strong { color: var(--amber); }
+
+/* NAVY CONTEXT */
+.navy-context {
+  background: rgba(30,40,70,0.6);
+  border: 1px solid rgba(99,149,240,0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 14px 0;
+  font-size: 12px;
+  color: #a8b8d8;
+}
+.navy-context .navy-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6496f0;
+  margin-bottom: 4px;
+}
+
+/* SECTION TEXT */
+.section-body h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--indigo);
+  margin: 18px 0 8px;
+}
+.section-body h3:first-child { margin-top: 16px; }
+.section-body p {
+  color: #c4c6d0;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.section-body ul, .section-body ol {
+  padding-left: 20px;
+  color: #c4c6d0;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.section-body li { margin-bottom: 4px; }
+
+/* INTERACTIVE AREA */
+.interactive-area {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.interactive-area h4 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--indigo);
+  margin-bottom: 14px;
+}
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.slider-row label {
+  font-size: 12px;
+  color: #8a8f9c;
+  min-width: 140px;
+}
+.slider-row input[type=range] {
+  flex: 1;
+  min-width: 100px;
+  accent-color: var(--indigo);
+}
+.slider-readout {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green);
+  min-width: 50px;
+  text-align: right;
+}
+
+/* RATE CANVAS */
+#rateCanvas {
+  width: 100%;
+  height: 180px;
+  border-radius: 6px;
+  background: var(--bg);
+  display: block;
+}
+
+/* Q vs K visualization */
+.q-vis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 16px 0;
+  position: relative;
+}
+.q-arrow-track {
+  position: relative;
+  width: 100%;
+  height: 44px;
+  background: linear-gradient(90deg, var(--indigo-dim) 0%, var(--green-dim) 50%, var(--pink-dim) 100%);
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.q-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--amber);
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #1a1d24;
+  cursor: pointer;
+  transition: left 0.4s ease;
+  z-index: 2;
+}
+.q-k-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 36px;
+  background: var(--green);
+  border-radius: 2px;
+  left: 50%;
+}
+.q-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #8a8f9c;
+  margin-top: 6px;
+}
+.q-status {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 10px;
+  min-height: 22px;
+}
+
+/* LE CHATELIER */
+.stress-btn {
+  display: inline-block;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 14px;
+  margin: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text);
+  transition: all 0.2s ease;
+}
+.stress-btn:hover { border-color: var(--indigo); color: var(--indigo); }
+.stress-result {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  min-height: 60px;
+  font-size: 13px;
+}
+.stress-forward { color: var(--green); }
+.stress-reverse { color: var(--pink); }
+.stress-none { color: var(--amber); }
+
+/* ICE TABLE */
+.ice-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 12px;
+}
+.ice-table th, .ice-table td {
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  text-align: center;
+}
+.ice-table th {
+  background: rgba(99,102,241,0.15);
+  color: var(--indigo);
+  font-weight: 600;
+}
+.ice-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.ice-row-I td:first-child { color: var(--green); font-weight: 700; }
+.ice-row-C td:first-child { color: var(--amber); font-weight: 700; }
+.ice-row-E td:first-child { color: var(--pink); font-weight: 700; }
+.ice-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  width: 80px;
+  text-align: center;
+}
+.ice-input:focus { outline: none; border-color: var(--indigo); }
+
+/* PROBLEMS */
+.problem {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.problem-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8a8f9c;
+  margin-bottom: 8px;
+}
+.problem p {
+  color: var(--text);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.num-input {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  width: 120px;
+}
+.num-input:focus { outline: none; border-color: var(--indigo); }
+.check-btn {
+  background: var(--indigo);
+  border: none;
+  border-radius: 6px;
+  padding: 7px 16px;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.check-btn:hover { opacity: 0.85; }
+.feedback {
+  margin-top: 8px;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: none;
+}
+.feedback.correct {
+  display: block;
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid rgba(34,197,94,0.3);
+}
+.feedback.incorrect {
+  display: block;
+  background: var(--red-dim);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,0.3);
+}
+
+/* MC BUTTONS */
+.mc-options { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.mc-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 14px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.mc-btn:hover:not(.disabled) { border-color: var(--indigo); color: var(--indigo); }
+.mc-btn.disabled { cursor: default; opacity: 0.7; }
+.mc-btn.correct { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.mc-btn.wrong { background: var(--red-dim); border-color: var(--red); color: #f87171; }
+
+/* QUIZ */
+.quiz-q {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.quiz-q-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--indigo);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.quiz-q p {
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.choice-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 14px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.choice-btn:hover:not(.disabled) { border-color: var(--indigo); color: var(--indigo); }
+.choice-btn.disabled { cursor: default; }
+.choice-btn.selected-correct { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.choice-btn.selected-wrong { background: var(--red-dim); border-color: var(--red); color: #f87171; }
+.choice-btn.reveal-correct { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.quiz-score-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.quiz-score-bar span { color: var(--green); font-weight: 700; font-size: 18px; }
+.reset-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 14px;
+  color: #8a8f9c;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.reset-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+/* ANIMATIONS */
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.025); }
+  100% { transform: scale(1); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.pop { animation: pop 0.35s ease; }
+.shake { animation: shake 0.4s ease; }
+
+/* STEP LIST */
+.step-list { counter-reset: step; list-style: none; padding: 0; margin: 12px 0; }
+.step-list li {
+  counter-increment: step;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+}
+.step-list li::before {
+  content: counter(step);
+  background: var(--indigo);
+  color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-list li span { color: #c4c6d0; font-size: 13px; }
+
+/* GRID */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 12px 0;
+}
+@media (max-width: 640px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .top-bar { flex-wrap: wrap; gap: 8px; }
+  .lesson-title { display: none; }
+  .slider-row label { min-width: 100px; }
+}
+
+/* DELTA N NOTE */
+.delta-note {
+  background: rgba(99,102,241,0.08);
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 10px 0;
+  font-size: 12px;
+  color: #b0b2c0;
+}
+.delta-note code {
+  background: var(--bg-input);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--indigo);
+}
+
+/* DIVIDER */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 18px 0;
+}
+
+/* CONVERSION TABLE */
+.conv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin: 10px 0;
+}
+.conv-table th, .conv-table td {
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  text-align: center;
+}
+.conv-table th {
+  background: rgba(99,102,241,0.12);
+  color: var(--indigo);
+  font-weight: 600;
+}
+.conv-table td { color: #c4c6d0; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="lesson-badge">14</div>
+  <div class="lesson-title">Chemical Equilibrium</div>
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 8 sections</div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <div class="page-intro">
+    <strong>Lesson 14 — Chemical Equilibrium</strong><br/>
+    Dynamic equilibrium isn't chaos — it's balance. Two competing processes running at equal rates, concentrations locked in a stable relationship. You've seen this in physics as <strong>steady state</strong>: flux in equals flux out, system parameters hold constant. Here we formalize that for chemistry, with the tools to quantify it, perturb it, and predict the response. Relevant to every closed system you work in.
+  </div>
+
+  <!-- SECTION 1: DYNAMIC EQUILIBRIUM -->
+  <div class="section-card" data-section="1">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">01</span>
+      <span class="section-title">Dynamic Equilibrium</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <h3>What Equilibrium Is Not</h3>
+      <p>Equilibrium does not mean the reaction stopped. It means the <strong>forward reaction rate equals the reverse reaction rate</strong>. Both processes continue simultaneously — no net change in macroscopic concentrations occurs, but at the molecular level, reactions are ongoing.</p>
+
+      <div class="formula-box">
+        <div class="formula-label">Condition for Equilibrium</div>
+        <div class="eq">rate<sub>forward</sub> = rate<sub>reverse</sub></div>
+        <p>Concentrations of reactants and products remain <em>constant</em> — not equal, just unchanging.</p>
+      </div>
+
+      <h3>The Physics Parallel: Steady State</h3>
+      <p>In fluid dynamics and thermodynamics, a <strong>steady-state</strong> system is one where internal flows balance: mass or energy enters at the same rate it leaves. Equilibrium is the chemical analogue — molecular "traffic" in both directions is equal. The system looks frozen from outside, but it is anything but.</p>
+
+      <div class="navy-context">
+        <div class="navy-label">Navy Application — CO₂ Scrubbing</div>
+        When a submarine runs the CO₂ scrubber (monoethanolamine or LiOH systems), the absorption chemistry reaches a dynamic equilibrium. CO₂ is continuously produced by the crew and continuously absorbed at matching rates. Fail to maintain that balance — concentrations drift, the system leaves equilibrium, and atmosphere control degrades.
+      </div>
+
+      <div class="key-point">
+        <strong>Key Point:</strong> At equilibrium, the Gibbs free energy of the system is at a minimum. The forward and reverse activation barriers are still being crossed constantly — equilibrium is a thermodynamic floor, not a kinetic wall.
+      </div>
+
+      <!-- Interactive Rate Diagram -->
+      <div class="interactive-area">
+        <h4>Interactive — Rate Convergence Diagram</h4>
+        <p style="font-size:12px;color:#8a8f9c;margin-bottom:12px;">Adjust initial forward rate. Watch forward and reverse rates converge to equilibrium.</p>
+        <div class="slider-row">
+          <label>Initial forward rate</label>
+          <input type="range" min="1" max="10" value="8" id="rateSlider" oninput="drawRates()"/>
+          <span class="slider-readout" id="rateVal">8.0</span>
+        </div>
+        <canvas id="rateCanvas" width="800" height="180"></canvas>
+        <p style="font-size:11px;color:#8a8f9c;margin-top:8px;text-align:center;">Green = forward rate &nbsp;|&nbsp; Pink = reverse rate &nbsp;|&nbsp; Dashed amber = equilibrium rate</p>
+      </div>
+
+      <h3>Establishing Equilibrium</h3>
+      <ul>
+        <li>Begin with all reactants: forward rate is high, reverse rate is near zero.</li>
+        <li>As products build up, the reverse rate increases and the forward rate decreases.</li>
+        <li>Eventually they converge — equilibrium is established.</li>
+        <li>The position of equilibrium (product-favored vs reactant-favored) is given by K.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 2: EQUILIBRIUM EXPRESSIONS -->
+  <div class="section-card" data-section="2">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">02</span>
+      <span class="section-title">Equilibrium Expressions — K<sub>c</sub> and K<sub>p</sub></span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <h3>Writing K Expressions</h3>
+      <p>For a general reaction: <strong>aA + bB ⇌ cC + dD</strong></p>
+
+      <div class="formula-box">
+        <div class="formula-label">Equilibrium Constant (Concentration) — K<sub>c</sub></div>
+        <div class="eq">K<sub>c</sub> = [C]<sup>c</sup>[D]<sup>d</sup> / [A]<sup>a</sup>[B]<sup>b</sup></div>
+        <p>Square brackets denote molar concentrations at equilibrium. Products in numerator, reactants in denominator. Exponents are stoichiometric coefficients.</p>
+      </div>
+
+      <div class="formula-box green">
+        <div class="formula-label">Equilibrium Constant (Pressure) — K<sub>p</sub></div>
+        <div class="eq">K<sub>p</sub> = (P<sub>C</sub>)<sup>c</sup>(P<sub>D</sub>)<sup>d</sup> / (P<sub>A</sub>)<sup>a</sup>(P<sub>B</sub>)<sup>b</sup></div>
+        <p>Used for gas-phase reactions. P values are partial pressures, typically in atm. Dimensionless when referenced to P° = 1 atm.</p>
+      </div>
+
+      <h3>What K Tells You</h3>
+      <div class="grid-2">
+        <div class="formula-box amber">
+          <div class="formula-label">K >> 1</div>
+          <div class="eq">Products favored</div>
+          <p>Reaction proceeds nearly to completion. Large amounts of product at equilibrium.</p>
+        </div>
+        <div class="formula-box pink">
+          <div class="formula-label">K &lt;&lt; 1</div>
+          <div class="eq">Reactants favored</div>
+          <p>Very little product at equilibrium. Reaction barely proceeds forward.</p>
+        </div>
+      </div>
+
+      <h3>Important Rules for Writing K</h3>
+      <ul>
+        <li><strong>Pure solids and pure liquids are excluded</strong> — their "concentration" is constant (incorporated into K). Example: CaCO₃(s), H₂O(l).</li>
+        <li><strong>K depends only on temperature</strong> — not on initial concentrations or pressures.</li>
+        <li>If you reverse a reaction, K becomes 1/K.</li>
+        <li>If you multiply coefficients by n, K becomes K<sup>n</sup>.</li>
+        <li>If you add reactions, K values multiply.</li>
+      </ul>
+
+      <div class="formula-box">
+        <div class="formula-label">Example — Haber Process</div>
+        <div class="eq">N₂(g) + 3H₂(g) ⇌ 2NH₃(g)</div>
+        <p>K<sub>c</sub> = [NH₃]² / ([N₂][H₂]³) &nbsp;&nbsp; K<sub>p</sub> = (P<sub>NH₃</sub>)² / (P<sub>N₂</sub> · P<sub>H₂</sub>³)</p>
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-label">Navy Application — Haber Process</div>
+        The Haber-Bosch process synthesizes ammonia from N₂ and H₂ — a prerequisite for manufacturing ammonium nitrate explosives and fertilizers critical to military logistics. Understanding K<sub>c</sub> for this reaction directly informs why industrial conditions (high pressure, 450°C catalyst temperature) are chosen to maximize yield while maintaining reaction rate.
+      </div>
+
+      <!-- Interactive K Calculator -->
+      <div class="interactive-area">
+        <h4>Interactive — K<sub>c</sub> Expression Builder</h4>
+        <p style="font-size:12px;color:#8a8f9c;margin-bottom:10px;">For: aA + bB ⇌ cC + dD — enter equilibrium concentrations and coefficients to compute K<sub>c</sub>.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div>
+            <div style="font-size:11px;color:#8a8f9c;margin-bottom:4px;">Products</div>
+            <div class="slider-row"><label>[C] (M)</label><input type="range" min="0.01" max="5" step="0.01" value="1.5" id="cC" oninput="calcK()"/><span class="slider-readout" id="cC-v">1.50</span></div>
+            <div class="slider-row"><label>c (coeff)</label><input type="range" min="1" max="4" step="1" value="2" id="cc" oninput="calcK()"/><span class="slider-readout" id="cc-v">2</span></div>
+            <div class="slider-row"><label>[D] (M)</label><input type="range" min="0.01" max="5" step="0.01" value="1.0" id="cD" oninput="calcK()"/><span class="slider-readout" id="cD-v">1.00</span></div>
+            <div class="slider-row"><label>d (coeff)</label><input type="range" min="1" max="4" step="1" value="1" id="cd" oninput="calcK()"/><span class="slider-readout" id="cd-v">1</span></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:#8a8f9c;margin-bottom:4px;">Reactants</div>
+            <div class="slider-row"><label>[A] (M)</label><input type="range" min="0.01" max="5" step="0.01" value="0.5" id="cA" oninput="calcK()"/><span class="slider-readout" id="cA-v">0.50</span></div>
+            <div class="slider-row"><label>a (coeff)</label><input type="range" min="1" max="4" step="1" value="1" id="ca" oninput="calcK()"/><span class="slider-readout" id="ca-v">1</span></div>
+            <div class="slider-row"><label>[B] (M)</label><input type="range" min="0.01" max="5" step="0.01" value="0.3" id="cB" oninput="calcK()"/><span class="slider-readout" id="cB-v">0.30</span></div>
+            <div class="slider-row"><label>b (coeff)</label><input type="range" min="1" max="4" step="1" value="3" id="cb" oninput="calcK()"/><span class="slider-readout" id="cb-v">3</span></div>
+          </div>
+        </div>
+        <div class="formula-box" style="text-align:center;">
+          <div class="formula-label">Computed K<sub>c</sub></div>
+          <div class="eq" id="kc-result">—</div>
+          <p id="kc-interpretation">—</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: REACTION QUOTIENT Q -->
+  <div class="section-card" data-section="3">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">03</span>
+      <span class="section-title">Reaction Quotient Q</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <h3>Q vs K — Predicting Direction</h3>
+      <p>The reaction quotient Q has the same mathematical form as K, but uses <em>current</em> (not necessarily equilibrium) concentrations. Comparing Q to K tells you which direction the reaction must shift to reach equilibrium.</p>
+
+      <div class="formula-box">
+        <div class="formula-label">Reaction Quotient</div>
+        <div class="eq">Q = [C]<sup>c</sup>[D]<sup>d</sup> / [A]<sup>a</sup>[B]<sup>b</sup> &nbsp; (at any moment)</div>
+        <p>Same expression as K — but evaluated at non-equilibrium conditions.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="formula-box green">
+          <div class="formula-label">Q &lt; K</div>
+          <div class="eq">Forward &#8594;</div>
+          <p>Too few products relative to equilibrium. Reaction shifts forward to produce more product.</p>
+        </div>
+        <div class="formula-box pink">
+          <div class="formula-label">Q &gt; K</div>
+          <div class="eq">&#8592; Reverse</div>
+          <p>Too many products relative to equilibrium. Reaction shifts reverse to consume products.</p>
+        </div>
+      </div>
+
+      <div class="formula-box amber">
+        <div class="formula-label">Q = K</div>
+        <div class="eq">At Equilibrium</div>
+        <p>System is at equilibrium. No net shift occurs in either direction.</p>
+      </div>
+
+      <h3>Physics Analogy</h3>
+      <p>Think of Q as a "position" and K as the "equilibrium position" of a mechanical oscillator. If you displace the system (Q ≠ K), a restoring force (net reaction rate) pushes it back. The system always evolves toward minimizing the difference Q − K.</p>
+
+      <!-- Q slider visualization -->
+      <div class="interactive-area">
+        <h4>Interactive — Q vs K Position</h4>
+        <p style="font-size:12px;color:#8a8f9c;margin-bottom:12px;">Drag Q to see which direction the reaction shifts. K is fixed at center (green line).</p>
+        <div class="slider-row">
+          <label>Q value (relative to K)</label>
+          <input type="range" min="0" max="100" value="20" id="qSlider" oninput="updateQ()"/>
+          <span class="slider-readout" id="qVal">0.2K</span>
+        </div>
+        <div class="q-arrow-track">
+          <div class="q-k-marker"></div>
+          <div class="q-marker" id="qMarker">Q</div>
+        </div>
+        <div class="q-labels">
+          <span>Q = 0 (all reactants)</span>
+          <span>Q = K (equilibrium)</span>
+          <span>Q → ∞ (all products)</span>
+        </div>
+        <div class="q-status" id="qStatus"></div>
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-label">Navy Application — O₂ Generation (ELSS)</div>
+        The Electrolytic Life Support System on submarines uses water electrolysis. Before startup, Q for the relevant electrode half-reactions is far from equilibrium. The applied voltage drives Q toward K, continuously generating O₂. Monitoring Q-equivalent parameters (current density, partial pressures) is essential to safe operation.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: LE CHATELIER'S PRINCIPLE -->
+  <div class="section-card" data-section="4">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">04</span>
+      <span class="section-title">Le Chatelier's Principle</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <h3>The Principle</h3>
+      <p><strong>If a stress is applied to a system at equilibrium, the system shifts to partially relieve that stress.</strong> This is a qualitative prediction tool — it tells you direction, not magnitude.</p>
+
+      <div class="key-point">
+        <strong>Physics Parallel:</strong> Le Chatelier's principle is the chemical version of negative feedback. A perturbation triggers a compensating response — exactly like how a thermostat or a feedback amplifier resists changes to its setpoint.
+      </div>
+
+      <h3>Types of Stress</h3>
+      <div class="formula-box">
+        <div class="formula-label">Reference Reaction</div>
+        <div class="eq">N₂(g) + 3H₂(g) ⇌ 2NH₃(g) &nbsp; ΔH = −92 kJ/mol</div>
+        <p>Exothermic, 4 moles gas → 2 moles gas. Used for all examples below.</p>
+      </div>
+
+      <!-- Stress simulator -->
+      <div class="interactive-area">
+        <h4>Interactive — Stress Simulator</h4>
+        <p style="font-size:12px;color:#8a8f9c;margin-bottom:10px;">Apply a stress to N₂ + 3H₂ ⇌ 2NH₃. System responds according to Le Chatelier's principle.</p>
+        <div>
+          <button class="stress-btn" onclick="applyStress('add-n2')">Add N₂</button>
+          <button class="stress-btn" onclick="applyStress('remove-n2')">Remove N₂</button>
+          <button class="stress-btn" onclick="applyStress('add-nh3')">Add NH₃</button>
+          <button class="stress-btn" onclick="applyStress('remove-nh3')">Remove NH₃</button>
+          <button class="stress-btn" onclick="applyStress('increase-p')">Increase Pressure</button>
+          <button class="stress-btn" onclick="applyStress('decrease-p')">Decrease Pressure</button>
+          <button class="stress-btn" onclick="applyStress('increase-t')">Increase Temperature</button>
+          <button class="stress-btn" onclick="applyStress('decrease-t')">Decrease Temperature</button>
+          <button class="stress-btn" onclick="applyStress('add-catalyst')">Add Catalyst</button>
+          <button class="stress-btn" onclick="applyStress('inert-gas')">Add Inert Gas (const V)</button>
+        </div>
+        <div class="stress-result" id="stressResult">
+          <span style="color:#8a8f9c;">Select a stress above to see the system response.</span>
+        </div>
+      </div>
+
+      <h3>Temperature Changes Affect K</h3>
+      <p>This is the critical distinction: concentration and pressure changes shift equilibrium position but <em>do not change K</em>. Temperature changes actually change the value of K.</p>
+      <div class="grid-2">
+        <div class="formula-box green">
+          <div class="formula-label">Exothermic reaction, increase T</div>
+          <div class="eq">K decreases</div>
+          <p>Treating heat as a product — adding heat shifts reverse. Fewer products at new equilibrium.</p>
+        </div>
+        <div class="formula-box pink">
+          <div class="formula-label">Endothermic reaction, increase T</div>
+          <div class="eq">K increases</div>
+          <p>Treating heat as a reactant — adding heat shifts forward. More products at new equilibrium.</p>
+        </div>
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-label">Navy Application — Haber Process Optimization</div>
+        The Haber process dilemma: higher temperature speeds the reaction (kinetics) but decreases yield (thermodynamics, Le Chatelier — exothermic). Higher pressure increases yield but requires massive containment hardware. Industrial plants run ~450°C and ~200 atm as the engineered compromise — a direct application of Le Chatelier's principle in weapons/logistics supply chains.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: ICE TABLES -->
+  <div class="section-card" data-section="5">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">05</span>
+      <span class="section-title">ICE Tables</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <h3>The ICE Method</h3>
+      <p>ICE tables systematically organize equilibrium calculations. The rows represent Initial concentrations, Change in concentrations, and Equilibrium concentrations.</p>
+
+      <div class="formula-box">
+        <div class="formula-label">ICE Row Definitions</div>
+        <ul>
+          <li><strong style="color:var(--green);">I</strong>nitial — concentrations before any reaction occurs (given in problem)</li>
+          <li><strong style="color:var(--amber);">C</strong>hange — change in each species; use stoichiometry ratios, unknown = x</li>
+          <li><strong style="color:var(--pink);">E</strong>quilibrium — I + C for each species; substitute into K expression</li>
+        </ul>
+      </div>
+
+      <h3>Worked Example</h3>
+      <p>Given: H₂(g) + I₂(g) ⇌ 2HI(g) &nbsp;&nbsp; K<sub>c</sub> = 50.5 at 448°C<br/>
+      Initial: [H₂] = 0.500 M, [I₂] = 0.500 M, [HI] = 0 M. Find equilibrium concentrations.</p>
+
+      <ol class="step-list">
+        <li><span>Write stoichiometric ICE rows. Change for H₂ = −x, I₂ = −x, HI = +2x (from 1:1:2 ratio).</span></li>
+        <li><span>Equilibrium expressions: [H₂] = 0.500 − x, [I₂] = 0.500 − x, [HI] = 2x.</span></li>
+        <li><span>Substitute into K<sub>c</sub>: 50.5 = (2x)² / [(0.500−x)(0.500−x)] = (2x)²/(0.500−x)²</span></li>
+        <li><span>Take square root of both sides: √50.5 = 2x/(0.500−x) → 7.106 = 2x/(0.500−x)</span></li>
+        <li><span>Solve: 7.106(0.500−x) = 2x → 3.553 − 7.106x = 2x → 3.553 = 9.106x → x = 0.3902</span></li>
+        <li><span>Equilibrium: [H₂] = [I₂] = 0.500 − 0.390 = 0.110 M; [HI] = 2(0.390) = 0.780 M</span></li>
+        <li><span>Verify: K<sub>c</sub> = (0.780)² / (0.110)² = 0.6084 / 0.01210 ≈ 50.3 ✓ (rounding expected)</span></li>
+      </ol>
+
+      <table class="ice-table">
+        <thead>
+          <tr><th>Row</th><th>H₂ (M)</th><th>I₂ (M)</th><th>HI (M)</th></tr>
+        </thead>
+        <tbody>
+          <tr class="ice-row-I"><td>I</td><td>0.500</td><td>0.500</td><td>0.000</td></tr>
+          <tr class="ice-row-C"><td>C</td><td>−x</td><td>−x</td><td>+2x</td></tr>
+          <tr class="ice-row-E"><td>E</td><td>0.500 − x</td><td>0.500 − x</td><td>2x</td></tr>
+          <tr style="background:rgba(34,197,94,0.08);"><td style="color:var(--green);font-weight:700;">Result</td><td>0.110 M</td><td>0.110 M</td><td>0.780 M</td></tr>
+        </tbody>
+      </table>
+
+      <h3>5% Approximation Rule</h3>
+      <p>When K is very small (K &lt; 10⁻³) and initial concentrations are reasonable, x is small. You can assume x &lt;&lt; initial concentration, dropping x from denominators. If x / initial &lt; 5%, the approximation is valid.</p>
+
+      <div class="formula-box amber">
+        <div class="formula-label">Approximation Validity Check</div>
+        <div class="eq">x / [initial] × 100% &lt; 5%</div>
+        <p>If this fails, use the quadratic formula. Never skip the check.</p>
+      </div>
+
+      <!-- Interactive ICE builder -->
+      <div class="interactive-area">
+        <h4>Interactive — Build Your Own ICE Table</h4>
+        <p style="font-size:12px;color:#8a8f9c;margin-bottom:10px;">Reaction: A(g) ⇌ 2B(g) &nbsp;&nbsp; Enter initial concentrations and K<sub>c</sub>. ICE rows auto-populate with x.</p>
+        <div class="slider-row">
+          <label>[A] initial (M)</label>
+          <input type="range" min="0.1" max="2.0" step="0.1" value="1.0" id="iceA" oninput="buildICE()"/>
+          <span class="slider-readout" id="iceA-v">1.00</span>
+        </div>
+        <div class="slider-row">
+          <label>K<sub>c</sub></label>
+          <input type="range" min="0.01" max="4.0" step="0.01" value="0.36" id="iceK" oninput="buildICE()"/>
+          <span class="slider-readout" id="iceK-v">0.36</span>
+        </div>
+        <table class="ice-table" style="margin-top:10px;">
+          <thead>
+            <tr><th>Row</th><th>A (M)</th><th>B (M)</th></tr>
+          </thead>
+          <tbody>
+            <tr class="ice-row-I"><td>I</td><td id="ice-I-A">1.00</td><td id="ice-I-B">0.00</td></tr>
+            <tr class="ice-row-C"><td>C</td><td id="ice-C-A">−x</td><td id="ice-C-B">+2x</td></tr>
+            <tr class="ice-row-E"><td>E</td><td id="ice-E-A">1.00 − x</td><td id="ice-E-B">2x</td></tr>
+            <tr id="ice-result-row" style="background:rgba(34,197,94,0.08);"><td style="color:var(--green);font-weight:700;">Result</td><td id="ice-R-A">—</td><td id="ice-R-B">—</td></tr>
+          </tbody>
+        </table>
+        <div class="formula-box" style="margin-top:10px;">
+          <div class="formula-label">Solution</div>
+          <div class="eq" id="ice-solution-eq">—</div>
+          <p id="ice-solution-detail">—</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: Kc ↔ Kp -->
+  <div class="section-card" data-section="6">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">06</span>
+      <span class="section-title">K<sub>c</sub> ↔ K<sub>p</sub> Relationship</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <h3>Derivation from Ideal Gas Law</h3>
+      <p>For an ideal gas, concentration and partial pressure are related by <strong>P = nRT/V = [X]RT</strong>. Substituting this into the K<sub>p</sub> expression, each partial pressure becomes [X]RT. The RT factors collect into a single power equal to Δn.</p>
+
+      <div class="formula-box">
+        <div class="formula-label">Kp — Kc Conversion</div>
+        <div class="eq">K<sub>p</sub> = K<sub>c</sub> (RT)<sup>Δn</sup></div>
+        <ul>
+          <li>R = 0.08206 L·atm·mol⁻¹·K⁻¹ (when using atm)</li>
+          <li>T = temperature in Kelvin</li>
+          <li>Δn = (moles of gaseous products) − (moles of gaseous reactants)</li>
+        </ul>
+      </div>
+
+      <div class="formula-box green">
+        <div class="formula-label">Calculating Δn</div>
+        <div class="eq">Δn = n<sub>gas,products</sub> − n<sub>gas,reactants</sub></div>
+        <p>Only count gaseous species. Solids and liquids are excluded from K and from Δn.</p>
+      </div>
+
+      <h3>Three Cases</h3>
+      <table class="conv-table">
+        <thead>
+          <tr><th>Δn</th><th>Relationship</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="color:var(--green);">Δn = 0</td><td>K<sub>p</sub> = K<sub>c</sub></td><td>H₂ + I₂ ⇌ 2HI &nbsp; (2−2=0)</td></tr>
+          <tr><td style="color:var(--amber);">Δn &gt; 0</td><td>K<sub>p</sub> &gt; K<sub>c</sub></td><td>PCl₅ ⇌ PCl₃ + Cl₂ &nbsp; (2−1=+1)</td></tr>
+          <tr><td style="color:var(--pink);">Δn &lt; 0</td><td>K<sub>p</sub> &lt; K<sub>c</sub></td><td>N₂ + 3H₂ ⇌ 2NH₃ &nbsp; (2−4=−2)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Worked Example</h3>
+      <p>For N₂(g) + 3H₂(g) ⇌ 2NH₃(g), K<sub>c</sub> = 0.105 at 472°C (745 K). Find K<sub>p</sub>.</p>
+      <div class="formula-box amber">
+        <div class="formula-label">Solution</div>
+        <div class="eq">Δn = 2 − 4 = −2</div>
+        <p>K<sub>p</sub> = K<sub>c</sub>(RT)<sup>Δn</sup> = 0.105 × (0.08206 × 745)<sup>−2</sup></p>
+        <p>= 0.105 × (61.13)<sup>−2</sup> = 0.105 × 2.677×10⁻⁴ = 2.81×10⁻⁵</p>
+      </div>
+
+      <!-- Interactive Kc to Kp -->
+      <div class="interactive-area">
+        <h4>Interactive — K<sub>c</sub> ↔ K<sub>p</sub> Converter</h4>
+        <div class="slider-row">
+          <label>K<sub>c</sub></label>
+          <input type="range" min="0.001" max="100" step="0.001" value="0.105" id="kcInput" oninput="convertK()"/>
+          <span class="slider-readout" id="kc-v">0.105</span>
+        </div>
+        <div class="slider-row">
+          <label>Temperature (K)</label>
+          <input type="range" min="273" max="1500" step="1" value="745" id="tempInput" oninput="convertK()"/>
+          <span class="slider-readout" id="temp-v">745 K</span>
+        </div>
+        <div class="slider-row">
+          <label>Δn</label>
+          <input type="range" min="-4" max="4" step="1" value="-2" id="dnInput" oninput="convertK()"/>
+          <span class="slider-readout" id="dn-v">−2</span>
+        </div>
+        <div class="formula-box" style="text-align:center;margin-top:10px;">
+          <div class="formula-label">K<sub>p</sub> Result</div>
+          <div class="eq" id="kp-result">—</div>
+          <p id="kp-formula">—</p>
+        </div>
+      </div>
+
+      <div class="key-point">
+        <strong>Key Point:</strong> When Δn = 0 (equal moles of gas on both sides), K<sub>p</sub> = K<sub>c</sub> at any temperature. The H₂ + I₂ ⇌ 2HI equilibrium is the classic example.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: PRACTICE PROBLEMS -->
+  <div class="section-card" data-section="7">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">07</span>
+      <span class="section-title">Practice Problems</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <p style="color:#8a8f9c;font-size:12px;margin-bottom:16px;">Enter your answer and click Check. Tolerance is noted per problem.</p>
+
+      <!-- P1 -->
+      <div class="problem">
+        <div class="problem-label">Problem 1 — Writing K<sub>c</sub></div>
+        <p>For the reaction 2SO₂(g) + O₂(g) ⇌ 2SO₃(g), at equilibrium: [SO₂] = 0.400 M, [O₂] = 0.300 M, [SO₃] = 0.600 M. Calculate K<sub>c</sub>. Round to 2 decimal places.</p>
+        <div class="input-row">
+          <input class="num-input" type="number" id="p1" placeholder="K_c ="/>
+          <button class="check-btn" onclick="checkNum('p1', 7.50, 0.05)">Check</button>
+        </div>
+        <div class="feedback" id="p1-fb"></div>
+        <details style="margin-top:10px;">
+          <summary style="font-size:11px;color:#8a8f9c;cursor:pointer;">Show work</summary>
+          <div class="delta-note" style="margin-top:8px;">K<sub>c</sub> = [SO₃]² / ([SO₂]²[O₂]) = (0.600)² / ((0.400)²(0.300)) = 0.360 / (0.160 × 0.300) = 0.360 / 0.04800 = 7.50</div>
+        </details>
+      </div>
+
+      <!-- P2 -->
+      <div class="problem">
+        <div class="problem-label">Problem 2 — Reaction Quotient Q</div>
+        <p>For N₂(g) + 3H₂(g) ⇌ 2NH₃(g), K<sub>c</sub> = 4.20 at some temperature. At a given moment: [N₂] = 1.00 M, [H₂] = 2.00 M, [NH₃] = 1.50 M. Calculate Q<sub>c</sub>. Round to 3 decimal places.</p>
+        <div class="input-row">
+          <input class="num-input" type="number" id="p2" placeholder="Q_c ="/>
+          <button class="check-btn" onclick="checkNum('p2', 0.281, 0.003)">Check</button>
+        </div>
+        <div class="feedback" id="p2-fb"></div>
+        <details style="margin-top:10px;">
+          <summary style="font-size:11px;color:#8a8f9c;cursor:pointer;">Show work</summary>
+          <div class="delta-note" style="margin-top:8px;">Q<sub>c</sub> = [NH₃]² / ([N₂][H₂]³) = (1.50)² / (1.00 × (2.00)³)<br/>= 2.250 / (1.00 × 8.000) = 2.250 / 8.000 = <strong>0.281</strong><br/>Since Q = 0.281 &lt; K = 4.20, reaction shifts forward (too few products relative to K).</div>
+        </details>
+      </div>
+
+      <!-- P3 -->
+      <div class="problem">
+        <div class="problem-label">Problem 3 — ICE Table Equilibrium Concentration</div>
+        <p>For CO(g) + Cl₂(g) ⇌ COCl₂(g), K<sub>c</sub> = 4.57×10⁹ at 25°C. Initial: [CO] = 0.100 M, [Cl₂] = 0.100 M, [COCl₂] = 0 M. Because K is very large, assume the reaction goes essentially to completion, then finds equilibrium. What is the approximate equilibrium [CO] in M? (K so large that x ≈ 0.100 − 0.100 = ~0 from completion; use back-calculation. Answer ≈ 1.48×10⁻⁶ M. Enter in scientific notation as decimal: 0.00000148)</p>
+        <div class="input-row">
+          <input class="num-input" type="number" step="0.0000001" id="p3" placeholder="[CO] eq"/>
+          <button class="check-btn" onclick="checkNum('p3', 0.00000148, 0.0000002)">Check</button>
+        </div>
+        <div class="feedback" id="p3-fb"></div>
+        <details style="margin-top:10px;">
+          <summary style="font-size:11px;color:#8a8f9c;cursor:pointer;">Show work</summary>
+          <div class="delta-note" style="margin-top:8px;">
+            Assume complete reaction: CO + Cl₂ → COCl₂. [CO]≈0, [Cl₂]≈0, [COCl₂]≈0.100 M.<br/>
+            Now back-react by x: [CO]=x, [Cl₂]=x, [COCl₂]=0.100−x ≈ 0.100.<br/>
+            K = 0.100/x² = 4.57×10⁹ → x² = 0.100/(4.57×10⁹) = 2.188×10⁻¹¹ → x = 1.48×10⁻⁶ M
+          </div>
+        </details>
+      </div>
+
+      <!-- P4 -->
+      <div class="problem">
+        <div class="problem-label">Problem 4 — K<sub>p</sub> from K<sub>c</sub></div>
+        <p>For PCl₅(g) ⇌ PCl₃(g) + Cl₂(g), K<sub>c</sub> = 0.0400 at 250°C (523 K). Calculate K<sub>p</sub>. Round to 3 significant figures.</p>
+        <div class="input-row">
+          <input class="num-input" type="number" id="p4" placeholder="K_p ="/>
+          <button class="check-btn" onclick="checkNum('p4', 1.72, 0.05)">Check</button>
+        </div>
+        <div class="feedback" id="p4-fb"></div>
+        <details style="margin-top:10px;">
+          <summary style="font-size:11px;color:#8a8f9c;cursor:pointer;">Show work</summary>
+          <div class="delta-note" style="margin-top:8px;">
+            Δn = (1+1) − 1 = +1<br/>
+            RT = 0.08206 × 523 = 42.92 L·atm/mol<br/>
+            K<sub>p</sub> = K<sub>c</sub>(RT)¹ = 0.0400 × 42.92 = 1.717 ≈ 1.72
+          </div>
+        </details>
+      </div>
+
+      <!-- P5 -->
+      <div class="problem">
+        <div class="problem-label">Problem 5 — ICE with Quadratic</div>
+        <p>For H₂(g) + F₂(g) ⇌ 2HF(g), K<sub>c</sub> = 115 at a certain temperature. Initial: [H₂] = [F₂] = 0.250 M, [HF] = 0. Find the equilibrium concentration of HF in M. Round to 3 decimal places.</p>
+        <div class="input-row">
+          <input class="num-input" type="number" id="p5" placeholder="[HF] eq"/>
+          <button class="check-btn" onclick="checkNum('p5', 0.421, 0.005)">Check</button>
+        </div>
+        <div class="feedback" id="p5-fb"></div>
+        <details style="margin-top:10px;">
+          <summary style="font-size:11px;color:#8a8f9c;cursor:pointer;">Show work</summary>
+          <div class="delta-note" style="margin-top:8px;">
+            ICE: [H₂] = 0.250−x, [F₂] = 0.250−x, [HF] = 2x<br/>
+            K = (2x)² / (0.250−x)² = 115<br/>
+            Take square root of both sides: 2x / (0.250−x) = √115 = 10.724<br/>
+            Solve: 10.724(0.250−x) = 2x → 2.681 − 10.724x = 2x → 2.681 = 12.724x → x = 0.2107<br/>
+            <strong>[HF] = 2x = 2(0.2107) = 0.421 M</strong><br/>
+            Verify: (0.421)² / (0.250 − 0.2107)² = 0.1772 / (0.0393)² = 0.1772 / 0.001544 = 114.8 ✓
+          </div>
+        </details>
+      </div>
+
+      <!-- P6 -->
+      <div class="problem">
+        <div class="problem-label">Problem 6 — Q Direction Prediction + K<sub>c</sub></div>
+        <p>For 2NO(g) + O₂(g) ⇌ 2NO₂(g), K<sub>c</sub> = 6.90×10⁵ at 25°C. Current concentrations: [NO] = 0.0200 M, [O₂] = 0.0100 M, [NO₂] = 0.400 M. Calculate Q<sub>c</sub> (enter as a whole number). Then determine the direction of shift: enter 1 if forward, −1 if reverse, 0 if at equilibrium.</p>
+        <p style="font-size:12px;color:#8a8f9c;">First: enter Q value</p>
+        <div class="input-row">
+          <input class="num-input" type="number" id="p6q" placeholder="Q_c ≈"/>
+          <button class="check-btn" onclick="checkNum('p6q', 40000, 4000)">Check Q</button>
+        </div>
+        <div class="feedback" id="p6q-fb"></div>
+        <p style="font-size:12px;color:#8a8f9c;margin-top:10px;">Then: direction (1 = forward, −1 = reverse)</p>
+        <div class="input-row">
+          <input class="num-input" type="number" id="p6d" placeholder="1 or -1"/>
+          <button class="check-btn" onclick="checkNum('p6d', 1, 0)">Check Direction</button>
+        </div>
+        <div class="feedback" id="p6d-fb"></div>
+        <details style="margin-top:10px;">
+          <summary style="font-size:11px;color:#8a8f9c;cursor:pointer;">Show work</summary>
+          <div class="delta-note" style="margin-top:8px;">
+            Q = [NO₂]² / ([NO]²[O₂]) = (0.400)² / ((0.0200)² × 0.0100)<br/>
+            = 0.1600 / (4.00×10⁻⁴ × 0.0100) = 0.1600 / 4.00×10⁻⁶ = <strong>4.00×10⁴ = 40,000</strong><br/>
+            K = 6.90×10⁵ = 690,000<br/>
+            Q = 40,000 &lt; K = 690,000 → Q &lt; K → reaction shifts <strong>FORWARD</strong> (direction = 1)<br/>
+            More NO₂ will form until equilibrium is reached.
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 8: QUIZ -->
+  <div class="section-card" data-section="8">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">08</span>
+      <span class="section-title">Quiz — 10 Questions</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <div class="quiz-score-bar">
+        <span>Score: <span id="quizScore">0</span> / 10</span>
+        <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+      </div>
+
+      <!-- Q1 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 1</div>
+        <p>At chemical equilibrium, which statement is true?</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(1,this,false)">A. Forward reaction has stopped</button>
+          <button class="choice-btn" onclick="quizAnswer(1,this,false)">B. Concentrations of reactants and products are equal</button>
+          <button class="choice-btn" onclick="quizAnswer(1,this,true)">C. Forward and reverse reaction rates are equal</button>
+          <button class="choice-btn" onclick="quizAnswer(1,this,false)">D. No molecular collisions are occurring</button>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 2</div>
+        <p>For the reaction 2A(g) ⇌ B(g) + 3C(g), which is the correct K<sub>c</sub> expression?</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(2,this,false)">A. [A]² / ([B][C]³)</button>
+          <button class="choice-btn" onclick="quizAnswer(2,this,true)">B. [B][C]³ / [A]²</button>
+          <button class="choice-btn" onclick="quizAnswer(2,this,false)">C. [B][C] / [A]²</button>
+          <button class="choice-btn" onclick="quizAnswer(2,this,false)">D. [A]² / ([B][C])</button>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 3</div>
+        <p>K<sub>c</sub> = 1.5×10⁻⁸ at 25°C for a reaction. What does this tell you?</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(3,this,false)">A. Products are strongly favored at equilibrium</button>
+          <button class="choice-btn" onclick="quizAnswer(3,this,true)">B. Reactants are strongly favored; very little product present</button>
+          <button class="choice-btn" onclick="quizAnswer(3,this,false)">C. Reaction proceeds at a very fast rate</button>
+          <button class="choice-btn" onclick="quizAnswer(3,this,false)">D. Equal amounts of reactant and product are present</button>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 4</div>
+        <p>For a reaction with K = 25, the measured Q = 100. What occurs next?</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(4,this,false)">A. The reaction shifts forward to produce more products</button>
+          <button class="choice-btn" onclick="quizAnswer(4,this,true)">B. The reaction shifts reverse to consume products</button>
+          <button class="choice-btn" onclick="quizAnswer(4,this,false)">C. The system is already at equilibrium</button>
+          <button class="choice-btn" onclick="quizAnswer(4,this,false)">D. K changes to match Q</button>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 5</div>
+        <p>The Haber process: N₂(g) + 3H₂(g) ⇌ 2NH₃(g) is exothermic. To maximize NH₃ yield at equilibrium (ignoring rate), you should:</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(5,this,false)">A. Increase temperature and decrease pressure</button>
+          <button class="choice-btn" onclick="quizAnswer(5,this,true)">B. Decrease temperature and increase pressure</button>
+          <button class="choice-btn" onclick="quizAnswer(5,this,false)">C. Increase temperature and increase pressure</button>
+          <button class="choice-btn" onclick="quizAnswer(5,this,false)">D. Add a catalyst and increase temperature</button>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 6</div>
+        <p>Adding an inert gas (like argon) to an equilibrium system at <em>constant volume</em>:</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(6,this,false)">A. Shifts equilibrium toward the side with fewer gas moles</button>
+          <button class="choice-btn" onclick="quizAnswer(6,this,false)">B. Shifts equilibrium toward the side with more gas moles</button>
+          <button class="choice-btn" onclick="quizAnswer(6,this,true)">C. Has no effect on the equilibrium position</button>
+          <button class="choice-btn" onclick="quizAnswer(6,this,false)">D. Always shifts equilibrium to the right</button>
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 7</div>
+        <p>Which species would NOT appear in the K<sub>c</sub> expression for CaCO₃(s) ⇌ CaO(s) + CO₂(g)?</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(7,this,false)">A. CO₂</button>
+          <button class="choice-btn" onclick="quizAnswer(7,this,true)">B. CaCO₃ and CaO</button>
+          <button class="choice-btn" onclick="quizAnswer(7,this,false)">C. CaO only</button>
+          <button class="choice-btn" onclick="quizAnswer(7,this,false)">D. All species appear</button>
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 8</div>
+        <p>For the reaction A(g) ⇌ 2B(g), K<sub>c</sub> = 0.250 at 500 K. What is K<sub>p</sub>? (R = 0.08206 L·atm/mol·K)</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(8,this,false)">A. 0.250</button>
+          <button class="choice-btn" onclick="quizAnswer(8,this,false)">B. 0.00609</button>
+          <button class="choice-btn" onclick="quizAnswer(8,this,true)">C. 10.26</button>
+          <button class="choice-btn" onclick="quizAnswer(8,this,false)">D. 1.026</button>
+        </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 9</div>
+        <p>In an ICE table for A + B ⇌ 2C, if [A]₀ = 0.600 M, [B]₀ = 0.400 M, [C]₀ = 0, what is the "C" row entry for species A?</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(9,this,false)">A. +x</button>
+          <button class="choice-btn" onclick="quizAnswer(9,this,true)">B. −x</button>
+          <button class="choice-btn" onclick="quizAnswer(9,this,false)">C. −2x</button>
+          <button class="choice-btn" onclick="quizAnswer(9,this,false)">D. +2x</button>
+        </div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 10</div>
+        <p>On a submarine, the CO₂ scrubber maintains CO₂ below 8,000 ppm (0.8%). The scrubbing reaction 2LiOH(s) + CO₂(g) ⇌ Li₂CO₃(s) + H₂O(g) is highly product-favored (large K). If CO₂ concentration rises sharply (Q decreases relative to K), Le Chatelier predicts:</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(10,this,true)">A. Scrubber shifts forward, absorbing more CO₂</button>
+          <button class="choice-btn" onclick="quizAnswer(10,this,false)">B. Scrubber shifts reverse, releasing CO₂</button>
+          <button class="choice-btn" onclick="quizAnswer(10,this,false)">C. No shift occurs; K is too large</button>
+          <button class="choice-btn" onclick="quizAnswer(10,this,false)">D. LiOH decomposes to restore equilibrium</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+/* ============================================================
+   PROGRESS & SECTION MANAGEMENT
+   ============================================================ */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="' + n + '"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) { markComplete(+card.getAttribute('data-section')); }
+  updateProgress();
+}
+
+/* ============================================================
+   CHECK FUNCTIONS
+   ============================================================ */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Enter a number.';
+    inp.parentElement.parentElement.classList.add('shake');
+    setTimeout(function() { inp.parentElement.parentElement.classList.remove('shake'); }, 400);
+    return;
+  }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop');
+    setTimeout(function() { inp.parentElement.parentElement.classList.remove('pop'); }, 350);
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed ? answer.toFixed(4) : answer + ')';
+    inp.parentElement.parentElement.classList.add('shake');
+    setTimeout(function() { inp.parentElement.parentElement.classList.remove('shake'); }, 400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop');
+    setTimeout(function() { btn.closest('.problem').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake');
+    setTimeout(function() { btn.closest('.problem').classList.remove('shake'); }, 400);
+  }
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop');
+    setTimeout(function() { btn.closest('.quiz-q').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf('true') !== -1) {
+        b.classList.add('reveal-correct');
+      }
+    });
+    btn.closest('.quiz-q').classList.add('shake');
+    setTimeout(function() { btn.closest('.quiz-q').classList.remove('shake'); }, 400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0;
+  quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) {
+    b.className = 'choice-btn';
+  });
+}
+
+/* ============================================================
+   SECTION 1 — RATE CANVAS
+   ============================================================ */
+function drawRates() {
+  var slider = document.getElementById('rateSlider');
+  var val = parseFloat(slider.value);
+  document.getElementById('rateVal').textContent = val.toFixed(1);
+
+  var canvas = document.getElementById('rateCanvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(54,59,71,0.5)';
+  ctx.lineWidth = 1;
+  for (var i = 1; i < 5; i++) {
+    ctx.beginPath(); ctx.moveTo(0, H * i / 5); ctx.lineTo(W, H * i / 5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(W * i / 5, 0); ctx.lineTo(W * i / 5, H); ctx.stroke();
+  }
+
+  var pts = 80;
+  var eqRate = 2.5; // equilibrium rate (arbitrary units)
+  var initFwd = val;
+  var initRev = 0.2;
+
+  // Forward rate: exponential decay toward eqRate
+  var fwdPts = [];
+  for (var i = 0; i <= pts; i++) {
+    var t = i / pts;
+    var rate = eqRate + (initFwd - eqRate) * Math.exp(-4 * t);
+    fwdPts.push({ x: t * W, y: H - (rate / 12) * H * 0.85 - 10 });
+  }
+
+  // Reverse rate: exponential rise toward eqRate
+  var revPts = [];
+  for (var i = 0; i <= pts; i++) {
+    var t = i / pts;
+    var rate = eqRate + (initRev - eqRate) * Math.exp(-4 * t);
+    revPts.push({ x: t * W, y: H - (rate / 12) * H * 0.85 - 10 });
+  }
+
+  // Equilibrium dashed line
+  var eqY = H - (eqRate / 12) * H * 0.85 - 10;
+  ctx.setLineDash([6, 4]);
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, eqY); ctx.lineTo(W, eqY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Forward rate (green)
+  ctx.strokeStyle = '#22c55e';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  fwdPts.forEach(function(p, i) { i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y); });
+  ctx.stroke();
+
+  // Reverse rate (pink)
+  ctx.strokeStyle = '#ec4899';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  revPts.forEach(function(p, i) { i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y); });
+  ctx.stroke();
+
+  // Equilibrium label
+  ctx.fillStyle = '#f59e0b';
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.fillText('Equilibrium rate', 6, eqY - 6);
+
+  // Convergence marker
+  var convX = W * 0.62;
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(convX, 0); ctx.lineTo(convX, H); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.fillText('rates converge', convX + 4, 20);
+
+  // Axis labels
+  ctx.fillStyle = '#8a8f9c';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.fillText('Time →', W - 52, H - 4);
+  ctx.save();
+  ctx.translate(12, H / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('Rate', -12, 0);
+  ctx.restore();
+}
+
+/* ============================================================
+   SECTION 2 — Kc CALCULATOR
+   ============================================================ */
+function calcK() {
+  var cC = parseFloat(document.getElementById('cC').value);
+  var cc = parseFloat(document.getElementById('cc').value);
+  var cD = parseFloat(document.getElementById('cD').value);
+  var cd = parseFloat(document.getElementById('cd').value);
+  var cA = parseFloat(document.getElementById('cA').value);
+  var ca = parseFloat(document.getElementById('ca').value);
+  var cB = parseFloat(document.getElementById('cB').value);
+  var cb = parseFloat(document.getElementById('cb').value);
+
+  document.getElementById('cC-v').textContent = cC.toFixed(2);
+  document.getElementById('cc-v').textContent = cc;
+  document.getElementById('cD-v').textContent = cD.toFixed(2);
+  document.getElementById('cd-v').textContent = cd;
+  document.getElementById('cA-v').textContent = cA.toFixed(2);
+  document.getElementById('ca-v').textContent = ca;
+  document.getElementById('cB-v').textContent = cB.toFixed(2);
+  document.getElementById('cb-v').textContent = cb;
+
+  var num = Math.pow(cC, cc) * Math.pow(cD, cd);
+  var den = Math.pow(cA, ca) * Math.pow(cB, cb);
+  var kc = num / den;
+
+  document.getElementById('kc-result').textContent = 'K\u2099 = ' + kc.toFixed(4);
+  var interp = kc > 100 ? 'Products strongly favored (K >> 1)' :
+               kc > 1   ? 'Products moderately favored (K > 1)' :
+               kc === 1 ? 'Roughly equal at equilibrium (K = 1)' :
+               kc > 0.01 ? 'Reactants moderately favored (K < 1)' :
+                           'Reactants strongly favored (K << 1)';
+  document.getElementById('kc-interpretation').textContent = interp;
+}
+
+/* ============================================================
+   SECTION 3 — Q SLIDER
+   ============================================================ */
+function updateQ() {
+  var val = parseInt(document.getElementById('qSlider').value);
+  var pct = val / 100;
+  var marker = document.getElementById('qMarker');
+  // Map 0-100 slider to 5%-95% track position
+  var pos = 5 + pct * 90;
+  marker.style.left = pos + '%';
+
+  var label, cls;
+  if (val < 45) {
+    label = 'Q < K — reaction shifts FORWARD (produces more products)';
+    cls = 'stress-forward';
+    document.getElementById('qVal').textContent = (pct * 0.9).toFixed(2) + 'K';
+  } else if (val > 55) {
+    label = 'Q > K — reaction shifts REVERSE (consumes products)';
+    cls = 'stress-reverse';
+    document.getElementById('qVal').textContent = (1 + pct * 0.9).toFixed(2) + 'K';
+  } else {
+    label = 'Q \u2248 K — system is at (or near) equilibrium, no net shift';
+    cls = 'stress-none';
+    document.getElementById('qVal').textContent = '\u2248K';
+  }
+  var status = document.getElementById('qStatus');
+  status.textContent = label;
+  status.className = 'q-status ' + cls;
+}
+
+/* ============================================================
+   SECTION 4 — LE CHATELIER STRESS SIMULATOR
+   ============================================================ */
+var stressData = {
+  'add-n2': {
+    title: 'Added N\u2082 (reactant)',
+    dir: 'forward',
+    text: 'Increasing [N\u2082] raises Q denominator, making Q < K. System shifts FORWARD to consume excess N\u2082 and produce more NH\u2083. New equilibrium has higher [NH\u2083]. K is unchanged.'
+  },
+  'remove-n2': {
+    title: 'Removed N\u2082 (reactant)',
+    dir: 'reverse',
+    text: 'Decreasing [N\u2082] lowers Q denominator, making Q > K. System shifts REVERSE to replenish N\u2082. [NH\u2083] decreases. K is unchanged.'
+  },
+  'add-nh3': {
+    title: 'Added NH\u2083 (product)',
+    dir: 'reverse',
+    text: 'Increasing [NH\u2083] raises Q numerator, making Q > K. System shifts REVERSE to consume excess NH\u2083. [N\u2082] and [H\u2082] increase. K is unchanged.'
+  },
+  'remove-nh3': {
+    title: 'Removed NH\u2083 (product)',
+    dir: 'forward',
+    text: 'Decreasing [NH\u2083] lowers Q numerator, making Q < K. System shifts FORWARD to replenish NH\u2083. This is exploited industrially — continuously removing product drives the reaction forward.'
+  },
+  'increase-p': {
+    title: 'Increased total pressure (decrease volume)',
+    dir: 'forward',
+    text: 'Increasing pressure favors the side with fewer moles of gas. Reactant side: 4 moles gas (1 N\u2082 + 3 H\u2082). Product side: 2 moles gas (2 NH\u2083). System shifts FORWARD, reducing total moles of gas to partially relieve the pressure increase. K\u209c unchanged; K\u209a changes.'
+  },
+  'decrease-p': {
+    title: 'Decreased total pressure (increase volume)',
+    dir: 'reverse',
+    text: 'Decreasing pressure favors the side with more moles of gas. Reactant side has 4 moles gas vs 2 for products. System shifts REVERSE to increase total gas moles.'
+  },
+  'increase-t': {
+    title: 'Increased temperature',
+    dir: 'reverse',
+    text: 'This is an EXOTHERMIC reaction (\u0394H = \u221292 kJ/mol). Treat heat as a product: N\u2082 + 3H\u2082 \u21cc 2NH\u2083 + heat. Adding heat (temperature) shifts REVERSE. K\u209c DECREASES — temperature actually changes the equilibrium constant. Less NH\u2083 at new equilibrium.'
+  },
+  'decrease-t': {
+    title: 'Decreased temperature',
+    dir: 'forward',
+    text: 'Removing heat from an exothermic system shifts FORWARD. K\u209c INCREASES. More NH\u2083 at new equilibrium. (But slower rate — this is the industrial trade-off that requires a compromise temperature of ~450\u00b0C.)'
+  },
+  'add-catalyst': {
+    title: 'Added catalyst (iron with promoters)',
+    dir: 'none',
+    text: 'A catalyst speeds both forward and reverse rates equally. It lowers activation energy for both directions, so equilibrium is reached faster. Equilibrium POSITION is unchanged. K is unchanged. The catalyst does not shift the reaction — it only shortens the time to get there.'
+  },
+  'inert-gas': {
+    title: 'Added inert gas at constant volume',
+    dir: 'none',
+    text: 'Adding an inert gas at constant volume does not change the partial pressures of any reacting species (PV = nRT; V and T fixed, so individual P values unchanged). Q is unchanged. NO SHIFT occurs. (If volume were allowed to expand to keep total P constant, then partial pressures would decrease and a shift would occur.)'
+  }
+};
+
+function applyStress(type) {
+  var d = stressData[type];
+  var res = document.getElementById('stressResult');
+  var dirLabel = d.dir === 'forward' ? '<span class="stress-forward">\u21d2 FORWARD SHIFT</span>' :
+                 d.dir === 'reverse' ? '<span class="stress-reverse">\u21d0 REVERSE SHIFT</span>' :
+                 '<span class="stress-none">NO SHIFT</span>';
+  res.innerHTML = '<strong style="color:var(--text);">' + d.title + '</strong> &mdash; ' + dirLabel + '<br/><br/>' + d.text;
+}
+
+/* ============================================================
+   SECTION 5 — ICE TABLE BUILDER
+   ============================================================ */
+// Reaction: A(g) ⇌ 2B(g)   Kc = [B]² / [A]
+// E: [A] = A0 - x, [B] = 2x
+// Kc = (2x)² / (A0 - x) = 4x² / (A0 - x)
+// Kc(A0 - x) = 4x²
+// 4x² + Kc*x - Kc*A0 = 0
+// x = (-Kc + sqrt(Kc² + 16*Kc*A0)) / 8
+function buildICE() {
+  var A0 = parseFloat(document.getElementById('iceA').value);
+  var Kc = parseFloat(document.getElementById('iceK').value);
+  document.getElementById('iceA-v').textContent = A0.toFixed(2);
+  document.getElementById('iceK-v').textContent = Kc.toFixed(2);
+
+  // Update I row
+  document.getElementById('ice-I-A').textContent = A0.toFixed(2);
+  document.getElementById('ice-I-B').textContent = '0.00';
+
+  // Update E row labels
+  document.getElementById('ice-E-A').textContent = A0.toFixed(2) + ' \u2212 x';
+  document.getElementById('ice-E-B').textContent = '2x';
+
+  // Solve: 4x² + Kc*x - Kc*A0 = 0
+  var a = 4, b = Kc, c = -Kc * A0;
+  var disc = b * b - 4 * a * c;
+  var x = (-b + Math.sqrt(disc)) / (2 * a);
+
+  var eqA = A0 - x;
+  var eqB = 2 * x;
+
+  document.getElementById('ice-R-A').textContent = eqA.toFixed(4) + ' M';
+  document.getElementById('ice-R-B').textContent = eqB.toFixed(4) + ' M';
+
+  // Verify
+  var Kcheck = (eqB * eqB) / eqA;
+  document.getElementById('ice-solution-eq').textContent =
+    '4x\u00b2 + ' + Kc.toFixed(2) + 'x \u2212 ' + (Kc * A0).toFixed(3) + ' = 0  \u2192  x = ' + x.toFixed(4);
+  document.getElementById('ice-solution-detail').textContent =
+    '[A]eq = ' + eqA.toFixed(4) + ' M,  [B]eq = ' + eqB.toFixed(4) + ' M   |   Verify Kc = ' + Kcheck.toFixed(3) + ' (expected ' + Kc.toFixed(2) + ')';
+}
+
+/* ============================================================
+   SECTION 6 — Kc/Kp CONVERTER
+   ============================================================ */
+function convertK() {
+  var kc = parseFloat(document.getElementById('kcInput').value);
+  var T  = parseFloat(document.getElementById('tempInput').value);
+  var dn = parseFloat(document.getElementById('dnInput').value);
+
+  document.getElementById('kc-v').textContent = kc.toFixed(3);
+  document.getElementById('temp-v').textContent = T.toFixed(0) + ' K';
+  document.getElementById('dn-v').textContent = (dn >= 0 ? '+' : '') + dn;
+
+  var R = 0.08206;
+  var RT = R * T;
+  var kp = kc * Math.pow(RT, dn);
+
+  document.getElementById('kp-result').textContent = 'K\u209a = ' + kp.toExponential(3);
+  document.getElementById('kp-formula').textContent =
+    'K\u209a = ' + kc.toFixed(3) + ' \u00d7 (' + R + ' \u00d7 ' + T.toFixed(0) + ')\u207f = ' +
+    kc.toFixed(3) + ' \u00d7 (' + RT.toFixed(2) + ')\u207f';
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+window.addEventListener('load', function() {
+  drawRates();
+  calcK();
+  updateQ();
+  buildICE();
+  convertK();
+  updateProgress();
+});
+
+// Redraw canvas on resize
+window.addEventListener('resize', function() {
+  var canvas = document.getElementById('rateCanvas');
+  canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+  canvas.height = 180 * (window.devicePixelRatio || 1);
+  canvas.style.height = '180px';
+  drawRates();
+});
+</script>
+
+</body>
+</html>

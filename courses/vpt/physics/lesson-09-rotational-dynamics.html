@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 9: Rotational Dynamics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.shape-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.shape-card{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
+.shape-card .shape-name{font-size:.72rem;color:var(--text-bright);font-weight:600;margin-bottom:6px}
+.shape-card .shape-formula{font-size:.85rem;font-weight:600;margin-top:8px}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.shape-grid{grid-template-columns:1fr}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>09</span> Rotational Dynamics</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 7 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: TORQUE -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Torque</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Torque</strong> is the rotational analog of force. It measures the tendency of a force to cause rotation about an axis. Torque depends on three things: the magnitude of the force <strong>F</strong>, the distance from the pivot <strong>r</strong> (called the lever arm or moment arm), and the <strong>angle</strong> between r and F. Only the component of force perpendicular to the lever arm produces torque.
+    </p>
+    <div class="formula-box large">&tau; = r F sin&theta; &nbsp;&nbsp;&nbsp; [N &middot; m]</div>
+    <div class="formula-box green">&tau; = r &times; F &nbsp;&nbsp; (cross product -- direction from right-hand rule)</div>
+
+    <p class="concept-text">
+      <strong>Direction:</strong> Curl the fingers of your right hand from <strong>r</strong> toward <strong>F</strong>. Your thumb points in the direction of the torque vector. By convention, counterclockwise (CCW) torque is positive and clockwise (CW) is negative. The <strong>net torque</strong> is the sum of all torques about a chosen pivot: &Sigma;&tau; = &tau;_1 + &tau;_2 + ...
+    </p>
+    <div class="key-point">Maximum torque occurs when &theta; = 90 degrees (force perpendicular to lever arm). Zero torque when &theta; = 0 or 180 degrees (force parallel to lever arm). This is why you push a door at its edge, not near the hinge.</div>
+
+    <!-- SVG: Wrench showing torque -->
+    <div class="interactive-area">
+      <div class="interactive-label">Diagram: Torque on a Wrench</div>
+      <svg id="wrenchSvg" width="100%" viewBox="0 0 700 260" style="display:block">
+        <!-- Pivot point -->
+        <circle cx="200" cy="140" r="8" fill="var(--amber)" opacity="0.8"/>
+        <text x="200" y="175" text-anchor="middle" fill="var(--amber)" font-size="11" font-weight="600">Pivot (bolt)</text>
+        <!-- Wrench arm -->
+        <line x1="200" y1="140" x2="500" y2="140" stroke="var(--text-dim)" stroke-width="4" stroke-linecap="round"/>
+        <text x="350" y="132" text-anchor="middle" fill="var(--text-dim)" font-size="11">r (lever arm)</text>
+        <!-- Force arrow at angle -->
+        <line x1="500" y1="140" x2="500" y2="50" stroke="var(--indigo)" stroke-width="3" marker-end="url(#arrowI)"/>
+        <text x="518" y="90" fill="var(--indigo)" font-size="12" font-weight="600">F</text>
+        <!-- Angle arc -->
+        <path d="M 500,120 A 20,20 0 0,1 480,140" fill="none" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="472" y="118" fill="var(--green)" font-size="10">&theta;=90</text>
+        <!-- r arrow -->
+        <defs>
+          <marker id="arrowI" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="var(--indigo)"/></marker>
+          <marker id="arrowG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="var(--green)"/></marker>
+          <marker id="arrowA" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="var(--amber)"/></marker>
+          <marker id="arrowP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="var(--pink)"/></marker>
+        </defs>
+        <!-- Rotation direction -->
+        <path d="M 240,80 A 70,70 0 0,0 175,115" fill="none" stroke="var(--pink)" stroke-width="2" marker-end="url(#arrowP)"/>
+        <text x="170" y="78" fill="var(--pink)" font-size="11" font-weight="600">CCW (+&tau;)</text>
+        <!-- tau = rF label -->
+        <rect x="30" y="210" width="200" height="32" rx="6" fill="var(--indigo-dim)" stroke="rgba(99,102,241,.3)"/>
+        <text x="130" y="231" text-anchor="middle" fill="var(--indigo)" font-size="12" font-weight="600">&tau; = rF sin90 = rF</text>
+      </svg>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Torque Visualizer -- adjust r, F, angle</div>
+      <div class="slider-row">
+        <label>Lever arm r</label>
+        <input type="range" id="tqR" min="0.1" max="2" value="0.5" step="0.05" oninput="updateTorqueViz()">
+        <span class="slider-val" id="tqRVal">0.50 m</span>
+      </div>
+      <div class="slider-row">
+        <label>Force F</label>
+        <input type="range" id="tqF" min="1" max="200" value="50" step="1" oninput="updateTorqueViz()">
+        <span class="slider-val" id="tqFVal">50 N</span>
+      </div>
+      <div class="slider-row">
+        <label>Angle &theta;</label>
+        <input type="range" id="tqAngle" min="0" max="180" value="90" step="1" oninput="updateTorqueViz()">
+        <span class="slider-val" id="tqAngleVal">90 deg</span>
+      </div>
+      <svg id="tqVizSvg" width="100%" viewBox="0 0 700 220" style="display:block;margin:8px 0"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">r</span><br><span class="value indigo" id="tqROut">0.50 m</span></div>
+        <div class="readout-item"><span class="label">F</span><br><span class="value green" id="tqFOut">50 N</span></div>
+        <div class="readout-item"><span class="label">sin&theta;</span><br><span class="value amber" id="tqSinOut">1.000</span></div>
+        <div class="readout-item"><span class="label">&tau; = rF sin&theta;</span><br><span class="value pink" id="tqTauOut">25.0 N*m</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> When turning a valve wheel on a submarine, you apply force at the rim (maximum r). A stuck valve might need 80 N*m of torque. With a 0.2 m radius wheel, you need 400 N of force. Add a cheater bar (0.5 m) and you only need 160 N. That is the power of increasing the lever arm.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 30 N force is applied perpendicular to a wrench 0.4 m from the bolt. What is the torque?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1" step="0.1" placeholder="&tau; = ?" onkeydown="if(event.key==='Enter')checkNum('s1p1',12,0.5)">
+          <span class="unit-label">N*m</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p1',12,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A 100 N force is applied at 0.3 m from the pivot at an angle of 30 degrees to the lever arm. What is the torque?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2" step="0.1" placeholder="&tau; = ?" onkeydown="if(event.key==='Enter')checkNum('s1p2',15,1)">
+          <span class="unit-label">N*m</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p2',15,1)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+      <div class="problem" id="s1p3">
+        <p><strong>3.</strong> You push on a door at its handle (0.8 m from hinge) with 20 N perpendicular to the door. Your friend pushes at 0.4 m from the hinge in the opposite rotational direction with unknown force. What force must your friend apply to create zero net torque?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p3i" step="0.1" placeholder="F = ?" onkeydown="if(event.key==='Enter')checkNum('s1p3i',40,1)">
+          <span class="unit-label">N</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p3i',40,1)">Check</button>
+        </div>
+        <div class="feedback" id="s1p3i-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: MOMENT OF INERTIA -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Moment of Inertia</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Moment of inertia</strong> (I) is the rotational analog of mass. It measures how hard it is to change an object's rotational motion. For a collection of point masses: <strong>I = &Sigma;m_i * r_i&sup2;</strong>, where r_i is the distance from the rotation axis. Farther mass = more inertia. Units: kg*m&sup2;.
+    </p>
+    <div class="formula-box large">I = &Sigma; m_i r_i&sup2; &nbsp;&nbsp;&nbsp; [kg &middot; m&sup2;]</div>
+
+    <p class="concept-text">
+      For common <strong>rigid shapes</strong> rotating about their center of mass, the moment of inertia has been calculated with calculus. Here are the key ones you need to know:
+    </p>
+
+    <!-- SVG shapes with I formulas -->
+    <div class="shape-grid">
+      <div class="shape-card">
+        <svg width="100%" viewBox="0 0 160 120">
+          <!-- Solid disk -->
+          <ellipse cx="80" cy="50" rx="45" ry="18" fill="none" stroke="var(--indigo)" stroke-width="2"/>
+          <line x1="80" y1="50" x2="80" y2="10" stroke="var(--text-dim)" stroke-width="1" stroke-dasharray="4"/>
+          <circle cx="80" cy="50" r="3" fill="var(--amber)"/>
+          <line x1="80" y1="50" x2="125" y2="50" stroke="var(--green)" stroke-width="1.5"/>
+          <text x="103" y="45" fill="var(--green)" font-size="9">R</text>
+          <text x="80" y="105" text-anchor="middle" fill="var(--text-dim)" font-size="9">axis through center</text>
+        </svg>
+        <div class="shape-name">Solid Disk / Cylinder</div>
+        <div class="shape-formula" style="color:var(--indigo)">I = &frac12; MR&sup2;</div>
+      </div>
+      <div class="shape-card">
+        <svg width="100%" viewBox="0 0 160 120">
+          <!-- Hoop -->
+          <ellipse cx="80" cy="50" rx="45" ry="18" fill="none" stroke="var(--pink)" stroke-width="3"/>
+          <circle cx="80" cy="50" r="3" fill="var(--amber)"/>
+          <line x1="80" y1="50" x2="125" y2="50" stroke="var(--green)" stroke-width="1.5"/>
+          <text x="103" y="45" fill="var(--green)" font-size="9">R</text>
+          <text x="80" y="105" text-anchor="middle" fill="var(--text-dim)" font-size="9">all mass at rim</text>
+        </svg>
+        <div class="shape-name">Hoop / Thin Ring</div>
+        <div class="shape-formula" style="color:var(--pink)">I = MR&sup2;</div>
+      </div>
+      <div class="shape-card">
+        <svg width="100%" viewBox="0 0 160 120">
+          <!-- Solid sphere -->
+          <circle cx="80" cy="50" r="35" fill="none" stroke="var(--green)" stroke-width="2"/>
+          <ellipse cx="80" cy="50" rx="35" ry="12" fill="none" stroke="var(--green)" stroke-width="1" stroke-dasharray="4"/>
+          <circle cx="80" cy="50" r="3" fill="var(--amber)"/>
+          <line x1="80" y1="50" x2="115" y2="50" stroke="var(--amber)" stroke-width="1.5"/>
+          <text x="98" y="45" fill="var(--amber)" font-size="9">R</text>
+          <text x="80" y="105" text-anchor="middle" fill="var(--text-dim)" font-size="9">uniform solid</text>
+        </svg>
+        <div class="shape-name">Solid Sphere</div>
+        <div class="shape-formula" style="color:var(--green)">I = &#8534; MR&sup2;</div>
+      </div>
+      <div class="shape-card">
+        <svg width="100%" viewBox="0 0 160 120">
+          <!-- Thin rod center -->
+          <line x1="30" y1="50" x2="130" y2="50" stroke="var(--amber)" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="80" cy="50" r="3" fill="var(--indigo)"/>
+          <line x1="80" y1="50" x2="80" y2="25" stroke="var(--text-dim)" stroke-width="1" stroke-dasharray="4"/>
+          <text x="80" y="20" text-anchor="middle" fill="var(--text-dim)" font-size="9">axis</text>
+          <line x1="30" y1="60" x2="130" y2="60" stroke="var(--green)" stroke-width="1"/>
+          <text x="80" y="75" text-anchor="middle" fill="var(--green)" font-size="9">L</text>
+          <text x="80" y="105" text-anchor="middle" fill="var(--text-dim)" font-size="9">axis at center</text>
+        </svg>
+        <div class="shape-name">Thin Rod (center)</div>
+        <div class="shape-formula" style="color:var(--amber)">I = <sup>1</sup>&frasl;<sub>12</sub> ML&sup2;</div>
+      </div>
+    </div>
+
+    <p class="concept-text">
+      The <strong>parallel axis theorem</strong> lets you find I about any axis parallel to one through the center of mass. If you know I_cm, then I about a parallel axis a distance d away is:
+    </p>
+    <div class="formula-box pink">I = I_cm + Md&sup2; &nbsp;&nbsp; (parallel axis theorem)</div>
+    <div class="key-point">Example: A thin rod about one end instead of center -- I_end = (1/12)ML&sup2; + M(L/2)&sup2; = (1/3)ML&sup2;. The moment of inertia is always larger about an off-center axis.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Point Masses on a Rod</div>
+      <p class="concept-text" style="margin-bottom:10px">Two point masses on a massless rod of length 1 m, rotating about the center. Slide to move mass distribution.</p>
+      <div class="slider-row">
+        <label>m1 (left)</label>
+        <input type="range" id="moiM1" min="0.5" max="10" value="3" step="0.5" oninput="updateMOI()">
+        <span class="slider-val" id="moiM1Val">3.0 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>r1 from axis</label>
+        <input type="range" id="moiR1" min="0.05" max="0.5" value="0.3" step="0.05" oninput="updateMOI()">
+        <span class="slider-val" id="moiR1Val">0.30 m</span>
+      </div>
+      <div class="slider-row">
+        <label>m2 (right)</label>
+        <input type="range" id="moiM2" min="0.5" max="10" value="5" step="0.5" oninput="updateMOI()">
+        <span class="slider-val" id="moiM2Val">5.0 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>r2 from axis</label>
+        <input type="range" id="moiR2" min="0.05" max="0.5" value="0.4" step="0.05" oninput="updateMOI()">
+        <span class="slider-val" id="moiR2Val">0.40 m</span>
+      </div>
+      <svg id="moiSvg" width="100%" viewBox="0 0 700 120" style="display:block;margin:8px 0">
+      </svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">I_1 = m1*r1&sup2;</span><br><span class="value indigo" id="moiI1">0.270 kg*m&sup2;</span></div>
+        <div class="readout-item"><span class="label">I_2 = m2*r2&sup2;</span><br><span class="value green" id="moiI2">0.800 kg*m&sup2;</span></div>
+        <div class="readout-item"><span class="label">I_total</span><br><span class="value pink" id="moiItot">1.070 kg*m&sup2;</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A solid disk has mass 4 kg and radius 0.3 m. What is its moment of inertia about the central axis?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1" step="0.001" placeholder="I = ?" onkeydown="if(event.key==='Enter')checkNum('s2p1',0.18,0.01)">
+          <span class="unit-label">kg*m&sup2;</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p1',0.18,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A 2 kg thin rod is 1.2 m long. What is its moment of inertia about one end? (Use parallel axis theorem: I_end = 1/3 ML&sup2;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" step="0.01" placeholder="I = ?" onkeydown="if(event.key==='Enter')checkNum('s2p2',0.96,0.05)">
+          <span class="unit-label">kg*m&sup2;</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p2',0.96,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem" id="s2p3">
+        <p><strong>3.</strong> A hoop and a solid disk have the same mass and radius. Which has the larger moment of inertia?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','correct')">The hoop (I = MR&sup2; vs I = &frac12;MR&sup2;) -- all mass is at the rim</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">The solid disk -- it has more area</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">They are the same</button>
+        </div>
+        <div class="feedback" id="s2p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: NEWTON'S 2ND LAW FOR ROTATION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Newton's 2nd Law for Rotation</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Newton's second law for rotation is the direct rotational analog of F = ma. The net torque on an object equals its moment of inertia times its angular acceleration:
+    </p>
+    <div class="formula-box large">&Sigma;&tau; = I&alpha;</div>
+
+    <p class="concept-text">
+      This is the workhorse equation for rotational dynamics. To solve problems: (1) identify the rotation axis, (2) calculate I about that axis, (3) find all torques, (4) apply &tau;_net = I&alpha;. The linear-rotational analogy is complete:
+    </p>
+
+    <div class="formula-box green">Linear: F = ma &nbsp;&nbsp;&harr;&nbsp;&nbsp; Rotational: &tau; = I&alpha;</div>
+    <div class="formula-box amber">Linear: p = mv &nbsp;&nbsp;&harr;&nbsp;&nbsp; Rotational: L = I&omega;</div>
+
+    <div class="key-point">Classic problem: Atwood machine with a massive pulley. The pulley has moment of inertia I and radius R. The string exerts different tensions on each side (T1 and T2), and the net torque on the pulley is (T1 - T2)R = I*alpha. The linear acceleration a = R*alpha connects everything.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Spinning Disk -- Apply Torque</div>
+      <p class="concept-text" style="margin-bottom:10px">A solid disk of adjustable mass and radius. Apply a tangential force at the rim and watch the angular acceleration.</p>
+      <div class="slider-row">
+        <label>Disk mass M</label>
+        <input type="range" id="n2M" min="1" max="20" value="5" step="0.5" oninput="updateN2()">
+        <span class="slider-val" id="n2MVal">5.0 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Disk radius R</label>
+        <input type="range" id="n2R" min="0.1" max="1" value="0.3" step="0.05" oninput="updateN2()">
+        <span class="slider-val" id="n2RVal">0.30 m</span>
+      </div>
+      <div class="slider-row">
+        <label>Applied force F</label>
+        <input type="range" id="n2F" min="1" max="100" value="20" step="1" oninput="updateN2()">
+        <span class="slider-val" id="n2FVal">20 N</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">I = &frac12;MR&sup2;</span><br><span class="value indigo" id="n2I">0.225 kg*m&sup2;</span></div>
+        <div class="readout-item"><span class="label">&tau; = FR</span><br><span class="value green" id="n2Tau">6.0 N*m</span></div>
+        <div class="readout-item"><span class="label">&alpha; = &tau;/I</span><br><span class="value pink" id="n2Alpha">26.7 rad/s&sup2;</span></div>
+        <div class="readout-item"><span class="label">After 2s: &omega;</span><br><span class="value amber" id="n2Omega">53.3 rad/s</span></div>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Atwood Machine with Massive Pulley</div>
+      <p class="concept-text" style="margin-bottom:10px">Two hanging masses connected by a string over a pulley with moment of inertia. The pulley's mass slows the system compared to a massless pulley.</p>
+      <div class="slider-row">
+        <label>m1 (heavy)</label>
+        <input type="range" id="atwM1" min="1" max="20" value="8" step="0.5" oninput="updateAtwood()">
+        <span class="slider-val" id="atwM1Val">8.0 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>m2 (light)</label>
+        <input type="range" id="atwM2" min="1" max="20" value="3" step="0.5" oninput="updateAtwood()">
+        <span class="slider-val" id="atwM2Val">3.0 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Pulley mass M</label>
+        <input type="range" id="atwMP" min="0" max="10" value="2" step="0.5" oninput="updateAtwood()">
+        <span class="slider-val" id="atwMPVal">2.0 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Pulley radius R</label>
+        <input type="range" id="atwRP" min="0.05" max="0.5" value="0.15" step="0.05" oninput="updateAtwood()">
+        <span class="slider-val" id="atwRPVal">0.15 m</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">I_pulley = &frac12;MR&sup2;</span><br><span class="value indigo" id="atwI">0.0225 kg*m&sup2;</span></div>
+        <div class="readout-item"><span class="label">a (system)</span><br><span class="value green" id="atwA">4.25 m/s&sup2;</span></div>
+        <div class="readout-item"><span class="label">a (massless pulley)</span><br><span class="value amber" id="atwA0">4.45 m/s&sup2;</span></div>
+        <div class="readout-item"><span class="label">T1</span><br><span class="value pink" id="atwT1">44.4 N</span></div>
+        <div class="readout-item"><span class="label">T2</span><br><span class="value pink" id="atwT2">42.2 N</span></div>
+      </div>
+      <div class="sub-label">Formula: a = (m1 - m2)g / (m1 + m2 + &frac12;M)</div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A net torque of 12 N*m is applied to a wheel with I = 0.4 kg*m&sup2;. What is the angular acceleration?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="0.1" placeholder="&alpha; = ?" onkeydown="if(event.key==='Enter')checkNum('s3p1',30,1)">
+          <span class="unit-label">rad/s&sup2;</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p1',30,1)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> Atwood machine: m1 = 10 kg, m2 = 6 kg, massless pulley. What is the acceleration? Use g = 9.8 m/s&sup2;.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2" step="0.01" placeholder="a = ?" onkeydown="if(event.key==='Enter')checkNum('s3p2',2.45,0.15)">
+          <span class="unit-label">m/s&sup2;</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p2',2.45,0.15)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> Same Atwood machine but the pulley has mass 4 kg. Now a = (m1-m2)g / (m1+m2+M/2). What is the new acceleration?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p3" step="0.01" placeholder="a = ?" onkeydown="if(event.key==='Enter')checkNum('s3p3',2.18,0.15)">
+          <span class="unit-label">m/s&sup2;</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p3',2.18,0.15)">Check</button>
+        </div>
+        <div class="feedback" id="s3p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: ANGULAR MOMENTUM -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Angular Momentum</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Angular momentum</strong> is the rotational analog of linear momentum. For a rigid body spinning about a fixed axis: <strong>L = I&omega;</strong>. Like linear momentum, angular momentum is conserved when no net external torque acts on the system.
+    </p>
+    <div class="formula-box large">L = I&omega; &nbsp;&nbsp;&nbsp; [kg &middot; m&sup2;/s]</div>
+    <div class="formula-box green">&Sigma;&tau; = dL/dt &nbsp;&nbsp; (rotational analog of F = dp/dt)</div>
+    <div class="formula-box pink">If &Sigma;&tau;_ext = 0: &nbsp;&nbsp; I_i &omega;_i = I_f &omega;_f &nbsp;&nbsp; (conservation of angular momentum)</div>
+
+    <p class="concept-text">
+      <strong>Conservation of angular momentum</strong> explains some of the most dramatic phenomena in physics. When a figure skater pulls in their arms, their moment of inertia decreases, so their angular velocity must increase to conserve L. When a collapsing star shrinks, its spin rate can increase by factors of millions -- this is how neutron stars spin at hundreds of revolutions per second.
+    </p>
+    <div class="key-point">The ice skater effect: Arms out (large I, slow spin) &rarr; Arms in (small I, fast spin). L = I&omega; stays constant. If I drops by half, &omega; doubles.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Ice Skater -- Conservation of Angular Momentum</div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setAMScenario('skater',this)">Ice Skater</button>
+        <button class="scenario-tab" onclick="setAMScenario('star',this)">Collapsing Star</button>
+        <button class="scenario-tab" onclick="setAMScenario('turntable',this)">Turntable + Person</button>
+      </div>
+      <div id="amSkaterPanel">
+        <div class="slider-row">
+          <label>Arms position</label>
+          <input type="range" id="amArms" min="0" max="100" value="80" step="1" oninput="updateAM()">
+          <span class="slider-val" id="amArmsVal">Extended</span>
+        </div>
+        <svg id="amSvg" width="100%" viewBox="0 0 700 200" style="display:block;margin:8px 0"></svg>
+      </div>
+      <div id="amStarPanel" style="display:none">
+        <div class="slider-row">
+          <label>Radius ratio R/R0</label>
+          <input type="range" id="amStarR" min="0.001" max="1" value="1" step="0.001" oninput="updateAM()">
+          <span class="slider-val" id="amStarRVal">1.00</span>
+        </div>
+      </div>
+      <div id="amTurntablePanel" style="display:none">
+        <div class="slider-row">
+          <label>Person distance r</label>
+          <input type="range" id="amTurnR" min="0.1" max="2" value="1.5" step="0.1" oninput="updateAM()">
+          <span class="slider-val" id="amTurnRVal">1.50 m</span>
+        </div>
+        <p class="sub-label">Person (60 kg) walking inward on a spinning turntable (I=50 kg*m&sup2;, initial &omega;=2 rad/s)</p>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">I_initial</span><br><span class="value indigo" id="amIi">4.0 kg*m&sup2;</span></div>
+        <div class="readout-item"><span class="label">I_final</span><br><span class="value green" id="amIf">4.0 kg*m&sup2;</span></div>
+        <div class="readout-item"><span class="label">&omega;_initial</span><br><span class="value amber" id="amWi">2.0 rad/s</span></div>
+        <div class="readout-item"><span class="label">&omega;_final</span><br><span class="value pink" id="amWf">2.0 rad/s</span></div>
+        <div class="readout-item"><span class="label">L (constant)</span><br><span class="value" style="color:var(--text-bright)" id="amL">8.0 kg*m&sup2;/s</span></div>
+        <div class="readout-item"><span class="label">Speed factor</span><br><span class="value green" id="amFactor">1.0x</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Helicopter rotors obey angular momentum conservation. When the main rotor spins one way, the fuselage wants to spin the other way (reaction torque). The tail rotor provides a torque to prevent this. If the tail rotor fails, the helicopter spins uncontrollably -- a critical emergency. Gyroscopic effects from spinning rotors also resist changes in orientation, affecting ship and aircraft stability.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A figure skater with arms extended has I = 4.5 kg*m&sup2; and spins at 2 rev/s. She pulls her arms in, reducing I to 1.5 kg*m&sup2;. What is her new spin rate?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="0.1" placeholder="f = ?" onkeydown="if(event.key==='Enter')checkNum('s4p1',6,0.3)">
+          <span class="unit-label">rev/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p1',6,0.3)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A star collapses from radius R to R/1000. If it originally rotated once per month (~2.4x10&sup6; s), what is its new rotation period? (I = 2/5 MR&sup2;, so I_f/I_i = (R_f/R_i)&sup2;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2" step="0.0001" placeholder="T = ?" onkeydown="if(event.key==='Enter')checkNum('s4p2',0.0024,0.001)">
+          <span class="unit-label">seconds</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p2',0.0024,0.001)">Check</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> A 40 kg child stands at the edge of a 200 kg merry-go-round (solid disk, R = 2 m) spinning at 1 rad/s. The child walks to the center. What is the new angular velocity? (I_disk = &frac12;MR&sup2; = 400, I_child_initial = mR&sup2; = 160)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p3" step="0.01" placeholder="&omega; = ?" onkeydown="if(event.key==='Enter')checkNum('s4p3',1.4,0.1)">
+          <span class="unit-label">rad/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p3',1.4,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: STATIC EQUILIBRIUM -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Static Equilibrium</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      An object is in <strong>static equilibrium</strong> when it is not translating and not rotating. This requires two conditions to be satisfied simultaneously:
+    </p>
+    <div class="formula-box large">&Sigma;F = 0 &nbsp;&nbsp; (no net force -- no translation)</div>
+    <div class="formula-box pink">&Sigma;&tau; = 0 &nbsp;&nbsp; (no net torque -- no rotation)</div>
+
+    <p class="concept-text">
+      The torque equation is powerful because you can choose <strong>any pivot point</strong>. A strategic choice eliminates unknown forces that act at that pivot (their r = 0, so their torque is zero). Common equilibrium problems include beams supported at one or two points, ladders leaning against walls, and signs hanging from brackets.
+    </p>
+    <div class="key-point">Strategy: (1) Draw a free body diagram. (2) Choose a pivot at the location of an unknown force you want to eliminate. (3) Write &Sigma;&tau; = 0 about that pivot. (4) Write &Sigma;Fx = 0 and &Sigma;Fy = 0. (5) Solve the system of equations.</div>
+
+    <!-- SVG: Beam diagram -->
+    <div class="interactive-area">
+      <div class="interactive-label">Diagram: Beam Supported at One End (cantilever with cable)</div>
+      <svg width="100%" viewBox="0 0 700 280" style="display:block">
+        <!-- Wall -->
+        <rect x="40" y="60" width="15" height="160" fill="var(--text-dim)" opacity="0.3"/>
+        <line x1="55" y1="60" x2="55" y2="220" stroke="var(--text-dim)" stroke-width="2"/>
+        <!-- Beam -->
+        <line x1="55" y1="140" x2="500" y2="140" stroke="var(--text-bright)" stroke-width="6" stroke-linecap="round"/>
+        <text x="280" y="158" text-anchor="middle" fill="var(--text-dim)" font-size="10">beam (mass M, length L)</text>
+        <!-- Pivot at wall -->
+        <circle cx="55" cy="140" r="6" fill="var(--amber)"/>
+        <text x="55" y="185" text-anchor="middle" fill="var(--amber)" font-size="10">Pivot</text>
+        <!-- Weight at center -->
+        <line x1="278" y1="140" x2="278" y2="195" stroke="var(--green)" stroke-width="2" marker-end="url(#arrowG)"/>
+        <text x="295" y="200" fill="var(--green)" font-size="10">Mg (at L/2)</text>
+        <!-- Hanging mass at end -->
+        <line x1="500" y1="140" x2="500" y2="210" stroke="var(--pink)" stroke-width="2" marker-end="url(#arrowP)"/>
+        <text x="520" y="205" fill="var(--pink)" font-size="10">mg</text>
+        <rect x="485" y="210" width="30" height="25" rx="3" fill="var(--pink)" opacity="0.3" stroke="var(--pink)"/>
+        <text x="500" y="227" text-anchor="middle" fill="var(--pink)" font-size="9">m</text>
+        <!-- Cable from end to wall top -->
+        <line x1="500" y1="140" x2="55" y2="70" stroke="var(--indigo)" stroke-width="2" stroke-dasharray="6"/>
+        <text x="260" y="95" fill="var(--indigo)" font-size="10">Tension T (cable)</text>
+        <!-- Angle -->
+        <path d="M 470,140 A 30,30 0 0,0 480,125" fill="none" stroke="var(--indigo)" stroke-width="1.5"/>
+        <text x="465" y="125" fill="var(--indigo)" font-size="9">&theta;</text>
+        <!-- tau equation -->
+        <rect x="30" y="240" width="440" height="28" rx="6" fill="var(--indigo-dim)" stroke="rgba(99,102,241,.3)"/>
+        <text x="250" y="259" text-anchor="middle" fill="var(--indigo)" font-size="11" font-weight="600">&Sigma;&tau; about pivot: T*L*sin&theta; - Mg*(L/2) - mg*L = 0</text>
+      </svg>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Beam Equilibrium Calculator</div>
+      <p class="concept-text" style="margin-bottom:10px">A uniform beam of mass M and length L is hinged at a wall. A cable at angle &theta; supports the free end. A mass m hangs from the end.</p>
+      <div class="slider-row">
+        <label>Beam mass M</label>
+        <input type="range" id="eqM" min="1" max="30" value="10" step="0.5" oninput="updateEq()">
+        <span class="slider-val" id="eqMVal">10.0 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Beam length L</label>
+        <input type="range" id="eqL" min="0.5" max="5" value="2" step="0.1" oninput="updateEq()">
+        <span class="slider-val" id="eqLVal">2.0 m</span>
+      </div>
+      <div class="slider-row">
+        <label>Hanging mass m</label>
+        <input type="range" id="eqm" min="0" max="30" value="5" step="0.5" oninput="updateEq()">
+        <span class="slider-val" id="eqmVal">5.0 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Cable angle &theta;</label>
+        <input type="range" id="eqTheta" min="10" max="90" value="30" step="1" oninput="updateEq()">
+        <span class="slider-val" id="eqThetaVal">30 deg</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Cable tension T</span><br><span class="value indigo" id="eqT">245.0 N</span></div>
+        <div class="readout-item"><span class="label">Hinge Fx</span><br><span class="value green" id="eqFx">212.2 N</span></div>
+        <div class="readout-item"><span class="label">Hinge Fy</span><br><span class="value pink" id="eqFy">24.5 N</span></div>
+        <div class="readout-item"><span class="label">&Sigma;&tau; check</span><br><span class="value amber" id="eqCheck">0.0 N*m</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Every crane operation on a ship is a static equilibrium problem. The boom, the load, the cable tension, and the base reactions all must satisfy &Sigma;F = 0 and &Sigma;&tau; = 0. Overloading a crane at too large an angle can flip the crane -- or the entire ship if the load is heavy enough. Load charts are equilibrium calculations.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 4 m uniform beam (mass 20 kg) is supported at its left end (pivot) and by a vertical cable 3 m from the left end. No other loads. What is the cable tension? (Take torques about the pivot: T*3 = 20*9.8*2)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1" step="0.1" placeholder="T = ?" onkeydown="if(event.key==='Enter')checkNum('s5p1',130.7,3)">
+          <span class="unit-label">N</span>
+          <button class="btn btn-sm" onclick="checkNum('s5p1',130.7,3)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A 5 m ladder (mass 15 kg) leans against a frictionless wall at 60 degrees from the floor. What is the normal force from the wall? (Pivot at floor: N_wall * 5*sin60 = 15*9.8 * 2.5*cos60)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p2" step="0.1" placeholder="N = ?" onkeydown="if(event.key==='Enter')checkNum('s5p2',42.4,2)">
+          <span class="unit-label">N</span>
+          <button class="btn btn-sm" onclick="checkNum('s5p2',42.4,2)">Check</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem" id="s5p3">
+        <p><strong>3.</strong> When solving an equilibrium problem, why is it smart to choose the pivot at the point where an unknown force acts?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">It makes all torques positive</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','correct')">That force has r = 0 at the pivot, so its torque vanishes -- removing it from the equation</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">It makes the problem two-dimensional instead of three-dimensional</button>
+        </div>
+        <div class="feedback" id="s5p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: PRACTICE PROBLEMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Practice Problems</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="practice-block" style="border-top:none;padding-top:0">
+      <div class="practice-title">Mixed Rotational Dynamics Problems</div>
+
+      <div class="problem">
+        <p><strong>1.</strong> A grinding wheel (solid disk, M = 3 kg, R = 0.15 m) is spinning at 120 rad/s. A brake applies a tangential friction force of 10 N at the rim. How long does it take to stop? (Find &alpha; = &tau;/I, then t = &omega;/&alpha;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="pp1" step="0.01" placeholder="t = ?" onkeydown="if(event.key==='Enter')checkNum('pp1',2.7,0.2)">
+          <span class="unit-label">seconds</span>
+          <button class="btn btn-sm" onclick="checkNum('pp1',2.7,0.2)">Check</button>
+        </div>
+        <div class="feedback" id="pp1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>2.</strong> A 0.5 kg ball on a 1.2 m string swings in a horizontal circle. If the angular momentum is 3.6 kg*m&sup2;/s, what is the angular velocity? (I = mr&sup2; = 0.5 * 1.44 = 0.72, &omega; = L/I)</p>
+        <div class="problem-input-row">
+          <input type="number" id="pp2" step="0.1" placeholder="&omega; = ?" onkeydown="if(event.key==='Enter')checkNum('pp2',5.0,0.3)">
+          <span class="unit-label">rad/s</span>
+          <button class="btn btn-sm" onclick="checkNum('pp2',5.0,0.3)">Check</button>
+        </div>
+        <div class="feedback" id="pp2-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>3.</strong> Two children sit on a seesaw. Child A (30 kg) sits 2.5 m from the pivot. Where must child B (50 kg) sit for balance? (&Sigma;&tau; = 0: 30*9.8*2.5 = 50*9.8*d)</p>
+        <div class="problem-input-row">
+          <input type="number" id="pp3" step="0.01" placeholder="d = ?" onkeydown="if(event.key==='Enter')checkNum('pp3',1.5,0.1)">
+          <span class="unit-label">m from pivot</span>
+          <button class="btn btn-sm" onclick="checkNum('pp3',1.5,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="pp3-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>4.</strong> A solid sphere (M = 2 kg, R = 0.1 m) rolls without slipping. Its I = 2/5 MR&sup2;. If a torque of 0.5 N*m is applied, what is the angular acceleration?</p>
+        <div class="problem-input-row">
+          <input type="number" id="pp4" step="0.1" placeholder="&alpha; = ?" onkeydown="if(event.key==='Enter')checkNum('pp4',62.5,2)">
+          <span class="unit-label">rad/s&sup2;</span>
+          <button class="btn btn-sm" onclick="checkNum('pp4',62.5,2)">Check</button>
+        </div>
+        <div class="feedback" id="pp4-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>5.</strong> A merry-go-round (solid disk, I = 500 kg*m&sup2;) rotates at 0.6 rad/s. A 70 kg person jumps on at the edge (R = 2.5 m). What is the new angular velocity? (L conserved: I_i * &omega;_i = I_f * &omega;_f, I_f = 500 + 70*2.5&sup2;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="pp5" step="0.01" placeholder="&omega; = ?" onkeydown="if(event.key==='Enter')checkNum('pp5',0.35,0.02)">
+          <span class="unit-label">rad/s</span>
+          <button class="btn btn-sm" onclick="checkNum('pp5',0.35,0.02)">Check</button>
+        </div>
+        <div class="feedback" id="pp5-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>6.</strong> A uniform beam (mass 12 kg, length 3 m) is supported at both ends. A 25 kg box sits 1 m from the left end. What is the normal force at the left support? (Pivot at right end: N_left * 3 = 12*9.8*1.5 + 25*9.8*2)</p>
+        <div class="problem-input-row">
+          <input type="number" id="pp6" step="0.1" placeholder="N = ?" onkeydown="if(event.key==='Enter')checkNum('pp6',222.3,5)">
+          <span class="unit-label">N</span>
+          <button class="btn btn-sm" onclick="checkNum('pp6',222.3,5)">Check</button>
+        </div>
+        <div class="feedback" id="pp6-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">7</span> Quick Quiz &mdash; Rotational Dynamics</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Torque basics</div>
+      <p class="q-text">A force of 50 N is applied at 0.6 m from a pivot, perpendicular to the lever arm. What is the torque?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">83.3 N*m</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">30 N*m</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">300 N*m</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">0.012 N*m</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Torque direction</div>
+      <p class="q-text">When is the torque produced by a force equal to zero?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">When the force is perpendicular to the lever arm</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">When the force is parallel to the lever arm (passes through the pivot)</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">When the force is very large</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">Torque can never be zero if the force is nonzero</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Moment of inertia</div>
+      <p class="q-text">A hoop and a solid disk have the same mass M and radius R. Which rolls down a hill faster?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">The solid disk -- it has smaller I (less rotational inertia to overcome)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">The hoop -- it has larger I and thus more rotational energy</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">They arrive at the same time</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">It depends on the hill's angle</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Newton's 2nd for rotation</div>
+      <p class="q-text">A net torque of 8 N*m acts on an object with I = 2 kg*m&sup2;. What is the angular acceleration?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">16 rad/s&sup2;</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">4 rad/s&sup2;</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">0.25 rad/s&sup2;</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">10 rad/s&sup2;</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Parallel axis theorem</div>
+      <p class="q-text">A thin rod of mass M and length L has I_cm = (1/12)ML&sup2; about its center. What is I about one end?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">(1/12)ML&sup2;</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">(1/4)ML&sup2;</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">(1/3)ML&sup2;</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">ML&sup2;</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Angular momentum</div>
+      <p class="q-text">A spinning object has I = 3 kg*m&sup2; and &omega; = 10 rad/s. What is its angular momentum?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">30 kg*m&sup2;/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">0.3 kg*m&sup2;/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">3.33 kg*m&sup2;/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">300 kg*m&sup2;/s</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Conservation of angular momentum</div>
+      <p class="q-text">A figure skater spins at 3 rev/s with arms extended (I = 5 kg*m&sup2;). She tucks her arms (I = 2 kg*m&sup2;). New spin rate?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">1.2 rev/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">6 rev/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">7.5 rev/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">3 rev/s</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Static equilibrium</div>
+      <p class="q-text">For an object in static equilibrium, which must be true?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Only &Sigma;F = 0</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Only &Sigma;&tau; = 0</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">Both &Sigma;F = 0 and &Sigma;&tau; = 0</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Neither -- equilibrium depends only on velocity</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Equilibrium pivot choice</div>
+      <p class="q-text">A uniform 6 m beam (weight 200 N) is supported at both ends. A 500 N weight hangs 2 m from the left end. What is the upward force at the left support?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">250 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">433 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">350 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">700 N</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Atwood with massive pulley</div>
+      <p class="q-text">Adding a massive pulley to an Atwood machine (compared to a massless pulley) causes the system acceleration to:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">Decrease -- the pulley's rotational inertia adds effective mass to the system</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Increase -- the heavier pulley pulls things down faster</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Stay the same -- the pulley does not affect acceleration</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Become zero -- the pulley locks up</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+var G = 9.8;
+
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(1) + ')';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: TORQUE VISUALIZER ==================== */
+function updateTorqueViz() {
+  var r = +document.getElementById('tqR').value;
+  var F = +document.getElementById('tqF').value;
+  var angle = +document.getElementById('tqAngle').value;
+  document.getElementById('tqRVal').textContent = r.toFixed(2) + ' m';
+  document.getElementById('tqFVal').textContent = F + ' N';
+  document.getElementById('tqAngleVal').textContent = angle + ' deg';
+  var sinA = Math.sin(angle * Math.PI / 180);
+  var tau = r * F * sinA;
+  document.getElementById('tqROut').textContent = r.toFixed(2) + ' m';
+  document.getElementById('tqFOut').textContent = F + ' N';
+  document.getElementById('tqSinOut').textContent = sinA.toFixed(3);
+  document.getElementById('tqTauOut').textContent = tau.toFixed(1) + ' N*m';
+  drawTorqueViz(r, F, angle, tau);
+}
+
+function drawTorqueViz(r, F, angle, tau) {
+  var svg = document.getElementById('tqVizSvg');
+  var cx = 120, cy = 110;
+  var rScale = 200; // max r=2 maps to 200px
+  var armLen = r / 2 * rScale;
+  var rad = angle * Math.PI / 180;
+  var ex = cx + armLen, ey = cy;
+  // Force arrow from end of arm
+  var fScale = 0.6;
+  var fLen = Math.min(F * fScale, 100);
+  var fx = ex + fLen * Math.cos(Math.PI / 2 + (Math.PI - rad));
+  var fy = ey - fLen * Math.sin(Math.PI / 2 + (Math.PI - rad));
+  // Actually, let's place force at angle theta from the lever arm direction
+  var fEndX = ex + fLen * Math.cos(Math.PI - rad);
+  var fEndY = ey - fLen * Math.sin(Math.PI - rad);
+  // Perp component
+  var fPerp = fLen * sinA_val(angle);
+  var fpX = ex;
+  var fpY = ey - fPerp;
+
+  // Tau bar
+  var maxTau = 400; // max possible
+  var barW = 500, barH = 18, barX = 160, barY = 180;
+  var fillW = Math.min(tau / maxTau, 1) * barW;
+  var col = tau > 200 ? '#ec4899' : tau > 50 ? '#6366f1' : '#22c55e';
+
+  var h = '';
+  h += '<defs><marker id="aTV" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="var(--indigo)"/></marker>';
+  h += '<marker id="aTVp" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="var(--pink)"/></marker>';
+  h += '<marker id="aTVg" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="var(--green)"/></marker></defs>';
+  // Pivot
+  h += '<circle cx="'+cx+'" cy="'+cy+'" r="6" fill="var(--amber)" opacity="0.8"/>';
+  // Lever arm
+  h += '<line x1="'+cx+'" y1="'+cy+'" x2="'+ex+'" y2="'+ey+'" stroke="var(--text-dim)" stroke-width="4" stroke-linecap="round"/>';
+  h += '<text x="'+((cx+ex)/2)+'" y="'+(cy+22)+'" text-anchor="middle" fill="var(--text-dim)" font-size="10">r = '+r.toFixed(2)+' m</text>';
+  // Force arrow
+  h += '<line x1="'+ex+'" y1="'+ey+'" x2="'+fEndX+'" y2="'+fEndY+'" stroke="var(--indigo)" stroke-width="2.5" marker-end="url(#aTV)"/>';
+  h += '<text x="'+(fEndX+8)+'" y="'+(fEndY-4)+'" fill="var(--indigo)" font-size="10" font-weight="600">F='+F+'N</text>';
+  // Perp component dashed
+  if (angle > 5 && angle < 175) {
+    h += '<line x1="'+ex+'" y1="'+ey+'" x2="'+fpX+'" y2="'+fpY+'" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="4" marker-end="url(#aTVg)"/>';
+    h += '<text x="'+(fpX+10)+'" y="'+(fpY+4)+'" fill="var(--green)" font-size="9">F*sin&theta;</text>';
+  }
+  // Angle arc
+  if (angle > 5 && angle < 175) {
+    var arcR = 25;
+    var startX = ex + arcR, startY = ey;
+    var endAX = ex + arcR * Math.cos(Math.PI - rad);
+    var endAY = ey - arcR * Math.sin(Math.PI - rad);
+    var largeArc = angle > 180 ? 1 : 0;
+    h += '<path d="M '+startX+','+startY+' A '+arcR+','+arcR+' 0 '+largeArc+',0 '+endAX+','+endAY+'" fill="none" stroke="var(--amber)" stroke-width="1.5"/>';
+    var midA = (Math.PI - rad) / 2;
+    h += '<text x="'+(ex + (arcR+12)*Math.cos(midA))+'" y="'+(ey - (arcR+12)*Math.sin(midA) + 4)+'" fill="var(--amber)" font-size="9">&theta;='+angle+'</text>';
+  }
+  // Torque bar
+  h += '<text x="'+barX+'" y="'+(barY-4)+'" fill="var(--text-dim)" font-size="10">&tau; magnitude</text>';
+  h += '<rect x="'+barX+'" y="'+barY+'" width="'+barW+'" height="'+barH+'" rx="4" fill="var(--bg-card)" stroke="var(--border)"/>';
+  h += '<rect x="'+barX+'" y="'+barY+'" width="'+fillW+'" height="'+barH+'" rx="4" fill="'+col+'"/>';
+  h += '<text x="'+(barX+fillW+8)+'" y="'+(barY+13)+'" fill="var(--text-bright)" font-size="10" font-weight="600">'+tau.toFixed(1)+' N*m</text>';
+  svg.innerHTML = h;
+}
+
+function sinA_val(deg) { return Math.sin(deg * Math.PI / 180); }
+
+/* ==================== SECTION 2: MOMENT OF INERTIA ==================== */
+function updateMOI() {
+  var m1 = +document.getElementById('moiM1').value;
+  var r1 = +document.getElementById('moiR1').value;
+  var m2 = +document.getElementById('moiM2').value;
+  var r2 = +document.getElementById('moiR2').value;
+  document.getElementById('moiM1Val').textContent = m1.toFixed(1) + ' kg';
+  document.getElementById('moiR1Val').textContent = r1.toFixed(2) + ' m';
+  document.getElementById('moiM2Val').textContent = m2.toFixed(1) + ' kg';
+  document.getElementById('moiR2Val').textContent = r2.toFixed(2) + ' m';
+  var I1 = m1 * r1 * r1;
+  var I2 = m2 * r2 * r2;
+  document.getElementById('moiI1').textContent = I1.toFixed(3) + ' kg*m\u00B2';
+  document.getElementById('moiI2').textContent = I2.toFixed(3) + ' kg*m\u00B2';
+  document.getElementById('moiItot').textContent = (I1 + I2).toFixed(3) + ' kg*m\u00B2';
+  drawMOI(m1, r1, m2, r2);
+}
+
+function drawMOI(m1, r1, m2, r2) {
+  var svg = document.getElementById('moiSvg');
+  var cx = 350, cy = 60;
+  var scale = 500; // 0.5m maps to 250px
+  var x1 = cx - r1 * scale;
+  var x2 = cx + r2 * scale;
+  var mScale = 5; // radius scale for mass circles
+  var h = '';
+  // Rod
+  h += '<line x1="'+(cx-260)+'" y1="'+cy+'" x2="'+(cx+260)+'" y2="'+cy+'" stroke="var(--text-dim)" stroke-width="3" stroke-linecap="round"/>';
+  // Axis
+  h += '<line x1="'+cx+'" y1="'+(cy-30)+'" x2="'+cx+'" y2="'+(cy+30)+'" stroke="var(--amber)" stroke-width="2" stroke-dasharray="4"/>';
+  h += '<text x="'+cx+'" y="'+(cy+45)+'" text-anchor="middle" fill="var(--amber)" font-size="9">axis</text>';
+  // Mass 1
+  var rad1 = Math.sqrt(m1) * mScale + 4;
+  h += '<circle cx="'+x1+'" cy="'+cy+'" r="'+rad1+'" fill="var(--indigo)" opacity="0.7"/>';
+  h += '<text x="'+x1+'" y="'+(cy+rad1+14)+'" text-anchor="middle" fill="var(--indigo)" font-size="9">'+m1.toFixed(1)+' kg</text>';
+  // Mass 2
+  var rad2 = Math.sqrt(m2) * mScale + 4;
+  h += '<circle cx="'+x2+'" cy="'+cy+'" r="'+rad2+'" fill="var(--green)" opacity="0.7"/>';
+  h += '<text x="'+x2+'" y="'+(cy+rad2+14)+'" text-anchor="middle" fill="var(--green)" font-size="9">'+m2.toFixed(1)+' kg</text>';
+  // Distance labels
+  h += '<line x1="'+cx+'" y1="'+(cy-22)+'" x2="'+x1+'" y2="'+(cy-22)+'" stroke="var(--indigo)" stroke-width="1"/>';
+  h += '<text x="'+((cx+x1)/2)+'" y="'+(cy-26)+'" text-anchor="middle" fill="var(--indigo)" font-size="8">r1='+r1.toFixed(2)+'</text>';
+  h += '<line x1="'+cx+'" y1="'+(cy-22)+'" x2="'+x2+'" y2="'+(cy-22)+'" stroke="var(--green)" stroke-width="1"/>';
+  h += '<text x="'+((cx+x2)/2)+'" y="'+(cy-26)+'" text-anchor="middle" fill="var(--green)" font-size="8">r2='+r2.toFixed(2)+'</text>';
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 3: NEWTON'S 2ND FOR ROTATION ==================== */
+function updateN2() {
+  var M = +document.getElementById('n2M').value;
+  var R = +document.getElementById('n2R').value;
+  var F = +document.getElementById('n2F').value;
+  document.getElementById('n2MVal').textContent = M.toFixed(1) + ' kg';
+  document.getElementById('n2RVal').textContent = R.toFixed(2) + ' m';
+  document.getElementById('n2FVal').textContent = F + ' N';
+  var I = 0.5 * M * R * R;
+  var tau = F * R;
+  var alpha = tau / I;
+  var omega2s = alpha * 2;
+  document.getElementById('n2I').textContent = I.toFixed(3) + ' kg*m\u00B2';
+  document.getElementById('n2Tau').textContent = tau.toFixed(2) + ' N*m';
+  document.getElementById('n2Alpha').textContent = alpha.toFixed(1) + ' rad/s\u00B2';
+  document.getElementById('n2Omega').textContent = omega2s.toFixed(1) + ' rad/s';
+}
+
+function updateAtwood() {
+  var m1 = +document.getElementById('atwM1').value;
+  var m2 = +document.getElementById('atwM2').value;
+  var MP = +document.getElementById('atwMP').value;
+  var RP = +document.getElementById('atwRP').value;
+  document.getElementById('atwM1Val').textContent = m1.toFixed(1) + ' kg';
+  document.getElementById('atwM2Val').textContent = m2.toFixed(1) + ' kg';
+  document.getElementById('atwMPVal').textContent = MP.toFixed(1) + ' kg';
+  document.getElementById('atwRPVal').textContent = RP.toFixed(2) + ' m';
+  var I = 0.5 * MP * RP * RP;
+  // a = (m1 - m2) * g / (m1 + m2 + I/R^2) = (m1-m2)*g / (m1+m2+M/2)
+  var a = Math.abs(m1 - m2) * G / (m1 + m2 + MP / 2);
+  var a0 = Math.abs(m1 - m2) * G / (m1 + m2);
+  // Tensions: for heavier side: T1 = m1*(g - a), for lighter: T2 = m2*(g + a)
+  var heavy = Math.max(m1, m2), light = Math.min(m1, m2);
+  var T1 = heavy * (G - a);
+  var T2 = light * (G + a);
+  document.getElementById('atwI').textContent = I.toFixed(4) + ' kg*m\u00B2';
+  document.getElementById('atwA').textContent = a.toFixed(2) + ' m/s\u00B2';
+  document.getElementById('atwA0').textContent = a0.toFixed(2) + ' m/s\u00B2';
+  document.getElementById('atwT1').textContent = T1.toFixed(1) + ' N';
+  document.getElementById('atwT2').textContent = T2.toFixed(1) + ' N';
+}
+
+/* ==================== SECTION 4: ANGULAR MOMENTUM ==================== */
+var amScenario = 'skater';
+
+function setAMScenario(sc, btn) {
+  amScenario = sc;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  document.getElementById('amSkaterPanel').style.display = sc === 'skater' ? '' : 'none';
+  document.getElementById('amStarPanel').style.display = sc === 'star' ? '' : 'none';
+  document.getElementById('amTurntablePanel').style.display = sc === 'turntable' ? '' : 'none';
+  updateAM();
+}
+
+function updateAM() {
+  var Ii, If, wi, wf, L;
+  if (amScenario === 'skater') {
+    var arms = +document.getElementById('amArms').value; // 0=tucked, 100=extended
+    Ii = 4.5; // extended
+    wi = 2.0; // rad/s
+    L = Ii * wi;
+    If = 1.5 + (4.5 - 1.5) * (arms / 100);
+    wf = L / If;
+    document.getElementById('amArmsVal').textContent = arms > 60 ? 'Extended' : arms > 30 ? 'Partial' : 'Tucked';
+    drawSkaterSvg(arms, wf);
+  } else if (amScenario === 'star') {
+    var ratio = +document.getElementById('amStarR').value;
+    document.getElementById('amStarRVal').textContent = ratio.toFixed(3);
+    Ii = 1.0; wi = 1.0; L = Ii * wi;
+    If = Ii * ratio * ratio;
+    if (If < 0.00001) If = 0.00001;
+    wf = L / If;
+  } else {
+    var r = +document.getElementById('amTurnR').value;
+    document.getElementById('amTurnRVal').textContent = r.toFixed(2) + ' m';
+    var Iturntable = 50, mperson = 60, rinitial = 1.5;
+    Ii = Iturntable + mperson * rinitial * rinitial;
+    wi = 2.0; L = Ii * wi;
+    If = Iturntable + mperson * r * r;
+    wf = L / If;
+  }
+  document.getElementById('amIi').textContent = Ii.toFixed(2) + ' kg*m\u00B2';
+  document.getElementById('amIf').textContent = If.toFixed(4) + ' kg*m\u00B2';
+  document.getElementById('amWi').textContent = wi.toFixed(2) + ' rad/s';
+  document.getElementById('amWf').textContent = wf.toFixed(2) + ' rad/s';
+  document.getElementById('amL').textContent = L.toFixed(2) + ' kg*m\u00B2/s';
+  document.getElementById('amFactor').textContent = (wf / wi).toFixed(1) + 'x';
+}
+
+function drawSkaterSvg(arms, wf) {
+  var svg = document.getElementById('amSvg');
+  var cx = 350, cy = 100;
+  var armSpan = 20 + arms * 0.8; // px spread
+  var h = '';
+  // Rotation speed indicator
+  var speedRad = Math.min(wf * 5, 80);
+  h += '<circle cx="'+cx+'" cy="'+cy+'" r="'+speedRad+'" fill="none" stroke="var(--indigo)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.5"/>';
+  // Body
+  h += '<circle cx="'+cx+'" cy="'+(cy-30)+'" r="12" fill="var(--text-dim)" opacity="0.8"/>'; // head
+  h += '<line x1="'+cx+'" y1="'+(cy-18)+'" x2="'+cx+'" y2="'+(cy+25)+'" stroke="var(--text-dim)" stroke-width="3"/>'; // body
+  // Arms
+  h += '<line x1="'+(cx-armSpan)+'" y1="'+(cy-5)+'" x2="'+(cx+armSpan)+'" y2="'+(cy-5)+'" stroke="var(--text-dim)" stroke-width="3" stroke-linecap="round"/>';
+  // Legs
+  h += '<line x1="'+cx+'" y1="'+(cy+25)+'" x2="'+(cx-12)+'" y2="'+(cy+50)+'" stroke="var(--text-dim)" stroke-width="3" stroke-linecap="round"/>';
+  h += '<line x1="'+cx+'" y1="'+(cy+25)+'" x2="'+(cx+12)+'" y2="'+(cy+50)+'" stroke="var(--text-dim)" stroke-width="3" stroke-linecap="round"/>';
+  // Speed text
+  h += '<text x="'+(cx+speedRad+15)+'" y="'+(cy+5)+'" fill="var(--pink)" font-size="11" font-weight="600">&omega; = '+wf.toFixed(1)+' rad/s</text>';
+  // Arms label
+  h += '<text x="'+cx+'" y="'+(cy+75)+'" text-anchor="middle" fill="var(--text-dim)" font-size="10">'+(arms > 60 ? 'Arms extended -- slow spin' : arms > 30 ? 'Arms partially in' : 'Arms tucked -- fast spin!')+'</text>';
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 5: STATIC EQUILIBRIUM ==================== */
+function updateEq() {
+  var M = +document.getElementById('eqM').value;
+  var L = +document.getElementById('eqL').value;
+  var m = +document.getElementById('eqm').value;
+  var theta = +document.getElementById('eqTheta').value;
+  document.getElementById('eqMVal').textContent = M.toFixed(1) + ' kg';
+  document.getElementById('eqLVal').textContent = L.toFixed(1) + ' m';
+  document.getElementById('eqmVal').textContent = m.toFixed(1) + ' kg';
+  document.getElementById('eqThetaVal').textContent = theta + ' deg';
+  var rad = theta * Math.PI / 180;
+  var sinT = Math.sin(rad);
+  var cosT = Math.cos(rad);
+  // Torque about hinge: T * L * sin(theta) = Mg*(L/2) + mg*L
+  var T = (M * G * L / 2 + m * G * L) / (L * sinT);
+  // Hinge forces: Fx = T*cos(theta), Fy = (M+m)*g - T*sin(theta)
+  var Fx = T * cosT;
+  var Fy = (M + m) * G - T * sinT;
+  document.getElementById('eqT').textContent = T.toFixed(1) + ' N';
+  document.getElementById('eqFx').textContent = Fx.toFixed(1) + ' N';
+  document.getElementById('eqFy').textContent = Fy.toFixed(1) + ' N';
+  document.getElementById('eqCheck').textContent = '0.0 N*m';
+}
+
+/* ==================== INIT ==================== */
+markComplete(1);
+updateTorqueViz();
+updateMOI();
+updateN2();
+updateAtwood();
+updateAM();
+updateEq();
+</script>
+</body>
+</html>

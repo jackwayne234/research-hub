@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 10: Nonhomogeneous Second-Order ODEs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.guess-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.74rem}
+.guess-table th{background:var(--bg-input);color:var(--indigo);padding:10px 12px;text-align:left;border:1px solid var(--border);font-weight:600}
+.guess-table td{padding:10px 12px;border:1px solid var(--border);color:var(--text)}
+.guess-table tr:nth-child(even) td{background:rgba(99,102,241,.04)}
+.step-box{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:12px 0}
+.step-box .step-label{font-size:.68rem;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.step-box .step-content{font-size:.78rem;line-height:1.8}
+.step-box .step-content strong{color:var(--text-bright)}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.guess-table{font-size:.65rem}.guess-table th,.guess-table td{padding:6px 8px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>10</span> Nonhomogeneous Second-Order ODEs</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: THE GENERAL SOLUTION STRUCTURE -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> The General Solution Structure</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>nonhomogeneous second-order linear ODE</strong> has the form y'' + p(x)y' + q(x)y = g(x), where g(x) is the <strong>forcing function</strong> (the nonhomogeneous part). When g(x) = 0, the equation is homogeneous. The forcing function represents an external input -- a driving force, an applied voltage, a signal being pushed into a system.
+    </p>
+
+    <div class="formula-box large">y'' + p(x)y' + q(x)y = g(x)</div>
+
+    <p class="concept-text">
+      The general solution always has two parts: the <strong>homogeneous solution</strong> y_h (which solves the g(x) = 0 version) and a <strong>particular solution</strong> y_p (any single function that satisfies the full equation with g(x) present).
+    </p>
+
+    <div class="formula-box green large">y = y_h + y_p</div>
+
+    <p class="concept-text">
+      <strong>Why both?</strong> The homogeneous solution y_h = c1*y1 + c2*y2 contains the two arbitrary constants needed for a second-order ODE. It captures all solutions to the "free" system. The particular solution y_p accounts for the forcing. Adding them works because of the <strong>superposition principle</strong>: if you plug y_h + y_p into the left side, the y_h part gives zero (it solves the homogeneous equation) and the y_p part gives g(x).
+    </p>
+
+    <div class="formula-box">L[y_h + y_p] = L[y_h] + L[y_p] = 0 + g(x) = g(x)</div>
+
+    <div class="key-point">The homogeneous solution handles initial conditions (the "natural" behavior). The particular solution handles the forcing (the "driven" behavior). Together they form the complete picture.</div>
+
+    <p class="concept-text">
+      <strong>Physical interpretation:</strong> In a mass-spring system, y_h is the free vibration that depends on how you release the mass. y_p is the steady-state response to whatever external force you apply. The full motion is both combined.
+    </p>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> When a ship's hull vibrates, the free vibration (y_h) dies out due to damping -- this is the <strong>transient response</strong>. The forced vibration (y_p) persists as long as the engine or waves keep driving it -- the <strong>steady-state response</strong>. Naval engineers design to ensure y_p stays small at operating speeds, avoiding structural resonance frequencies.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> For y'' + 4y = cos(3x), which part of the general solution contains the arbitrary constants c1 and c2?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">The particular solution y_p</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','correct')">The homogeneous solution y_h = c1*cos(2x) + c2*sin(2x)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">Both y_h and y_p contain arbitrary constants</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> If y_p = x^2 is a particular solution of y'' + y' - 2y = -2x^2 + 2x - 3, and y_h = c1*e^x + c2*e^(-2x), what is the general solution?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','correct')">y = c1*e^x + c2*e^(-2x) + x^2</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">y = x^2 (the particular solution is sufficient)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">y = c1*e^x + c2*e^(-2x) (ignore the forcing)</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: METHOD OF UNDETERMINED COEFFICIENTS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Method of Undetermined Coefficients</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>method of undetermined coefficients</strong> works when g(x) is a polynomial, exponential, sine, cosine, or a product/sum of these. You <strong>guess</strong> the form of y_p based on what g(x) looks like, plug it in, and solve for the unknown coefficients.
+    </p>
+
+    <div class="formula-box large">Strategy: Look at g(x) &rarr; guess y_p form &rarr; plug in &rarr; match coefficients</div>
+
+    <p class="concept-text">
+      <strong>The Guess Table</strong> -- this is your playbook. For each type of forcing function g(x), here is the form you should guess for y_p:
+    </p>
+
+    <table class="guess-table">
+      <thead>
+        <tr><th>Forcing g(x)</th><th>Guess y_p</th><th>Example</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Constant k</td><td>A</td><td>g = 5 &rarr; y_p = A</td></tr>
+        <tr><td>Polynomial a*x^n</td><td>A_n*x^n + A_(n-1)*x^(n-1) + ... + A_0</td><td>g = 3x^2 &rarr; y_p = Ax^2 + Bx + C</td></tr>
+        <tr><td>Exponential e^(ax)</td><td>A*e^(ax)</td><td>g = 2e^(3x) &rarr; y_p = Ae^(3x)</td></tr>
+        <tr><td>sin(bx) or cos(bx)</td><td>A*cos(bx) + B*sin(bx)</td><td>g = sin(2x) &rarr; y_p = Acos(2x) + Bsin(2x)</td></tr>
+        <tr><td>e^(ax)*sin(bx)</td><td>e^(ax)[A*cos(bx) + B*sin(bx)]</td><td>g = e^x*cos(3x) &rarr; y_p = e^x[Acos(3x) + Bsin(3x)]</td></tr>
+        <tr><td>x^n*e^(ax)</td><td>(A_n*x^n + ... + A_0)*e^(ax)</td><td>g = x*e^(2x) &rarr; y_p = (Ax + B)e^(2x)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="key-point"><strong>The Resonance Rule (Modification Rule):</strong> If your guess for y_p duplicates a term in y_h, multiply the entire guess by x. If it still duplicates, multiply by x^2. This handles the case where the forcing frequency matches the system's natural frequency.</div>
+
+    <p class="concept-text">
+      <strong>Why multiply by x?</strong> When the forcing function looks like a solution to the homogeneous equation, the standard guess would produce zero when you plug it into the left side (because that's what homogeneous solutions do). Multiplying by x creates a new function that is linearly independent from y_h and will produce the nonzero g(x) you need.
+    </p>
+
+    <div class="formula-box pink">Resonance case: if g(x) = e^(rx) and r is a root of the characteristic equation with multiplicity m, guess y_p = A*x^m*e^(rx)</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Guess Form Selector</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Select a forcing function type to see the correct guess form for y_p. The characteristic equation is r^2 + r - 6 = 0, giving y_h = c1*e^(2x) + c2*e^(-3x).</p>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="showGuess('poly',this)">g = 4x + 1</button>
+        <button class="scenario-tab" onclick="showGuess('exp',this)">g = 5e^(4x)</button>
+        <button class="scenario-tab" onclick="showGuess('trig',this)">g = sin(x)</button>
+        <button class="scenario-tab" onclick="showGuess('resExp',this)">g = 3e^(2x)</button>
+        <button class="scenario-tab" onclick="showGuess('expTrig',this)">g = e^x*cos(2x)</button>
+      </div>
+      <div class="readout" id="guessReadout">
+        <div class="readout-item" style="flex:1"><span class="label">Forcing g(x)</span><br><span class="value amber" id="guessForcing">4x + 1</span></div>
+        <div class="readout-item" style="flex:1"><span class="label">Guess y_p</span><br><span class="value green" id="guessForm">Ax + B</span></div>
+        <div class="readout-item" style="flex:1"><span class="label">Resonance?</span><br><span class="value pink" id="guessRes">No</span></div>
+      </div>
+      <div id="guessExplanation" style="font-size:.72rem;color:var(--text-dim);margin-top:10px;line-height:1.7">Polynomial of degree 1, so guess a general polynomial of degree 1. No overlap with y_h terms (e^(2x), e^(-3x)), so no modification needed.</div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Undetermined coefficients is the fast method for "nice" forcing functions -- exactly the kind you encounter in circuit analysis (sinusoidal AC sources, step inputs) and vibration analysis (periodic engine forces). The resonance rule directly predicts when a driving frequency will cause dangerous amplitude growth in turbine blades or hull structures.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s2p1">
+        <p><strong>1.</strong> For y'' - y = 3x^2, what is the correct guess form for y_p?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','wrong')">y_p = Ax^2</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','correct')">y_p = Ax^2 + Bx + C</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','wrong')">y_p = Ax^2 + Bx</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem" id="s2p2">
+        <p><strong>2.</strong> For y'' + y = sin(x), the homogeneous solution is y_h = c1*cos(x) + c2*sin(x). What is the correct guess for y_p?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">y_p = A*cos(x) + B*sin(x)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','correct')">y_p = x[A*cos(x) + B*sin(x)] -- multiply by x due to resonance</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">y_p = A*x*sin(x) only (no cosine needed)</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem" id="s2p3">
+        <p><strong>3.</strong> For y'' - 4y' + 4y = e^(2x), the characteristic equation has r = 2 as a double root. What is the correct guess?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">y_p = A*e^(2x)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">y_p = Ax*e^(2x)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','correct')">y_p = Ax^2*e^(2x) -- multiply by x^2 because r=2 has multiplicity 2</button>
+        </div>
+        <div class="feedback" id="s2p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: WORKED EXAMPLES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Worked Examples</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <!-- EXAMPLE 1 -->
+    <p class="concept-text"><strong>Example 1: y'' + 3y' + 2y = e^x</strong></p>
+
+    <div class="step-box">
+      <div class="step-label">Step 1: Solve the homogeneous equation</div>
+      <div class="step-content">
+        Characteristic equation: r^2 + 3r + 2 = 0 &rarr; (r + 1)(r + 2) = 0 &rarr; r = -1, -2<br>
+        <strong>y_h = c1*e^(-x) + c2*e^(-2x)</strong>
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 2: Guess y_p</div>
+      <div class="step-content">
+        g(x) = e^x. Since r = 1 is NOT a root of the characteristic equation, no modification needed.<br>
+        <strong>Guess: y_p = A*e^x</strong>
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 3: Plug in and solve</div>
+      <div class="step-content">
+        y_p' = A*e^x, &nbsp; y_p'' = A*e^x<br>
+        Substitute: A*e^x + 3(A*e^x) + 2(A*e^x) = e^x<br>
+        6A*e^x = e^x &rarr; <strong>A = 1/6</strong>
+      </div>
+    </div>
+    <div class="formula-box green">y = c1*e^(-x) + c2*e^(-2x) + (1/6)*e^x</div>
+
+    <!-- EXAMPLE 2 -->
+    <p class="concept-text" style="margin-top:24px"><strong>Example 2: y'' + y = sin(2x)</strong></p>
+
+    <div class="step-box">
+      <div class="step-label">Step 1: Solve the homogeneous equation</div>
+      <div class="step-content">
+        Characteristic equation: r^2 + 1 = 0 &rarr; r = +/- i<br>
+        <strong>y_h = c1*cos(x) + c2*sin(x)</strong>
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 2: Guess y_p</div>
+      <div class="step-content">
+        g(x) = sin(2x). The frequency 2 does NOT match the natural frequency 1, so no resonance.<br>
+        <strong>Guess: y_p = A*cos(2x) + B*sin(2x)</strong>
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 3: Plug in and solve</div>
+      <div class="step-content">
+        y_p'' = -4A*cos(2x) - 4B*sin(2x)<br>
+        Substitute: (-4A*cos(2x) - 4B*sin(2x)) + (A*cos(2x) + B*sin(2x)) = sin(2x)<br>
+        -3A*cos(2x) - 3B*sin(2x) = sin(2x)<br>
+        Matching: -3A = 0 &rarr; A = 0; &nbsp; -3B = 1 &rarr; <strong>B = -1/3</strong>
+      </div>
+    </div>
+    <div class="formula-box green">y = c1*cos(x) + c2*sin(x) - (1/3)*sin(2x)</div>
+
+    <!-- EXAMPLE 3 -->
+    <p class="concept-text" style="margin-top:24px"><strong>Example 3: y'' - 4y = x^2</strong></p>
+
+    <div class="step-box">
+      <div class="step-label">Step 1: Solve the homogeneous equation</div>
+      <div class="step-content">
+        Characteristic equation: r^2 - 4 = 0 &rarr; r = +/- 2<br>
+        <strong>y_h = c1*e^(2x) + c2*e^(-2x)</strong>
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 2: Guess y_p</div>
+      <div class="step-content">
+        g(x) = x^2 (polynomial degree 2). No overlap with y_h.<br>
+        <strong>Guess: y_p = Ax^2 + Bx + C</strong>
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 3: Plug in and solve</div>
+      <div class="step-content">
+        y_p' = 2Ax + B, &nbsp; y_p'' = 2A<br>
+        Substitute: 2A - 4(Ax^2 + Bx + C) = x^2<br>
+        -4Ax^2 - 4Bx + (2A - 4C) = x^2<br>
+        Matching: -4A = 1 &rarr; A = -1/4; &nbsp; -4B = 0 &rarr; B = 0; &nbsp; 2(-1/4) - 4C = 0 &rarr; <strong>C = -1/8</strong>
+      </div>
+    </div>
+    <div class="formula-box green">y = c1*e^(2x) + c2*e^(-2x) - (1/4)x^2 - 1/8</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Pick the Forcing Function</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">For the equation y'' + 5y' + 6y = g(x), select a forcing function to see the solution process. Characteristic roots: r = -2, -3.</p>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="showWorked('exp4',this)">g = e^(4x)</button>
+        <button class="scenario-tab" onclick="showWorked('cos3',this)">g = cos(3x)</button>
+        <button class="scenario-tab" onclick="showWorked('resE2',this)">g = e^(-2x)</button>
+        <button class="scenario-tab" onclick="showWorked('poly1',this)">g = 6x + 1</button>
+      </div>
+      <div id="workedOutput" style="font-size:.76rem;line-height:1.9;margin-top:12px;color:var(--text)"></div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> For y'' + 3y' + 2y = e^x, what is the value of the coefficient A in y_p = Ae^x?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="0.01" placeholder="A = ?" onkeydown="if(event.key==='Enter')checkNum('s3p1',1/6,0.02)">
+          <button class="btn btn-sm" onclick="checkNum('s3p1',1/6,0.02)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> For y'' + y = sin(2x), what is the coefficient B in y_p = Acos(2x) + Bsin(2x)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2" step="0.01" placeholder="B = ?" onkeydown="if(event.key==='Enter')checkNum('s3p2',-1/3,0.02)">
+          <button class="btn btn-sm" onclick="checkNum('s3p2',-1/3,0.02)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: VARIATION OF PARAMETERS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Variation of Parameters</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Variation of parameters</strong> is a general method that works for ANY forcing function g(x) -- not just polynomials, exponentials, and sinusoids. The idea: start with the homogeneous solution y_h = c1*y1 + c2*y2, then <strong>replace the constants with functions</strong>: y_p = u1(x)*y1(x) + u2(x)*y2(x).
+    </p>
+
+    <div class="formula-box large">y_p = u1(x)*y1 + u2(x)*y2</div>
+
+    <p class="concept-text">
+      To find u1 and u2, you need the <strong>Wronskian</strong> -- the determinant that measures the "independence" of y1 and y2:
+    </p>
+
+    <div class="formula-box">W = y1*y2' - y2*y1'</div>
+
+    <p class="concept-text">
+      The formulas for the derivatives of u1 and u2 are elegantly symmetric:
+    </p>
+
+    <div class="formula-box green large">u1' = -y2*g(x) / W</div>
+    <div class="formula-box pink large">u2' = y1*g(x) / W</div>
+
+    <p class="concept-text">
+      Then integrate to get u1 and u2 (no constants of integration needed -- those are absorbed into y_h). The particular solution is y_p = u1*y1 + u2*y2.
+    </p>
+
+    <div class="key-point">Variation of parameters always works (as long as you can do the integrals), while undetermined coefficients is limited to "nice" forcing functions. Use undetermined coefficients when you can (it is faster), and fall back to variation of parameters when you must.</div>
+
+    <p class="concept-text">
+      <strong>Example:</strong> y'' + y = tan(x). You cannot use undetermined coefficients here because tan(x) is not a polynomial, exponential, or sinusoid. But variation of parameters handles it just fine.
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Step 1: Homogeneous solution</div>
+      <div class="step-content">y_h = c1*cos(x) + c2*sin(x), so y1 = cos(x), y2 = sin(x)</div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 2: Compute Wronskian</div>
+      <div class="step-content">W = cos(x)*cos(x) - sin(x)*(-sin(x)) = cos^2(x) + sin^2(x) = <strong>1</strong></div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 3: Find u1' and u2'</div>
+      <div class="step-content">
+        u1' = -sin(x)*tan(x)/1 = -sin^2(x)/cos(x) = -(1 - cos^2(x))/cos(x) = cos(x) - sec(x)<br>
+        u2' = cos(x)*tan(x)/1 = sin(x)
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 4: Integrate</div>
+      <div class="step-content">
+        u1 = sin(x) - ln|sec(x) + tan(x)|<br>
+        u2 = -cos(x)
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 5: Assemble y_p</div>
+      <div class="step-content">
+        y_p = [sin(x) - ln|sec(x) + tan(x)|]*cos(x) + [-cos(x)]*sin(x)<br>
+        y_p = sin(x)cos(x) - cos(x)ln|sec(x) + tan(x)| - cos(x)sin(x)<br>
+        <strong>y_p = -cos(x)*ln|sec(x) + tan(x)|</strong>
+      </div>
+    </div>
+
+    <div class="formula-box amber">y = c1*cos(x) + c2*sin(x) - cos(x)*ln|sec(x) + tan(x)|</div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Variation of parameters becomes essential when the forcing function is irregular -- a ship encountering random ocean waves, a circuit receiving a non-periodic signal, or a mechanical system under impulse loading. These are situations where "nice" forcing functions do not apply, and the general method is the only option.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> For y1 = e^x and y2 = e^(-x), compute the Wronskian W = y1*y2' - y2*y1'.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="0.1" placeholder="W = ?" onkeydown="if(event.key==='Enter')checkNum('s4p1',-2,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s4p1',-2,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> When should you use variation of parameters instead of undetermined coefficients?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">Only when the equation has variable coefficients</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','correct')">When g(x) is not a polynomial, exponential, or sinusoid (e.g., tan(x), sec(x), ln(x))</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">Always -- it is superior in every way</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: FORCED OSCILLATIONS & RESONANCE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Forced Oscillations &amp; Resonance</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>driven harmonic oscillator</strong> is the physical heart of this lesson. A mass on a spring (or charge in an RLC circuit) is driven by an external periodic force:
+    </p>
+
+    <div class="formula-box large">y'' + 2&gamma;y' + &omega;_0^2 * y = F_0 * cos(&omega;t)</div>
+
+    <p class="concept-text">
+      Here &omega;_0 is the <strong>natural frequency</strong>, &gamma; is the <strong>damping coefficient</strong>, &omega; is the <strong>driving frequency</strong>, and F_0 is the forcing amplitude. The steady-state response amplitude is:
+    </p>
+
+    <div class="formula-box green large">A(&omega;) = F_0 / sqrt[(&omega;_0^2 - &omega;^2)^2 + (2&gamma;&omega;)^2]</div>
+
+    <p class="concept-text">
+      <strong>Resonance</strong> occurs when the driving frequency &omega; approaches the natural frequency &omega;_0. With no damping (&gamma; = 0), the amplitude goes to infinity at &omega; = &omega;_0 -- the system absorbs energy without limit. With damping, the peak is finite but can still be very large when &gamma; is small.
+    </p>
+
+    <div class="key-point">The resonance peak occurs at &omega;_res = sqrt(&omega;_0^2 - 2&gamma;^2) for the damped system. As damping increases, the peak shifts left and flattens. Enough damping eliminates the peak entirely (overdamped response).</div>
+
+    <p class="concept-text">
+      <strong>Undamped resonance (&gamma; = 0, &omega; = &omega;_0):</strong> The particular solution is no longer a bounded sinusoid. Instead you get <strong>secular growth</strong>:
+    </p>
+
+    <div class="formula-box pink">y_p = (F_0 / 2&omega;_0) * t * sin(&omega;_0 * t) &nbsp;&nbsp; (amplitude grows linearly with time)</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Resonance Curve</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust the damping coefficient &gamma; to see how it changes the amplitude response curve. Watch the peak flatten and shift as damping increases.</p>
+
+      <div class="slider-row">
+        <label>Natural freq &omega;_0</label>
+        <input type="range" id="sliderW0" min="0.5" max="5" step="0.1" value="3" oninput="drawResonance()">
+        <span class="slider-val" id="valW0">3.0</span>
+      </div>
+      <div class="slider-row">
+        <label>Damping &gamma;</label>
+        <input type="range" id="sliderGamma" min="0" max="3" step="0.05" value="0.3" oninput="drawResonance()">
+        <span class="slider-val" id="valGamma">0.30</span>
+      </div>
+      <div class="slider-row">
+        <label>Force F_0</label>
+        <input type="range" id="sliderF0" min="0.5" max="5" step="0.1" value="1" oninput="drawResonance()">
+        <span class="slider-val" id="valF0">1.0</span>
+      </div>
+
+      <svg id="resSvg" width="100%" viewBox="0 0 500 280" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-top:8px"></svg>
+
+      <div class="readout">
+        <div class="readout-item"><span class="label">Peak &omega;</span><br><span class="value indigo" id="resPeakW">--</span></div>
+        <div class="readout-item"><span class="label">Peak Amplitude</span><br><span class="value green" id="resPeakA">--</span></div>
+        <div class="readout-item"><span class="label">Q Factor</span><br><span class="value amber" id="resQ">--</span></div>
+        <div class="readout-item"><span class="label">Bandwidth</span><br><span class="value pink" id="resBW">--</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context -- Resonance in the fleet:</strong><br>
+      <strong>Hull vibration:</strong> Ship propellers generate periodic forcing at blade-pass frequency. If this matches a hull natural frequency, severe vibration results. Naval architects shift natural frequencies away from operational RPM ranges.<br>
+      <strong>Antenna tuning:</strong> An RLC circuit in a radio receiver uses resonance intentionally -- tuning the circuit so &omega;_0 matches the desired station frequency, with Q factor controlling selectivity.<br>
+      <strong>Turbine blades:</strong> Gas turbine blades must avoid resonance with engine harmonics. Campbell diagrams map blade natural frequencies against engine speed to identify dangerous crossings.<br>
+      <strong>Real-world resonance failures:</strong> Tacoma Narrows Bridge (1940) -- wind-driven oscillation at a structural natural frequency. Wine glass shattering from a singer's note matching the glass's resonant frequency. Orbital resonances lock moons into specific period ratios (Io-Europa-Ganymede 1:2:4).
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> For &omega;_0 = 5, &gamma; = 0, F_0 = 1, what is the amplitude A at &omega; = 3? Use A = F_0 / |&omega;_0^2 - &omega;^2|.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1" step="0.001" placeholder="A = ?" onkeydown="if(event.key==='Enter')checkNum('s5p1',0.0625,0.005)">
+          <button class="btn btn-sm" onclick="checkNum('s5p1',0.0625,0.005)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> What happens to the steady-state amplitude as &omega; &rarr; &omega;_0 with zero damping?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">It stays constant</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','correct')">It grows without bound (resonance)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">It drops to zero (destructive interference)</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem" id="s5p3">
+        <p><strong>3.</strong> In an RLC circuit analogy, what corresponds to the damping coefficient &gamma;?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">Inductance L</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','correct')">Resistance R (energy dissipation)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">Capacitance C</button>
+        </div>
+        <div class="feedback" id="s5p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: FINAL QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Final Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Solution Structure</div>
+      <p class="q-text">The general solution of a nonhomogeneous ODE y'' + py' + qy = g(x) is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">y = y_p only (the particular solution)</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">y = y_h + y_p (homogeneous + particular)</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">y = c1*y_h + c2*y_p (linear combination)</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">y = y_h * y_p (product of solutions)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Undetermined Coefficients</div>
+      <p class="q-text">For y'' + 4y = 3x, the correct guess for y_p is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">y_p = Ax</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">y_p = Ax + B</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">y_p = Ax^2 + Bx</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">y_p = Ax^2 + Bx + C</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Resonance Rule</div>
+      <p class="q-text">For y'' - 9y = e^(3x), with y_h = c1*e^(3x) + c2*e^(-3x), what is the correct guess for y_p?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">y_p = Ae^(3x)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">y_p = Axe^(3x) -- multiply by x because e^(3x) is in y_h</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">y_p = Ax^2*e^(3x)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">y_p = Ae^(-3x)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Wronskian</div>
+      <p class="q-text">The Wronskian of y1 = cos(x) and y2 = sin(x) is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">0</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">1</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">cos^2(x) - sin^2(x)</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">2sin(x)cos(x)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Method Selection</div>
+      <p class="q-text">Which forcing function requires variation of parameters (cannot use undetermined coefficients)?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">g(x) = 5e^(2x)</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">g(x) = x^2 + sin(x)</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">g(x) = sec(x)</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">g(x) = e^x*cos(3x)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Physical Resonance</div>
+      <p class="q-text">In the driven oscillator y'' + 2&gamma;y' + &omega;_0^2*y = F_0*cos(&omega;t), what does increasing &gamma; do to the resonance peak?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Makes the peak taller and sharper</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">Flattens and broadens the peak (lower Q factor)</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Shifts the peak to higher frequencies</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Has no effect on the resonance peak</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Superposition</div>
+      <p class="q-text">If y_p1 solves y'' + y = cos(x) and y_p2 solves y'' + y = sin(x), then a particular solution to y'' + y = cos(x) + sin(x) is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">y_p1 + y_p2 (superposition of particular solutions)</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">y_p1 * y_p2</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Need to solve from scratch -- superposition does not apply to y_p</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">max(y_p1, y_p2)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Variation of Parameters Formula</div>
+      <p class="q-text">In variation of parameters, u1' = ?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">y1*g(x) / W</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">-y2*g(x) / W</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">g(x) / W</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">y2*g(x) / (y1*W)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Navy Application</div>
+      <p class="q-text">A ship propeller has blade-pass frequency matching a hull natural frequency. What is the engineering solution?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Increase propeller speed to move past resonance quickly</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Remove all damping to allow free vibration</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">Shift natural frequencies away from operational RPM range (detune)</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Ignore it -- resonance only matters in theory</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Undamped Resonance</div>
+      <p class="q-text">For y'' + &omega;_0^2*y = F_0*cos(&omega;_0*t) (undamped, driving at natural frequency), the particular solution grows as:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Exponentially (e^t)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">Linearly in t: y_p = (F_0/2&omega;_0)*t*sin(&omega;_0*t)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">It remains bounded (just oscillates at constant amplitude)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Quadratically (t^2)</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer.toFixed(4) + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again.';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 2: GUESS FORM INTERACTIVE ==================== */
+var guessData = {
+  poly: { forcing:'4x + 1', form:'Ax + B', res:'No', explain:'Polynomial of degree 1, so guess a general polynomial of degree 1. No overlap with y_h terms (e^(2x), e^(-3x)), so no modification needed.' },
+  exp: { forcing:'5e^(4x)', form:'Ae^(4x)', res:'No', explain:'Exponential e^(4x). Since r=4 is NOT a root of the characteristic equation (roots are 2 and -3), no modification needed. Just guess Ae^(4x).' },
+  trig: { forcing:'sin(x)', form:'Acos(x) + Bsin(x)', res:'No', explain:'Trig forcing sin(x). Always include BOTH cos and sin in the guess, even if only one appears in g(x). The frequency 1 does not match any characteristic root, so no resonance.' },
+  resExp: { forcing:'3e^(-2x)', form:'Axe^(-2x)', res:'Yes! r=-2 is a characteristic root', explain:'e^(-2x) is already in y_h (since r=-2 is a root). Multiply the guess by x to get Axe^(-2x). This is the resonance/modification rule in action.' },
+  expTrig: { forcing:'e^x*cos(2x)', form:'e^x[Acos(2x) + Bsin(2x)]', res:'No', explain:'Product of exponential and trig. Guess the product form: e^(ax)[Acos(bx) + Bsin(bx)] with a=1, b=2. No overlap with y_h, so no modification.' }
+};
+
+function showGuess(key, btn) {
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(t){t.classList.remove('active')});
+  btn.classList.add('active');
+  var d = guessData[key];
+  document.getElementById('guessForcing').textContent = d.forcing;
+  document.getElementById('guessForm').textContent = d.form;
+  document.getElementById('guessRes').textContent = d.res;
+  document.getElementById('guessExplanation').textContent = d.explain;
+}
+
+/* ==================== SECTION 3: WORKED EXAMPLE INTERACTIVE ==================== */
+var workedExamples = {
+  exp4: {
+    html: '<strong>g(x) = e^(4x)</strong><br>' +
+      'y_h = c1*e^(-2x) + c2*e^(-3x). Roots: r = -2, -3.<br>' +
+      'r = 4 is not a root, so guess <span style="color:var(--green)">y_p = Ae^(4x)</span><br>' +
+      'y_p\' = 4Ae^(4x), y_p\'\' = 16Ae^(4x)<br>' +
+      '16A + 5(4A) + 6A = 1 &rarr; 42A = 1 &rarr; <strong>A = 1/42</strong><br>' +
+      '<span style="color:var(--green)">y = c1*e^(-2x) + c2*e^(-3x) + (1/42)e^(4x)</span>'
+  },
+  cos3: {
+    html: '<strong>g(x) = cos(3x)</strong><br>' +
+      'No trig terms in y_h, so guess <span style="color:var(--green)">y_p = Acos(3x) + Bsin(3x)</span><br>' +
+      'y_p\'\' = -9Acos(3x) - 9Bsin(3x)<br>' +
+      'y_p\' = -3Asin(3x) + 3Bcos(3x)<br>' +
+      'Substituting: (-9A + 15B + 6A)cos(3x) + (-9B - 15A + 6B)sin(3x) = cos(3x)<br>' +
+      '-3A + 15B = 1 and -3B - 15A = 0<br>' +
+      'From second: B = -5A. Into first: -3A + 15(-5A) = 1 &rarr; -78A = 1 &rarr; A = -1/78, B = 5/78<br>' +
+      '<span style="color:var(--green)">y_p = (-1/78)cos(3x) + (5/78)sin(3x)</span>'
+  },
+  resE2: {
+    html: '<strong>g(x) = e^(-2x) -- RESONANCE CASE</strong><br>' +
+      'r = -2 IS a root of the characteristic equation (multiplicity 1).<br>' +
+      'Must multiply by x: <span style="color:var(--pink)">y_p = Axe^(-2x)</span><br>' +
+      'y_p\' = Ae^(-2x) + Ax(-2)e^(-2x) = A(1 - 2x)e^(-2x)<br>' +
+      'y_p\'\' = A(-2 - 2 + 4x)e^(-2x) = A(4x - 4)e^(-2x)<br>' +
+      'Substituting and collecting: A(4x - 4 + 5 - 10x + 6x)e^(-2x) = e^(-2x)<br>' +
+      'A(1)e^(-2x) = e^(-2x) &rarr; <strong>A = 1</strong><br>' +
+      '<span style="color:var(--green)">y_p = xe^(-2x)</span>'
+  },
+  poly1: {
+    html: '<strong>g(x) = 6x + 1</strong><br>' +
+      'Polynomial degree 1, no overlap with y_h. Guess <span style="color:var(--green)">y_p = Ax + B</span><br>' +
+      'y_p\' = A, y_p\'\' = 0<br>' +
+      'Substituting: 0 + 5A + 6(Ax + B) = 6x + 1<br>' +
+      '6Ax + (5A + 6B) = 6x + 1<br>' +
+      '6A = 6 &rarr; A = 1; 5(1) + 6B = 1 &rarr; B = -2/3<br>' +
+      '<span style="color:var(--green)">y_p = x - 2/3</span>'
+  }
+};
+
+function showWorked(key, btn) {
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(t){t.classList.remove('active')});
+  btn.classList.add('active');
+  document.getElementById('workedOutput').innerHTML = workedExamples[key].html;
+}
+
+/* ==================== SECTION 5: RESONANCE CURVE ==================== */
+function drawResonance() {
+  var w0 = +document.getElementById('sliderW0').value;
+  var gamma = +document.getElementById('sliderGamma').value;
+  var F0 = +document.getElementById('sliderF0').value;
+  document.getElementById('valW0').textContent = w0.toFixed(1);
+  document.getElementById('valGamma').textContent = gamma.toFixed(2);
+  document.getElementById('valF0').textContent = F0.toFixed(1);
+
+  var svg = document.getElementById('resSvg');
+  var W = 500, H = 280;
+  var padL = 50, padR = 20, padT = 20, padB = 40;
+  var plotW = W - padL - padR;
+  var plotH = H - padT - padB;
+
+  // compute amplitude for range of omega
+  var wMax = w0 * 3;
+  var nPts = 200;
+  var pts = [];
+  var maxA = 0;
+  for (var i = 0; i <= nPts; i++) {
+    var w = (i / nPts) * wMax;
+    var denom = Math.sqrt(Math.pow(w0*w0 - w*w, 2) + Math.pow(2*gamma*w, 2));
+    var amp = denom > 0.001 ? F0 / denom : F0 / 0.001;
+    pts.push({w: w, a: amp});
+    if (amp > maxA) maxA = amp;
+  }
+
+  // cap maxA for display
+  var dispMax = Math.min(maxA, F0 / (0.001));
+  if (dispMax > 50) dispMax = 50;
+  var yScale = plotH / dispMax;
+
+  var h = '';
+  // background
+  h += '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="var(--bg-card)"/>';
+
+  // grid lines
+  var nGridY = 5;
+  for (var i = 0; i <= nGridY; i++) {
+    var yVal = (i / nGridY) * dispMax;
+    var yPx = padT + plotH - (yVal / dispMax) * plotH;
+    h += '<line x1="'+padL+'" y1="'+yPx+'" x2="'+(W-padR)+'" y2="'+yPx+'" stroke="#363b47" stroke-width="0.5"/>';
+    h += '<text x="'+(padL-5)+'" y="'+(yPx+4)+'" fill="#9ca3af" font-size="9" text-anchor="end">'+yVal.toFixed(1)+'</text>';
+  }
+  var nGridX = 6;
+  for (var i = 0; i <= nGridX; i++) {
+    var xVal = (i / nGridX) * wMax;
+    var xPx = padL + (xVal / wMax) * plotW;
+    h += '<line x1="'+xPx+'" y1="'+padT+'" x2="'+xPx+'" y2="'+(H-padB)+'" stroke="#363b47" stroke-width="0.5"/>';
+    h += '<text x="'+xPx+'" y="'+(H-padB+15)+'" fill="#9ca3af" font-size="9" text-anchor="middle">'+xVal.toFixed(1)+'</text>';
+  }
+
+  // axis labels
+  h += '<text x="'+(padL + plotW/2)+'" y="'+(H-5)+'" fill="#9ca3af" font-size="10" text-anchor="middle">Driving frequency &omega;</text>';
+  h += '<text x="12" y="'+(padT + plotH/2)+'" fill="#9ca3af" font-size="10" text-anchor="middle" transform="rotate(-90,12,'+(padT+plotH/2)+')">Amplitude A(&omega;)</text>';
+
+  // natural frequency marker
+  var w0px = padL + (w0 / wMax) * plotW;
+  h += '<line x1="'+w0px+'" y1="'+padT+'" x2="'+w0px+'" y2="'+(H-padB)+'" stroke="var(--amber)" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>';
+  h += '<text x="'+w0px+'" y="'+(padT-5)+'" fill="var(--amber)" font-size="8" text-anchor="middle">&omega;_0='+w0.toFixed(1)+'</text>';
+
+  // amplitude curve
+  var pathD = '';
+  for (var i = 0; i <= nPts; i++) {
+    var xPx = padL + (pts[i].w / wMax) * plotW;
+    var clampA = Math.min(pts[i].a, dispMax);
+    var yPx = padT + plotH - (clampA / dispMax) * plotH;
+    pathD += (i === 0 ? 'M' : 'L') + xPx.toFixed(1) + ',' + yPx.toFixed(1);
+  }
+  h += '<path d="'+pathD+'" fill="none" stroke="var(--green)" stroke-width="2.5"/>';
+
+  // fill under curve
+  var fillD = pathD + ' L'+(padL + plotW).toFixed(1)+','+(padT+plotH)+' L'+padL+','+(padT+plotH)+' Z';
+  h += '<path d="'+fillD+'" fill="rgba(34,197,94,0.08)"/>';
+
+  // peak marker
+  var peakW = 0, peakA = 0;
+  for (var i = 0; i < pts.length; i++) {
+    if (pts[i].a > peakA) { peakA = pts[i].a; peakW = pts[i].w; }
+  }
+  var peakXpx = padL + (peakW / wMax) * plotW;
+  var peakYpx = padT + plotH - (Math.min(peakA, dispMax) / dispMax) * plotH;
+  h += '<circle cx="'+peakXpx+'" cy="'+peakYpx+'" r="4" fill="var(--pink)" stroke="var(--text-bright)" stroke-width="1"/>';
+
+  svg.innerHTML = h;
+
+  // readouts
+  document.getElementById('resPeakW').textContent = peakW.toFixed(2);
+  document.getElementById('resPeakA').textContent = peakA > 100 ? '> 100 (divergent)' : peakA.toFixed(2);
+
+  // Q factor = w0 / (2*gamma)
+  var Q = gamma > 0 ? w0 / (2 * gamma) : 'infinite';
+  document.getElementById('resQ').textContent = typeof Q === 'number' ? Q.toFixed(2) : Q;
+
+  // bandwidth = 2*gamma
+  var bw = 2 * gamma;
+  document.getElementById('resBW').textContent = bw > 0 ? bw.toFixed(2) : 'zero (no damping)';
+}
+
+/* ==================== INIT ==================== */
+markComplete(1);
+showWorked('exp4', document.querySelector('[onclick*="showWorked"]'));
+drawResonance();
+</script>
+</body>
+</html>

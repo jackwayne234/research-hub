@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 12 -- Exponents &amp; Radicals</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #262a33;
+    --border: #363b47;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* -- Progress Bar -- */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* -- Header -- */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* -- Collapsible Cards -- */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details[open] { border-color: var(--accent); }
+  details.completed { border-color: var(--green); }
+  details.completed summary::after {
+    content: 'Done';
+    font-size: 0.65rem;
+    background: rgba(34,197,94,0.15);
+    color: var(--green);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    margin-left: auto;
+    font-weight: 600;
+  }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s var(--spring);
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .card-body { padding: 1.25rem; }
+  .card-body p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+  .card-body h3 {
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  /* -- Equation display -- */
+  .eq {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--orange);
+    text-align: center;
+    margin: 0.75rem 0;
+    padding: 0.5rem;
+    background: rgba(245,158,11,0.06);
+    border-radius: var(--radius);
+  }
+
+  /* -- Info boxes -- */
+  .info-box {
+    background: rgba(99,102,241,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+  }
+  .info-box.green {
+    background: rgba(34,197,94,0.08);
+    border-color: var(--green);
+  }
+  .info-box.pink {
+    background: rgba(236,72,153,0.08);
+    border-color: var(--pink);
+  }
+  .info-box.amber {
+    background: rgba(245,158,11,0.08);
+    border-color: var(--orange);
+  }
+
+  /* -- Buttons -- */
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn.green { background: var(--green); }
+  .btn.pink { background: var(--pink); }
+  .btn.orange { background: var(--orange); color: #1e2128; }
+  .btn.outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0.75rem 0;
+  }
+
+  /* -- Rule Cards -- */
+  .rule-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .rule-card {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .rule-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .rule-card .rule-name {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  .rule-card .rule-formula {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .rule-card .rule-example {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .rule-card .rule-example strong { color: var(--green); }
+
+  /* -- Practice Problems -- */
+  .problem-set {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    transition: border-color 0.3s, transform 0.15s;
+  }
+  .problem.correct { border-color: var(--green); }
+  .problem.incorrect { border-color: var(--pink); }
+  .problem .prompt {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    min-width: 200px;
+  }
+  .problem input[type="text"] {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .problem input:focus { border-color: var(--accent); }
+  .problem .feedback {
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 60px;
+  }
+  .problem .feedback.correct { color: var(--green); }
+  .problem .feedback.incorrect { color: var(--pink); }
+
+  /* -- Step-through -- */
+  .step-container { margin: 1rem 0; }
+  .step {
+    display: none;
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    animation: stepIn 0.3s var(--spring);
+  }
+  .step.active { display: block; }
+  .step .step-label {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+  .step .math {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--orange);
+    margin: 0.4rem 0;
+  }
+
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* -- Converter Box -- */
+  .converter-box {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin: 1rem 0;
+    text-align: center;
+  }
+  .converter-box input[type="text"],
+  .converter-box input[type="number"] {
+    padding: 0.5rem 0.75rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    text-align: center;
+    width: 200px;
+    max-width: 100%;
+    transition: border-color 0.3s;
+  }
+  .converter-box input:focus { border-color: var(--accent); }
+  .converter-result {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--green);
+    margin-top: 0.75rem;
+    min-height: 1.5em;
+  }
+  .converter-steps {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.5rem;
+    min-height: 1em;
+  }
+
+  /* -- Decimal animation -- */
+  .decimal-viz {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 1rem 0;
+    font-variant-numeric: tabular-nums;
+    overflow-x: auto;
+    padding: 0.5rem;
+  }
+  .decimal-viz .digit {
+    display: inline-block;
+    width: 1ch;
+    text-align: center;
+    color: var(--text);
+    transition: all 0.3s;
+  }
+  .decimal-viz .dot {
+    color: var(--orange);
+    font-weight: 700;
+    transition: all 0.5s ease;
+  }
+  .decimal-viz .arrow-indicator {
+    display: block;
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--accent);
+    margin-top: 0.3rem;
+  }
+
+  /* -- Factor tree -- */
+  .factor-tree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .tree-row {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+  }
+  .tree-node {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 36px;
+    padding: 0 0.5rem;
+    border-radius: 18px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    animation: stepIn 0.4s var(--spring);
+  }
+  .tree-node.original {
+    background: rgba(245,158,11,0.15);
+    color: var(--orange);
+    border: 1px solid var(--orange);
+  }
+  .tree-node.perfect {
+    background: rgba(34,197,94,0.15);
+    color: var(--green);
+    border: 1px solid var(--green);
+  }
+  .tree-node.remainder {
+    background: rgba(99,102,241,0.15);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .tree-connector {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+
+  /* -- Slider rows -- */
+  .slider-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0.75rem 0;
+    align-items: center;
+  }
+  .slider-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 200px;
+  }
+  .slider-group label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    min-width: 15px;
+  }
+  .slider-group input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    outline: none;
+  }
+  .slider-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+  .slider-group input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+  }
+  .slider-val {
+    font-size: 0.8rem;
+    color: var(--orange);
+    min-width: 50px;
+    text-align: right;
+    font-weight: 600;
+  }
+
+  /* -- Graph wrap -- */
+  .graph-wrap {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .graph-wrap svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* -- Feature tags -- */
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+  }
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .tag.indigo { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .tag.green { background: rgba(34,197,94,0.15); color: var(--green); }
+  .tag.pink { background: rgba(236,72,153,0.15); color: var(--pink); }
+  .tag.amber { background: rgba(245,158,11,0.15); color: var(--orange); }
+
+  /* -- Quiz -- */
+  .quiz-score {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    background: rgba(99,102,241,0.08);
+    border-radius: var(--radius);
+  }
+  .quiz-score span { color: var(--green); }
+
+  .quiz-problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.75rem 0;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem.correct { border-color: var(--green); }
+  .quiz-problem.incorrect { border-color: var(--pink); }
+  .quiz-problem .q-num {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  .quiz-problem .q-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .quiz-problem input[type="text"] {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem input:focus { border-color: var(--accent); }
+  .quiz-problem .q-feedback {
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    min-height: 1.2em;
+  }
+  .quiz-problem .q-feedback.correct { color: var(--green); }
+  .quiz-problem .q-feedback.incorrect { color: var(--pink); }
+
+  /* -- Physics context boxes -- */
+  .physics-box {
+    background: rgba(99,102,241,0.05);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.75rem 0;
+  }
+  .physics-box .phys-label {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  .physics-box .phys-val {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--orange);
+  }
+  .physics-box .phys-desc {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+  }
+
+  /* -- Interactive step exercise -- */
+  .step-exercise {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.75rem 0;
+  }
+  .step-exercise .se-prompt {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .step-exercise .se-step {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 0.3rem;
+  }
+  .step-exercise .se-step.active-step {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .step-exercise .se-step.done-step {
+    color: var(--green);
+  }
+
+  /* -- Responsive -- */
+  @media (max-width: 600px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.2rem; }
+    summary { font-size: 0.9rem; padding: 0.75rem 1rem; }
+    .card-body { padding: 1rem; }
+    .rule-cards { grid-template-columns: 1fr; }
+    .problem { flex-direction: column; align-items: stretch; }
+    .problem .prompt { min-width: unset; }
+    .slider-group { min-width: 100%; }
+    .converter-box input { width: 100%; }
+    .decimal-viz { font-size: 1.1rem; }
+    .tree-row { gap: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar">
+  <div class="seg" data-section="0"></div>
+  <div class="seg" data-section="1"></div>
+  <div class="seg" data-section="2"></div>
+  <div class="seg" data-section="3"></div>
+  <div class="seg" data-section="4"></div>
+  <div class="seg" data-section="5"></div>
+</div>
+
+<h1>Week 9: Exponents &amp; Radicals</h1>
+<p class="subtitle">Laws, scientific notation, simplifying radicals, rational exponents &amp; physics applications // Lesson 12 of VPT Prep</p>
+
+<!-- ===================== SECTION 1: Laws of Exponents ===================== -->
+<details id="sec0" open>
+  <summary>1. Laws of Exponents</summary>
+  <div class="card-body">
+    <p>Exponent laws are the grammar of algebra. Master these six rules and you can simplify any expression.</p>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Product Rule</div>
+        <div class="rule-formula">a<sup>m</sup> &middot; a<sup>n</sup> = a<sup>m+n</sup></div>
+        <div class="rule-example">x<sup>3</sup> &middot; x<sup>4</sup> = x<sup><strong>7</strong></sup></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Quotient Rule</div>
+        <div class="rule-formula">a<sup>m</sup> / a<sup>n</sup> = a<sup>m-n</sup></div>
+        <div class="rule-example">x<sup>8</sup> / x<sup>3</sup> = x<sup><strong>5</strong></sup></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Power Rule</div>
+        <div class="rule-formula">(a<sup>m</sup>)<sup>n</sup> = a<sup>mn</sup></div>
+        <div class="rule-example">(x<sup>2</sup>)<sup>5</sup> = x<sup><strong>10</strong></sup></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Zero Exponent</div>
+        <div class="rule-formula">a<sup>0</sup> = 1</div>
+        <div class="rule-example">5<sup>0</sup> = <strong>1</strong>, &nbsp;(3xy)<sup>0</sup> = <strong>1</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Negative Exponent</div>
+        <div class="rule-formula">a<sup>-n</sup> = 1 / a<sup>n</sup></div>
+        <div class="rule-example">x<sup>-3</sup> = <strong>1/x<sup>3</sup></strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Power of Product</div>
+        <div class="rule-formula">(ab)<sup>n</sup> = a<sup>n</sup>b<sup>n</sup></div>
+        <div class="rule-example">(2x)<sup>3</sup> = <strong>8x<sup>3</sup></strong></div>
+      </div>
+    </div>
+
+    <h3>Interactive: Identify the Rule</h3>
+    <p>Each expression below uses one or more exponent laws. Type the simplified answer.</p>
+
+    <div class="info-box amber">
+      <strong>How to type exponents:</strong> Use ^ for powers. For example: x^7, 1/x^3, 8x^3. Use * for multiplication if needed.
+    </div>
+
+    <div id="expStepExercise"></div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="expProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkExpProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showExpAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 2: Scientific Notation ===================== -->
+<details id="sec1">
+  <summary>2. Scientific Notation</summary>
+  <div class="card-body">
+    <p>Scientific notation expresses numbers as <strong>a &times; 10<sup>n</sup></strong> where 1 &le; |a| &lt; 10 and n is an integer. Essential for physics -- values range from 10<sup>-35</sup> to 10<sup>26</sup>.</p>
+
+    <div class="info-box">
+      <strong>The rule:</strong> Move the decimal so only one non-zero digit sits left of it. The exponent counts how many places you moved: right = positive, left = negative.
+    </div>
+
+    <h3>Interactive Converter</h3>
+    <div class="converter-box">
+      <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;">Enter any number (e.g. 0.00045 or 186000)</p>
+      <input type="text" id="sciInput" placeholder="e.g. 186000" onkeydown="if(event.key==='Enter')convertToSci()">
+      <button class="btn" onclick="convertToSci()" style="margin-left:0.5rem;">Convert</button>
+      <div class="converter-result" id="sciResult"></div>
+      <div class="converter-steps" id="sciSteps"></div>
+      <div id="sciDecimalViz" style="min-height:2.5rem;margin-top:0.5rem;"></div>
+    </div>
+
+    <h3>Physics Constants in Scientific Notation</h3>
+    <div class="rule-cards" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+      <div class="physics-box">
+        <div class="phys-label">Speed of Light</div>
+        <div class="phys-val">3 &times; 10<sup>8</sup> m/s</div>
+        <div class="phys-desc">300,000,000 meters per second</div>
+      </div>
+      <div class="physics-box">
+        <div class="phys-label">Planck's Constant</div>
+        <div class="phys-val">6.626 &times; 10<sup>-34</sup> J&middot;s</div>
+        <div class="phys-desc">0.0000000000000000000000000000000006626</div>
+      </div>
+      <div class="physics-box">
+        <div class="phys-label">Electron Mass</div>
+        <div class="phys-val">9.109 &times; 10<sup>-31</sup> kg</div>
+        <div class="phys-desc">Incredibly tiny -- 31 zeros after the decimal</div>
+      </div>
+      <div class="physics-box">
+        <div class="phys-label">Avogadro's Number</div>
+        <div class="phys-val">6.022 &times; 10<sup>23</sup></div>
+        <div class="phys-desc">602,200,000,000,000,000,000,000 particles/mol</div>
+      </div>
+    </div>
+
+    <h3>Operations in Scientific Notation</h3>
+    <div class="info-box amber">
+      <strong>Multiplication:</strong> (a &times; 10<sup>m</sup>) &middot; (b &times; 10<sup>n</sup>) = (a &middot; b) &times; 10<sup>m+n</sup><br>
+      <strong>Division:</strong> (a &times; 10<sup>m</sup>) / (b &times; 10<sup>n</sup>) = (a / b) &times; 10<sup>m-n</sup>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="sciProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkSciProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showSciAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 3: Simplifying Radicals ===================== -->
+<details id="sec2">
+  <summary>3. Simplifying Radicals</summary>
+  <div class="card-body">
+    <p>To simplify a radical, find the largest <strong>perfect square</strong> (or perfect cube) factor hiding inside.</p>
+
+    <div class="eq">&radic;18 = &radic;(9 &middot; 2) = &radic;9 &middot; &radic;2 = 3&radic;2</div>
+
+    <div class="info-box">
+      <strong>Strategy:</strong> Factor the number under the radical. Find perfect square factors (4, 9, 16, 25, 36, 49, 64, 81, 100...). Pull their square roots outside.
+    </div>
+
+    <h3>Interactive Radical Simplifier</h3>
+    <div class="converter-box">
+      <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;">Enter a number to see its radical simplified (square root by default)</p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap;">
+        <select id="radicalType" style="padding:0.4rem;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:0.85rem;">
+          <option value="2">Square root</option>
+          <option value="3">Cube root</option>
+        </select>
+        <input type="number" id="radInput" placeholder="e.g. 72" min="1" max="9999" style="width:120px;" onkeydown="if(event.key==='Enter')simplifyRadical()">
+        <button class="btn" onclick="simplifyRadical()">Simplify</button>
+      </div>
+      <div class="converter-result" id="radResult"></div>
+      <div id="radTree"></div>
+      <div class="converter-steps" id="radSteps"></div>
+    </div>
+
+    <h3>Perfect Squares &amp; Cubes Reference</h3>
+    <div class="rule-cards" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+      <div class="rule-card">
+        <div class="rule-name">Perfect Squares</div>
+        <div class="rule-example" style="line-height:1.8">
+          1, 4, 9, 16, 25, 36,<br>49, 64, 81, 100, 121, 144
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Perfect Cubes</div>
+        <div class="rule-example" style="line-height:1.8">
+          1, 8, 27, 64, 125,<br>216, 343, 512, 729, 1000
+        </div>
+      </div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="info-box amber">
+      <strong>How to type radicals:</strong> Write the coefficient then sqrt(remainder). Examples: 3sqrt(2), 5sqrt(3), 2cbrt(5). If it simplifies to a whole number, just type the number.
+    </div>
+    <div class="problem-set" id="radProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkRadProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showRadAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 4: Rational Exponents ===================== -->
+<details id="sec3">
+  <summary>4. Rational Exponents</summary>
+  <div class="card-body">
+    <p>Rational (fractional) exponents are just another way to write radicals. They bridge the gap between powers and roots.</p>
+
+    <div class="eq">a<sup>1/n</sup> = <sup>n</sup>&radic;a &nbsp;&nbsp;&nbsp;&nbsp; a<sup>m/n</sup> = <sup>n</sup>&radic;(a<sup>m</sup>) = (<sup>n</sup>&radic;a)<sup>m</sup></div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Square Root</div>
+        <div class="rule-formula">a<sup>1/2</sup> = &radic;a</div>
+        <div class="rule-example">25<sup>1/2</sup> = &radic;25 = <strong>5</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Cube Root</div>
+        <div class="rule-formula">a<sup>1/3</sup> = <sup>3</sup>&radic;a</div>
+        <div class="rule-example">64<sup>1/3</sup> = <sup>3</sup>&radic;64 = <strong>4</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">General Form</div>
+        <div class="rule-formula">a<sup>m/n</sup> = (<sup>n</sup>&radic;a)<sup>m</sup></div>
+        <div class="rule-example">8<sup>2/3</sup> = (<sup>3</sup>&radic;8)<sup>2</sup> = 2<sup>2</sup> = <strong>4</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Negative Rational</div>
+        <div class="rule-formula">a<sup>-m/n</sup> = 1 / a<sup>m/n</sup></div>
+        <div class="rule-example">4<sup>-3/2</sup> = 1 / 4<sup>3/2</sup> = <strong>1/8</strong></div>
+      </div>
+    </div>
+
+    <h3>Interactive Converter</h3>
+    <div class="converter-box">
+      <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;">Enter a rational exponent expression to see it as a radical, or a radical to see it as an exponent.</p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap;">
+        <select id="ratConvMode" style="padding:0.4rem;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:0.85rem;">
+          <option value="exp2rad">Exponent to Radical</option>
+          <option value="rad2exp">Radical to Exponent</option>
+        </select>
+      </div>
+      <div id="ratConvInputs" style="margin-top:0.75rem;"></div>
+      <div class="converter-result" id="ratConvResult"></div>
+      <div class="converter-steps" id="ratConvSteps"></div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="ratProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkRatProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showRatAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 5: Physics Connection ===================== -->
+<details id="sec4">
+  <summary>5. Physics: Exponential Growth &amp; Decay</summary>
+  <div class="card-body">
+    <p>Exponential functions model real-world phenomena where quantities grow or shrink at a rate proportional to their current value.</p>
+
+    <div class="eq">N(t) = N<sub>0</sub> &middot; e<sup>kt</sup></div>
+
+    <div class="info-box">
+      <strong>k &gt; 0:</strong> Exponential growth (bacterial colonies, compound interest).<br>
+      <strong>k &lt; 0:</strong> Exponential decay (radioactive isotopes, capacitor discharge).
+    </div>
+
+    <h3>Interactive: Explore the Curve</h3>
+    <p>Adjust k to see how the curve changes. Positive k = growth, negative k = decay. N<sub>0</sub> is the initial quantity.</p>
+
+    <div class="slider-row">
+      <div class="slider-group">
+        <label>k</label>
+        <input type="range" id="sliderK" min="-2" max="2" step="0.05" value="0.5">
+        <span class="slider-val" id="sliderKVal">0.50</span>
+      </div>
+      <div class="slider-group">
+        <label>N<sub>0</sub></label>
+        <input type="range" id="sliderN0" min="10" max="200" step="10" value="100">
+        <span class="slider-val" id="sliderN0Val">100</span>
+      </div>
+    </div>
+
+    <div class="features" id="expFeatures">
+      <span class="tag indigo" id="expType">Growth</span>
+      <span class="tag amber" id="expHalflife">Half-life: --</span>
+      <span class="tag green" id="expEqDisplay">N(t) = 100 e^(0.50t)</span>
+    </div>
+
+    <div class="graph-wrap">
+      <svg id="svgExp" viewBox="0 0 500 350" width="500" height="350"></svg>
+    </div>
+
+    <h3>Navy Context: Real-World Applications</h3>
+    <div class="rule-cards" style="grid-template-columns: 1fr;">
+      <div class="physics-box">
+        <div class="phys-label">Reactor Waste Decay</div>
+        <div class="phys-desc" style="margin-top:0;">
+          Nuclear reactor waste contains isotopes like <strong>Cobalt-60</strong> (half-life 5.27 years) and <strong>Cesium-137</strong> (half-life 30.17 years). The Navy tracks these to determine safe handling times. Using N(t) = N<sub>0</sub> &middot; (1/2)<sup>t/t<sub>1/2</sub></sup>, we can calculate when waste reaches safe activity levels.
+        </div>
+      </div>
+      <div class="physics-box">
+        <div class="phys-label">Bacterial Growth in Contaminated Water</div>
+        <div class="phys-desc" style="margin-top:0;">
+          Bacteria like <em>E. coli</em> can double every 20 minutes in warm water. At sea, potable water contamination can grow exponentially: N(t) = N<sub>0</sub> &middot; 2<sup>t/20</sup>. Starting with 100 bacteria, after 3 hours (180 min) you get 100 &middot; 2<sup>9</sup> = <strong>51,200 bacteria</strong>.
+        </div>
+      </div>
+    </div>
+
+    <h3>Half-Life Formula</h3>
+    <div class="info-box amber">
+      <strong>Key relationship:</strong> If N(t) = N<sub>0</sub> &middot; e<sup>kt</sup>, the half-life is t<sub>1/2</sub> = ln(2) / |k| &approx; 0.693 / |k|.<br>
+      Equivalently: N(t) = N<sub>0</sub> &middot; (1/2)<sup>t/t<sub>1/2</sub></sup>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="physProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkPhysProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showPhysAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 6: Quick Quiz ===================== -->
+<details id="sec5">
+  <summary>6. Quick Quiz</summary>
+  <div class="card-body">
+    <p>10 mixed problems covering all sections. Submit when ready.</p>
+
+    <div class="quiz-score" id="quizScore">Score: <span>-- / 10</span></div>
+
+    <div id="quizProblems"></div>
+
+    <div class="btn-row" style="margin-top:1rem;">
+      <button class="btn green" onclick="gradeQuiz()">Submit Quiz</button>
+      <button class="btn outline" onclick="showQuizAnswers()">Show All Answers</button>
+      <button class="btn pink" onclick="resetQuiz()">Reset</button>
+    </div>
+  </div>
+</details>
+
+<script>
+// ====== UTILITIES ======
+const $ = id => document.getElementById(id);
+const sections = 6;
+const completed = new Array(sections).fill(false);
+
+function updateProgress() {
+  const segs = document.querySelectorAll('.progress-bar .seg');
+  segs.forEach((seg, i) => {
+    if (completed[i]) seg.classList.add('done');
+    else seg.classList.remove('done');
+  });
+}
+
+function markComplete(idx) {
+  completed[idx] = true;
+  updateProgress();
+  const sec = $('sec' + idx);
+  sec.classList.add('completed');
+}
+
+function normalize(s) {
+  return s.replace(/\s+/g, '')
+           .replace(/\u2212/g, '-')
+           .replace(/\u00d7/g, '*')
+           .replace(/\u00b7/g, '*')
+           .replace(/x/gi, 'x')
+           .toLowerCase()
+           .replace(/\*\*/g, '^');
+}
+
+function springPop(el) {
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = 'popIn 0.35s var(--spring)';
+}
+
+function shakeEl(el) {
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = 'shake 0.4s ease';
+}
+
+// Enter key listener for all problem inputs
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  const t = e.target;
+  if (!t || t.tagName !== 'INPUT') return;
+  const card = t.closest('details');
+  if (!card) return;
+  const id = card.id;
+  if (id === 'sec0') checkExpProblems();
+  else if (id === 'sec1') checkSciProblems();
+  else if (id === 'sec2') checkRadProblems();
+  else if (id === 'sec3') checkRatProblems();
+  else if (id === 'sec4') checkPhysProblems();
+  else if (id === 'sec5') gradeQuiz();
+});
+
+// ====== SECTION 1: Laws of Exponents ======
+
+// Step-by-step interactive exercises
+const stepExercises = [
+  {
+    prompt: 'Simplify: x<sup>5</sup> &middot; x<sup>3</sup>',
+    steps: [
+      { text: 'Identify the rule: same base, multiplication = Product Rule', auto: true },
+      { text: 'Add the exponents: 5 + 3 = 8', auto: true },
+      { text: 'Result:', input: true, answer: 'x^8' }
+    ]
+  },
+  {
+    prompt: 'Simplify: (y<sup>4</sup>)<sup>3</sup>',
+    steps: [
+      { text: 'Identify the rule: power raised to a power = Power Rule', auto: true },
+      { text: 'Multiply the exponents: 4 &times; 3 = 12', auto: true },
+      { text: 'Result:', input: true, answer: 'y^12' }
+    ]
+  },
+  {
+    prompt: 'Simplify: z<sup>7</sup> / z<sup>2</sup>',
+    steps: [
+      { text: 'Identify the rule: same base, division = Quotient Rule', auto: true },
+      { text: 'Subtract the exponents: 7 - 2 = 5', auto: true },
+      { text: 'Result:', input: true, answer: 'z^5' }
+    ]
+  }
+];
+
+function buildStepExercises() {
+  const cont = $('expStepExercise');
+  cont.innerHTML = '';
+  stepExercises.forEach((ex, ei) => {
+    const div = document.createElement('div');
+    div.className = 'step-exercise';
+    div.id = 'stepEx' + ei;
+    let html = `<div class="se-prompt">${ex.prompt}</div>`;
+    ex.steps.forEach((s, si) => {
+      if (s.auto) {
+        html += `<div class="se-step" id="seStep${ei}_${si}" style="display:none;">${s.text}</div>`;
+      } else {
+        html += `<div class="se-step" id="seStep${ei}_${si}" style="display:none;">
+          ${s.text}
+          <input type="text" id="seInput${ei}" placeholder="type answer" style="width:120px;padding:0.3rem 0.5rem;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:0.85rem;margin-left:0.5rem;">
+          <span id="seFeedback${ei}" style="margin-left:0.5rem;font-size:0.8rem;font-weight:600;"></span>
+        </div>`;
+      }
+    });
+    html += `<button class="btn" id="seBtn${ei}" onclick="advanceStep(${ei})" style="margin-top:0.5rem;font-size:0.75rem;">Next Step</button>`;
+    div.innerHTML = html;
+    cont.appendChild(div);
+  });
+  // Show first step of each
+  stepExercises.forEach((ex, ei) => {
+    const firstStep = $('seStep' + ei + '_0');
+    if (firstStep) { firstStep.style.display = 'block'; firstStep.classList.add('active-step'); }
+  });
+}
+
+const stepState = {};
+function advanceStep(ei) {
+  if (!stepState[ei]) stepState[ei] = 0;
+  const ex = stepExercises[ei];
+  const current = stepState[ei];
+
+  // If current step has an input, validate first
+  const currentStepData = ex.steps[current];
+  if (currentStepData && currentStepData.input) {
+    const inp = $('seInput' + ei);
+    const fb = $('seFeedback' + ei);
+    if (normalize(inp.value) === normalize(currentStepData.answer)) {
+      fb.textContent = 'Correct!';
+      fb.style.color = 'var(--green)';
+      const stepEl = $('seStep' + ei + '_' + current);
+      stepEl.classList.remove('active-step');
+      stepEl.classList.add('done-step');
+      springPop(stepEl);
+      inp.disabled = true;
+      $('seBtn' + ei).style.display = 'none';
+      return;
+    } else {
+      fb.textContent = 'Try again';
+      fb.style.color = 'var(--pink)';
+      shakeEl($('seStep' + ei + '_' + current));
+      return;
+    }
+  }
+
+  // Mark current as done
+  const curEl = $('seStep' + ei + '_' + current);
+  if (curEl) { curEl.classList.remove('active-step'); curEl.classList.add('done-step'); }
+
+  // Advance
+  stepState[ei] = current + 1;
+  const next = stepState[ei];
+
+  if (next < ex.steps.length) {
+    const nextEl = $('seStep' + ei + '_' + next);
+    nextEl.style.display = 'block';
+    nextEl.classList.add('active-step');
+    springPop(nextEl);
+
+    if (ex.steps[next].input) {
+      $('seBtn' + ei).textContent = 'Check';
+    }
+  }
+}
+
+buildStepExercises();
+
+// Practice problems
+const expProblemsData = [
+  { prompt: '2<sup>3</sup> &middot; 2<sup>5</sup>', answer: '2^8', display: '2^8 = 256', alts: ['256'] },
+  { prompt: 'x<sup>9</sup> / x<sup>4</sup>', answer: 'x^5', display: 'x^5', alts: [] },
+  { prompt: '(3a<sup>2</sup>)<sup>3</sup>', answer: '27a^6', display: '27a^6', alts: [] },
+  { prompt: '5<sup>0</sup> + 7<sup>0</sup>', answer: '2', display: '1 + 1 = 2', alts: [] },
+  { prompt: 'x<sup>-4</sup> &middot; x<sup>7</sup>', answer: 'x^3', display: 'x^(-4+7) = x^3', alts: [] },
+];
+
+function buildProblems(data, containerId, prefix) {
+  const cont = $(containerId);
+  cont.innerHTML = '';
+  data.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = prefix + i;
+    div.innerHTML = `
+      <span class="prompt">${p.prompt}</span>
+      <input type="text" id="${prefix}In${i}" placeholder="answer">
+      <span class="feedback" id="${prefix}Fb${i}"></span>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function checkProblems(data, prefix, sectionIdx) {
+  let allCorrect = true;
+  data.forEach((p, i) => {
+    const input = normalize($(`${prefix}In${i}`).value);
+    const answers = [p.answer, ...p.alts].map(normalize);
+    const isRight = answers.includes(input);
+    $(`${prefix}${i}`).className = 'problem ' + (isRight ? 'correct' : 'incorrect');
+    $(`${prefix}Fb${i}`).textContent = isRight ? 'Correct!' : p.display;
+    $(`${prefix}Fb${i}`).className = 'feedback ' + (isRight ? 'correct' : 'incorrect');
+    if (isRight) springPop($(`${prefix}${i}`));
+    else shakeEl($(`${prefix}${i}`));
+    if (!isRight) allCorrect = false;
+  });
+  if (allCorrect) markComplete(sectionIdx);
+}
+
+function showAnswers(data, prefix, sectionIdx) {
+  data.forEach((p, i) => {
+    $(`${prefix}In${i}`).value = p.answer;
+    $(`${prefix}${i}`).className = 'problem correct';
+    $(`${prefix}Fb${i}`).textContent = p.display;
+    $(`${prefix}Fb${i}`).className = 'feedback correct';
+  });
+  markComplete(sectionIdx);
+}
+
+buildProblems(expProblemsData, 'expProblems', 'ep');
+function checkExpProblems() { checkProblems(expProblemsData, 'ep', 0); }
+function showExpAnswers() { showAnswers(expProblemsData, 'ep', 0); }
+
+
+// ====== SECTION 2: Scientific Notation ======
+
+function convertToSci() {
+  const raw = $('sciInput').value.trim();
+  if (!raw) return;
+  const num = parseFloat(raw);
+  if (isNaN(num) || num === 0) {
+    $('sciResult').textContent = num === 0 ? '0 (zero cannot be expressed in standard scientific notation)' : 'Invalid number';
+    $('sciSteps').textContent = '';
+    $('sciDecimalViz').innerHTML = '';
+    return;
+  }
+
+  const abs = Math.abs(num);
+  const sign = num < 0 ? '-' : '';
+  let exp = Math.floor(Math.log10(abs));
+  let coeff = abs / Math.pow(10, exp);
+
+  // Fix floating point
+  coeff = parseFloat(coeff.toPrecision(12));
+
+  // Ensure 1 <= coeff < 10
+  if (coeff >= 10) { coeff /= 10; exp++; }
+  if (coeff < 1 && coeff > 0) { coeff *= 10; exp--; }
+
+  const coeffStr = parseFloat(coeff.toPrecision(6));
+
+  $('sciResult').innerHTML = `${sign}${coeffStr} &times; 10<sup>${exp}</sup>`;
+
+  // Steps explanation
+  const places = Math.abs(exp);
+  const direction = exp > 0 ? 'left' : 'right';
+  $('sciSteps').innerHTML = `Moved decimal ${places} place${places !== 1 ? 's' : ''} to the ${direction} &rarr; exponent is ${exp > 0 ? '+' : ''}${exp}`;
+
+  // Build decimal visualization
+  buildDecimalViz(raw, exp);
+}
+
+function buildDecimalViz(numStr, exponent) {
+  const viz = $('sciDecimalViz');
+  // Show original number with decimal position highlighted
+  let clean = numStr.replace(/^-/, '');
+  let dotPos = clean.indexOf('.');
+  if (dotPos === -1) { clean += '.0'; dotPos = clean.length - 2; }
+
+  let html = '<div class="decimal-viz">';
+  for (let i = 0; i < clean.length; i++) {
+    if (clean[i] === '.') {
+      html += `<span class="digit dot">.</span>`;
+    } else {
+      html += `<span class="digit">${clean[i]}</span>`;
+    }
+  }
+  html += '</div>';
+  const moves = Math.abs(exponent);
+  const dir = exponent > 0 ? 'LEFT' : 'RIGHT';
+  html += `<div style="text-align:center;font-size:0.75rem;color:var(--accent);margin-top:0.25rem;">Move decimal <strong>${moves}</strong> place${moves !== 1 ? 's' : ''} ${dir}</div>`;
+  viz.innerHTML = html;
+}
+
+const sciProblemsData = [
+  { prompt: 'Write 0.00052 in scientific notation', answer: '5.2*10^-4', display: '5.2 x 10^(-4)', alts: ['5.2x10^-4','5.2x10^(-4)','5.2*10^(-4)'] },
+  { prompt: 'Write 8,340,000 in scientific notation', answer: '8.34*10^6', display: '8.34 x 10^6', alts: ['8.34x10^6','8.34x10^(6)','8.34*10^(6)'] },
+  { prompt: '(3 x 10<sup>4</sup>)(2 x 10<sup>5</sup>) = ?', answer: '6*10^9', display: '6 x 10^9', alts: ['6x10^9','6x10^(9)','6*10^(9)'] },
+  { prompt: '(8 x 10<sup>6</sup>) / (4 x 10<sup>2</sup>) = ?', answer: '2*10^4', display: '2 x 10^4', alts: ['2x10^4','2x10^(4)','2*10^(4)','20000'] },
+];
+
+buildProblems(sciProblemsData, 'sciProblems', 'sp');
+function checkSciProblems() { checkProblems(sciProblemsData, 'sp', 1); }
+function showSciAnswers() { showAnswers(sciProblemsData, 'sp', 1); }
+
+
+// ====== SECTION 3: Simplifying Radicals ======
+
+function simplifyRadical() {
+  const n = parseInt($('radInput').value);
+  const rootType = parseInt($('radicalType').value);
+
+  if (!n || n < 1) {
+    $('radResult').textContent = 'Enter a positive integer';
+    $('radTree').innerHTML = '';
+    $('radSteps').textContent = '';
+    return;
+  }
+
+  if (rootType === 2) {
+    simplifySquareRoot(n);
+  } else {
+    simplifyCubeRoot(n);
+  }
+}
+
+function simplifySquareRoot(n) {
+  // Find largest perfect square factor
+  let bestSquare = 1;
+  for (let i = Math.floor(Math.sqrt(n)); i >= 2; i--) {
+    if (n % (i * i) === 0) {
+      bestSquare = i * i;
+      break;
+    }
+  }
+
+  const outside = Math.sqrt(bestSquare);
+  const inside = n / bestSquare;
+
+  // Build factor tree
+  buildFactorTree(n, bestSquare, inside, outside, 2);
+
+  if (inside === 1) {
+    $('radResult').innerHTML = `&radic;${n} = <strong>${outside}</strong>`;
+    $('radSteps').innerHTML = `${n} is a perfect square! &radic;${n} = ${outside}`;
+  } else if (bestSquare === 1) {
+    $('radResult').innerHTML = `&radic;${n} = <strong>&radic;${n}</strong> (already simplified)`;
+    $('radSteps').innerHTML = `${n} has no perfect square factors other than 1.`;
+  } else {
+    $('radResult').innerHTML = `&radic;${n} = &radic;(${bestSquare} &middot; ${inside}) = <strong>${outside}&radic;${inside}</strong>`;
+    $('radSteps').innerHTML = `Largest perfect square factor of ${n} is ${bestSquare}. &radic;${bestSquare} = ${outside}, remainder = ${inside}.`;
+  }
+}
+
+function simplifyCubeRoot(n) {
+  let bestCube = 1;
+  for (let i = Math.floor(Math.cbrt(n)); i >= 2; i--) {
+    if (n % (i * i * i) === 0) {
+      bestCube = i * i * i;
+      break;
+    }
+  }
+
+  const outside = Math.round(Math.cbrt(bestCube));
+  const inside = n / bestCube;
+
+  buildFactorTree(n, bestCube, inside, outside, 3);
+
+  if (inside === 1) {
+    $('radResult').innerHTML = `<sup>3</sup>&radic;${n} = <strong>${outside}</strong>`;
+    $('radSteps').innerHTML = `${n} is a perfect cube! <sup>3</sup>&radic;${n} = ${outside}`;
+  } else if (bestCube === 1) {
+    $('radResult').innerHTML = `<sup>3</sup>&radic;${n} = <strong><sup>3</sup>&radic;${n}</strong> (already simplified)`;
+    $('radSteps').innerHTML = `${n} has no perfect cube factors other than 1.`;
+  } else {
+    $('radResult').innerHTML = `<sup>3</sup>&radic;${n} = <sup>3</sup>&radic;(${bestCube} &middot; ${inside}) = <strong>${outside}<sup>3</sup>&radic;${inside}</strong>`;
+    $('radSteps').innerHTML = `Largest perfect cube factor of ${n} is ${bestCube}. <sup>3</sup>&radic;${bestCube} = ${outside}, remainder = ${inside}.`;
+  }
+}
+
+function buildFactorTree(n, perfectPower, remainder, root, degree) {
+  const tree = $('radTree');
+  if (perfectPower === 1 || remainder === 1) {
+    const label = degree === 2 ? 'Perfect square' : 'Perfect cube';
+    if (remainder === 1) {
+      tree.innerHTML = `
+        <div class="factor-tree">
+          <div class="tree-row"><span class="tree-node original">${n}</span></div>
+          <div class="tree-row"><span class="tree-connector">${label}!</span></div>
+          <div class="tree-row"><span class="tree-node perfect">${root}<sup>${degree}</sup> = ${n}</span></div>
+        </div>`;
+    } else {
+      tree.innerHTML = `
+        <div class="factor-tree">
+          <div class="tree-row"><span class="tree-node original">${n}</span></div>
+          <div class="tree-row"><span class="tree-connector">No perfect ${degree === 2 ? 'square' : 'cube'} factors</span></div>
+        </div>`;
+    }
+    return;
+  }
+
+  const rootLabel = degree === 2 ? '&radic;' : '<sup>3</sup>&radic;';
+  tree.innerHTML = `
+    <div class="factor-tree">
+      <div class="tree-row"><span class="tree-node original">${n}</span></div>
+      <div class="tree-row"><span class="tree-connector">= ${perfectPower} &times; ${remainder}</span></div>
+      <div class="tree-row">
+        <span class="tree-node perfect">${perfectPower}</span>
+        <span class="tree-connector">&times;</span>
+        <span class="tree-node remainder">${remainder}</span>
+      </div>
+      <div class="tree-row" style="margin-top:0.25rem;">
+        <span class="tree-connector">${rootLabel}${perfectPower} = ${root}</span>
+      </div>
+      <div class="tree-row">
+        <span class="tree-node perfect" style="font-size:1rem;">${root}${rootLabel}${remainder}</span>
+      </div>
+    </div>`;
+}
+
+const radProblemsData = [
+  { prompt: 'Simplify: &radic;72', answer: '6sqrt(2)', display: '6sqrt(2)', alts: ['6sqrt2'] },
+  { prompt: 'Simplify: &radic;50', answer: '5sqrt(2)', display: '5sqrt(2)', alts: ['5sqrt2'] },
+  { prompt: 'Simplify: &radic;144', answer: '12', display: '12', alts: [] },
+  { prompt: 'Simplify: &radic;200', answer: '10sqrt(2)', display: '10sqrt(2)', alts: ['10sqrt2'] },
+  { prompt: 'Simplify: <sup>3</sup>&radic;54', answer: '3cbrt(2)', display: '3cbrt(2)', alts: ['3cbrt2'] },
+];
+
+buildProblems(radProblemsData, 'radProblems', 'rp');
+function checkRadProblems() { checkProblems(radProblemsData, 'rp', 2); }
+function showRadAnswers() { showAnswers(radProblemsData, 'rp', 2); }
+
+
+// ====== SECTION 4: Rational Exponents ======
+
+function setupRatConverter() {
+  const mode = $('ratConvMode').value;
+  const cont = $('ratConvInputs');
+
+  if (mode === 'exp2rad') {
+    cont.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap;">
+        <span style="font-size:0.85rem;color:var(--text-dim);">base:</span>
+        <input type="number" id="ratBase" value="8" style="width:60px;padding:0.4rem;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:0.9rem;text-align:center;">
+        <span style="font-size:0.85rem;color:var(--text-dim);"><sup>exponent:</sup></span>
+        <input type="text" id="ratExp" value="2/3" placeholder="m/n" style="width:60px;padding:0.4rem;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:0.9rem;text-align:center;">
+        <button class="btn" onclick="convertRatExp()">Convert</button>
+      </div>`;
+  } else {
+    cont.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap;">
+        <span style="font-size:0.85rem;color:var(--text-dim);">root index:</span>
+        <input type="number" id="ratRootIdx" value="3" min="2" style="width:50px;padding:0.4rem;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:0.9rem;text-align:center;">
+        <span style="font-size:0.85rem;color:var(--text-dim);">radicand:</span>
+        <input type="number" id="ratRadicand" value="64" style="width:70px;padding:0.4rem;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:0.9rem;text-align:center;">
+        <span style="font-size:0.85rem;color:var(--text-dim);">power:</span>
+        <input type="number" id="ratPow" value="2" min="1" style="width:50px;padding:0.4rem;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:0.9rem;text-align:center;">
+        <button class="btn" onclick="convertRadToExp()">Convert</button>
+      </div>`;
+  }
+  $('ratConvResult').innerHTML = '';
+  $('ratConvSteps').innerHTML = '';
+}
+
+$('ratConvMode').addEventListener('change', setupRatConverter);
+setupRatConverter();
+
+function convertRatExp() {
+  const base = parseFloat($('ratBase').value);
+  const expStr = $('ratExp').value.trim();
+
+  const parts = expStr.split('/');
+  if (parts.length !== 2) {
+    $('ratConvResult').textContent = 'Enter exponent as m/n (e.g. 2/3)';
+    return;
+  }
+
+  const m = parseInt(parts[0]);
+  const n = parseInt(parts[1]);
+
+  if (isNaN(m) || isNaN(n) || n === 0) {
+    $('ratConvResult').textContent = 'Invalid fraction';
+    return;
+  }
+
+  // Calculate result
+  const result = Math.pow(base, m / n);
+  const nthRoot = Math.pow(base, 1 / n);
+  const isNice = Math.abs(result - Math.round(result)) < 0.0001;
+
+  let rootSymbol = n === 2 ? '&radic;' : `<sup>${n}</sup>&radic;`;
+
+  $('ratConvResult').innerHTML = `${base}<sup>${m}/${n}</sup> = ${rootSymbol}(${base}<sup>${m}</sup>) = (${rootSymbol}${base})<sup>${m}</sup>${isNice ? ' = <strong>' + Math.round(result) + '</strong>' : ' &approx; ' + result.toFixed(4)}`;
+
+  $('ratConvSteps').innerHTML = `Step 1: ${rootSymbol}${base} = ${nthRoot.toFixed(4)} &nbsp; Step 2: Raise to the ${m}${m===1?'st':m===2?'nd':m===3?'rd':'th'} power`;
+}
+
+function convertRadToExp() {
+  const idx = parseInt($('ratRootIdx').value);
+  const rad = parseInt($('ratRadicand').value);
+  const pow = parseInt($('ratPow').value);
+
+  if (isNaN(idx) || isNaN(rad) || isNaN(pow)) {
+    $('ratConvResult').textContent = 'Enter valid numbers';
+    return;
+  }
+
+  const result = Math.pow(rad, pow / idx);
+  const isNice = Math.abs(result - Math.round(result)) < 0.0001;
+
+  let rootSymbol = idx === 2 ? '&radic;' : `<sup>${idx}</sup>&radic;`;
+
+  if (pow === 1) {
+    $('ratConvResult').innerHTML = `${rootSymbol}${rad} = ${rad}<sup>1/${idx}</sup>${isNice ? ' = <strong>' + Math.round(result) + '</strong>' : ' &approx; ' + result.toFixed(4)}`;
+  } else {
+    $('ratConvResult').innerHTML = `${rootSymbol}(${rad}<sup>${pow}</sup>) = ${rad}<sup>${pow}/${idx}</sup>${isNice ? ' = <strong>' + Math.round(result) + '</strong>' : ' &approx; ' + result.toFixed(4)}`;
+  }
+
+  $('ratConvSteps').innerHTML = `The ${idx === 2 ? 'square' : idx === 3 ? 'cube' : idx + 'th'} root becomes exponent 1/${idx}, multiplied by power ${pow} gives ${pow}/${idx}`;
+}
+
+const ratProblemsData = [
+  { prompt: 'Evaluate: 16<sup>1/2</sup>', answer: '4', display: '4', alts: [] },
+  { prompt: 'Evaluate: 27<sup>2/3</sup>', answer: '9', display: '9', alts: [] },
+  { prompt: 'Rewrite &radic;x as exponent', answer: 'x^(1/2)', display: 'x^(1/2)', alts: ['x^1/2'] },
+  { prompt: 'Evaluate: 32<sup>-2/5</sup>', answer: '1/4', display: '1/4', alts: ['0.25'] },
+];
+
+buildProblems(ratProblemsData, 'ratProblems', 'ratp');
+function checkRatProblems() { checkProblems(ratProblemsData, 'ratp', 3); }
+function showRatAnswers() { showAnswers(ratProblemsData, 'ratp', 3); }
+
+
+// ====== SECTION 5: Exponential Growth & Decay ======
+
+function drawExpCurve() {
+  const k = parseFloat($('sliderK').value);
+  const n0 = parseFloat($('sliderN0').value);
+  $('sliderKVal').textContent = k.toFixed(2);
+  $('sliderN0Val').textContent = n0.toFixed(0);
+
+  const svg = $('svgExp');
+  const W = 500, H = 350;
+  const pad = { top: 30, right: 30, bottom: 40, left: 60 };
+  const gW = W - pad.left - pad.right;
+  const gH = H - pad.top - pad.bottom;
+
+  // Determine good x range
+  let tMax = 5;
+  if (Math.abs(k) > 0) {
+    tMax = Math.min(10, Math.max(3, 3 / Math.abs(k)));
+  }
+
+  // Calculate y range
+  let yMax = n0;
+  for (let t = 0; t <= tMax; t += 0.1) {
+    const val = n0 * Math.exp(k * t);
+    if (val > yMax) yMax = val;
+  }
+  yMax = Math.max(yMax * 1.1, n0 * 1.2);
+  if (yMax > 10000) yMax = 10000; // cap
+
+  function tx(t) { return pad.left + (t / tMax) * gW; }
+  function ty(y) { return pad.top + gH - (y / yMax) * gH; }
+
+  let html = '';
+
+  // Background
+  html += `<rect x="0" y="0" width="${W}" height="${H}" fill="#1a1d24"/>`;
+
+  // Grid lines
+  const yTicks = 5;
+  for (let i = 0; i <= yTicks; i++) {
+    const yv = (yMax / yTicks) * i;
+    const y = ty(yv);
+    html += `<line x1="${pad.left}" y1="${y}" x2="${W - pad.right}" y2="${y}" stroke="#2a2e38" stroke-width="1"/>`;
+    html += `<text x="${pad.left - 8}" y="${y + 4}" text-anchor="end" fill="#8a8578" font-size="10" font-family="JetBrains Mono">${Math.round(yv)}</text>`;
+  }
+
+  const xTicks = 5;
+  for (let i = 0; i <= xTicks; i++) {
+    const tv = (tMax / xTicks) * i;
+    const x = tx(tv);
+    html += `<line x1="${x}" y1="${pad.top}" x2="${x}" y2="${H - pad.bottom}" stroke="#2a2e38" stroke-width="1"/>`;
+    html += `<text x="${x}" y="${H - pad.bottom + 18}" text-anchor="middle" fill="#8a8578" font-size="10" font-family="JetBrains Mono">${tv.toFixed(1)}</text>`;
+  }
+
+  // Axes
+  html += `<line x1="${pad.left}" y1="${H - pad.bottom}" x2="${W - pad.right}" y2="${H - pad.bottom}" stroke="#8a8578" stroke-width="1.5"/>`;
+  html += `<line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${H - pad.bottom}" stroke="#8a8578" stroke-width="1.5"/>`;
+
+  // Labels
+  html += `<text x="${W / 2}" y="${H - 5}" text-anchor="middle" fill="#8a8578" font-size="11" font-family="JetBrains Mono">Time (t)</text>`;
+  html += `<text x="15" y="${H / 2}" text-anchor="middle" fill="#8a8578" font-size="11" font-family="JetBrains Mono" transform="rotate(-90 15 ${H / 2})">N(t)</text>`;
+
+  // Curve
+  let path = '';
+  for (let t = 0; t <= tMax; t += 0.05) {
+    const val = n0 * Math.exp(k * t);
+    if (val > yMax * 2 || val < -10) break;
+    const x = tx(t);
+    const y = ty(Math.max(0, Math.min(val, yMax)));
+    path += (t === 0 ? 'M' : 'L') + `${x.toFixed(1)},${y.toFixed(1)}`;
+  }
+
+  const curveColor = k >= 0 ? '#22c55e' : '#ec4899';
+  html += `<path d="${path}" fill="none" stroke="${curveColor}" stroke-width="2.5" stroke-linecap="round"/>`;
+
+  // N0 dot
+  html += `<circle cx="${tx(0)}" cy="${ty(n0)}" r="4" fill="${curveColor}"/>`;
+  html += `<text x="${tx(0) + 8}" y="${ty(n0) - 8}" fill="${curveColor}" font-size="11" font-family="JetBrains Mono" font-weight="600">N0=${n0}</text>`;
+
+  // Half-life line (if decay)
+  if (k < 0) {
+    const halfLife = Math.log(2) / Math.abs(k);
+    if (halfLife <= tMax) {
+      const halfY = n0 / 2;
+      html += `<line x1="${tx(halfLife)}" y1="${pad.top}" x2="${tx(halfLife)}" y2="${H - pad.bottom}" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,3"/>`;
+      html += `<circle cx="${tx(halfLife)}" cy="${ty(halfY)}" r="4" fill="#f59e0b"/>`;
+      html += `<text x="${tx(halfLife) + 6}" y="${ty(halfY) - 8}" fill="#f59e0b" font-size="10" font-family="JetBrains Mono" font-weight="600">t1/2=${halfLife.toFixed(2)}</text>`;
+    }
+  }
+
+  svg.innerHTML = html;
+
+  // Update feature tags
+  $('expType').textContent = k > 0 ? 'Growth' : k < 0 ? 'Decay' : 'Constant';
+  $('expType').className = 'tag ' + (k > 0 ? 'green' : k < 0 ? 'pink' : 'indigo');
+
+  if (k < 0) {
+    const hl = (Math.log(2) / Math.abs(k)).toFixed(2);
+    $('expHalflife').textContent = `Half-life: ${hl}`;
+  } else if (k > 0) {
+    const dt = (Math.log(2) / k).toFixed(2);
+    $('expHalflife').textContent = `Doubling time: ${dt}`;
+  } else {
+    $('expHalflife').textContent = 'Half-life: --';
+  }
+
+  const kSign = k >= 0 ? '+' : '';
+  $('expEqDisplay').textContent = `N(t) = ${n0} e^(${kSign}${k.toFixed(2)}t)`;
+}
+
+$('sliderK').addEventListener('input', drawExpCurve);
+$('sliderN0').addEventListener('input', drawExpCurve);
+drawExpCurve();
+
+const physProblemsData = [
+  {
+    prompt: 'Cobalt-60 half-life is 5.27 years. Starting with 100g, how much remains after 10.54 years?',
+    answer: '25',
+    display: '25g (two half-lives: 100 -> 50 -> 25)',
+    alts: ['25g', '25.0']
+  },
+  {
+    prompt: 'Bacteria double every 20 min. Starting with 500, how many after 1 hour?',
+    answer: '4000',
+    display: '4000 (3 doublings: 500 -> 1000 -> 2000 -> 4000)',
+    alts: []
+  },
+  {
+    prompt: 'If N(t) = 200 e<sup>-0.1t</sup>, find the half-life (round to 1 decimal)',
+    answer: '6.9',
+    display: '6.9 (ln2/0.1 = 6.93...)',
+    alts: ['6.93', '6.931', '7', '7.0', '6.9315']
+  },
+];
+
+buildProblems(physProblemsData, 'physProblems', 'pp');
+function checkPhysProblems() { checkProblems(physProblemsData, 'pp', 4); }
+function showPhysAnswers() { showAnswers(physProblemsData, 'pp', 4); }
+
+
+// ====== SECTION 6: Quick Quiz ======
+
+const quizData = [
+  { q: 'Simplify: x<sup>6</sup> &middot; x<sup>-2</sup>', answer: 'x^4', alts: [], explanation: 'Product rule: 6 + (-2) = 4, so x^4.' },
+  { q: 'Simplify: (2y<sup>3</sup>)<sup>4</sup>', answer: '16y^12', alts: [], explanation: 'Power of product: 2^4 = 16, (y^3)^4 = y^12.' },
+  { q: 'Write 0.0067 in scientific notation', answer: '6.7*10^-3', alts: ['6.7x10^-3','6.7x10^(-3)','6.7*10^(-3)'], explanation: 'Move decimal 3 places right: 6.7 x 10^(-3).' },
+  { q: 'Simplify: &radic;98', answer: '7sqrt(2)', alts: ['7sqrt2'], explanation: '98 = 49 x 2. sqrt(49) = 7. Answer: 7sqrt(2).' },
+  { q: 'Evaluate: 8<sup>2/3</sup>', answer: '4', alts: [], explanation: 'Cube root of 8 = 2, then 2^2 = 4.' },
+  { q: 'Simplify: a<sup>5</sup> / a<sup>8</sup>', answer: 'a^-3', alts: ['a^(-3)','1/a^3'], explanation: 'Quotient rule: 5 - 8 = -3. Could also write 1/a^3.' },
+  { q: '(4 x 10<sup>3</sup>)(5 x 10<sup>-7</sup>) = ?', answer: '2*10^-3', alts: ['2x10^-3','2x10^(-3)','2*10^(-3)','0.002'], explanation: '4*5 = 20 = 2x10^1. 10^(3+(-7)) = 10^(-4). Total: 2x10^(-3).' },
+  { q: 'Simplify: <sup>3</sup>&radic;125', answer: '5', alts: [], explanation: '5^3 = 125, so cube root of 125 = 5.' },
+  { q: 'A sample halves every 3 hours. After 9 hours, what fraction remains?', answer: '1/8', alts: ['0.125'], explanation: '9 hours = 3 half-lives. (1/2)^3 = 1/8.' },
+  { q: 'Rewrite x<sup>-3/4</sup> without negative exponents', answer: '1/x^(3/4)', alts: ['1/(x^(3/4))'], explanation: 'Negative exponent moves to denominator: 1/x^(3/4).' },
+];
+
+function buildQuiz() {
+  const cont = $('quizProblems');
+  cont.innerHTML = '';
+  quizData.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-problem';
+    div.id = 'qp' + i;
+    div.innerHTML = `
+      <div class="q-num">Question ${i + 1}</div>
+      <div class="q-text">${q.q}</div>
+      <input type="text" id="qIn${i}" placeholder="your answer">
+      <div class="q-feedback" id="qFb${i}"></div>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function gradeQuiz() {
+  let score = 0;
+  quizData.forEach((q, i) => {
+    const input = normalize($('qIn' + i).value);
+    const answers = [q.answer, ...q.alts].map(normalize);
+    const isRight = answers.includes(input);
+
+    if (isRight) {
+      score++;
+      $('qp' + i).className = 'quiz-problem correct';
+      $('qFb' + i).textContent = 'Correct!';
+      $('qFb' + i).className = 'q-feedback correct';
+      springPop($('qp' + i));
+    } else {
+      $('qp' + i).className = 'quiz-problem incorrect';
+      $('qFb' + i).innerHTML = `Incorrect. Answer: ${q.answer}. ${q.explanation}`;
+      $('qFb' + i).className = 'q-feedback incorrect';
+      shakeEl($('qp' + i));
+    }
+  });
+
+  $('quizScore').innerHTML = `Score: <span>${score} / 10</span>`;
+  if (score >= 7) markComplete(5);
+}
+
+function showQuizAnswers() {
+  quizData.forEach((q, i) => {
+    $('qIn' + i).value = q.answer;
+    $('qp' + i).className = 'quiz-problem correct';
+    $('qFb' + i).innerHTML = q.explanation;
+    $('qFb' + i).className = 'q-feedback correct';
+  });
+  $('quizScore').innerHTML = `Score: <span>10 / 10</span>`;
+  markComplete(5);
+}
+
+function resetQuiz() {
+  quizData.forEach((q, i) => {
+    $('qIn' + i).value = '';
+    $('qp' + i).className = 'quiz-problem';
+    $('qFb' + i).textContent = '';
+    $('qFb' + i).className = 'q-feedback';
+  });
+  $('quizScore').innerHTML = `Score: <span>-- / 10</span>`;
+  completed[5] = false;
+  $('sec5').classList.remove('completed');
+  updateProgress();
+}
+
+buildQuiz();
+
+</script>
+</body>
+</html>

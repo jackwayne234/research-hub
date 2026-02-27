@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 16: Thermodynamics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0;flex:1}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.graph-container{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.energy-flow{display:flex;align-items:center;justify-content:center;gap:0;margin:16px 0;flex-wrap:wrap}
+.reservoir-box{border-radius:var(--radius);padding:14px 18px;text-align:center;font-size:.75rem;font-weight:600;min-width:100px}
+.reservoir-hot{background:rgba(236,72,153,.15);border:1px solid rgba(236,72,153,.3);color:var(--pink)}
+.reservoir-cold{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:var(--indigo)}
+.engine-box{background:var(--amber-dim);border:1px solid rgba(245,158,11,.3);color:var(--amber);border-radius:var(--radius);padding:14px 18px;text-align:center;font-size:.75rem;font-weight:600;min-width:80px}
+.flow-arrow{font-size:1.2rem;color:var(--text-dim);padding:0 8px}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.graph-container{grid-template-columns:1fr}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.energy-flow{flex-direction:column;gap:8px}.flow-arrow{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>16</span> Thermodynamics</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 7 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: ZEROTH & FIRST LAW -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Zeroth &amp; First Law</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>Zeroth Law of Thermodynamics</strong> states: if system A is in thermal equilibrium with system C, and system B is also in thermal equilibrium with C, then A and B are in thermal equilibrium with each other. This seemingly obvious statement is the foundation for temperature measurement -- it justifies using a thermometer (system C) to compare temperatures.
+    </p>
+
+    <div class="key-point">The Zeroth Law was formulated after the First and Second Laws but is more fundamental, hence the name "zeroth."</div>
+
+    <p class="concept-text">
+      The <strong>First Law of Thermodynamics</strong> is conservation of energy applied to thermal systems. The <strong>internal energy</strong> U of a system changes when heat Q flows in or work W is done by the system. Sign conventions: <strong>Q &gt; 0</strong> means heat flows INTO the system; <strong>W &gt; 0</strong> means work is done BY the system (gas expands).
+    </p>
+
+    <div class="formula-box large">&Delta;U = Q - W</div>
+    <div class="formula-box green">W = &int; P dV &nbsp;&nbsp; (work done by gas)</div>
+
+    <p class="concept-text">
+      <strong>Internal energy U</strong> is the total microscopic kinetic and potential energy of molecules. For an ideal gas, U depends only on temperature: <strong>U = nC_vT</strong>. When a gas expands (dV &gt; 0), it does positive work on the surroundings. When compressed (dV &lt; 0), work is done on the gas (W &lt; 0).
+    </p>
+
+    <div class="key-point">On a PV diagram, the work done by the gas equals the area under the curve. Path matters -- different paths between the same two states give different W and Q, but the same &Delta;U.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: First Law Energy Balance</div>
+      <div class="slider-row">
+        <label>Heat in Q (J)</label>
+        <input type="range" id="s1Q" min="-500" max="500" value="300" step="10" oninput="updateS1()">
+        <span class="slider-val" id="s1QVal">300 J</span>
+      </div>
+      <div class="slider-row">
+        <label>Work out W (J)</label>
+        <input type="range" id="s1W" min="-500" max="500" value="100" step="10" oninput="updateS1()">
+        <span class="slider-val" id="s1WVal">100 J</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Q (heat in)</span><br><span class="value pink" id="s1RQ">300 J</span></div>
+        <div class="readout-item"><span class="label">W (work out)</span><br><span class="value amber" id="s1RW">100 J</span></div>
+        <div class="readout-item"><span class="label">&Delta;U = Q - W</span><br><span class="value green" id="s1RDU">200 J</span></div>
+      </div>
+      <div style="margin-top:12px">
+        <svg width="100%" viewBox="0 0 600 120" style="display:block">
+          <rect x="200" y="20" width="200" height="80" rx="10" fill="none" stroke="#363b47" stroke-width="2"/>
+          <text x="300" y="55" text-anchor="middle" fill="#e2e4e9" font-size="11" font-weight="600">SYSTEM</text>
+          <text x="300" y="75" text-anchor="middle" font-size="12" font-weight="700" id="s1SvgDU" fill="#22c55e">&Delta;U = +200 J</text>
+          <!-- Q arrow -->
+          <line x1="60" y1="60" x2="195" y2="60" stroke="#ec4899" stroke-width="3" marker-end="url(#arrowPink)" id="s1ArrowQ"/>
+          <text x="130" y="48" text-anchor="middle" fill="#ec4899" font-size="10" font-weight="600" id="s1SvgQ">Q = +300 J</text>
+          <!-- W arrow -->
+          <line x1="405" y1="60" x2="540" y2="60" stroke="#f59e0b" stroke-width="3" marker-end="url(#arrowAmber)" id="s1ArrowW"/>
+          <text x="470" y="48" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="600" id="s1SvgW">W = +100 J</text>
+          <defs>
+            <marker id="arrowPink" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker>
+            <marker id="arrowAmber" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#f59e0b"/></marker>
+            <marker id="arrowPinkRev" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6Z" fill="#ec4899"/></marker>
+            <marker id="arrowAmberRev" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6Z" fill="#f59e0b"/></marker>
+          </defs>
+        </svg>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Steam propulsion plants on warships are a direct application of the First Law. Heat from the reactor (Q) converts water to steam, which does work (W) on the turbines. The remaining energy stays in the steam as internal energy, which is then dumped to seawater condensers. Every BTU is accounted for.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: THERMODYNAMIC PROCESSES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Thermodynamic Processes</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Four idealized thermodynamic processes, each holding one variable constant:
+    </p>
+
+    <div class="formula-box"><strong>Isothermal</strong> (&Delta;T = 0): PV = const &nbsp;|&nbsp; &Delta;U = 0, so Q = W</div>
+    <div class="formula-box green"><strong>Adiabatic</strong> (Q = 0): PV<sup>&gamma;</sup> = const &nbsp;|&nbsp; &Delta;U = -W</div>
+    <div class="formula-box pink"><strong>Isobaric</strong> (&Delta;P = 0): W = P&Delta;V &nbsp;|&nbsp; Q = nC_p&Delta;T</div>
+    <div class="formula-box amber"><strong>Isochoric</strong> (&Delta;V = 0): W = 0 &nbsp;|&nbsp; Q = &Delta;U = nC_v&Delta;T</div>
+
+    <p class="concept-text">
+      On a <strong>PV diagram</strong>, each process has a distinctive curve shape. Isothermal curves are hyperbolas (PV = nRT = const). Adiabatic curves are steeper than isothermals because &gamma; &gt; 1. Isobaric processes are horizontal lines. Isochoric processes are vertical lines.
+    </p>
+
+    <div class="key-point">The work done by the gas is the area under the PV curve. For isochoric processes (vertical line), area = 0, so no work is done. For isobaric processes, the area is simply P * &Delta;V.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: PV Diagram -- Process Selector</div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setPVProcess('isothermal',this)">Isothermal</button>
+        <button class="scenario-tab" onclick="setPVProcess('adiabatic',this)">Adiabatic</button>
+        <button class="scenario-tab" onclick="setPVProcess('isobaric',this)">Isobaric</button>
+        <button class="scenario-tab" onclick="setPVProcess('isochoric',this)">Isochoric</button>
+      </div>
+      <svg id="pvSvg" width="100%" viewBox="0 0 700 380" style="display:block"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Process</span><br><span class="value indigo" id="pvProcess">Isothermal</span></div>
+        <div class="readout-item"><span class="label">Constraint</span><br><span class="value amber" id="pvConstraint">&Delta;T = 0</span></div>
+        <div class="readout-item"><span class="label">Work (W)</span><br><span class="value green" id="pvWork">Q</span></div>
+        <div class="readout-item"><span class="label">&Delta;U</span><br><span class="value pink" id="pvDU">0</span></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: HEAT ENGINES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Heat Engines</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>heat engine</strong> is a device that converts heat into work by cycling a working substance (gas, steam) between a hot reservoir and a cold reservoir. In each cycle, it absorbs heat Q_H from the hot source, converts some to work W, and dumps the remainder Q_C to the cold sink. By the First Law: <strong>W = Q_H - Q_C</strong>.
+    </p>
+
+    <div class="formula-box large">&eta; = W / Q_H = 1 - Q_C / Q_H</div>
+
+    <div class="energy-flow">
+      <div class="reservoir-box reservoir-hot">Hot Reservoir<br>T_H<br><span style="font-size:.65rem">supplies Q_H</span></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="engine-box">ENGINE<br>W = Q_H - Q_C</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="reservoir-box reservoir-cold">Cold Reservoir<br>T_C<br><span style="font-size:.65rem">absorbs Q_C</span></div>
+    </div>
+
+    <p class="concept-text">
+      A <strong>refrigerator</strong> runs the cycle in reverse: it uses work W to move heat from the cold reservoir to the hot reservoir. Its performance is measured by the <strong>coefficient of performance</strong>: COP = Q_C / W = Q_C / (Q_H - Q_C). For a heat pump, COP_hp = Q_H / W.
+    </p>
+
+    <div class="formula-box green">COP_refrigerator = Q_C / W</div>
+    <div class="formula-box pink">COP_heat_pump = Q_H / W = COP_ref + 1</div>
+
+    <div class="key-point">No heat engine can be 100% efficient. Some heat must always be dumped to the cold reservoir. This is a consequence of the Second Law.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Heat Engine Efficiency</div>
+      <div class="slider-row">
+        <label>Q_H (J)</label>
+        <input type="range" id="s3QH" min="100" max="2000" value="1000" step="50" oninput="updateS3()">
+        <span class="slider-val" id="s3QHVal">1000 J</span>
+      </div>
+      <div class="slider-row">
+        <label>Q_C (J)</label>
+        <input type="range" id="s3QC" min="0" max="2000" value="600" step="50" oninput="updateS3()">
+        <span class="slider-val" id="s3QCVal">600 J</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Q_H</span><br><span class="value pink" id="s3RQH">1000 J</span></div>
+        <div class="readout-item"><span class="label">Q_C</span><br><span class="value indigo" id="s3RQC">600 J</span></div>
+        <div class="readout-item"><span class="label">W = Q_H - Q_C</span><br><span class="value amber" id="s3RW">400 J</span></div>
+        <div class="readout-item"><span class="label">&eta; = W/Q_H</span><br><span class="value green" id="s3REta">40.0%</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> A nuclear aircraft carrier's steam plant operates as a heat engine. The reactor heats water to steam (~550F), which drives turbines (work), and spent steam is condensed by seawater (~70F). The Carnot limit for these temps is about 47%. Real efficiency is lower due to friction and irreversibilities, typically around 33%.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: CARNOT CYCLE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Carnot Cycle</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>Carnot cycle</strong> is the most efficient possible heat engine operating between two temperatures. It consists of four reversible steps: (1) isothermal expansion at T_H (absorb Q_H), (2) adiabatic expansion (T drops from T_H to T_C), (3) isothermal compression at T_C (release Q_C), (4) adiabatic compression (T rises from T_C to T_H).
+    </p>
+
+    <div class="formula-box large">&eta;_Carnot = 1 - T_C / T_H &nbsp;&nbsp; (temperatures in Kelvin)</div>
+
+    <div class="key-point">No real engine can exceed Carnot efficiency. To increase efficiency: raise T_H or lower T_C. At T_C = 0 K, &eta; = 100%, but absolute zero is unreachable (Third Law).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Carnot Cycle PV Diagram</div>
+      <svg id="carnotSvg" width="100%" viewBox="0 0 700 400" style="display:block"></svg>
+      <div class="sub-label">Step 1&rarr;2: Isothermal expansion (T_H) &nbsp;|&nbsp; Step 2&rarr;3: Adiabatic expansion &nbsp;|&nbsp; Step 3&rarr;4: Isothermal compression (T_C) &nbsp;|&nbsp; Step 4&rarr;1: Adiabatic compression</div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Carnot Efficiency Calculator</div>
+      <div class="slider-row">
+        <label>T_H (K)</label>
+        <input type="range" id="s4TH" min="300" max="1500" value="800" step="10" oninput="updateS4()">
+        <span class="slider-val" id="s4THVal">800 K</span>
+      </div>
+      <div class="slider-row">
+        <label>T_C (K)</label>
+        <input type="range" id="s4TC" min="100" max="600" value="300" step="10" oninput="updateS4()">
+        <span class="slider-val" id="s4TCVal">300 K</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">T_H</span><br><span class="value pink" id="s4RTH">800 K</span></div>
+        <div class="readout-item"><span class="label">T_C</span><br><span class="value indigo" id="s4RTC">300 K</span></div>
+        <div class="readout-item"><span class="label">&eta;_Carnot</span><br><span class="value green" id="s4REta">62.5%</span></div>
+        <div class="readout-item"><span class="label">T_C / T_H</span><br><span class="value amber" id="s4RRatio">0.375</span></div>
+      </div>
+      <div style="margin-top:12px">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:10px 14px;height:30px;position:relative;overflow:hidden">
+          <div id="s4EtaBar" style="position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--green),var(--indigo));border-radius:6px;transition:width .3s ease;width:62.5%"></div>
+          <span style="position:relative;z-index:1;font-size:.7rem;color:var(--text-bright);font-weight:600" id="s4EtaBarLabel">62.5%</span>
+        </div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: SECOND LAW & ENTROPY -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Second Law &amp; Entropy</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>Second Law of Thermodynamics</strong> has two equivalent statements:
+    </p>
+
+    <div class="formula-box pink"><strong>Kelvin-Planck:</strong> No cyclic process can convert heat entirely into work. (No perfect engine.)</div>
+    <div class="formula-box"><strong>Clausius:</strong> Heat cannot spontaneously flow from cold to hot. (No perfect refrigerator.)</div>
+
+    <p class="concept-text">
+      <strong>Entropy (S)</strong> is a state function that measures the disorder or number of microstates in a system. For a reversible process at constant temperature:
+    </p>
+
+    <div class="formula-box large green">&Delta;S = Q_rev / T &nbsp;&nbsp; [J/K]</div>
+
+    <p class="concept-text">
+      The Second Law in entropy form: <strong>for any process in an isolated system, &Delta;S_total &ge; 0</strong>. Entropy never decreases in an isolated system. It stays constant only for reversible processes and increases for all real (irreversible) processes. This defines the "arrow of time."
+    </p>
+
+    <div class="key-point">Boltzmann's statistical interpretation: S = k_B * ln(W), where W is the number of microstates. A gas spreading to fill a room has astronomically more microstates than all molecules clustered in one corner -- that is why it never spontaneously un-mixes.</div>
+
+    <p class="concept-text">
+      <strong>Connection to Carnot:</strong> A Carnot engine is reversible, so &Delta;S_total = 0 for the cycle. For any real engine, &Delta;S_total &gt; 0, meaning some energy is permanently degraded -- this is why real efficiencies are always below Carnot.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Entropy Change Calculator</div>
+      <div class="slider-row">
+        <label>Heat transfer Q (J)</label>
+        <input type="range" id="s5Q" min="100" max="5000" value="1000" step="100" oninput="updateS5()">
+        <span class="slider-val" id="s5QVal">1000 J</span>
+      </div>
+      <div class="slider-row">
+        <label>T_hot (K)</label>
+        <input type="range" id="s5TH" min="300" max="1000" value="600" step="10" oninput="updateS5()">
+        <span class="slider-val" id="s5THVal">600 K</span>
+      </div>
+      <div class="slider-row">
+        <label>T_cold (K)</label>
+        <input type="range" id="s5TC" min="200" max="500" value="300" step="10" oninput="updateS5()">
+        <span class="slider-val" id="s5TCVal">300 K</span>
+      </div>
+      <div class="sub-label">Heat Q flows from T_hot to T_cold:</div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">&Delta;S_hot = -Q/T_hot</span><br><span class="value pink" id="s5DSH">-1.67 J/K</span></div>
+        <div class="readout-item"><span class="label">&Delta;S_cold = +Q/T_cold</span><br><span class="value indigo" id="s5DSC">+3.33 J/K</span></div>
+        <div class="readout-item"><span class="label">&Delta;S_total</span><br><span class="value green" id="s5DST">+1.67 J/K</span></div>
+        <div class="readout-item"><span class="label">Irreversible?</span><br><span class="value amber" id="s5Irr">Yes (&Delta;S > 0)</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Entropy explains why heat always flows from hot engine components to cool seawater, never the reverse. The heat death concept also applies to damage control -- once a fire spreads energy through a compartment (entropy increases), restoring order takes external work (firefighting effort, ventilation, cooling). The Second Law dictates the direction of every energy flow on the ship.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: PRACTICE PROBLEMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Practice Problems</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="practice-block" style="border-top:none;padding-top:0">
+      <div class="practice-title">Thermodynamics Practice</div>
+
+      <div class="problem">
+        <p><strong>1.</strong> A gas absorbs 500 J of heat and does 200 J of work on its surroundings. What is the change in internal energy?</p>
+        <p style="font-size:.7rem;color:var(--text-dim)">&Delta;U = Q - W = 500 - 200</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1" step="1" placeholder="&Delta;U = ?" onkeydown="if(event.key==='Enter')checkNum('p1',300,5)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('p1',300,5)">Check</button>
+        </div>
+        <div class="feedback" id="p1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>2.</strong> A heat engine absorbs 800 J from the hot reservoir and exhausts 500 J to the cold reservoir. What is its efficiency?</p>
+        <p style="font-size:.7rem;color:var(--text-dim)">&eta; = 1 - Q_C/Q_H = 1 - 500/800</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2" step="0.1" placeholder="&eta; (%) = ?" onkeydown="if(event.key==='Enter')checkNum('p2',37.5,1)">
+          <span class="unit-label">%</span>
+          <button class="btn btn-sm" onclick="checkNum('p2',37.5,1)">Check</button>
+        </div>
+        <div class="feedback" id="p2-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>3.</strong> A Carnot engine operates between T_H = 600 K and T_C = 300 K. What is the maximum efficiency?</p>
+        <p style="font-size:.7rem;color:var(--text-dim)">&eta;_Carnot = 1 - T_C/T_H = 1 - 300/600</p>
+        <div class="problem-input-row">
+          <input type="number" id="p3" step="0.1" placeholder="&eta; (%) = ?" onkeydown="if(event.key==='Enter')checkNum('p3',50,1)">
+          <span class="unit-label">%</span>
+          <button class="btn btn-sm" onclick="checkNum('p3',50,1)">Check</button>
+        </div>
+        <div class="feedback" id="p3-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>4.</strong> 2000 J of heat flows from a 500 K reservoir to a 250 K reservoir. What is the total entropy change of the universe?</p>
+        <p style="font-size:.7rem;color:var(--text-dim)">&Delta;S = -Q/T_H + Q/T_C = -2000/500 + 2000/250</p>
+        <div class="problem-input-row">
+          <input type="number" id="p4" step="0.1" placeholder="&Delta;S = ?" onkeydown="if(event.key==='Enter')checkNum('p4',4.0,0.2)">
+          <span class="unit-label">J/K</span>
+          <button class="btn btn-sm" onclick="checkNum('p4',4.0,0.2)">Check</button>
+        </div>
+        <div class="feedback" id="p4-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>5.</strong> A Carnot refrigerator removes 400 J from a cold reservoir at 250 K, with T_H = 350 K. How much work is required?</p>
+        <p style="font-size:.7rem;color:var(--text-dim)">COP_Carnot = T_C/(T_H - T_C) = 250/100 = 2.5, so W = Q_C/COP</p>
+        <div class="problem-input-row">
+          <input type="number" id="p5" step="1" placeholder="W = ?" onkeydown="if(event.key==='Enter')checkNum('p5',160,5)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('p5',160,5)">Check</button>
+        </div>
+        <div class="feedback" id="p5-fb"></div>
+      </div>
+
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">7</span> Quick Quiz &mdash; Thermodynamics</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Zeroth Law</div>
+      <p class="q-text">The Zeroth Law of Thermodynamics establishes the basis for which concept?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Energy conservation</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">Temperature measurement</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Entropy increase</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Heat engine efficiency</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- First Law</div>
+      <p class="q-text">A gas has 400 J of work done ON it (compression) while losing 100 J of heat. What is &Delta;U?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">-500 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">+300 J (Q = -100, W = -400, &Delta;U = -100 - (-400) = 300)</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">+500 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">-300 J</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Isothermal process</div>
+      <p class="q-text">In an isothermal expansion of an ideal gas, what happens to the internal energy?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">It increases because work is done</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">It decreases because the gas expands</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">It stays the same (&Delta;T = 0, so &Delta;U = 0 for ideal gas)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">It depends on the pressure</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Adiabatic process</div>
+      <p class="q-text">During an adiabatic expansion, the temperature of the gas:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Increases</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">Decreases (gas does work using internal energy since Q = 0)</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Stays the same</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Depends on the specific heat</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Heat engine efficiency</div>
+      <p class="q-text">An engine absorbs 1200 J and exhausts 800 J. What is the efficiency?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">66.7%</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">33.3% (&eta; = W/Q_H = 400/1200)</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">50.0%</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">25.0%</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Carnot efficiency</div>
+      <p class="q-text">A Carnot engine operates between 400 K and 200 K. Its efficiency is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">50% (1 - 200/400 = 0.5)</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">25%</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">75%</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">100%</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Second Law (Kelvin-Planck)</div>
+      <p class="q-text">According to the Kelvin-Planck statement, which is impossible?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">A refrigerator that uses work to move heat from cold to hot</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">An engine that converts heat entirely into work with no exhaust</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">An engine with efficiency less than Carnot</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">A process where entropy increases</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Entropy</div>
+      <p class="q-text">500 J of heat flows reversibly from a 400 K reservoir. What is the entropy change of that reservoir?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">+1.25 J/K</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">-1.25 J/K (it loses heat, so &Delta;S = -Q/T = -500/400)</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">+2.00 J/K</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">0 J/K</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Carnot cycle steps</div>
+      <p class="q-text">The four steps of a Carnot cycle, in order, are:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Isobaric expansion, adiabatic expansion, isobaric compression, adiabatic compression</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">Isothermal expansion, adiabatic expansion, isothermal compression, adiabatic compression</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Adiabatic expansion, isothermal expansion, adiabatic compression, isothermal compression</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Isochoric heating, isothermal expansion, isochoric cooling, isothermal compression</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Entropy and irreversibility</div>
+      <p class="q-text">Heat flows spontaneously from 600 K to 300 K. The total entropy change per joule transferred is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">0 J/K (entropy is conserved)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">-1/600 J/K</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">+1/600 J/K (= -1/600 + 1/300 = 1/600 &gt; 0, irreversible)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">+1/300 J/K</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(1) + ')';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: FIRST LAW ==================== */
+function updateS1() {
+  var Q = +document.getElementById('s1Q').value;
+  var W = +document.getElementById('s1W').value;
+  var dU = Q - W;
+  document.getElementById('s1QVal').textContent = Q + ' J';
+  document.getElementById('s1WVal').textContent = W + ' J';
+  document.getElementById('s1RQ').textContent = Q + ' J';
+  document.getElementById('s1RW').textContent = W + ' J';
+  document.getElementById('s1RDU').textContent = dU + ' J';
+
+  document.getElementById('s1SvgDU').textContent = '\u0394U = ' + (dU >= 0 ? '+' : '') + dU + ' J';
+  document.getElementById('s1SvgQ').textContent = 'Q = ' + (Q >= 0 ? '+' : '') + Q + ' J';
+  document.getElementById('s1SvgW').textContent = 'W = ' + (W >= 0 ? '+' : '') + W + ' J';
+
+  // Flip Q arrow direction if negative
+  var arrowQ = document.getElementById('s1ArrowQ');
+  if (Q >= 0) {
+    arrowQ.setAttribute('x1', '60'); arrowQ.setAttribute('x2', '195');
+    arrowQ.setAttribute('marker-end', 'url(#arrowPink)'); arrowQ.removeAttribute('marker-start');
+  } else {
+    arrowQ.setAttribute('x1', '195'); arrowQ.setAttribute('x2', '60');
+    arrowQ.setAttribute('marker-end', 'url(#arrowPink)'); arrowQ.removeAttribute('marker-start');
+  }
+  // Flip W arrow direction if negative
+  var arrowW = document.getElementById('s1ArrowW');
+  if (W >= 0) {
+    arrowW.setAttribute('x1', '405'); arrowW.setAttribute('x2', '540');
+    arrowW.setAttribute('marker-end', 'url(#arrowAmber)'); arrowW.removeAttribute('marker-start');
+  } else {
+    arrowW.setAttribute('x1', '540'); arrowW.setAttribute('x2', '405');
+    arrowW.setAttribute('marker-end', 'url(#arrowAmber)'); arrowW.removeAttribute('marker-start');
+  }
+
+  // Color dU
+  var duEl = document.getElementById('s1SvgDU');
+  var duRO = document.getElementById('s1RDU');
+  if (dU > 0) { duEl.setAttribute('fill', '#22c55e'); duRO.className = 'value green'; }
+  else if (dU < 0) { duEl.setAttribute('fill', '#ec4899'); duRO.className = 'value pink'; }
+  else { duEl.setAttribute('fill', '#f59e0b'); duRO.className = 'value amber'; }
+}
+
+/* ==================== SECTION 2: PV PROCESSES ==================== */
+var pvCurrentProcess = 'isothermal';
+
+function setPVProcess(proc, btn) {
+  pvCurrentProcess = proc;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  drawPV();
+}
+
+function drawPV() {
+  var svg = document.getElementById('pvSvg');
+  var ox = 70, oy = 20, gw = 560, gh = 300;
+  var h = '';
+
+  // Axes
+  h += '<rect x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="#1a1d24" stroke="#363b47" rx="4"/>';
+  h += '<defs><marker id="pvArr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#9ca3af"/></marker></defs>';
+  h += '<line x1="'+ox+'" y1="'+(oy+gh)+'" x2="'+(ox+gw)+'" y2="'+(oy+gh)+'" stroke="#9ca3af" stroke-width="1" marker-end="url(#pvArr)"/>';
+  h += '<line x1="'+ox+'" y1="'+(oy+gh)+'" x2="'+ox+'" y2="'+oy+'" stroke="#9ca3af" stroke-width="1" marker-end="url(#pvArr)"/>';
+  h += '<text x="'+(ox+gw/2)+'" y="'+(oy+gh+35)+'" text-anchor="middle" fill="#9ca3af" font-size="12">Volume (V)</text>';
+  h += '<text x="'+(ox-15)+'" y="'+(oy+gh/2)+'" fill="#9ca3af" font-size="12" text-anchor="middle" transform="rotate(-90,'+(ox-15)+','+(oy+gh/2)+')">Pressure (P)</text>';
+
+  // Grid lines
+  for (var i = 1; i <= 5; i++) {
+    var gx = ox + (gw/6)*i;
+    var gy = oy + (gh/6)*i;
+    h += '<line x1="'+gx+'" y1="'+oy+'" x2="'+gx+'" y2="'+(oy+gh)+'" stroke="#363b47" stroke-width="0.5" stroke-dasharray="4,4"/>';
+    h += '<line x1="'+ox+'" y1="'+gy+'" x2="'+(ox+gw)+'" y2="'+gy+'" stroke="#363b47" stroke-width="0.5" stroke-dasharray="4,4"/>';
+  }
+
+  var proc = pvCurrentProcess;
+  var color, labelText, constraintText, workText, duText;
+
+  // Normalized coordinates for drawing
+  var V1 = 0.15, V2 = 0.75;
+  var P1 = 0.8, P2;
+
+  if (proc === 'isothermal') {
+    color = '#6366f1';
+    labelText = 'Isothermal';
+    constraintText = '\u0394T = 0';
+    workText = 'nRT ln(V2/V1)';
+    duText = '0';
+    // Hyperbola: PV = const, so P2 = P1 * V1/V2
+    var pts = '';
+    var fillPts = '';
+    var nPts = 60;
+    for (var i = 0; i <= nPts; i++) {
+      var t = i / nPts;
+      var v = V1 + t * (V2 - V1);
+      var p = P1 * V1 / v;
+      var px = ox + v * gw;
+      var py = oy + gh - p * gh;
+      pts += (i === 0 ? 'M' : 'L') + px + ',' + py;
+      fillPts += px + ',' + py + ' ';
+    }
+    // Fill area under curve
+    var bx1 = ox + V1 * gw, bx2 = ox + V2 * gw, by = oy + gh;
+    h += '<polygon points="'+bx1+','+by+' '+fillPts+bx2+','+by+'" fill="rgba(99,102,241,0.15)" stroke="none"/>';
+    h += '<path d="'+pts+'" fill="none" stroke="'+color+'" stroke-width="3"/>';
+    // Start/end points
+    var sy = oy + gh - P1 * gh;
+    var ey = oy + gh - (P1 * V1 / V2) * gh;
+    h += '<circle cx="'+bx1+'" cy="'+sy+'" r="5" fill="'+color+'"/>';
+    h += '<circle cx="'+bx2+'" cy="'+ey+'" r="5" fill="'+color+'"/>';
+    h += '<text x="'+(bx1-8)+'" y="'+(sy-10)+'" fill="'+color+'" font-size="11" text-anchor="end">1 (P1,V1)</text>';
+    h += '<text x="'+(bx2+8)+'" y="'+(ey-10)+'" fill="'+color+'" font-size="11">2 (P2,V2)</text>';
+    h += '<text x="'+(ox+gw/2)+'" y="'+(oy+30)+'" text-anchor="middle" fill="'+color+'" font-size="13" font-weight="600">Isothermal: PV = const</text>';
+    h += '<text x="'+(ox+gw/2)+'" y="'+(oy+50)+'" text-anchor="middle" fill="#9ca3af" font-size="10">Area = W = nRT ln(V2/V1)</text>';
+  } else if (proc === 'adiabatic') {
+    color = '#22c55e';
+    labelText = 'Adiabatic';
+    constraintText = 'Q = 0';
+    workText = '-\u0394U = nCv(T1-T2)';
+    duText = '-W';
+    var gamma = 1.4;
+    var pts = '';
+    var fillPts = '';
+    var nPts = 60;
+    for (var i = 0; i <= nPts; i++) {
+      var t = i / nPts;
+      var v = V1 + t * (V2 - V1);
+      var p = P1 * Math.pow(V1 / v, gamma);
+      var px = ox + v * gw;
+      var py = oy + gh - p * gh;
+      pts += (i === 0 ? 'M' : 'L') + px + ',' + py;
+      fillPts += px + ',' + py + ' ';
+    }
+    var bx1 = ox + V1 * gw, bx2 = ox + V2 * gw, by = oy + gh;
+    h += '<polygon points="'+bx1+','+by+' '+fillPts+bx2+','+by+'" fill="rgba(34,197,94,0.15)" stroke="none"/>';
+    h += '<path d="'+pts+'" fill="none" stroke="'+color+'" stroke-width="3"/>';
+    var sy = oy + gh - P1 * gh;
+    var ey = oy + gh - P1 * Math.pow(V1 / V2, gamma) * gh;
+    h += '<circle cx="'+bx1+'" cy="'+sy+'" r="5" fill="'+color+'"/>';
+    h += '<circle cx="'+bx2+'" cy="'+ey+'" r="5" fill="'+color+'"/>';
+    h += '<text x="'+(bx1-8)+'" y="'+(sy-10)+'" fill="'+color+'" font-size="11" text-anchor="end">1 (P1,V1,T1)</text>';
+    h += '<text x="'+(bx2+8)+'" y="'+(ey-10)+'" fill="'+color+'" font-size="11">2 (P2,V2,T2)</text>';
+    // Also draw isothermal for comparison
+    var ipts = '';
+    for (var i = 0; i <= nPts; i++) {
+      var t = i / nPts;
+      var v = V1 + t * (V2 - V1);
+      var p = P1 * V1 / v;
+      var px = ox + v * gw;
+      var py = oy + gh - p * gh;
+      ipts += (i === 0 ? 'M' : 'L') + px + ',' + py;
+    }
+    h += '<path d="'+ipts+'" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.5"/>';
+    h += '<text x="'+(ox+gw-60)+'" y="'+(oy+gh-30)+'" fill="#6366f1" font-size="9" opacity="0.6">isothermal (for reference)</text>';
+    h += '<text x="'+(ox+gw/2)+'" y="'+(oy+30)+'" text-anchor="middle" fill="'+color+'" font-size="13" font-weight="600">Adiabatic: PV^&gamma; = const</text>';
+    h += '<text x="'+(ox+gw/2)+'" y="'+(oy+50)+'" text-anchor="middle" fill="#9ca3af" font-size="10">Steeper than isothermal (&gamma; = 1.4 shown)</text>';
+  } else if (proc === 'isobaric') {
+    color = '#ec4899';
+    labelText = 'Isobaric';
+    constraintText = '\u0394P = 0';
+    workText = 'P\u0394V';
+    duText = 'Q - P\u0394V';
+    var P = 0.5;
+    var bx1 = ox + V1 * gw, bx2 = ox + V2 * gw;
+    var py = oy + gh - P * gh;
+    var by = oy + gh;
+    h += '<rect x="'+bx1+'" y="'+py+'" width="'+(bx2-bx1)+'" height="'+(by-py)+'" fill="rgba(236,72,153,0.15)"/>';
+    h += '<line x1="'+bx1+'" y1="'+py+'" x2="'+bx2+'" y2="'+py+'" stroke="'+color+'" stroke-width="3"/>';
+    h += '<circle cx="'+bx1+'" cy="'+py+'" r="5" fill="'+color+'"/>';
+    h += '<circle cx="'+bx2+'" cy="'+py+'" r="5" fill="'+color+'"/>';
+    h += '<text x="'+(bx1-8)+'" y="'+(py-10)+'" fill="'+color+'" font-size="11" text-anchor="end">1</text>';
+    h += '<text x="'+(bx2+8)+'" y="'+(py-10)+'" fill="'+color+'" font-size="11">2</text>';
+    // Arrow
+    var mx = (bx1 + bx2) / 2;
+    h += '<line x1="'+(mx-30)+'" y1="'+py+'" x2="'+(mx+30)+'" y2="'+py+'" stroke="'+color+'" stroke-width="1.5" marker-end="url(#pvArr)" opacity="0.6"/>';
+    h += '<text x="'+(ox+gw/2)+'" y="'+(oy+30)+'" text-anchor="middle" fill="'+color+'" font-size="13" font-weight="600">Isobaric: P = const (horizontal line)</text>';
+    h += '<text x="'+(ox+gw/2)+'" y="'+(oy+50)+'" text-anchor="middle" fill="#9ca3af" font-size="10">Area = W = P&Delta;V (rectangle)</text>';
+  } else if (proc === 'isochoric') {
+    color = '#f59e0b';
+    labelText = 'Isochoric';
+    constraintText = '\u0394V = 0';
+    workText = '0';
+    duText = 'Q';
+    var V = 0.4;
+    var Plo = 0.25, Phi = 0.75;
+    var bx = ox + V * gw;
+    var pylo = oy + gh - Plo * gh;
+    var pyhi = oy + gh - Phi * gh;
+    h += '<line x1="'+bx+'" y1="'+pylo+'" x2="'+bx+'" y2="'+pyhi+'" stroke="'+color+'" stroke-width="3"/>';
+    h += '<circle cx="'+bx+'" cy="'+pylo+'" r="5" fill="'+color+'"/>';
+    h += '<circle cx="'+bx+'" cy="'+pyhi+'" r="5" fill="'+color+'"/>';
+    h += '<text x="'+(bx+10)+'" y="'+(pylo+5)+'" fill="'+color+'" font-size="11">1 (lower P, T)</text>';
+    h += '<text x="'+(bx+10)+'" y="'+(pyhi-5)+'" fill="'+color+'" font-size="11">2 (higher P, T)</text>';
+    h += '<text x="'+(ox+gw/2)+'" y="'+(oy+30)+'" text-anchor="middle" fill="'+color+'" font-size="13" font-weight="600">Isochoric: V = const (vertical line)</text>';
+    h += '<text x="'+(ox+gw/2)+'" y="'+(oy+50)+'" text-anchor="middle" fill="#9ca3af" font-size="10">Area = W = 0 (no volume change, no work)</text>';
+  }
+
+  svg.innerHTML = h;
+  document.getElementById('pvProcess').textContent = labelText;
+  document.getElementById('pvConstraint').innerHTML = constraintText;
+  document.getElementById('pvWork').innerHTML = workText;
+  document.getElementById('pvDU').innerHTML = duText;
+}
+
+/* ==================== SECTION 3: HEAT ENGINE ==================== */
+function updateS3() {
+  var QH = +document.getElementById('s3QH').value;
+  var QC = +document.getElementById('s3QC').value;
+  if (QC > QH) { QC = QH; document.getElementById('s3QC').value = QC; }
+  var W = QH - QC;
+  var eta = QH > 0 ? (W / QH * 100) : 0;
+  document.getElementById('s3QHVal').textContent = QH + ' J';
+  document.getElementById('s3QCVal').textContent = QC + ' J';
+  document.getElementById('s3RQH').textContent = QH + ' J';
+  document.getElementById('s3RQC').textContent = QC + ' J';
+  document.getElementById('s3RW').textContent = W + ' J';
+  document.getElementById('s3REta').textContent = eta.toFixed(1) + '%';
+}
+
+/* ==================== SECTION 4: CARNOT ==================== */
+function drawCarnot() {
+  var svg = document.getElementById('carnotSvg');
+  var ox = 70, oy = 20, gw = 560, gh = 320;
+  var h = '';
+
+  h += '<rect x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="#1a1d24" stroke="#363b47" rx="4"/>';
+  h += '<defs><marker id="cArr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#9ca3af"/></marker></defs>';
+  h += '<line x1="'+ox+'" y1="'+(oy+gh)+'" x2="'+(ox+gw)+'" y2="'+(oy+gh)+'" stroke="#9ca3af" stroke-width="1" marker-end="url(#cArr)"/>';
+  h += '<line x1="'+ox+'" y1="'+(oy+gh)+'" x2="'+ox+'" y2="'+oy+'" stroke="#9ca3af" stroke-width="1" marker-end="url(#cArr)"/>';
+  h += '<text x="'+(ox+gw/2)+'" y="'+(oy+gh+35)+'" text-anchor="middle" fill="#9ca3af" font-size="12">Volume (V)</text>';
+  h += '<text x="'+(ox-15)+'" y="'+(oy+gh/2)+'" fill="#9ca3af" font-size="12" text-anchor="middle" transform="rotate(-90,'+(ox-15)+','+(oy+gh/2)+')">Pressure (P)</text>';
+
+  // Carnot cycle: 4 points
+  // State 1: V1, P_high (start of isothermal expansion at T_H)
+  // State 2: V2, P2 (end of isothermal expansion / start adiabatic)
+  // State 3: V3, P_low (end of adiabatic / start isothermal compression at T_C)
+  // State 4: V4, P4 (end isothermal compression / start adiabatic compression)
+  var gamma = 1.4;
+  var TH = 1.0, TC = 0.45; // normalized temps
+
+  // State 1
+  var V1 = 0.12, P1 = 0.85;
+  var nRT_H = P1 * V1; // PV = nRT for isotherm
+
+  // State 2: isothermal expansion at TH to V2
+  var V2 = 0.35;
+  var P2 = nRT_H / V2;
+
+  // State 3: adiabatic from state 2, T drops to TC
+  // TV^(gamma-1) = const => V3 = V2 * (TH/TC)^(1/(gamma-1))
+  var V3 = V2 * Math.pow(TH / TC, 1 / (gamma - 1));
+  var nRT_C = nRT_H * TC / TH;
+  var P3 = nRT_C / V3;
+
+  // State 4: isothermal compression at TC back, then adiabatic to state 1
+  // V4 = V1 * (TH/TC)^(1/(gamma-1))
+  var V4 = V1 * Math.pow(TH / TC, 1 / (gamma - 1));
+  var P4 = nRT_C / V4;
+
+  // Normalize all Vs
+  var maxV = Math.max(V1, V2, V3, V4) * 1.15;
+  var maxP = P1 * 1.15;
+
+  function vToX(v) { return ox + (v / maxV) * gw; }
+  function pToY(p) { return oy + gh - (p / maxP) * gh; }
+
+  var nPts = 40;
+
+  // Path 1->2: Isothermal at TH
+  var path12 = '', fill12 = '';
+  for (var i = 0; i <= nPts; i++) {
+    var t = i / nPts;
+    var v = V1 + t * (V2 - V1);
+    var p = nRT_H / v;
+    path12 += (i === 0 ? 'M' : 'L') + vToX(v) + ',' + pToY(p);
+    fill12 += vToX(v) + ',' + pToY(p) + ' ';
+  }
+
+  // Path 2->3: Adiabatic (TH -> TC)
+  var path23 = '', fill23 = '';
+  for (var i = 0; i <= nPts; i++) {
+    var t = i / nPts;
+    var v = V2 + t * (V3 - V2);
+    var p = P2 * Math.pow(V2 / v, gamma);
+    path23 += (i === 0 ? 'M' : 'L') + vToX(v) + ',' + pToY(p);
+    fill23 += vToX(v) + ',' + pToY(p) + ' ';
+  }
+
+  // Path 3->4: Isothermal at TC (compression, reversed)
+  var path34 = '', fill34 = '';
+  for (var i = 0; i <= nPts; i++) {
+    var t = i / nPts;
+    var v = V3 + t * (V4 - V3);
+    var p = nRT_C / v;
+    path34 += (i === 0 ? 'M' : 'L') + vToX(v) + ',' + pToY(p);
+    fill34 += vToX(v) + ',' + pToY(p) + ' ';
+  }
+
+  // Path 4->1: Adiabatic (TC -> TH, compression)
+  var path41 = '', fill41 = '';
+  for (var i = 0; i <= nPts; i++) {
+    var t = i / nPts;
+    var v = V4 + t * (V1 - V4);
+    var p = P4 * Math.pow(V4 / v, gamma);
+    path41 += (i === 0 ? 'M' : 'L') + vToX(v) + ',' + pToY(p);
+    fill41 += vToX(v) + ',' + pToY(p) + ' ';
+  }
+
+  // Filled cycle area
+  var allPts = fill12 + fill23 + fill34 + fill41;
+  h += '<polygon points="'+allPts+'" fill="rgba(99,102,241,0.1)" stroke="none"/>';
+
+  // Draw paths
+  h += '<path d="'+path12+'" fill="none" stroke="#ec4899" stroke-width="2.5"/>';
+  h += '<path d="'+path23+'" fill="none" stroke="#22c55e" stroke-width="2.5"/>';
+  h += '<path d="'+path34+'" fill="none" stroke="#6366f1" stroke-width="2.5"/>';
+  h += '<path d="'+path41+'" fill="none" stroke="#f59e0b" stroke-width="2.5"/>';
+
+  // Points
+  var pts = [
+    {v:V1, p:P1, label:'1', color:'#ec4899'},
+    {v:V2, p:P2, label:'2', color:'#22c55e'},
+    {v:V3, p:P3, label:'3', color:'#6366f1'},
+    {v:V4, p:P4, label:'4', color:'#f59e0b'}
+  ];
+  pts.forEach(function(pt) {
+    h += '<circle cx="'+vToX(pt.v)+'" cy="'+pToY(pt.p)+'" r="6" fill="'+pt.color+'"/>';
+    h += '<text x="'+(vToX(pt.v)+10)+'" y="'+(pToY(pt.p)-8)+'" fill="'+pt.color+'" font-size="12" font-weight="600">'+pt.label+'</text>';
+  });
+
+  // Labels
+  var mx12 = vToX((V1+V2)/2), my12 = pToY(nRT_H / ((V1+V2)/2));
+  h += '<text x="'+mx12+'" y="'+(my12-12)+'" text-anchor="middle" fill="#ec4899" font-size="9">Isothermal T_H</text>';
+  var mx34 = vToX((V3+V4)/2), my34 = pToY(nRT_C / ((V3+V4)/2));
+  h += '<text x="'+mx34+'" y="'+(my34+18)+'" text-anchor="middle" fill="#6366f1" font-size="9">Isothermal T_C</text>';
+  h += '<text x="'+(vToX((V2+V3)/2)+15)+'" y="'+(pToY((P2+P3)/2))+'" fill="#22c55e" font-size="9">Adiabatic</text>';
+  h += '<text x="'+(vToX((V4+V1)/2)-15)+'" y="'+(pToY((P4+P1)/2))+'" fill="#f59e0b" font-size="9" text-anchor="end">Adiabatic</text>';
+
+  // Direction arrows (small triangles on paths)
+  h += '<text x="'+(vToX((V1+V2)/2)+15)+'" y="'+(my12+2)+'" fill="#ec4899" font-size="14">&rarr;</text>';
+
+  svg.innerHTML = h;
+}
+
+function updateS4() {
+  var TH = +document.getElementById('s4TH').value;
+  var TC = +document.getElementById('s4TC').value;
+  if (TC >= TH) { TC = TH - 10; document.getElementById('s4TC').value = TC; }
+  var eta = (1 - TC / TH) * 100;
+  document.getElementById('s4THVal').textContent = TH + ' K';
+  document.getElementById('s4TCVal').textContent = TC + ' K';
+  document.getElementById('s4RTH').textContent = TH + ' K';
+  document.getElementById('s4RTC').textContent = TC + ' K';
+  document.getElementById('s4REta').textContent = eta.toFixed(1) + '%';
+  document.getElementById('s4RRatio').textContent = (TC / TH).toFixed(3);
+  document.getElementById('s4EtaBar').style.width = eta.toFixed(1) + '%';
+  document.getElementById('s4EtaBarLabel').textContent = eta.toFixed(1) + '%';
+}
+
+/* ==================== SECTION 5: ENTROPY ==================== */
+function updateS5() {
+  var Q = +document.getElementById('s5Q').value;
+  var TH = +document.getElementById('s5TH').value;
+  var TC = +document.getElementById('s5TC').value;
+  if (TC >= TH) { TC = TH - 10; document.getElementById('s5TC').value = TC; }
+  document.getElementById('s5QVal').textContent = Q + ' J';
+  document.getElementById('s5THVal').textContent = TH + ' K';
+  document.getElementById('s5TCVal').textContent = TC + ' K';
+  var dsH = -Q / TH;
+  var dsC = Q / TC;
+  var dsT = dsH + dsC;
+  document.getElementById('s5DSH').textContent = dsH.toFixed(2) + ' J/K';
+  document.getElementById('s5DSC').textContent = '+' + dsC.toFixed(2) + ' J/K';
+  document.getElementById('s5DST').textContent = (dsT >= 0 ? '+' : '') + dsT.toFixed(2) + ' J/K';
+  document.getElementById('s5Irr').textContent = dsT > 0.001 ? 'Yes (\u0394S > 0)' : 'Reversible (\u0394S = 0)';
+}
+
+/* ==================== INIT ==================== */
+updateS1();
+drawPV();
+updateS3();
+drawCarnot();
+updateS4();
+updateS5();
+markComplete(1);
+</script>
+</body>
+</html>

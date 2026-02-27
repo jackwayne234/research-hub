@@ -1,0 +1,1925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 13 -- Polynomials &amp; Rational Expressions</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #262a33;
+    --border: #363b47;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* -- Progress Bar -- */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* -- Header -- */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* -- Collapsible Cards -- */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details[open] { border-color: var(--accent); }
+  details.completed { border-color: var(--green); }
+  details.completed summary::after {
+    content: 'Done';
+    font-size: 0.65rem;
+    background: rgba(34,197,94,0.15);
+    color: var(--green);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    margin-left: auto;
+    font-weight: 600;
+  }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s var(--spring);
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .card-body { padding: 1.25rem; }
+  .card-body p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+  .card-body h3 {
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  /* -- Equation display -- */
+  .eq {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--orange);
+    text-align: center;
+    margin: 0.75rem 0;
+    padding: 0.5rem;
+    background: rgba(245,158,11,0.06);
+    border-radius: var(--radius);
+  }
+
+  /* -- Info boxes -- */
+  .info-box {
+    background: rgba(99,102,241,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+  }
+  .info-box.green {
+    background: rgba(34,197,94,0.08);
+    border-color: var(--green);
+  }
+  .info-box.pink {
+    background: rgba(236,72,153,0.08);
+    border-color: var(--pink);
+  }
+  .info-box.amber {
+    background: rgba(245,158,11,0.08);
+    border-color: var(--orange);
+  }
+
+  /* -- Buttons -- */
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn.green { background: var(--green); }
+  .btn.pink { background: var(--pink); }
+  .btn.orange { background: var(--orange); color: #1e2128; }
+  .btn.outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0.75rem 0;
+  }
+
+  /* -- Rule Cards -- */
+  .rule-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .rule-card {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .rule-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .rule-card .rule-name {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  .rule-card .rule-formula {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .rule-card .rule-example {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .rule-card .rule-example strong { color: var(--green); }
+
+  /* -- Practice Problems -- */
+  .problem-set {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    transition: border-color 0.3s, transform 0.15s;
+  }
+  .problem.correct { border-color: var(--green); }
+  .problem.incorrect { border-color: var(--pink); }
+  .problem .prompt {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    min-width: 200px;
+  }
+  .problem input[type="text"] {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .problem input:focus { border-color: var(--accent); }
+  .problem .feedback {
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 60px;
+  }
+  .problem .feedback.correct { color: var(--green); }
+  .problem .feedback.incorrect { color: var(--pink); }
+
+  /* -- Step-through -- */
+  .step-container { margin: 1rem 0; }
+  .step {
+    display: none;
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    animation: stepIn 0.3s var(--spring);
+  }
+  .step.active { display: block; }
+  .step .step-label {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+  .step .math {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--orange);
+    margin: 0.4rem 0;
+  }
+
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* -- Converter Box -- */
+  .converter-box {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin: 1rem 0;
+    text-align: center;
+  }
+  .converter-box input[type="text"],
+  .converter-box input[type="number"] {
+    padding: 0.5rem 0.75rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+    transition: border-color 0.3s;
+  }
+  .converter-box input:focus { border-color: var(--accent); }
+  .converter-result {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--green);
+    margin-top: 0.75rem;
+    min-height: 1.5em;
+  }
+  .converter-steps {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.5rem;
+    min-height: 1em;
+  }
+
+  /* -- Term breakdown display -- */
+  .term-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+    align-items: center;
+    margin: 0.75rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .term-display .term {
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    transition: all 0.3s var(--spring);
+    animation: stepIn 0.3s var(--spring);
+  }
+  .term-display .term.leading {
+    background: rgba(99,102,241,0.2);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .term-display .term.middle {
+    background: rgba(212,207,196,0.08);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .term-display .term.constant {
+    background: rgba(245,158,11,0.15);
+    color: var(--orange);
+    border: 1px solid var(--orange);
+  }
+  .term-display .term-op {
+    color: var(--text-dim);
+    font-weight: 400;
+  }
+
+  /* -- End behavior arrows -- */
+  .end-behavior {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+  }
+  .end-behavior .arrow-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .end-behavior .arrow-box .arrow {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  .end-behavior .arrow-box .arrow.up { color: var(--green); }
+  .end-behavior .arrow-box .arrow.down { color: var(--pink); }
+
+  /* -- Feature tags -- */
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+  }
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .tag.indigo { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .tag.green { background: rgba(34,197,94,0.15); color: var(--green); }
+  .tag.pink { background: rgba(236,72,153,0.15); color: var(--pink); }
+  .tag.amber { background: rgba(245,158,11,0.15); color: var(--orange); }
+
+  /* -- Long Division Table -- */
+  .long-div-wrap {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .long-div-display {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 2;
+    text-align: left;
+    min-width: 350px;
+  }
+  .long-div-display .ld-row {
+    display: flex;
+    gap: 0;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.4s var(--spring);
+    transform: translateY(6px);
+  }
+  .long-div-display .ld-row.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .long-div-display .ld-row.highlight {
+    background: rgba(99,102,241,0.08);
+    border-radius: 4px;
+  }
+  .long-div-display .ld-cell {
+    min-width: 5ch;
+    text-align: right;
+    padding: 0 0.25rem;
+  }
+  .long-div-display .ld-quotient { color: var(--green); font-weight: 700; }
+  .long-div-display .ld-divisor { color: var(--accent); }
+  .long-div-display .ld-dividend { color: var(--orange); }
+  .long-div-display .ld-subtract { color: var(--pink); }
+  .long-div-display .ld-result { color: var(--text); }
+  .long-div-display .ld-remainder-final { color: var(--orange); font-weight: 700; }
+  .long-div-display .ld-line {
+    border-bottom: 2px solid var(--border);
+    margin: 0.15rem 0;
+  }
+
+  /* -- Decision tree flowchart -- */
+  .flowchart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .flow-node {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    max-width: 260px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .flow-node:hover { transform: translateY(-1px); }
+  .flow-node.decision {
+    background: rgba(99,102,241,0.15);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .flow-node.action {
+    background: rgba(34,197,94,0.15);
+    color: var(--green);
+    border: 1px solid var(--green);
+  }
+  .flow-node.start {
+    background: rgba(245,158,11,0.15);
+    color: var(--orange);
+    border: 1px solid var(--orange);
+  }
+  .flow-arrow {
+    color: var(--text-dim);
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+  .flow-branch {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* -- Fraction bar display -- */
+  .frac-display {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 0.3rem;
+  }
+  .frac-display .frac-num,
+  .frac-display .frac-den {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  .frac-display .frac-num { color: var(--accent); }
+  .frac-display .frac-bar {
+    width: 100%;
+    height: 2px;
+    background: var(--text-dim);
+  }
+  .frac-display .frac-den { color: var(--orange); }
+
+  /* -- Cancel animation -- */
+  .cancel-line {
+    position: relative;
+    display: inline-block;
+  }
+  .cancel-line::after {
+    content: '';
+    position: absolute;
+    left: -2px; right: -2px;
+    top: 50%;
+    height: 2px;
+    background: var(--pink);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--spring);
+  }
+  .cancel-line.cancelled::after {
+    transform: scaleX(1);
+  }
+  .cancel-line.cancelled {
+    opacity: 0.4;
+  }
+
+  /* -- Graph wrap -- */
+  .graph-wrap {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .graph-wrap svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* -- LCD visual -- */
+  .lcd-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .lcd-visual .op { color: var(--text-dim); font-size: 1.2rem; }
+
+  /* -- Quiz -- */
+  .quiz-score {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    background: rgba(99,102,241,0.08);
+    border-radius: var(--radius);
+  }
+  .quiz-score span { color: var(--green); }
+
+  .quiz-problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.75rem 0;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem.correct { border-color: var(--green); }
+  .quiz-problem.incorrect { border-color: var(--pink); }
+  .quiz-problem .q-num {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  .quiz-problem .q-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .quiz-problem input[type="text"] {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem input:focus { border-color: var(--accent); }
+  .quiz-problem .q-feedback {
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    min-height: 1.2em;
+  }
+  .quiz-problem .q-feedback.correct { color: var(--green); }
+  .quiz-problem .q-feedback.incorrect { color: var(--pink); }
+
+  /* -- Interactive example boxes in flowchart -- */
+  .flow-example {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.85rem;
+    display: none;
+  }
+  .flow-example.visible { display: block; animation: stepIn 0.3s var(--spring); }
+  .flow-example .fe-title {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  .flow-example .fe-math {
+    color: var(--orange);
+    font-weight: 600;
+    margin: 0.3rem 0;
+  }
+  .flow-example .fe-step {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+  .flow-example .fe-result {
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  /* -- Responsive -- */
+  @media (max-width: 600px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.2rem; }
+    summary { font-size: 0.9rem; padding: 0.75rem 1rem; }
+    .card-body { padding: 1rem; }
+    .rule-cards { grid-template-columns: 1fr; }
+    .problem { flex-direction: column; align-items: stretch; }
+    .problem .prompt { min-width: unset; }
+    .converter-box input { width: 100%; }
+    .term-display { font-size: 0.9rem; }
+    .end-behavior { flex-direction: column; gap: 0.5rem; align-items: center; }
+    .flow-branch { flex-direction: column; align-items: center; }
+    .lcd-visual { flex-direction: column; font-size: 0.9rem; }
+    .long-div-display { font-size: 0.85rem; min-width: 280px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar">
+  <div class="seg" data-section="0"></div>
+  <div class="seg" data-section="1"></div>
+  <div class="seg" data-section="2"></div>
+  <div class="seg" data-section="3"></div>
+  <div class="seg" data-section="4"></div>
+  <div class="seg" data-section="5"></div>
+</div>
+
+<h1>Week 10: Polynomials &amp; Rational Expressions</h1>
+<p class="subtitle">Degree, division, factoring, rational expressions &amp; operations // Lesson 13 of VPT Prep</p>
+
+<!-- ===================== SECTION 1: Polynomial Basics ===================== -->
+<details id="sec0" open>
+  <summary>1. Polynomial Basics</summary>
+  <div class="card-body">
+    <p>A <strong>polynomial</strong> is a sum of terms, each of the form <em>a&middot;x<sup>n</sup></em> where <em>n</em> is a non-negative integer. The key vocabulary:</p>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Degree</div>
+        <div class="rule-formula">Highest exponent</div>
+        <div class="rule-example">3x<sup>4</sup> + x<sup>2</sup> - 1 has degree <strong>4</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Leading Coefficient</div>
+        <div class="rule-formula">Coefficient of highest-degree term</div>
+        <div class="rule-example">In 3x<sup>4</sup> + x<sup>2</sup> - 1, it is <strong>3</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Constant Term</div>
+        <div class="rule-formula">Term with no variable (x<sup>0</sup>)</div>
+        <div class="rule-example">In 3x<sup>4</sup> + x<sup>2</sup> - 1, it is <strong>-1</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Standard Form</div>
+        <div class="rule-formula">Descending order of exponents</div>
+        <div class="rule-example">x + 5 - 2x<sup>3</sup> becomes <strong>-2x<sup>3</sup> + x + 5</strong></div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>Classification by degree:</strong> Constant (0), Linear (1), Quadratic (2), Cubic (3), Quartic (4), Quintic (5).
+    </div>
+
+    <h3>Interactive: Polynomial Analyzer</h3>
+    <p>Enter a polynomial and see it broken into color-coded terms with classification and end behavior.</p>
+
+    <div class="info-box amber">
+      <strong>How to type:</strong> Use ^ for exponents, * is optional for coefficients. Examples: 3x^4 + x^2 - 1, -2x^3 + 5x - 7, x^5 - 3x^2 + 2
+    </div>
+
+    <div class="converter-box">
+      <input type="text" id="polyInput" placeholder="e.g. 2x^3 + 3x^2 - x + 5" onkeydown="if(event.key==='Enter')analyzePoly()">
+      <button class="btn" onclick="analyzePoly()" style="margin-top:0.5rem;">Analyze</button>
+      <div id="polyTermDisplay" class="term-display" style="min-height:2rem;"></div>
+      <div id="polyFeatures" class="features" style="justify-content:center;min-height:1.5rem;"></div>
+      <div id="polyEndBehavior" class="end-behavior" style="min-height:2rem;"></div>
+      <div class="converter-steps" id="polySteps"></div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="polyBasicsProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkPolyBasics()">Check Answers</button>
+      <button class="btn outline" onclick="showPolyBasics()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 2: Polynomial Long Division ===================== -->
+<details id="sec1">
+  <summary>2. Polynomial Long Division</summary>
+  <div class="card-body">
+    <p>Just like long division with numbers, polynomial long division systematically divides one polynomial by another. The result is a <strong>quotient</strong> plus a <strong>remainder</strong>.</p>
+
+    <div class="eq">(2x<sup>3</sup> + 3x<sup>2</sup> - x + 5) &divide; (x + 2)</div>
+
+    <div class="info-box">
+      <strong>Algorithm:</strong> 1) Divide leading terms. 2) Multiply divisor by result. 3) Subtract. 4) Bring down next term. 5) Repeat until degree of remainder &lt; degree of divisor.
+    </div>
+
+    <h3>Step-by-Step: (2x<sup>3</sup> + 3x<sup>2</sup> - x + 5) &divide; (x + 2)</h3>
+
+    <div class="long-div-wrap" id="longDivDemo">
+      <div id="longDivSteps"></div>
+      <div class="btn-row" style="justify-content:center;margin-top:0.75rem;">
+        <button class="btn" id="ldPrevBtn" onclick="ldPrev()" disabled>Previous</button>
+        <button class="btn" id="ldNextBtn" onclick="ldNext()">Next Step</button>
+        <button class="btn outline" id="ldResetBtn" onclick="ldReset()">Reset</button>
+      </div>
+      <div id="ldExplanation" style="font-size:0.85rem;color:var(--text-dim);margin-top:0.75rem;min-height:1.5em;text-align:center;"></div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="info-box amber">
+      <strong>How to type answers:</strong> Write the quotient. For remainders, add + R/divisor. Example: 2x^2 - x + 1 + 3/(x+2)
+    </div>
+    <div class="problem-set" id="divProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkDivProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showDivAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 3: Factoring Strategies ===================== -->
+<details id="sec2">
+  <summary>3. Factoring Strategies</summary>
+  <div class="card-body">
+    <p>Factoring reverses multiplication. The key is choosing the right strategy for each polynomial. <strong>Always start by pulling out the GCF.</strong></p>
+
+    <h3>Decision Tree</h3>
+    <p>Click each node to see a worked example.</p>
+
+    <div class="flowchart">
+      <div class="flow-node start" onclick="toggleFlowExample('feGcf')">Step 1: Factor out the GCF</div>
+      <div class="flow-example" id="feGcf">
+        <div class="fe-title">Example: GCF</div>
+        <div class="fe-math">6x<sup>3</sup> + 9x<sup>2</sup> - 3x</div>
+        <div class="fe-step">GCF of 6, 9, 3 is 3. Each term has at least x.</div>
+        <div class="fe-result">= 3x(2x<sup>2</sup> + 3x - 1)</div>
+      </div>
+      <div class="flow-arrow">&darr;</div>
+      <div class="flow-node decision">How many terms remain?</div>
+      <div class="flow-arrow">&darr;</div>
+      <div class="flow-branch">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.4rem;">
+          <span style="font-size:0.7rem;color:var(--text-dim);">2 terms</span>
+          <div class="flow-node action" onclick="toggleFlowExample('feDiff')">Difference of Squares<br>a<sup>2</sup> - b<sup>2</sup> = (a+b)(a-b)</div>
+          <div class="flow-example" id="feDiff">
+            <div class="fe-title">Example: Difference of Squares</div>
+            <div class="fe-math">x<sup>2</sup> - 49</div>
+            <div class="fe-step">x<sup>2</sup> = (x)<sup>2</sup>, 49 = (7)<sup>2</sup></div>
+            <div class="fe-result">= (x + 7)(x - 7)</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.4rem;">
+          <span style="font-size:0.7rem;color:var(--text-dim);">3 terms</span>
+          <div class="flow-node action" onclick="toggleFlowExample('feTri')">Perfect Square or<br>Trial-and-Error</div>
+          <div class="flow-example" id="feTri">
+            <div class="fe-title">Example: Trinomial</div>
+            <div class="fe-math">x<sup>2</sup> + 5x + 6</div>
+            <div class="fe-step">Find two numbers that multiply to 6 and add to 5: 2 and 3.</div>
+            <div class="fe-result">= (x + 2)(x + 3)</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.4rem;">
+          <span style="font-size:0.7rem;color:var(--text-dim);">4 terms</span>
+          <div class="flow-node action" onclick="toggleFlowExample('feGroup')">Factor by Grouping</div>
+          <div class="flow-example" id="feGroup">
+            <div class="fe-title">Example: Grouping</div>
+            <div class="fe-math">x<sup>3</sup> + 2x<sup>2</sup> + 3x + 6</div>
+            <div class="fe-step">Group: (x<sup>3</sup> + 2x<sup>2</sup>) + (3x + 6)<br>= x<sup>2</sup>(x + 2) + 3(x + 2)</div>
+            <div class="fe-result">= (x<sup>2</sup> + 3)(x + 2)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Special Patterns Reference</h3>
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Difference of Squares</div>
+        <div class="rule-formula">a<sup>2</sup> - b<sup>2</sup> = (a+b)(a-b)</div>
+        <div class="rule-example">4x<sup>2</sup> - 25 = <strong>(2x+5)(2x-5)</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Perfect Square Trinomial</div>
+        <div class="rule-formula">a<sup>2</sup> &plusmn; 2ab + b<sup>2</sup> = (a &plusmn; b)<sup>2</sup></div>
+        <div class="rule-example">x<sup>2</sup> + 6x + 9 = <strong>(x+3)<sup>2</sup></strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Sum of Cubes</div>
+        <div class="rule-formula">a<sup>3</sup> + b<sup>3</sup> = (a+b)(a<sup>2</sup>-ab+b<sup>2</sup>)</div>
+        <div class="rule-example">x<sup>3</sup> + 8 = <strong>(x+2)(x<sup>2</sup>-2x+4)</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Difference of Cubes</div>
+        <div class="rule-formula">a<sup>3</sup> - b<sup>3</sup> = (a-b)(a<sup>2</sup>+ab+b<sup>2</sup>)</div>
+        <div class="rule-example">27x<sup>3</sup> - 1 = <strong>(3x-1)(9x<sup>2</sup>+3x+1)</strong></div>
+      </div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="info-box amber">
+      <strong>How to type:</strong> Use parentheses for factors: (x+3)(x-2). For squared factors: (x+3)^2. For GCF: 3x(x+2).
+    </div>
+    <div class="problem-set" id="factorProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkFactorProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showFactorAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 4: Rational Expressions ===================== -->
+<details id="sec3">
+  <summary>4. Rational Expressions</summary>
+  <div class="card-body">
+    <p>A <strong>rational expression</strong> is a fraction where the numerator and denominator are polynomials. To simplify, factor both and cancel common factors.</p>
+
+    <div class="eq">
+      <span class="frac-display" style="font-size:1.1rem;">
+        <span class="frac-num">P(x)</span>
+        <span class="frac-bar"></span>
+        <span class="frac-den">Q(x)</span>
+      </span>
+      &nbsp; where Q(x) &ne; 0
+    </div>
+
+    <div class="info-box">
+      <strong>Domain restrictions:</strong> Any value that makes the denominator zero is <em>excluded</em> from the domain. Always find these first!
+    </div>
+
+    <h3>Interactive: Simplify a Rational Expression</h3>
+
+    <div class="converter-box" id="rationalDemo">
+      <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.75rem;">Watch the factoring and cancellation step by step:</p>
+
+      <div style="font-size:1.1rem;font-weight:600;margin-bottom:0.5rem;">
+        <span class="frac-display">
+          <span class="frac-num">x<sup>2</sup> - 9</span>
+          <span class="frac-bar"></span>
+          <span class="frac-den">x<sup>2</sup> + 5x + 6</span>
+        </span>
+      </div>
+
+      <div id="ratSimplifySteps" style="text-align:left;"></div>
+
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn" id="ratStepBtn" onclick="advanceRatSimplify()">Next Step</button>
+        <button class="btn outline" onclick="resetRatSimplify()">Reset</button>
+      </div>
+    </div>
+
+    <h3>Domain Restrictions and Graph</h3>
+    <p>For <span style="color:var(--orange);font-weight:600;">(x<sup>2</sup> - 9) / (x<sup>2</sup> + 5x + 6)</span>, the denominator = 0 at x = -2 and x = -3. These are excluded from the domain.</p>
+
+    <div class="graph-wrap">
+      <svg id="svgRational" viewBox="0 0 500 350" width="500" height="350"></svg>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="info-box amber">
+      <strong>How to type:</strong> For simplified fractions, write num/den. Example: (x-3)/(x+2). For domain restrictions: x != value. Separate multiple with comma: x != 2, x != -3
+    </div>
+    <div class="problem-set" id="ratProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkRatProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showRatAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 5: Adding & Multiplying Rationals ===================== -->
+<details id="sec4">
+  <summary>5. Adding &amp; Multiplying Rationals</summary>
+  <div class="card-body">
+    <p>Operations with rational expressions follow the same rules as numeric fractions, but you must factor first to find LCDs and cancel before multiplying.</p>
+
+    <h3>Multiplying Rational Expressions</h3>
+    <div class="info-box green">
+      <strong>Rule:</strong> Factor everything, cancel common factors across numerators and denominators, then multiply what remains.
+    </div>
+
+    <div class="converter-box" id="multDemo">
+      <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;">Cross-cancellation example:</p>
+      <div style="font-size:1rem;font-weight:600;margin-bottom:0.75rem;">
+        <span class="frac-display">
+          <span class="frac-num"><span class="cancel-line" id="mc1">x + 3</span></span>
+          <span class="frac-bar"></span>
+          <span class="frac-den"><span class="cancel-line" id="mc2">x - 1</span></span>
+        </span>
+        &middot;
+        <span class="frac-display">
+          <span class="frac-num"><span class="cancel-line" id="mc3">x - 1</span></span>
+          <span class="frac-bar"></span>
+          <span class="frac-den"><span class="cancel-line" id="mc4">x + 3</span></span>
+        </span>
+      </div>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn" onclick="showCrossCancelDemo()">Show Cancellation</button>
+        <button class="btn outline" onclick="resetCrossCancelDemo()">Reset</button>
+      </div>
+      <div class="converter-result" id="multDemoResult"></div>
+      <div class="converter-steps" id="multDemoSteps"></div>
+    </div>
+
+    <h3>Adding Rational Expressions</h3>
+    <div class="info-box">
+      <strong>Rule:</strong> 1) Find the LCD (least common denominator). 2) Rewrite each fraction with the LCD. 3) Add numerators. 4) Simplify.
+    </div>
+
+    <div class="converter-box" id="addDemo">
+      <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;">LCD Finder example:</p>
+      <div style="font-size:1rem;font-weight:600;margin-bottom:0.75rem;">
+        <span class="frac-display">
+          <span class="frac-num">3</span>
+          <span class="frac-bar"></span>
+          <span class="frac-den">x + 1</span>
+        </span>
+        <span style="color:var(--text-dim);margin:0 0.3rem;">+</span>
+        <span class="frac-display">
+          <span class="frac-num">2</span>
+          <span class="frac-bar"></span>
+          <span class="frac-den">x - 1</span>
+        </span>
+      </div>
+      <div id="addSteps" style="text-align:left;"></div>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn" id="addStepBtn" onclick="advanceAddDemo()">Next Step</button>
+        <button class="btn outline" onclick="resetAddDemo()">Reset</button>
+      </div>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="info-box amber">
+      <strong>How to type:</strong> Write the simplified result as a single fraction: (5x-1)/((x+1)(x-1)) or distribute denominator. Use ^ for exponents.
+    </div>
+    <div class="problem-set" id="opsProblems"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="checkOpsProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showOpsAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 6: Quick Quiz ===================== -->
+<details id="sec5">
+  <summary>6. Quick Quiz</summary>
+  <div class="card-body">
+    <p>10 mixed problems covering all sections. Submit when ready.</p>
+
+    <div class="quiz-score" id="quizScore">Score: <span>-- / 10</span></div>
+
+    <div id="quizProblems"></div>
+
+    <div class="btn-row" style="margin-top:1rem;">
+      <button class="btn green" onclick="gradeQuiz()">Submit Quiz</button>
+      <button class="btn outline" onclick="showQuizAnswers()">Show All Answers</button>
+      <button class="btn pink" onclick="resetQuiz()">Reset</button>
+    </div>
+  </div>
+</details>
+
+<script>
+// ====== UTILITIES ======
+const $ = id => document.getElementById(id);
+const sections = 6;
+const completed = new Array(sections).fill(false);
+
+function updateProgress() {
+  const segs = document.querySelectorAll('.progress-bar .seg');
+  segs.forEach((seg, i) => {
+    if (completed[i]) seg.classList.add('done');
+    else seg.classList.remove('done');
+  });
+}
+
+function markComplete(idx) {
+  completed[idx] = true;
+  updateProgress();
+  const sec = $('sec' + idx);
+  sec.classList.add('completed');
+}
+
+function normalize(s) {
+  return s.replace(/\s+/g, '')
+           .replace(/\u2212/g, '-')
+           .replace(/\u00d7/g, '*')
+           .replace(/\u00b7/g, '*')
+           .replace(/x/gi, 'x')
+           .toLowerCase()
+           .replace(/\*\*/g, '^');
+}
+
+function springPop(el) {
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = 'popIn 0.35s var(--spring)';
+}
+
+function shakeEl(el) {
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = 'shake 0.4s ease';
+}
+
+// Enter key listener for all problem inputs
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  const t = e.target;
+  if (!t || t.tagName !== 'INPUT') return;
+  const card = t.closest('details');
+  if (!card) return;
+  const id = card.id;
+  if (id === 'sec0') checkPolyBasics();
+  else if (id === 'sec1') checkDivProblems();
+  else if (id === 'sec2') checkFactorProblems();
+  else if (id === 'sec3') checkRatProblems();
+  else if (id === 'sec4') checkOpsProblems();
+  else if (id === 'sec5') gradeQuiz();
+});
+
+// Generic problem builder + checker
+function buildProblems(data, containerId, prefix) {
+  const cont = $(containerId);
+  cont.innerHTML = '';
+  data.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = prefix + i;
+    div.innerHTML = `
+      <span class="prompt">${p.prompt}</span>
+      <input type="text" id="${prefix}In${i}" placeholder="answer">
+      <span class="feedback" id="${prefix}Fb${i}"></span>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function checkProblems(data, prefix, sectionIdx) {
+  let allCorrect = true;
+  data.forEach((p, i) => {
+    const input = normalize($(`${prefix}In${i}`).value);
+    const answers = [p.answer, ...p.alts].map(normalize);
+    const isRight = answers.includes(input);
+    $(`${prefix}${i}`).className = 'problem ' + (isRight ? 'correct' : 'incorrect');
+    $(`${prefix}Fb${i}`).textContent = isRight ? 'Correct!' : p.display;
+    $(`${prefix}Fb${i}`).className = 'feedback ' + (isRight ? 'correct' : 'incorrect');
+    if (isRight) springPop($(`${prefix}${i}`));
+    else shakeEl($(`${prefix}${i}`));
+    if (!isRight) allCorrect = false;
+  });
+  if (allCorrect) markComplete(sectionIdx);
+}
+
+function showAnswers(data, prefix, sectionIdx) {
+  data.forEach((p, i) => {
+    $(`${prefix}In${i}`).value = p.answer;
+    $(`${prefix}${i}`).className = 'problem correct';
+    $(`${prefix}Fb${i}`).textContent = p.display;
+    $(`${prefix}Fb${i}`).className = 'feedback correct';
+  });
+  markComplete(sectionIdx);
+}
+
+
+// ====== SECTION 1: Polynomial Basics ======
+
+function parsePoly(str) {
+  // Parse a polynomial string into array of {coeff, exp} objects
+  let s = str.replace(/\s+/g, '');
+  s = s.replace(/-/g, '+-');
+  const parts = s.split('+').filter(p => p.length > 0);
+  const terms = [];
+
+  for (let part of parts) {
+    part = part.trim();
+    if (!part) continue;
+
+    // Match patterns like: -3x^4, 2x^2, x, -x, 5, -7, 3x
+    let coeff = 0, exp = 0;
+
+    if (part.includes('x')) {
+      const xIdx = part.indexOf('x');
+      let coeffStr = part.substring(0, xIdx);
+      if (coeffStr === '' || coeffStr === '+') coeffStr = '1';
+      else if (coeffStr === '-') coeffStr = '-1';
+      coeff = parseFloat(coeffStr);
+      if (isNaN(coeff)) continue;
+
+      if (part.includes('^')) {
+        const caretIdx = part.indexOf('^');
+        exp = parseInt(part.substring(caretIdx + 1));
+        if (isNaN(exp)) exp = 1;
+      } else {
+        exp = 1;
+      }
+    } else {
+      coeff = parseFloat(part);
+      if (isNaN(coeff)) continue;
+      exp = 0;
+    }
+    terms.push({ coeff, exp });
+  }
+
+  // Sort by descending exponent
+  terms.sort((a, b) => b.exp - a.exp);
+  return terms;
+}
+
+function analyzePoly() {
+  const raw = $('polyInput').value.trim();
+  if (!raw) {
+    $('polyTermDisplay').innerHTML = '';
+    $('polyFeatures').innerHTML = '';
+    $('polyEndBehavior').innerHTML = '';
+    $('polySteps').innerHTML = '';
+    return;
+  }
+
+  const terms = parsePoly(raw);
+  if (terms.length === 0) {
+    $('polyTermDisplay').innerHTML = '<span style="color:var(--pink);">Could not parse polynomial</span>';
+    return;
+  }
+
+  const degree = terms[0].exp;
+  const leadCoeff = terms[0].coeff;
+  const constant = terms.find(t => t.exp === 0);
+  const constVal = constant ? constant.coeff : 0;
+
+  // Build color-coded term display
+  let termHtml = '';
+  terms.forEach((t, i) => {
+    if (i > 0) {
+      termHtml += `<span class="term-op">${t.coeff >= 0 ? '+' : ''}</span>`;
+    }
+
+    let termStr = '';
+    if (t.exp === 0) {
+      termStr = t.coeff.toString();
+    } else if (t.exp === 1) {
+      if (t.coeff === 1) termStr = 'x';
+      else if (t.coeff === -1) termStr = (i === 0 ? '-' : '') + 'x';
+      else termStr = (i === 0 ? '' : '') + t.coeff + 'x';
+    } else {
+      if (t.coeff === 1) termStr = 'x^' + t.exp;
+      else if (t.coeff === -1) termStr = (i === 0 ? '-' : '') + 'x^' + t.exp;
+      else termStr = (i === 0 ? '' : '') + t.coeff + 'x^' + t.exp;
+    }
+
+    // Fix display for non-leading negative terms
+    if (i > 0 && t.coeff < 0) {
+      termStr = termStr.replace(/^\+?/, '');
+    }
+
+    // Use sup for exponents in display
+    termStr = termStr.replace(/\^(\d+)/g, '<sup>$1</sup>');
+
+    let cls = 'middle';
+    if (i === 0) cls = 'leading';
+    else if (t.exp === 0) cls = 'constant';
+
+    termHtml += `<span class="term ${cls}">${termStr}</span>`;
+  });
+
+  $('polyTermDisplay').innerHTML = termHtml;
+
+  // Classification
+  const degreeNames = { 0: 'Constant', 1: 'Linear', 2: 'Quadratic', 3: 'Cubic', 4: 'Quartic', 5: 'Quintic' };
+  const degreeName = degreeNames[degree] || `Degree ${degree}`;
+
+  let featHtml = '';
+  featHtml += `<span class="tag indigo">${degreeName} (degree ${degree})</span>`;
+  featHtml += `<span class="tag amber">Leading coeff: ${leadCoeff}</span>`;
+  featHtml += `<span class="tag green">Constant term: ${constVal}</span>`;
+  featHtml += `<span class="tag pink">${terms.length} term${terms.length > 1 ? 's' : ''}</span>`;
+  $('polyFeatures').innerHTML = featHtml;
+
+  // End behavior
+  let leftArrow, rightArrow;
+  if (degree % 2 === 0) {
+    // Even degree
+    if (leadCoeff > 0) { leftArrow = 'up'; rightArrow = 'up'; }
+    else { leftArrow = 'down'; rightArrow = 'down'; }
+  } else {
+    // Odd degree
+    if (leadCoeff > 0) { leftArrow = 'down'; rightArrow = 'up'; }
+    else { leftArrow = 'up'; rightArrow = 'down'; }
+  }
+
+  $('polyEndBehavior').innerHTML = `
+    <div class="arrow-box">
+      <span style="font-size:0.75rem;color:var(--text-dim);">x &rarr; -&infin;</span>
+      <span class="arrow ${leftArrow}">${leftArrow === 'up' ? '&nearr;' : '&searr;'}</span>
+    </div>
+    <div class="arrow-box">
+      <span style="font-size:0.75rem;color:var(--text-dim);">x &rarr; +&infin;</span>
+      <span class="arrow ${rightArrow}">${rightArrow === 'up' ? '&nearr;' : '&searr;'}</span>
+    </div>
+  `;
+
+  const evenOdd = degree % 2 === 0 ? 'even' : 'odd';
+  const posNeg = leadCoeff > 0 ? 'positive' : 'negative';
+  $('polySteps').innerHTML = `Degree is ${evenOdd}, leading coefficient is ${posNeg}. ${evenOdd === 'even' ? 'Both ends go the same direction.' : 'Ends go in opposite directions.'}`;
+}
+
+const polyBasicsData = [
+  { prompt: 'Degree of 5x<sup>3</sup> - 2x + 7', answer: '3', display: '3 (highest exponent is 3)', alts: [] },
+  { prompt: 'Leading coefficient of -4x<sup>5</sup> + x<sup>2</sup>', answer: '-4', display: '-4', alts: [] },
+  { prompt: 'Constant term of x<sup>2</sup> + 3x - 8', answer: '-8', display: '-8', alts: [] },
+  { prompt: 'Classify by degree: 7x<sup>2</sup> - 3x + 1', answer: 'quadratic', display: 'Quadratic (degree 2)', alts: ['2', 'degree 2'] },
+];
+
+buildProblems(polyBasicsData, 'polyBasicsProblems', 'pb');
+function checkPolyBasics() { checkProblems(polyBasicsData, 'pb', 0); }
+function showPolyBasics() { showAnswers(polyBasicsData, 'pb', 0); }
+
+
+// ====== SECTION 2: Polynomial Long Division ======
+
+const ldStepData = [
+  {
+    text: 'Set up the division: divide 2x<sup>3</sup> + 3x<sup>2</sup> - x + 5 by x + 2',
+    html: `<div style="font-weight:600;">
+      <span style="color:var(--accent);">(x + 2)</span> ) <span style="color:var(--orange);border-top:2px solid var(--text-dim);padding-top:4px;">2x<sup>3</sup> + 3x<sup>2</sup> - x + 5</span>
+    </div>`
+  },
+  {
+    text: 'Step 1: Divide leading terms. 2x<sup>3</sup> / x = 2x<sup>2</sup>. Write 2x<sup>2</sup> in the quotient.',
+    html: `<div style="font-weight:600;">
+      <div style="padding-left:4.5rem;color:var(--green);">2x<sup>2</sup></div>
+      <span style="color:var(--accent);">(x + 2)</span> ) <span style="color:var(--orange);border-top:2px solid var(--text-dim);padding-top:4px;">2x<sup>3</sup> + 3x<sup>2</sup> - x + 5</span>
+    </div>`
+  },
+  {
+    text: 'Step 2: Multiply (x + 2) by 2x<sup>2</sup> = 2x<sup>3</sup> + 4x<sup>2</sup>. Write below and subtract.',
+    html: `<div style="font-weight:600;">
+      <div style="padding-left:4.5rem;color:var(--green);">2x<sup>2</sup></div>
+      <span style="color:var(--accent);">(x + 2)</span> ) <span style="color:var(--orange);border-top:2px solid var(--text-dim);padding-top:4px;">2x<sup>3</sup> + 3x<sup>2</sup> - x + 5</span>
+      <div style="padding-left:4.5rem;color:var(--pink);">-(2x<sup>3</sup> + 4x<sup>2</sup>)</div>
+      <div style="padding-left:4.5rem;border-top:1px solid var(--border);display:inline-block;min-width:12ch;">
+        <span style="color:var(--text);">-x<sup>2</sup> - x</span>
+      </div>
+    </div>`
+  },
+  {
+    text: 'Step 3: Divide -x<sup>2</sup> / x = -x. Write -x in the quotient.',
+    html: `<div style="font-weight:600;">
+      <div style="padding-left:4.5rem;color:var(--green);">2x<sup>2</sup> - x</div>
+      <span style="color:var(--accent);">(x + 2)</span> ) <span style="color:var(--orange);border-top:2px solid var(--text-dim);padding-top:4px;">2x<sup>3</sup> + 3x<sup>2</sup> - x + 5</span>
+      <div style="padding-left:4.5rem;color:var(--pink);">-(2x<sup>3</sup> + 4x<sup>2</sup>)</div>
+      <div style="padding-left:4.5rem;border-top:1px solid var(--border);display:inline-block;min-width:12ch;">
+        <span style="color:var(--text);">-x<sup>2</sup> - x</span>
+      </div>
+    </div>`
+  },
+  {
+    text: 'Step 4: Multiply (x + 2) by -x = -x<sup>2</sup> - 2x. Subtract.',
+    html: `<div style="font-weight:600;">
+      <div style="padding-left:4.5rem;color:var(--green);">2x<sup>2</sup> - x</div>
+      <span style="color:var(--accent);">(x + 2)</span> ) <span style="color:var(--orange);border-top:2px solid var(--text-dim);padding-top:4px;">2x<sup>3</sup> + 3x<sup>2</sup> - x + 5</span>
+      <div style="padding-left:4.5rem;color:var(--pink);">-(2x<sup>3</sup> + 4x<sup>2</sup>)</div>
+      <div style="padding-left:4.5rem;border-top:1px solid var(--border);display:inline-block;min-width:12ch;">
+        <span style="color:var(--text);">-x<sup>2</sup> - x</span>
+      </div>
+      <div style="padding-left:5.5rem;color:var(--pink);">-(-x<sup>2</sup> - 2x)</div>
+      <div style="padding-left:5.5rem;border-top:1px solid var(--border);display:inline-block;min-width:10ch;">
+        <span style="color:var(--text);">x + 5</span>
+      </div>
+    </div>`
+  },
+  {
+    text: 'Step 5: Divide x / x = 1. Write +1 in the quotient.',
+    html: `<div style="font-weight:600;">
+      <div style="padding-left:4.5rem;color:var(--green);">2x<sup>2</sup> - x + 1</div>
+      <span style="color:var(--accent);">(x + 2)</span> ) <span style="color:var(--orange);border-top:2px solid var(--text-dim);padding-top:4px;">2x<sup>3</sup> + 3x<sup>2</sup> - x + 5</span>
+      <div style="padding-left:4.5rem;color:var(--pink);">-(2x<sup>3</sup> + 4x<sup>2</sup>)</div>
+      <div style="padding-left:4.5rem;border-top:1px solid var(--border);display:inline-block;min-width:12ch;">
+        <span style="color:var(--text);">-x<sup>2</sup> - x</span>
+      </div>
+      <div style="padding-left:5.5rem;color:var(--pink);">-(-x<sup>2</sup> - 2x)</div>
+      <div style="padding-left:5.5rem;border-top:1px solid var(--border);display:inline-block;min-width:10ch;">
+        <span style="color:var(--text);">x + 5</span>
+      </div>
+    </div>`
+  },
+  {
+    text: 'Step 6: Multiply (x + 2) by 1 = x + 2. Subtract to get the remainder.',
+    html: `<div style="font-weight:600;">
+      <div style="padding-left:4.5rem;color:var(--green);">2x<sup>2</sup> - x + 1</div>
+      <span style="color:var(--accent);">(x + 2)</span> ) <span style="color:var(--orange);border-top:2px solid var(--text-dim);padding-top:4px;">2x<sup>3</sup> + 3x<sup>2</sup> - x + 5</span>
+      <div style="padding-left:4.5rem;color:var(--pink);">-(2x<sup>3</sup> + 4x<sup>2</sup>)</div>
+      <div style="padding-left:4.5rem;border-top:1px solid var(--border);display:inline-block;min-width:12ch;">
+        <span style="color:var(--text);">-x<sup>2</sup> - x</span>
+      </div>
+      <div style="padding-left:5.5rem;color:var(--pink);">-(-x<sup>2</sup> - 2x)</div>
+      <div style="padding-left:5.5rem;border-top:1px solid var(--border);display:inline-block;min-width:10ch;">
+        <span style="color:var(--text);">x + 5</span>
+      </div>
+      <div style="padding-left:6.5rem;color:var(--pink);">-(x + 2)</div>
+      <div style="padding-left:6.5rem;border-top:1px solid var(--border);display:inline-block;min-width:8ch;">
+        <span style="color:var(--orange);font-weight:700;">3</span> <span style="color:var(--text-dim);font-size:0.8rem;">&larr; remainder</span>
+      </div>
+    </div>`
+  },
+  {
+    text: 'Result: Quotient is 2x<sup>2</sup> - x + 1 with remainder 3. So the answer is 2x<sup>2</sup> - x + 1 + 3/(x + 2)',
+    html: `<div style="text-align:center;margin:1rem 0;">
+      <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:0.5rem;">FINAL RESULT</div>
+      <div style="font-size:1.2rem;font-weight:700;color:var(--green);">
+        2x<sup>2</sup> - x + 1 +
+        <span class="frac-display" style="font-size:1.1rem;">
+          <span class="frac-num" style="color:var(--orange);">3</span>
+          <span class="frac-bar"></span>
+          <span class="frac-den" style="color:var(--accent);">x + 2</span>
+        </span>
+      </div>
+    </div>`
+  }
+];
+
+let ldStep = 0;
+
+function ldRender() {
+  const data = ldStepData[ldStep];
+  $('longDivSteps').innerHTML = data.html;
+  $('ldExplanation').innerHTML = data.text;
+  $('ldPrevBtn').disabled = ldStep === 0;
+  $('ldNextBtn').disabled = ldStep === ldStepData.length - 1;
+  springPop($('longDivSteps'));
+}
+
+function ldNext() {
+  if (ldStep < ldStepData.length - 1) { ldStep++; ldRender(); }
+}
+
+function ldPrev() {
+  if (ldStep > 0) { ldStep--; ldRender(); }
+}
+
+function ldReset() {
+  ldStep = 0;
+  ldRender();
+}
+
+ldRender();
+
+const divProblemsData = [
+  {
+    prompt: '(x<sup>2</sup> + 5x + 6) &divide; (x + 2)',
+    answer: 'x+3',
+    display: 'x + 3 (no remainder)',
+    alts: ['x + 3']
+  },
+  {
+    prompt: '(2x<sup>2</sup> + 7x + 3) &divide; (x + 3)',
+    answer: '2x+1',
+    display: '2x + 1 (no remainder)',
+    alts: ['2x + 1']
+  },
+  {
+    prompt: '(x<sup>3</sup> - 1) &divide; (x - 1)',
+    answer: 'x^2+x+1',
+    display: 'x^2 + x + 1 (no remainder)',
+    alts: ['x^2 + x + 1', 'x^2+x+1']
+  },
+];
+
+buildProblems(divProblemsData, 'divProblems', 'dp');
+function checkDivProblems() { checkProblems(divProblemsData, 'dp', 1); }
+function showDivAnswers() { showAnswers(divProblemsData, 'dp', 1); }
+
+
+// ====== SECTION 3: Factoring Strategies ======
+
+function toggleFlowExample(id) {
+  const el = $(id);
+  if (el.classList.contains('visible')) {
+    el.classList.remove('visible');
+  } else {
+    // Close all others
+    document.querySelectorAll('.flow-example').forEach(fe => fe.classList.remove('visible'));
+    el.classList.add('visible');
+  }
+}
+
+const factorProblemsData = [
+  {
+    prompt: 'Factor: x<sup>2</sup> - 16',
+    answer: '(x+4)(x-4)',
+    display: '(x + 4)(x - 4)',
+    alts: ['(x-4)(x+4)', '(x + 4)(x - 4)', '(x - 4)(x + 4)']
+  },
+  {
+    prompt: 'Factor: x<sup>2</sup> + 7x + 12',
+    answer: '(x+3)(x+4)',
+    display: '(x + 3)(x + 4)',
+    alts: ['(x+4)(x+3)', '(x + 3)(x + 4)', '(x + 4)(x + 3)']
+  },
+  {
+    prompt: 'Factor: 2x<sup>2</sup> - 5x - 3',
+    answer: '(2x+1)(x-3)',
+    display: '(2x + 1)(x - 3)',
+    alts: ['(x-3)(2x+1)', '(2x + 1)(x - 3)', '(x - 3)(2x + 1)']
+  },
+  {
+    prompt: 'Factor: 3x<sup>3</sup> - 12x',
+    answer: '3x(x+2)(x-2)',
+    display: '3x(x + 2)(x - 2)',
+    alts: ['3x(x-2)(x+2)', '3x(x + 2)(x - 2)', '3x(x - 2)(x + 2)']
+  },
+  {
+    prompt: 'Factor: x<sup>2</sup> - 10x + 25',
+    answer: '(x-5)^2',
+    display: '(x - 5)^2',
+    alts: ['(x - 5)^2', '(x-5)(x-5)', '(x - 5)(x - 5)']
+  },
+];
+
+buildProblems(factorProblemsData, 'factorProblems', 'fp');
+function checkFactorProblems() { checkProblems(factorProblemsData, 'fp', 2); }
+function showFactorAnswers() { showAnswers(factorProblemsData, 'fp', 2); }
+
+
+// ====== SECTION 4: Rational Expressions ======
+
+let ratSimplifyStep = 0;
+const ratSimplifySteps = [
+  {
+    text: 'Original expression',
+    html: `<div style="text-align:center;font-size:1rem;font-weight:600;margin:0.5rem 0;">
+      <span class="frac-display">
+        <span class="frac-num">x<sup>2</sup> - 9</span>
+        <span class="frac-bar"></span>
+        <span class="frac-den">x<sup>2</sup> + 5x + 6</span>
+      </span>
+    </div>`
+  },
+  {
+    text: 'Factor the numerator: x<sup>2</sup> - 9 is a difference of squares = (x + 3)(x - 3)',
+    html: `<div style="text-align:center;font-size:1rem;font-weight:600;margin:0.5rem 0;">
+      <span class="frac-display">
+        <span class="frac-num" style="color:var(--green);">(x + 3)(x - 3)</span>
+        <span class="frac-bar"></span>
+        <span class="frac-den">x<sup>2</sup> + 5x + 6</span>
+      </span>
+    </div>`
+  },
+  {
+    text: 'Factor the denominator: x<sup>2</sup> + 5x + 6 = (x + 2)(x + 3)',
+    html: `<div style="text-align:center;font-size:1rem;font-weight:600;margin:0.5rem 0;">
+      <span class="frac-display">
+        <span class="frac-num" style="color:var(--green);">(x + 3)(x - 3)</span>
+        <span class="frac-bar"></span>
+        <span class="frac-den" style="color:var(--green);">(x + 2)(x + 3)</span>
+      </span>
+    </div>`
+  },
+  {
+    text: 'Cancel the common factor (x + 3)',
+    html: `<div style="text-align:center;font-size:1rem;font-weight:600;margin:0.5rem 0;">
+      <span class="frac-display">
+        <span class="frac-num"><span class="cancel-line cancelled">(x + 3)</span>(x - 3)</span>
+        <span class="frac-bar"></span>
+        <span class="frac-den">(x + 2)<span class="cancel-line cancelled">(x + 3)</span></span>
+      </span>
+    </div>`
+  },
+  {
+    text: 'Result: (x - 3)/(x + 2), with domain restrictions x != -2 and x != -3',
+    html: `<div style="text-align:center;margin:0.5rem 0;">
+      <div style="font-size:1.2rem;font-weight:700;color:var(--green);margin-bottom:0.5rem;">
+        <span class="frac-display" style="font-size:1.1rem;">
+          <span class="frac-num" style="color:var(--green);">x - 3</span>
+          <span class="frac-bar"></span>
+          <span class="frac-den" style="color:var(--green);">x + 2</span>
+        </span>
+      </div>
+      <div style="font-size:0.8rem;">
+        <span class="tag pink">x != -2</span>
+        <span class="tag pink">x != -3</span>
+      </div>
+    </div>`
+  }
+];
+
+function advanceRatSimplify() {
+  if (ratSimplifyStep < ratSimplifySteps.length - 1) {
+    ratSimplifyStep++;
+    renderRatSimplify();
+  }
+}
+
+function resetRatSimplify() {
+  ratSimplifyStep = 0;
+  renderRatSimplify();
+}
+
+function renderRatSimplify() {
+  const data = ratSimplifySteps[ratSimplifyStep];
+  $('ratSimplifySteps').innerHTML = `
+    <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:0.3rem;">${data.text}</div>
+    ${data.html}
+  `;
+  $('ratStepBtn').disabled = ratSimplifyStep === ratSimplifySteps.length - 1;
+  springPop($('ratSimplifySteps'));
+}
+
+renderRatSimplify();
+
+// Draw rational function graph
+function drawRationalGraph() {
+  const svg = $('svgRational');
+  const W = 500, H = 350;
+  const pad = { top: 20, right: 20, bottom: 35, left: 50 };
+  const gW = W - pad.left - pad.right;
+  const gH = H - pad.top - pad.bottom;
+
+  const xMin = -8, xMax = 6, yMin = -6, yMax = 6;
+
+  function tx(x) { return pad.left + ((x - xMin) / (xMax - xMin)) * gW; }
+  function ty(y) { return pad.top + gH - ((y - yMin) / (yMax - yMin)) * gH; }
+
+  let html = '';
+  html += `<rect x="0" y="0" width="${W}" height="${H}" fill="#1a1d24"/>`;
+
+  // Grid
+  for (let x = Math.ceil(xMin); x <= xMax; x++) {
+    const px = tx(x);
+    html += `<line x1="${px}" y1="${pad.top}" x2="${px}" y2="${H - pad.bottom}" stroke="#2a2e38" stroke-width="1"/>`;
+    html += `<text x="${px}" y="${H - pad.bottom + 15}" text-anchor="middle" fill="#8a8578" font-size="10" font-family="JetBrains Mono">${x}</text>`;
+  }
+  for (let y = Math.ceil(yMin); y <= yMax; y++) {
+    const py = ty(y);
+    html += `<line x1="${pad.left}" y1="${py}" x2="${W - pad.right}" y2="${py}" stroke="#2a2e38" stroke-width="1"/>`;
+    html += `<text x="${pad.left - 8}" y="${py + 4}" text-anchor="end" fill="#8a8578" font-size="10" font-family="JetBrains Mono">${y}</text>`;
+  }
+
+  // Axes
+  html += `<line x1="${tx(xMin)}" y1="${ty(0)}" x2="${tx(xMax)}" y2="${ty(0)}" stroke="#8a8578" stroke-width="1.5"/>`;
+  html += `<line x1="${tx(0)}" y1="${ty(yMin)}" x2="${tx(0)}" y2="${ty(yMax)}" stroke="#8a8578" stroke-width="1.5"/>`;
+
+  // Vertical asymptote at x = -2 (hole at x = -3 since it cancels)
+  html += `<line x1="${tx(-2)}" y1="${pad.top}" x2="${tx(-2)}" y2="${H - pad.bottom}" stroke="var(--pink)" stroke-width="1.5" stroke-dasharray="6,4"/>`;
+  html += `<text x="${tx(-2) + 5}" y="${pad.top + 15}" fill="var(--pink)" font-size="10" font-family="JetBrains Mono">x = -2</text>`;
+
+  // Simplified function: f(x) = (x-3)/(x+2), with hole at x = -3
+  // At x = -3: f(-3) = (-3-3)/(-3+2) = -6/-1 = 6 (hole)
+  const segments = [
+    { from: xMin, to: -2.05 },
+    { from: -1.95, to: xMax }
+  ];
+
+  segments.forEach(seg => {
+    let path = '';
+    let first = true;
+    for (let x = seg.from; x <= seg.to; x += 0.05) {
+      const y = (x - 3) / (x + 2);
+      if (y < yMin - 2 || y > yMax + 2) { first = true; continue; }
+      const px = tx(x);
+      const py = ty(Math.max(yMin, Math.min(yMax, y)));
+      path += (first ? 'M' : 'L') + `${px.toFixed(1)},${py.toFixed(1)}`;
+      first = false;
+    }
+    html += `<path d="${path}" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"/>`;
+  });
+
+  // Hole at x = -3, y = 6 (outside visible range, show label)
+  const holeY = (-3 - 3) / (-3 + 2); // = 6
+  if (holeY >= yMin && holeY <= yMax) {
+    html += `<circle cx="${tx(-3)}" cy="${ty(holeY)}" r="5" fill="#1a1d24" stroke="var(--orange)" stroke-width="2"/>`;
+    html += `<text x="${tx(-3) + 8}" y="${ty(holeY) - 8}" fill="var(--orange)" font-size="10" font-family="JetBrains Mono" font-weight="600">Hole (-3, 6)</text>`;
+  }
+
+  // Labels
+  html += `<text x="${W / 2}" y="${H - 3}" text-anchor="middle" fill="#8a8578" font-size="11" font-family="JetBrains Mono">f(x) = (x-3)/(x+2)</text>`;
+
+  svg.innerHTML = html;
+}
+
+drawRationalGraph();
+
+const ratProblemsData = [
+  {
+    prompt: 'Simplify: (x<sup>2</sup> - 4)/(x + 2)',
+    answer: 'x-2',
+    display: 'x - 2 (cancel (x+2))',
+    alts: ['x - 2']
+  },
+  {
+    prompt: 'Simplify: (x<sup>2</sup> + 3x)/(x<sup>2</sup> + 5x + 6)',
+    answer: 'x/(x+2)',
+    display: 'x/(x + 2)',
+    alts: ['x / (x+2)', 'x/(x + 2)']
+  },
+  {
+    prompt: 'Domain restriction of 3/(x<sup>2</sup> - 9)',
+    answer: 'x!=3,x!=-3',
+    display: 'x != 3, x != -3',
+    alts: ['x!=-3,x!=3', 'x != 3, x != -3', 'x != -3, x != 3', 'x!=3, x!=-3', 'x!=-3, x!=3']
+  },
+  {
+    prompt: 'Simplify: (2x<sup>2</sup> - 8)/(2x + 4)',
+    answer: 'x-2',
+    display: 'x - 2 (factor 2 from both, cancel (x+2))',
+    alts: ['x - 2']
+  },
+];
+
+buildProblems(ratProblemsData, 'ratProblems', 'rp');
+function checkRatProblems() { checkProblems(ratProblemsData, 'rp', 3); }
+function showRatAnswers() { showAnswers(ratProblemsData, 'rp', 3); }
+
+
+// ====== SECTION 5: Adding & Multiplying Rationals ======
+
+function showCrossCancelDemo() {
+  setTimeout(() => { $('mc1').classList.add('cancelled'); $('mc4').classList.add('cancelled'); }, 100);
+  setTimeout(() => { $('mc2').classList.add('cancelled'); $('mc3').classList.add('cancelled'); }, 500);
+  setTimeout(() => {
+    $('multDemoResult').textContent = '= 1';
+    $('multDemoSteps').innerHTML = '(x+3) cancels with (x+3), and (x-1) cancels with (x-1). What remains is 1/1 = 1.';
+  }, 900);
+}
+
+function resetCrossCancelDemo() {
+  ['mc1','mc2','mc3','mc4'].forEach(id => $(id).classList.remove('cancelled'));
+  $('multDemoResult').textContent = '';
+  $('multDemoSteps').textContent = '';
+}
+
+let addDemoStep = 0;
+const addDemoSteps = [
+  {
+    text: 'Identify denominators: (x + 1) and (x - 1). These share no common factors.',
+    html: `<div style="text-align:center;font-size:0.9rem;font-weight:600;">
+      LCD = <span style="color:var(--green);">(x + 1)(x - 1)</span>
+    </div>`
+  },
+  {
+    text: 'Rewrite each fraction with the LCD:',
+    html: `<div style="text-align:center;font-size:0.95rem;font-weight:600;">
+      <span class="frac-display">
+        <span class="frac-num">3<span style="color:var(--green);">(x - 1)</span></span>
+        <span class="frac-bar"></span>
+        <span class="frac-den">(x + 1)(x - 1)</span>
+      </span>
+      <span style="color:var(--text-dim);margin:0 0.3rem;">+</span>
+      <span class="frac-display">
+        <span class="frac-num">2<span style="color:var(--green);">(x + 1)</span></span>
+        <span class="frac-bar"></span>
+        <span class="frac-den">(x + 1)(x - 1)</span>
+      </span>
+    </div>`
+  },
+  {
+    text: 'Expand the numerators: 3(x-1) = 3x - 3 and 2(x+1) = 2x + 2',
+    html: `<div style="text-align:center;font-size:0.95rem;font-weight:600;">
+      <span class="frac-display">
+        <span class="frac-num">3x - 3 + 2x + 2</span>
+        <span class="frac-bar"></span>
+        <span class="frac-den">(x + 1)(x - 1)</span>
+      </span>
+    </div>`
+  },
+  {
+    text: 'Combine like terms in the numerator: 3x + 2x = 5x, -3 + 2 = -1',
+    html: `<div style="text-align:center;margin:0.5rem 0;">
+      <div style="font-size:1.2rem;font-weight:700;color:var(--green);">
+        <span class="frac-display" style="font-size:1.1rem;">
+          <span class="frac-num" style="color:var(--green);">5x - 1</span>
+          <span class="frac-bar"></span>
+          <span class="frac-den" style="color:var(--green);">(x + 1)(x - 1)</span>
+        </span>
+      </div>
+    </div>`
+  }
+];
+
+function advanceAddDemo() {
+  if (addDemoStep < addDemoSteps.length - 1) {
+    addDemoStep++;
+    renderAddDemo();
+  }
+}
+
+function resetAddDemo() {
+  addDemoStep = 0;
+  renderAddDemo();
+}
+
+function renderAddDemo() {
+  const data = addDemoSteps[addDemoStep];
+  $('addSteps').innerHTML = `
+    <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:0.3rem;">${data.text}</div>
+    ${data.html}
+  `;
+  $('addStepBtn').disabled = addDemoStep === addDemoSteps.length - 1;
+  springPop($('addSteps'));
+}
+
+renderAddDemo();
+
+const opsProblemsData = [
+  {
+    prompt: 'Multiply: <span class="frac-display" style="font-size:0.85rem;"><span class="frac-num" style="font-size:0.85rem;">x+1</span><span class="frac-bar"></span><span class="frac-den" style="font-size:0.85rem;">x-2</span></span> &middot; <span class="frac-display" style="font-size:0.85rem;"><span class="frac-num" style="font-size:0.85rem;">x-2</span><span class="frac-bar"></span><span class="frac-den" style="font-size:0.85rem;">x+3</span></span>',
+    answer: '(x+1)/(x+3)',
+    display: '(x+1)/(x+3)',
+    alts: ['(x + 1)/(x + 3)', '(x+1) / (x+3)']
+  },
+  {
+    prompt: 'Add: <span class="frac-display" style="font-size:0.85rem;"><span class="frac-num" style="font-size:0.85rem;">1</span><span class="frac-bar"></span><span class="frac-den" style="font-size:0.85rem;">x</span></span> + <span class="frac-display" style="font-size:0.85rem;"><span class="frac-num" style="font-size:0.85rem;">1</span><span class="frac-bar"></span><span class="frac-den" style="font-size:0.85rem;">x+1</span></span>',
+    answer: '(2x+1)/(x(x+1))',
+    display: '(2x+1) / (x(x+1))',
+    alts: ['(2x+1)/(x^2+x)', '(2x + 1)/(x(x + 1))', '(2x+1)/x(x+1)']
+  },
+  {
+    prompt: 'Subtract: <span class="frac-display" style="font-size:0.85rem;"><span class="frac-num" style="font-size:0.85rem;">5</span><span class="frac-bar"></span><span class="frac-den" style="font-size:0.85rem;">x-1</span></span> - <span class="frac-display" style="font-size:0.85rem;"><span class="frac-num" style="font-size:0.85rem;">2</span><span class="frac-bar"></span><span class="frac-den" style="font-size:0.85rem;">x-1</span></span>',
+    answer: '3/(x-1)',
+    display: '3/(x - 1)',
+    alts: ['3 / (x-1)', '3/(x - 1)']
+  },
+  {
+    prompt: 'Multiply: <span class="frac-display" style="font-size:0.85rem;"><span class="frac-num" style="font-size:0.85rem;">x<sup>2</sup>-4</span><span class="frac-bar"></span><span class="frac-den" style="font-size:0.85rem;">x+3</span></span> &middot; <span class="frac-display" style="font-size:0.85rem;"><span class="frac-num" style="font-size:0.85rem;">1</span><span class="frac-bar"></span><span class="frac-den" style="font-size:0.85rem;">x-2</span></span>',
+    answer: '(x+2)/(x+3)',
+    display: '(x+2)/(x+3) -- factor x^2-4 = (x+2)(x-2), cancel (x-2)',
+    alts: ['(x + 2)/(x + 3)', '(x+2) / (x+3)']
+  },
+];
+
+buildProblems(opsProblemsData, 'opsProblems', 'op');
+function checkOpsProblems() { checkProblems(opsProblemsData, 'op', 4); }
+function showOpsAnswers() { showAnswers(opsProblemsData, 'op', 4); }
+
+
+// ====== SECTION 6: Quick Quiz ======
+
+const quizData = [
+  { q: 'What is the degree of 4x<sup>5</sup> - x<sup>3</sup> + 2?', answer: '5', alts: [], explanation: 'The highest exponent is 5.' },
+  { q: 'Leading coefficient of -3x<sup>4</sup> + 7x<sup>2</sup> - 1', answer: '-3', alts: [], explanation: 'The coefficient of x^4 (highest degree term) is -3.' },
+  { q: '(x<sup>2</sup> + 3x - 10) &divide; (x - 2) = ?', answer: 'x+5', alts: ['x + 5'], explanation: 'x^2 + 3x - 10 = (x + 5)(x - 2). Dividing by (x-2) gives x + 5.' },
+  { q: 'Factor: x<sup>2</sup> - 25', answer: '(x+5)(x-5)', alts: ['(x-5)(x+5)', '(x + 5)(x - 5)', '(x - 5)(x + 5)'], explanation: 'Difference of squares: (x+5)(x-5).' },
+  { q: 'Factor: x<sup>2</sup> - 3x - 10', answer: '(x-5)(x+2)', alts: ['(x+2)(x-5)', '(x - 5)(x + 2)', '(x + 2)(x - 5)'], explanation: 'Find two numbers that multiply to -10 and add to -3: -5 and 2.' },
+  { q: 'Simplify: (x<sup>2</sup> - 1)/(x + 1)', answer: 'x-1', alts: ['x - 1'], explanation: 'x^2 - 1 = (x+1)(x-1). Cancel (x+1). Answer: x - 1.' },
+  { q: 'Domain restriction of 5/(x<sup>2</sup> - 4)', answer: 'x!=2,x!=-2', alts: ['x!=-2,x!=2', 'x != 2, x != -2', 'x != -2, x != 2'], explanation: 'x^2 - 4 = 0 when x = 2 or x = -2.' },
+  { q: 'Add: 1/x + 2/x', answer: '3/x', alts: ['3 / x'], explanation: 'Same denominator: (1 + 2)/x = 3/x.' },
+  { q: 'Factor: 2x<sup>2</sup> + 5x + 3', answer: '(2x+3)(x+1)', alts: ['(x+1)(2x+3)', '(2x + 3)(x + 1)', '(x + 1)(2x + 3)'], explanation: 'Find factors of 2*3=6 that add to 5: 2 and 3. Split: 2x^2 + 2x + 3x + 3 = 2x(x+1) + 3(x+1) = (2x+3)(x+1).' },
+  { q: 'End behavior of -2x<sup>3</sup> + x: as x&rarr;+&infin;, f(x)&rarr;?', answer: '-infinity', alts: ['-inf', 'negative infinity', '-infin', '-oo', 'negative inf'], explanation: 'Odd degree, negative leading coefficient: as x goes to +infinity, f(x) goes to -infinity.' },
+];
+
+function buildQuiz() {
+  const cont = $('quizProblems');
+  cont.innerHTML = '';
+  quizData.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-problem';
+    div.id = 'qp' + i;
+    div.innerHTML = `
+      <div class="q-num">Question ${i + 1}</div>
+      <div class="q-text">${q.q}</div>
+      <input type="text" id="qIn${i}" placeholder="your answer">
+      <div class="q-feedback" id="qFb${i}"></div>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function gradeQuiz() {
+  let score = 0;
+  quizData.forEach((q, i) => {
+    const input = normalize($('qIn' + i).value);
+    const answers = [q.answer, ...q.alts].map(normalize);
+    const isRight = answers.includes(input);
+
+    if (isRight) {
+      score++;
+      $('qp' + i).className = 'quiz-problem correct';
+      $('qFb' + i).textContent = 'Correct!';
+      $('qFb' + i).className = 'q-feedback correct';
+      springPop($('qp' + i));
+    } else {
+      $('qp' + i).className = 'quiz-problem incorrect';
+      $('qFb' + i).innerHTML = `Incorrect. Answer: ${q.answer}. ${q.explanation}`;
+      $('qFb' + i).className = 'q-feedback incorrect';
+      shakeEl($('qp' + i));
+    }
+  });
+
+  $('quizScore').innerHTML = `Score: <span>${score} / 10</span>`;
+  if (score >= 7) markComplete(5);
+}
+
+function showQuizAnswers() {
+  quizData.forEach((q, i) => {
+    $('qIn' + i).value = q.answer;
+    $('qp' + i).className = 'quiz-problem correct';
+    $('qFb' + i).innerHTML = q.explanation;
+    $('qFb' + i).className = 'q-feedback correct';
+  });
+  $('quizScore').innerHTML = `Score: <span>10 / 10</span>`;
+  markComplete(5);
+}
+
+function resetQuiz() {
+  quizData.forEach((q, i) => {
+    $('qIn' + i).value = '';
+    $('qp' + i).className = 'quiz-problem';
+    $('qFb' + i).textContent = '';
+    $('qFb' + i).className = 'q-feedback';
+  });
+  $('quizScore').innerHTML = `Score: <span>-- / 10</span>`;
+  completed[5] = false;
+  $('sec5').classList.remove('completed');
+  updateProgress();
+}
+
+buildQuiz();
+
+</script>
+</body>
+</html>

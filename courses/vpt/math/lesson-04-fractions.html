@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 04 -- Fractions</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #272d38;
+    --border: #333a48;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── Progress Bar ── */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* ── Header ── */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── Collapsible Cards ── */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details[open] { border-color: var(--accent); }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .section-num {
+    font-size: 0.7rem;
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .card-body { padding: 1.25rem; }
+
+  /* ── Insight boxes ── */
+  .insight {
+    background: rgba(99, 102, 241, 0.08);
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1rem;
+    margin-top: 1.25rem;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .insight strong { color: var(--accent); }
+
+  /* ── Fraction bars ── */
+  .fraction-bar-container { margin: 1rem 0; }
+
+  .fraction-bar {
+    display: flex;
+    height: 44px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 2px solid var(--border);
+    transition: border-color 0.3s;
+  }
+  .fraction-bar.match { border-color: var(--green); box-shadow: 0 0 12px rgba(34,197,94,0.2); }
+
+  .fraction-bar .piece {
+    flex: 1;
+    border-right: 1px solid var(--border);
+    transition: background 0.25s;
+    background: transparent;
+    position: relative;
+  }
+  .fraction-bar .piece:last-child { border-right: none; }
+  .fraction-bar .piece.filled { background: var(--accent); }
+  .fraction-bar .piece.filled-green { background: var(--green); }
+  .fraction-bar .piece.filled-pink { background: var(--pink); }
+  .fraction-bar .piece.filled-orange { background: var(--orange); }
+
+  /* ── Slider rows ── */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.6rem 0;
+  }
+  .slider-row label {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    min-width: 110px;
+    flex-shrink: 0;
+  }
+  .slider-row input[type=range] { flex: 1; max-width: 320px; }
+  .slider-row .val {
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 28px;
+    text-align: center;
+    color: var(--accent);
+  }
+
+  /* ── Range styling ── */
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+  }
+
+  /* ── Display values ── */
+  .display {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0.75rem 0;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  .display .frac { color: var(--accent); }
+  .display .eq { color: var(--text-dim); margin: 0 0.3rem; }
+  .display .dec { color: var(--orange); }
+
+  /* ── Number line ── */
+  .number-line-container {
+    margin: 1.25rem 0 0.5rem;
+    position: relative;
+  }
+  .number-line-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-bottom: 0.4rem;
+  }
+  .number-line {
+    position: relative;
+    height: 36px;
+    margin: 0 20px;
+  }
+  .number-line .track {
+    position: absolute;
+    top: 16px;
+    left: 0; right: 0;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+  }
+  .number-line .tick {
+    position: absolute;
+    top: 10px;
+    width: 2px; height: 14px;
+    background: var(--text-dim);
+    transform: translateX(-1px);
+  }
+  .number-line .tick-label {
+    position: absolute;
+    top: 26px;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    transform: translateX(-50%);
+  }
+  .number-line .marker {
+    position: absolute;
+    top: 4px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--pink);
+    transform: translateX(-6px);
+    transition: left 0.3s ease;
+    box-shadow: 0 0 8px rgba(236,72,153,0.4);
+  }
+
+  /* ── Section 2 specifics ── */
+  .equiv-display {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+    min-height: 1.6em;
+    transition: color 0.3s;
+  }
+  .equiv-display.match { color: var(--green); }
+
+  .simplify-tool {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .simplify-tool h3 {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .frac-input {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 1.1rem;
+  }
+  .frac-input input {
+    width: 52px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 600;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 6px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .frac-input input:focus { border-color: var(--accent); }
+  .frac-input .slash { color: var(--text-dim); font-weight: 300; }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 6px 16px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: var(--accent); color: #fff; }
+
+  .steps {
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+    line-height: 1.8;
+  }
+  .steps .step { color: var(--text-dim); }
+  .steps .step strong { color: var(--text); }
+  .steps .result { color: var(--green); font-weight: 600; margin-top: 0.25rem; }
+
+  .simplify-bars {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 0.75rem;
+  }
+  .simplify-bars .arrow {
+    color: var(--text-dim);
+    font-size: 1.2rem;
+  }
+  .simplify-bars .mini-bar-wrap {
+    flex: 1;
+  }
+  .simplify-bars .mini-bar-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  .mini-bar {
+    display: flex;
+    height: 28px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .mini-bar .piece {
+    flex: 1;
+    border-right: 1px solid var(--border);
+    transition: background 0.4s;
+    background: transparent;
+  }
+  .mini-bar .piece:last-child { border-right: none; }
+  .mini-bar .piece.filled { background: var(--accent); }
+  .mini-bar .piece.filled-green { background: var(--green); }
+
+  /* ── Section 3 specifics ── */
+  .add-fractions-area {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.75rem;
+    align-items: start;
+  }
+  .add-frac-col h4 {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  .plus-col {
+    display: flex;
+    align-items: center;
+    padding-top: 2.5rem;
+    font-size: 1.4rem;
+    color: var(--text-dim);
+  }
+
+  .add-btn-row {
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  .add-result-area {
+    margin: 1rem 0;
+    min-height: 2rem;
+  }
+  .add-steps {
+    text-align: center;
+    font-size: 0.95rem;
+    line-height: 2;
+  }
+  .add-steps .step-line { color: var(--text-dim); }
+  .add-steps .step-line .hl { color: var(--accent); font-weight: 600; }
+  .add-steps .result-line { color: var(--green); font-weight: 600; font-size: 1.1rem; }
+
+  .result-bar-area { margin: 0.75rem 0; }
+  .result-bar-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  /* ── Practice Problems ── */
+  .practice {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .practice h3 {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  .problem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+  }
+  .problem .prompt { min-width: 140px; color: var(--text); }
+  .problem input {
+    width: 44px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .problem input:focus { border-color: var(--accent); }
+  .problem .slash { color: var(--text-dim); }
+  .problem .check-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .problem .check-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .problem .feedback {
+    font-size: 0.78rem;
+    font-weight: 600;
+    min-width: 120px;
+    transition: opacity 0.3s;
+  }
+  .problem .feedback.correct { color: var(--green); }
+  .problem .feedback.wrong { color: var(--pink); }
+
+  .practice-score {
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+  .practice-score strong { color: var(--green); }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    body { padding: 1rem; }
+    .add-fractions-area { grid-template-columns: 1fr; gap: 0.5rem; }
+    .plus-col { padding-top: 0; justify-content: center; }
+    .slider-row label { min-width: 90px; font-size: 0.72rem; }
+    .display { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar">
+  <div class="seg" id="prog1"></div>
+  <div class="seg" id="prog2"></div>
+  <div class="seg" id="prog3"></div>
+</div>
+
+<h1>Lesson 04 -- Fractions</h1>
+<p class="subtitle">Fractions are just division you can see.</p>
+
+<!-- ============================== SECTION 1 ============================== -->
+<details id="section1" open>
+  <summary>
+    <span class="section-num">01</span>
+    Fractions Are Division
+  </summary>
+  <div class="card-body">
+
+    <div class="fraction-bar-container">
+      <div class="fraction-bar" id="s1Bar"></div>
+    </div>
+
+    <div class="slider-row">
+      <label for="s1Denom">Denominator</label>
+      <input type="range" id="s1Denom" min="2" max="12" value="4">
+      <span class="val" id="s1DenomVal">4</span>
+    </div>
+
+    <div class="slider-row">
+      <label for="s1Numer">Numerator</label>
+      <input type="range" id="s1Numer" min="0" max="4" value="3">
+      <span class="val" id="s1NumerVal">3</span>
+    </div>
+
+    <div class="display" id="s1Display">
+      <span class="frac">3/4</span>
+      <span class="eq">=</span>
+      <span class="frac">3 / 4</span>
+      <span class="eq">=</span>
+      <span class="dec">0.75</span>
+    </div>
+
+    <div class="number-line-container">
+      <div class="number-line-label">Position on the number line (0 to 2)</div>
+      <div class="number-line" id="s1NumberLine">
+        <div class="track"></div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Key insight:</strong> A fraction is division that hasn't happened yet.
+      The denominator says how many pieces to cut. The numerator says how many pieces to take.
+    </div>
+  </div>
+</details>
+
+<!-- ============================== SECTION 2 ============================== -->
+<details id="section2">
+  <summary>
+    <span class="section-num">02</span>
+    Equivalent Fractions &amp; Simplifying
+  </summary>
+  <div class="card-body">
+
+    <p style="font-size:0.82rem; color:var(--text-dim); margin-bottom:0.75rem;">
+      Set a reference fraction on top. Adjust the bottom bar's denominator. When both bars fill the same amount, they are equivalent.
+    </p>
+
+    <!-- Reference fraction controls -->
+    <div class="slider-row">
+      <label for="s2RefNumer">Reference num.</label>
+      <input type="range" id="s2RefNumer" min="1" max="6" value="1">
+      <span class="val" id="s2RefNumerVal">1</span>
+    </div>
+    <div class="slider-row">
+      <label for="s2RefDenom">Reference den.</label>
+      <input type="range" id="s2RefDenom" min="2" max="12" value="2">
+      <span class="val" id="s2RefDenomVal">2</span>
+    </div>
+
+    <div class="fraction-bar-container">
+      <div class="fraction-bar" id="s2TopBar" style="margin-bottom:6px;"></div>
+      <div class="fraction-bar" id="s2BotBar"></div>
+    </div>
+
+    <!-- Bottom bar denominator -->
+    <div class="slider-row">
+      <label for="s2BotDenom">Bottom denom.</label>
+      <input type="range" id="s2BotDenom" min="2" max="12" value="6">
+      <span class="val" id="s2BotDenomVal">6</span>
+    </div>
+
+    <div class="equiv-display" id="s2Equiv"></div>
+
+    <!-- Simplification tool -->
+    <div class="simplify-tool">
+      <h3>Simplification Tool</h3>
+      <div class="input-row">
+        <span style="font-size:0.82rem; color:var(--text-dim);">Enter a fraction:</span>
+        <div class="frac-input">
+          <input type="number" id="simpNumer" min="1" max="120" value="6">
+          <span class="slash">/</span>
+          <input type="number" id="simpDenom" min="1" max="120" value="8">
+        </div>
+        <button class="btn" id="simpBtn">Simplify</button>
+      </div>
+      <div class="steps" id="simpSteps"></div>
+      <div class="simplify-bars" id="simpBars" style="display:none;">
+        <div class="mini-bar-wrap">
+          <div class="mini-bar-label" id="simpOrigLabel"></div>
+          <div class="mini-bar" id="simpOrigBar"></div>
+        </div>
+        <div class="arrow">--></div>
+        <div class="mini-bar-wrap">
+          <div class="mini-bar-label" id="simpResultLabel"></div>
+          <div class="mini-bar" id="simpResultBar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Key insight:</strong> Equivalent fractions are the same number wearing different clothes.
+      1/2 and 3/6 fill the same amount of bar -- they are the same point on the number line.
+    </div>
+  </div>
+</details>
+
+<!-- ============================== SECTION 3 ============================== -->
+<details id="section3">
+  <summary>
+    <span class="section-num">03</span>
+    Adding Fractions Visually
+  </summary>
+  <div class="card-body">
+
+    <div class="add-fractions-area">
+      <div class="add-frac-col">
+        <h4>First fraction</h4>
+        <div class="slider-row">
+          <label for="s3aN">Num.</label>
+          <input type="range" id="s3aN" min="1" max="11" value="1">
+          <span class="val" id="s3aNVal">1</span>
+        </div>
+        <div class="slider-row">
+          <label for="s3aD">Den.</label>
+          <input type="range" id="s3aD" min="2" max="12" value="3">
+          <span class="val" id="s3aDVal">3</span>
+        </div>
+        <div class="fraction-bar" id="s3aBar" style="height:32px;"></div>
+      </div>
+
+      <div class="plus-col">+</div>
+
+      <div class="add-frac-col">
+        <h4>Second fraction</h4>
+        <div class="slider-row">
+          <label for="s3bN">Num.</label>
+          <input type="range" id="s3bN" min="1" max="11" value="1">
+          <span class="val" id="s3bNVal">1</span>
+        </div>
+        <div class="slider-row">
+          <label for="s3bD">Den.</label>
+          <input type="range" id="s3bD" min="2" max="12" value="4">
+          <span class="val" id="s3bDVal">4</span>
+        </div>
+        <div class="fraction-bar" id="s3bBar" style="height:32px;"></div>
+      </div>
+    </div>
+
+    <div class="add-btn-row">
+      <button class="btn" id="addBtn">Add These Fractions</button>
+    </div>
+
+    <div class="add-result-area" id="addResult"></div>
+
+    <!-- Practice Problems -->
+    <div class="practice">
+      <h3>Practice Problems (6/6)</h3>
+      <div id="practiceProblems"></div>
+      <div class="practice-score" id="practiceScore"></div>
+    </div>
+
+    <div class="insight">
+      <strong>Key insight:</strong> To add fractions, the pieces must be the same size (same denominator).
+      If they are not, subdivide both bars until the pieces match, then count them up.
+    </div>
+  </div>
+</details>
+
+<script>
+// ── Utilities ──
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+function lcm(a, b) { return (a * b) / gcd(a, b); }
+function simplify(n, d) { const g = gcd(n, d); return [n / g, d / g]; }
+
+function buildBar(container, denom, numer, fillClass = 'filled') {
+  container.innerHTML = '';
+  for (let i = 0; i < denom; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'piece' + (i < numer ? ' ' + fillClass : '');
+    container.appendChild(piece);
+  }
+}
+
+function buildMiniBar(container, denom, numer, fillClass = 'filled') {
+  container.innerHTML = '';
+  for (let i = 0; i < denom; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'piece' + (i < numer ? ' ' + fillClass : '');
+    container.appendChild(piece);
+  }
+}
+
+// ── Progress tracking ──
+const sectionViewed = { 1: false, 2: false, 3: false };
+
+function markViewed(n) {
+  sectionViewed[n] = true;
+  updateProgress();
+}
+
+function updateProgress() {
+  document.getElementById('prog1').className = 'seg' + (sectionViewed[1] ? ' done' : '');
+  document.getElementById('prog2').className = 'seg' + (sectionViewed[2] ? ' done' : '');
+  document.getElementById('prog3').className = 'seg' + (sectionViewed[3] ? ' done' : '');
+}
+
+document.getElementById('section1').addEventListener('toggle', function() { if (this.open) markViewed(1); });
+document.getElementById('section2').addEventListener('toggle', function() { if (this.open) markViewed(2); });
+document.getElementById('section3').addEventListener('toggle', function() { if (this.open) markViewed(3); });
+
+
+// ============================== SECTION 1 ==============================
+const s1Denom = document.getElementById('s1Denom');
+const s1Numer = document.getElementById('s1Numer');
+const s1DenomVal = document.getElementById('s1DenomVal');
+const s1NumerVal = document.getElementById('s1NumerVal');
+const s1Bar = document.getElementById('s1Bar');
+const s1Display = document.getElementById('s1Display');
+const s1NumberLine = document.getElementById('s1NumberLine');
+
+function buildNumberLine() {
+  // Clear all except track
+  s1NumberLine.innerHTML = '<div class="track"></div>';
+  for (let i = 0; i <= 4; i++) {
+    const val = i * 0.5;
+    const pct = (val / 2) * 100;
+    const tick = document.createElement('div');
+    tick.className = 'tick';
+    tick.style.left = pct + '%';
+    s1NumberLine.appendChild(tick);
+
+    const label = document.createElement('div');
+    label.className = 'tick-label';
+    label.style.left = pct + '%';
+    label.textContent = val % 1 === 0 ? val.toFixed(0) : val.toFixed(1);
+    s1NumberLine.appendChild(label);
+  }
+  // marker
+  const marker = document.createElement('div');
+  marker.className = 'marker';
+  marker.id = 's1Marker';
+  s1NumberLine.appendChild(marker);
+}
+buildNumberLine();
+
+function updateS1() {
+  const d = parseInt(s1Denom.value);
+  s1DenomVal.textContent = d;
+
+  // Clamp numerator max to denominator value (allow up to 2*denom for improper fractions up to 2)
+  const maxN = d * 2;
+  s1Numer.max = maxN;
+  if (parseInt(s1Numer.value) > maxN) s1Numer.value = maxN;
+  const n = parseInt(s1Numer.value);
+  s1NumerVal.textContent = n;
+
+  // Build bar -- show up to 2 wholes if numerator exceeds denominator
+  const totalPieces = Math.max(d, n);
+  // We visualize exactly d pieces (one whole), and color n of them.
+  // For improper fractions (n > d), we still show the bar to d pieces
+  // but visually indicate overflow.
+  buildBar(s1Bar, d, Math.min(n, d));
+
+  // Display
+  const decimal = (n / d);
+  s1Display.innerHTML =
+    '<span class="frac">' + n + '/' + d + '</span>' +
+    '<span class="eq"> = </span>' +
+    '<span class="frac">' + n + ' &divide; ' + d + '</span>' +
+    '<span class="eq"> = </span>' +
+    '<span class="dec">' + decimal.toFixed(decimal === Math.floor(decimal) ? 0 : (decimal * 1000 % 10 === 0 ? (decimal * 100 % 10 === 0 ? (decimal * 10 % 10 === 0 ? 0 : 1) : 2) : 3)) + '</span>';
+
+  // Cleaner decimal display
+  let decStr;
+  const rounded = Math.round(decimal * 10000) / 10000;
+  if (rounded === Math.floor(rounded)) {
+    decStr = rounded.toFixed(0);
+  } else {
+    decStr = parseFloat(rounded.toFixed(4)).toString();
+  }
+  s1Display.innerHTML =
+    '<span class="frac">' + n + '/' + d + '</span>' +
+    '<span class="eq"> = </span>' +
+    '<span class="frac">' + n + ' &divide; ' + d + '</span>' +
+    '<span class="eq"> = </span>' +
+    '<span class="dec">' + decStr + '</span>';
+
+  // Number line marker
+  const marker = document.getElementById('s1Marker');
+  const pct = Math.min((decimal / 2) * 100, 100);
+  marker.style.left = pct + '%';
+}
+
+s1Denom.addEventListener('input', updateS1);
+s1Numer.addEventListener('input', updateS1);
+
+// Init section 1
+markViewed(1);
+updateS1();
+
+
+// ============================== SECTION 2 ==============================
+const s2RefNumer = document.getElementById('s2RefNumer');
+const s2RefDenom = document.getElementById('s2RefDenom');
+const s2RefNumerVal = document.getElementById('s2RefNumerVal');
+const s2RefDenomVal = document.getElementById('s2RefDenomVal');
+const s2BotDenom = document.getElementById('s2BotDenom');
+const s2BotDenomVal = document.getElementById('s2BotDenomVal');
+const s2TopBar = document.getElementById('s2TopBar');
+const s2BotBar = document.getElementById('s2BotBar');
+const s2Equiv = document.getElementById('s2Equiv');
+
+function updateS2() {
+  const rn = parseInt(s2RefNumer.value);
+  const rd = parseInt(s2RefDenom.value);
+  s2RefNumerVal.textContent = rn;
+  s2RefDenomVal.textContent = rd;
+
+  // Clamp reference numerator to denominator
+  s2RefNumer.max = rd;
+  if (rn > rd) { s2RefNumer.value = rd; }
+  const rnClamped = Math.min(rn, rd);
+  s2RefNumerVal.textContent = rnClamped;
+
+  const bd = parseInt(s2BotDenom.value);
+  s2BotDenomVal.textContent = bd;
+
+  // Top bar: reference fraction
+  buildBar(s2TopBar, rd, rnClamped, 'filled');
+
+  // Bottom bar: find how many pieces of bd match the reference fraction
+  // rnClamped/rd of the bar = (rnClamped * bd / rd) pieces
+  const botFilled = (rnClamped * bd) / rd;
+  const isEquiv = (botFilled === Math.round(botFilled)) && botFilled >= 0 && botFilled <= bd;
+  const botFilledInt = Math.round(botFilled);
+
+  if (isEquiv) {
+    buildBar(s2BotBar, bd, botFilledInt, 'filled-green');
+    s2TopBar.classList.add('match');
+    s2BotBar.classList.add('match');
+    s2Equiv.className = 'equiv-display match';
+    s2Equiv.textContent = rnClamped + '/' + rd + ' = ' + botFilledInt + '/' + bd;
+
+    // also recolor top bar green
+    buildBar(s2TopBar, rd, rnClamped, 'filled-green');
+  } else {
+    buildBar(s2BotBar, bd, Math.floor(botFilled), 'filled-pink');
+    s2TopBar.classList.remove('match');
+    s2BotBar.classList.remove('match');
+    s2Equiv.className = 'equiv-display';
+    s2Equiv.textContent = 'Not equivalent -- keep adjusting the bottom denominator.';
+    buildBar(s2TopBar, rd, rnClamped, 'filled');
+  }
+}
+
+s2RefNumer.addEventListener('input', updateS2);
+s2RefDenom.addEventListener('input', updateS2);
+s2BotDenom.addEventListener('input', updateS2);
+updateS2();
+
+// Simplification tool
+const simpNumer = document.getElementById('simpNumer');
+const simpDenom = document.getElementById('simpDenom');
+const simpBtn = document.getElementById('simpBtn');
+const simpSteps = document.getElementById('simpSteps');
+const simpBars = document.getElementById('simpBars');
+
+simpBtn.addEventListener('click', function() {
+  let n = parseInt(simpNumer.value) || 1;
+  let d = parseInt(simpDenom.value) || 1;
+  if (d === 0) { d = 1; }
+  if (n < 0) n = Math.abs(n);
+  if (d < 0) d = Math.abs(d);
+
+  const g = gcd(n, d);
+  const sn = n / g;
+  const sd = d / g;
+
+  let html = '';
+  if (g === 1) {
+    html = '<div class="step"><strong>' + n + '/' + d + '</strong> is already in simplest form.</div>';
+  } else {
+    html += '<div class="step">Find GCF of ' + n + ' and ' + d + ':</div>';
+
+    // Show factor steps
+    const factorsN = [];
+    const factorsD = [];
+    for (let i = 1; i <= n; i++) { if (n % i === 0) factorsN.push(i); }
+    for (let i = 1; i <= d; i++) { if (d % i === 0) factorsD.push(i); }
+
+    html += '<div class="step">Factors of ' + n + ': <strong>' + factorsN.join(', ') + '</strong></div>';
+    html += '<div class="step">Factors of ' + d + ': <strong>' + factorsD.join(', ') + '</strong></div>';
+    html += '<div class="step">GCF = <strong>' + g + '</strong></div>';
+    html += '<div class="step" style="margin-top:0.25rem;">';
+    html += n + ' &divide; ' + g + ' = <strong>' + sn + '</strong>, ';
+    html += d + ' &divide; ' + g + ' = <strong>' + sd + '</strong>';
+    html += '</div>';
+    html += '<div class="result">' + n + '/' + d + ' = ' + sn + '/' + sd + '</div>';
+  }
+
+  simpSteps.innerHTML = html;
+
+  // Build visual bars
+  simpBars.style.display = 'flex';
+  document.getElementById('simpOrigLabel').textContent = n + '/' + d;
+  document.getElementById('simpResultLabel').textContent = sn + '/' + sd;
+
+  // Limit bar pieces to a reasonable max for display
+  const maxPieces = 24;
+  if (d <= maxPieces) {
+    buildMiniBar(document.getElementById('simpOrigBar'), d, n);
+  } else {
+    document.getElementById('simpOrigBar').innerHTML = '<div class="piece filled" style="flex:' + n + ';"></div><div class="piece" style="flex:' + (d - n) + ';"></div>';
+  }
+  if (sd <= maxPieces) {
+    buildMiniBar(document.getElementById('simpResultBar'), sd, sn, 'filled-green');
+  } else {
+    document.getElementById('simpResultBar').innerHTML = '<div class="piece filled-green" style="flex:' + sn + ';"></div><div class="piece" style="flex:' + (sd - sn) + ';"></div>';
+  }
+});
+
+
+// ============================== SECTION 3 ==============================
+const s3aN = document.getElementById('s3aN');
+const s3aD = document.getElementById('s3aD');
+const s3bN = document.getElementById('s3bN');
+const s3bD = document.getElementById('s3bD');
+const s3aBar = document.getElementById('s3aBar');
+const s3bBar = document.getElementById('s3bBar');
+const addResult = document.getElementById('addResult');
+
+function updateS3Bars() {
+  const an = parseInt(s3aN.value);
+  const ad = parseInt(s3aD.value);
+  const bn = parseInt(s3bN.value);
+  const bd = parseInt(s3bD.value);
+
+  s3aN.max = ad;
+  if (an > ad) s3aN.value = ad;
+  s3bN.max = bd;
+  if (bn > bd) s3bN.value = bd;
+
+  document.getElementById('s3aNVal').textContent = Math.min(an, ad);
+  document.getElementById('s3aDVal').textContent = ad;
+  document.getElementById('s3bNVal').textContent = Math.min(bn, bd);
+  document.getElementById('s3bDVal').textContent = bd;
+
+  buildBar(s3aBar, ad, Math.min(an, ad), 'filled');
+  buildBar(s3bBar, bd, Math.min(bn, bd), 'filled-pink');
+
+  // Clear previous result
+  addResult.innerHTML = '';
+}
+
+s3aN.addEventListener('input', updateS3Bars);
+s3aD.addEventListener('input', updateS3Bars);
+s3bN.addEventListener('input', updateS3Bars);
+s3bD.addEventListener('input', updateS3Bars);
+updateS3Bars();
+
+document.getElementById('addBtn').addEventListener('click', function() {
+  const an = Math.min(parseInt(s3aN.value), parseInt(s3aD.value));
+  const ad = parseInt(s3aD.value);
+  const bn = Math.min(parseInt(s3bN.value), parseInt(s3bD.value));
+  const bd = parseInt(s3bD.value);
+
+  const commonD = lcm(ad, bd);
+  const newAN = an * (commonD / ad);
+  const newBN = bn * (commonD / bd);
+  const sumN = newAN + newBN;
+
+  const [simpN, simpD] = simplify(sumN, commonD);
+
+  let html = '<div class="add-steps">';
+
+  if (ad === bd) {
+    // Same denominator -- simple case
+    html += '<div class="step-line">Same denominator: just add the numerators.</div>';
+    html += '<div class="step-line"><span class="hl">' + an + '/' + ad + '</span> + <span class="hl">' + bn + '/' + bd + '</span> = <span class="hl">' + sumN + '/' + commonD + '</span></div>';
+  } else {
+    // Different denominators
+    html += '<div class="step-line">Different denominators -- find the LCM of ' + ad + ' and ' + bd + '.</div>';
+    html += '<div class="step-line">LCM(' + ad + ', ' + bd + ') = <span class="hl">' + commonD + '</span></div>';
+    html += '<div class="step-line">';
+    html += '<span class="hl">' + an + '/' + ad + '</span>';
+    html += ' = ' + an + ' x ' + (commonD / ad) + ' / ' + ad + ' x ' + (commonD / ad);
+    html += ' = <span class="hl">' + newAN + '/' + commonD + '</span>';
+    html += '</div>';
+    html += '<div class="step-line">';
+    html += '<span class="hl">' + bn + '/' + bd + '</span>';
+    html += ' = ' + bn + ' x ' + (commonD / bd) + ' / ' + bd + ' x ' + (commonD / bd);
+    html += ' = <span class="hl">' + newBN + '/' + commonD + '</span>';
+    html += '</div>';
+    html += '<div class="step-line"><span class="hl">' + newAN + '/' + commonD + '</span> + <span class="hl">' + newBN + '/' + commonD + '</span> = <span class="hl">' + sumN + '/' + commonD + '</span></div>';
+  }
+
+  if (simpN !== sumN || simpD !== commonD) {
+    html += '<div class="result-line">' + sumN + '/' + commonD + ' = ' + simpN + '/' + simpD + '</div>';
+  } else {
+    html += '<div class="result-line">' + simpN + '/' + simpD + '</div>';
+  }
+  html += '</div>';
+
+  // Result bar
+  const displayD = Math.min(commonD, 36);
+  const displayN = Math.min(sumN, displayD);
+  html += '<div class="result-bar-area">';
+  html += '<div class="result-bar-label">Result: ' + simpN + '/' + simpD;
+  if (sumN > commonD) html += ' (greater than 1 whole)';
+  html += '</div>';
+  html += '<div class="fraction-bar" id="s3ResultBar" style="height:32px;"></div>';
+  html += '</div>';
+
+  addResult.innerHTML = html;
+
+  // Build the result bar
+  const resBar = document.getElementById('s3ResultBar');
+  if (commonD <= 36) {
+    buildBar(resBar, commonD, Math.min(sumN, commonD), 'filled-green');
+    // Color first portion as accent (from first fraction) and second as pink
+    const pieces = resBar.querySelectorAll('.piece');
+    pieces.forEach((p, i) => {
+      p.classList.remove('filled-green', 'filled', 'filled-pink');
+      if (i < newAN) {
+        p.classList.add('filled');
+      } else if (i < sumN && i < commonD) {
+        p.classList.add('filled-pink');
+      }
+    });
+  } else {
+    // Proportional display for large denominators
+    resBar.innerHTML = '';
+    if (newAN > 0) {
+      const a = document.createElement('div');
+      a.className = 'piece filled';
+      a.style.flex = newAN;
+      resBar.appendChild(a);
+    }
+    if (newBN > 0) {
+      const b = document.createElement('div');
+      b.className = 'piece filled-pink';
+      b.style.flex = newBN;
+      resBar.appendChild(b);
+    }
+    const remainder = commonD - sumN;
+    if (remainder > 0) {
+      const r = document.createElement('div');
+      r.className = 'piece';
+      r.style.flex = remainder;
+      resBar.appendChild(r);
+    }
+  }
+
+  // Also animate the source bars to show common denominator subdivision
+  if (ad !== bd && commonD <= 36) {
+    buildBar(s3aBar, commonD, newAN, 'filled');
+    buildBar(s3bBar, commonD, newBN, 'filled-pink');
+  }
+});
+
+
+// ── Practice Problems ──
+const problems = [
+  { a: [1, 4], b: [1, 4], ansN: 1, ansD: 2 },  // 2/4 = 1/2
+  { a: [2, 5], b: [1, 5], ansN: 3, ansD: 5 },
+  { a: [1, 2], b: [1, 4], ansN: 3, ansD: 4 },
+  { a: [1, 3], b: [1, 6], ansN: 1, ansD: 2 },  // 3/6 = 1/2
+  { a: [2, 3], b: [1, 4], ansN: 11, ansD: 12 },
+  { a: [3, 8], b: [1, 3], ansN: 17, ansD: 24 },
+];
+
+let correctCount = 0;
+
+function buildPractice() {
+  const container = document.getElementById('practiceProblems');
+  container.innerHTML = '';
+
+  problems.forEach((prob, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.innerHTML =
+      '<span class="prompt">' + (i + 1) + '. &nbsp;' +
+      prob.a[0] + '/' + prob.a[1] + ' + ' + prob.b[0] + '/' + prob.b[1] +
+      ' = </span>' +
+      '<input type="number" class="prob-n" data-idx="' + i + '" min="0" max="100">' +
+      '<span class="slash">/</span>' +
+      '<input type="number" class="prob-d" data-idx="' + i + '" min="1" max="100">' +
+      '<button class="check-btn" data-idx="' + i + '">check</button>' +
+      '<span class="feedback" id="fb' + i + '"></span>';
+    container.appendChild(div);
+  });
+
+  // Add event listeners to check buttons
+  container.querySelectorAll('.check-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const idx = parseInt(this.dataset.idx);
+      checkProblem(idx);
+    });
+  });
+
+  // Also allow Enter key in inputs
+  container.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        const idx = parseInt(this.dataset.idx);
+        checkProblem(idx);
+      }
+    });
+  });
+}
+
+function checkProblem(idx) {
+  const prob = problems[idx];
+  const nInputs = document.querySelectorAll('.prob-n');
+  const dInputs = document.querySelectorAll('.prob-d');
+  const fb = document.getElementById('fb' + idx);
+
+  const userN = parseInt(nInputs[idx].value);
+  const userD = parseInt(dInputs[idx].value);
+
+  if (isNaN(userN) || isNaN(userD) || userD === 0) {
+    fb.textContent = 'Enter both values.';
+    fb.className = 'feedback wrong';
+    return;
+  }
+
+  // Check if the user's fraction equals the correct answer
+  const [simpUserN, simpUserD] = simplify(userN, userD);
+  const [simpAnsN, simpAnsD] = simplify(prob.ansN, prob.ansD);
+
+  if (simpUserN === simpAnsN && simpUserD === simpAnsD) {
+    if (!fb.classList.contains('correct')) {
+      correctCount++;
+    }
+    fb.textContent = 'Correct!';
+    fb.className = 'feedback correct';
+    if (userN !== simpAnsN || userD !== simpAnsD) {
+      fb.textContent = 'Correct! (' + userN + '/' + userD + ' = ' + simpAnsN + '/' + simpAnsD + ')';
+    }
+  } else {
+    fb.textContent = 'Not quite. Try again.';
+    fb.className = 'feedback wrong';
+  }
+
+  updateScore();
+}
+
+function updateScore() {
+  const scoreEl = document.getElementById('practiceScore');
+  scoreEl.innerHTML = '<strong>' + correctCount + '</strong> of 6 correct';
+  if (correctCount === 6) {
+    scoreEl.innerHTML += ' -- All clear. Fractions defeated.';
+  }
+}
+
+buildPractice();
+
+</script>
+</body>
+</html>

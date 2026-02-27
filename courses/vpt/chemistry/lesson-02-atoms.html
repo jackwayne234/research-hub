@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 2: Atomic Structure</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  background: #1e2128;
+  color: #c9cdd5;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.65;
+  min-height: 100vh;
+  padding: 0 0 4rem;
+}
+
+/* ── Palette ──────────────────────────────────────── */
+:root {
+  --bg: #1e2128;
+  --surface: #262a33;
+  --surface2: #2e323d;
+  --border: #383d49;
+  --text: #c9cdd5;
+  --text-dim: #8b90a0;
+  --primary: #6366f1;
+  --primary-dim: rgba(99,102,241,.15);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,.15);
+  --pink: #ec4899;
+  --pink-dim: rgba(236,72,153,.15);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,.15);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,.15);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,.15);
+}
+
+/* ── Header ───────────────────────────────────────── */
+.page-header {
+  text-align: center;
+  padding: 2.5rem 1rem 1rem;
+}
+.page-header h1 {
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.page-header .subtitle {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-top: .3rem;
+}
+
+/* ── Progress Bar ─────────────────────────────────── */
+.progress-wrap {
+  max-width: 740px;
+  margin: 1.2rem auto .5rem;
+  padding: 0 1rem;
+}
+.progress-bar-outer {
+  background: var(--surface);
+  border-radius: 8px;
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-bar-inner {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), #818cf8);
+  border-radius: 8px;
+  transition: width .5s ease;
+}
+.progress-label {
+  font-size: .7rem;
+  color: var(--text-dim);
+  text-align: right;
+  margin-top: .3rem;
+}
+
+/* ── Container ────────────────────────────────────── */
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ── Collapsible Card ─────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: border-color .3s;
+}
+.card.completed { border-color: var(--green); }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background .2s;
+}
+.card-header:hover { background: var(--surface2); }
+.card-header .num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--primary-dim);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: .8rem;
+  flex-shrink: 0;
+}
+.card.completed .card-header .num {
+  background: var(--green-dim);
+  color: var(--green);
+}
+.card-header .title {
+  flex: 1;
+  font-weight: 600;
+  font-size: .9rem;
+  color: #eee;
+}
+.card-header .chevron {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  transition: transform .3s;
+}
+.card.open .card-header .chevron { transform: rotate(180deg); }
+.card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .5s ease, padding .3s ease;
+}
+.card.open .card-body {
+  max-height: 30000px;
+  padding: 0 1.2rem 1.5rem;
+}
+
+/* ── Section Internals ────────────────────────────── */
+.section-desc {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+h3.sub-heading {
+  font-size: .85rem;
+  color: var(--primary);
+  margin: 1.5rem 0 .8rem;
+  font-weight: 600;
+}
+h3.sub-heading:first-of-type { margin-top: .5rem; }
+
+/* ── Reference Table ──────────────────────────────── */
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .72rem;
+  margin-bottom: 1.2rem;
+}
+.ref-table th {
+  text-align: left;
+  padding: .5rem .6rem;
+  background: var(--bg);
+  color: var(--primary);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border);
+}
+.ref-table td {
+  padding: .45rem .6rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.ref-table tr:hover td { background: var(--surface2); }
+
+/* ── Interactive Box ──────────────────────────────── */
+.interactive-box {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid var(--border);
+}
+.interactive-box h4 {
+  font-size: .82rem;
+  color: var(--primary);
+  margin-bottom: .8rem;
+}
+
+/* ── Buttons ──────────────────────────────────────── */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: .8rem;
+}
+.btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  padding: .45rem .9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn:hover { border-color: var(--primary); color: #fff; }
+.btn.active {
+  background: var(--primary-dim);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.btn.correct {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+.btn.incorrect {
+  background: var(--pink-dim);
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+/* ── Atom Diagram SVG ─────────────────────────────── */
+.atom-svg-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.atom-svg-wrap svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Isotope Side-by-Side ─────────────────────────── */
+.isotope-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .8rem;
+  margin-bottom: 1.2rem;
+}
+@media (max-width: 500px) { .isotope-row { grid-template-columns: 1fr; } }
+.isotope-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+.isotope-card .iso-name {
+  font-weight: 700;
+  font-size: .85rem;
+  color: #fff;
+  margin-bottom: .4rem;
+}
+.isotope-notation {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin: .6rem 0;
+  position: relative;
+  display: inline-block;
+}
+.isotope-notation .mass-num {
+  position: absolute;
+  top: -.5rem;
+  left: -1.4rem;
+  font-size: .7rem;
+  color: var(--amber);
+}
+.isotope-notation .atomic-num {
+  position: absolute;
+  bottom: -.3rem;
+  left: -1.4rem;
+  font-size: .7rem;
+  color: var(--primary);
+}
+.iso-details {
+  font-size: .7rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* ── Slider ───────────────────────────────────────── */
+.slider-group {
+  margin-bottom: 1rem;
+}
+.slider-group label {
+  display: flex;
+  justify-content: space-between;
+  font-size: .75rem;
+  color: var(--text);
+  margin-bottom: .3rem;
+}
+.slider-group input[type="range"] {
+  width: 100%;
+  accent-color: var(--primary);
+  height: 6px;
+  -webkit-appearance: none;
+  background: var(--surface2);
+  border-radius: 4px;
+  outline: none;
+}
+.slider-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+}
+.calc-result {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--green);
+  text-align: center;
+  padding: .6rem 0;
+}
+
+/* ── Energy Level Diagram ─────────────────────────── */
+.energy-diagram-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+/* ── Orbital Shape Viewer ─────────────────────────── */
+.orbital-viewer {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+.orbital-viewer svg {
+  max-width: 100%;
+}
+
+/* ── Practice Problem ─────────────────────────────── */
+.practice-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: .8rem;
+}
+.practice-box .p-question {
+  font-size: .8rem;
+  color: #ddd;
+  margin-bottom: .6rem;
+  font-weight: 500;
+}
+.practice-box .p-input-row {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.practice-box input[type="text"] {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  padding: .4rem .6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: #fff;
+  outline: none;
+  width: 200px;
+  max-width: 100%;
+}
+.practice-box input[type="text"]:focus { border-color: var(--primary); }
+.practice-box .p-check {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  padding: .4rem .8rem;
+  border-radius: 6px;
+  border: 1px solid var(--primary);
+  background: var(--primary-dim);
+  color: var(--primary);
+  cursor: pointer;
+  transition: all .2s;
+}
+.practice-box .p-check:hover { background: var(--primary); color: #fff; }
+.practice-box .p-feedback {
+  font-size: .75rem;
+  margin-top: .5rem;
+  min-height: 1.2em;
+  font-weight: 600;
+}
+
+/* ── Electron Config Display ──────────────────────── */
+.econfig-display {
+  font-size: .85rem;
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+  padding: .8rem;
+  min-height: 2em;
+  word-break: break-all;
+}
+.econfig-display sup {
+  color: var(--amber);
+  font-size: .7rem;
+}
+
+/* ── Orbital Box Diagram ──────────────────────────── */
+.orbital-boxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  align-items: flex-end;
+  justify-content: center;
+  margin: 1rem 0;
+}
+.orbital-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .3rem;
+}
+.orbital-group-label {
+  font-size: .6rem;
+  color: var(--text-dim);
+}
+.orbital-group-boxes {
+  display: flex;
+  gap: 2px;
+}
+.orbital-cell {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .7rem;
+  font-weight: 700;
+  background: var(--surface2);
+  transition: all .3s;
+}
+.orbital-cell.filled {
+  border-color: var(--primary);
+  background: var(--primary-dim);
+}
+.arrow-up { color: var(--amber); }
+.arrow-down { color: var(--pink); }
+
+/* ── Quantum Number Cards ─────────────────────────── */
+.qn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .8rem;
+  margin-bottom: 1.2rem;
+}
+@media (max-width: 500px) { .qn-grid { grid-template-columns: 1fr; } }
+.qn-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+.qn-card .qn-symbol {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: .3rem;
+}
+.qn-card .qn-name {
+  font-size: .72rem;
+  color: var(--text-dim);
+  margin-bottom: .3rem;
+}
+.qn-card .qn-desc {
+  font-size: .7rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* ── PT Block Diagram ─────────────────────────────── */
+.pt-blocks {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+.pt-block {
+  padding: .5rem .8rem;
+  border-radius: 6px;
+  font-size: .7rem;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+/* ── Quiz Section ─────────────────────────────────── */
+.quiz-question {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.2rem;
+  margin-bottom: .8rem;
+}
+.quiz-question .qq-num {
+  font-size: .7rem;
+  color: var(--text-dim);
+  margin-bottom: .4rem;
+}
+.quiz-question .qq-text {
+  font-size: .82rem;
+  color: #ddd;
+  margin-bottom: .8rem;
+  font-weight: 500;
+}
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+.quiz-opt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem;
+  padding: .5rem .8rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all .2s;
+  text-align: left;
+}
+.quiz-opt:hover { border-color: var(--primary); color: #fff; }
+.quiz-opt.q-correct {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+.quiz-opt.q-incorrect {
+  background: var(--pink-dim);
+  border-color: var(--pink);
+  color: var(--pink);
+}
+.quiz-opt.q-show-answer {
+  border-color: var(--green);
+  color: var(--green);
+}
+.quiz-score-bar {
+  text-align: center;
+  padding: 1rem;
+  font-size: .9rem;
+  font-weight: 700;
+}
+.quiz-explanation {
+  font-size: .7rem;
+  color: var(--amber);
+  margin-top: .4rem;
+  line-height: 1.5;
+}
+
+/* ── Info Callout ─────────────────────────────────── */
+.callout {
+  background: var(--primary-dim);
+  border-left: 3px solid var(--primary);
+  padding: .8rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 1rem;
+  font-size: .75rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+.callout strong { color: var(--primary); }
+
+/* ── Filling Order Arrow Diagram ──────────────────── */
+.filling-diagram {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+/* ── Two Column ───────────────────────────────────── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .8rem;
+  margin-bottom: 1.2rem;
+}
+@media (max-width: 560px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 480px) {
+  .card.open .card-body { padding: 0 .8rem 1rem; }
+  .interactive-box { padding: .8rem; }
+  .practice-box input[type="text"] { width: 140px; }
+  .orbital-cell { width: 24px; height: 24px; font-size: .6rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <h1>Week 2: Atomic Structure</h1>
+  <div class="subtitle">Subatomic particles, isotopes, electron configurations & quantum numbers</div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 5 sections</div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 1: Inside the Atom
+     ═══════════════════════════════════════════════════ -->
+<div class="card open" data-section="1">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">1</div>
+    <div class="title">Inside the Atom</div>
+    <div class="chevron">&#9660;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Every atom has a dense nucleus containing protons (+) and neutrons (0), surrounded by a cloud of electrons (-). The identity of an element is defined by its number of protons (atomic number).
+    </p>
+
+    <h3 class="sub-heading">Interactive Atom Viewer</h3>
+    <div class="interactive-box">
+      <h4>Select an Element</h4>
+      <div class="btn-row" id="elementBtns"></div>
+      <div class="atom-svg-wrap">
+        <svg id="atomSvg" width="340" height="340" viewBox="0 0 340 340"></svg>
+      </div>
+      <div id="atomInfo" style="text-align:center; font-size:.78rem; color:var(--text);"></div>
+    </div>
+
+    <h3 class="sub-heading">Subatomic Particles</h3>
+    <table class="ref-table">
+      <thead>
+        <tr><th>Particle</th><th>Symbol</th><th>Charge</th><th>Mass (amu)</th><th>Location</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Proton</td><td>p+</td><td>+1</td><td>1.007</td><td>Nucleus</td></tr>
+        <tr><td>Neutron</td><td>n0</td><td>0</td><td>1.009</td><td>Nucleus</td></tr>
+        <tr><td>Electron</td><td>e-</td><td>-1</td><td>0.00055</td><td>Electron cloud</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <strong>Key insight:</strong> The mass of an electron is roughly 1/1836 that of a proton. Virtually all of an atom's mass comes from its nucleus.
+    </div>
+
+    <h3 class="sub-heading">Practice</h3>
+    <div id="s1Practice"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 2: Isotopes & Atomic Mass
+     ═══════════════════════════════════════════════════ -->
+<div class="card" data-section="2">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">2</div>
+    <div class="title">Isotopes & Atomic Mass</div>
+    <div class="chevron">&#9660;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Isotopes are atoms of the same element with different numbers of neutrons. They have the same atomic number but different mass numbers. Most elements exist as a mixture of isotopes in nature.
+    </p>
+
+    <h3 class="sub-heading">Carbon Isotopes</h3>
+    <div class="isotope-row">
+      <div class="isotope-card">
+        <div class="iso-name">Carbon-12</div>
+        <div class="isotope-notation"><span class="mass-num">12</span><span class="atomic-num">6</span>C</div>
+        <div class="iso-details">6 protons<br>6 neutrons<br>6 electrons<br><span style="color:var(--green)">98.9% abundance</span></div>
+        <div class="atom-svg-wrap" style="margin-top:.6rem;">
+          <svg class="iso-atom" width="100" height="100" viewBox="0 0 100 100"></svg>
+        </div>
+      </div>
+      <div class="isotope-card">
+        <div class="iso-name">Carbon-13</div>
+        <div class="isotope-notation"><span class="mass-num">13</span><span class="atomic-num">6</span>C</div>
+        <div class="iso-details">6 protons<br>7 neutrons<br>6 electrons<br><span style="color:var(--amber)">1.1% abundance</span></div>
+        <div class="atom-svg-wrap" style="margin-top:.6rem;">
+          <svg class="iso-atom" width="100" height="100" viewBox="0 0 100 100"></svg>
+        </div>
+      </div>
+      <div class="isotope-card">
+        <div class="iso-name">Carbon-14</div>
+        <div class="isotope-notation"><span class="mass-num">14</span><span class="atomic-num">6</span>C</div>
+        <div class="iso-details">6 protons<br>8 neutrons<br>6 electrons<br><span style="color:var(--pink)">trace (radioactive)</span></div>
+        <div class="atom-svg-wrap" style="margin-top:.6rem;">
+          <svg class="iso-atom" width="100" height="100" viewBox="0 0 100 100"></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Isotope notation:</strong> The mass number (A = protons + neutrons) goes top-left. The atomic number (Z = protons) goes bottom-left of the element symbol.
+    </div>
+
+    <h3 class="sub-heading">Weighted Average Calculator</h3>
+    <div class="interactive-box">
+      <h4>Adjust isotope abundances to see how atomic mass changes</h4>
+      <div style="margin-bottom:.5rem;">
+        <div class="btn-row">
+          <button class="btn active" onclick="setIsotopeCalc('Cu', 63, 62.930, 65, 64.928, 69.17)" id="isoCalcCu">Cu-63 / Cu-65</button>
+          <button class="btn" onclick="setIsotopeCalc('Cl', 35, 34.969, 37, 36.966, 75.76)" id="isoCalcCl">Cl-35 / Cl-37</button>
+          <button class="btn" onclick="setIsotopeCalc('Br', 79, 78.918, 81, 80.916, 50.69)" id="isoCalcBr">Br-79 / Br-81</button>
+        </div>
+      </div>
+      <div class="slider-group">
+        <label><span id="isoLabel1">Isotope 1</span> <span id="isoPercent1">69.17%</span></label>
+        <input type="range" min="0" max="100" step="0.01" value="69.17" id="isoSlider" oninput="updateIsotopeCalc()">
+      </div>
+      <div class="slider-group">
+        <label><span id="isoLabel2">Isotope 2</span> <span id="isoPercent2">30.83%</span></label>
+      </div>
+      <div class="calc-result" id="isoCalcResult">Weighted average: 63.546 amu</div>
+    </div>
+
+    <h3 class="sub-heading">Practice</h3>
+    <div id="s2Practice"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 3: Electron Configuration
+     ═══════════════════════════════════════════════════ -->
+<div class="card" data-section="3">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">3</div>
+    <div class="title">Electron Configuration</div>
+    <div class="chevron">&#9660;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Electrons occupy orbitals arranged by increasing energy. The Aufbau principle says electrons fill the lowest available energy level first. Hund's rule says electrons fill each orbital in a subshell singly before pairing.
+    </p>
+
+    <h3 class="sub-heading">Energy Level Diagram</h3>
+    <div class="energy-diagram-wrap">
+      <svg id="energySvg" width="500" height="360" viewBox="0 0 500 360"></svg>
+    </div>
+
+    <h3 class="sub-heading">Diagonal Filling Order</h3>
+    <div class="filling-diagram">
+      <svg id="fillOrderSvg" width="320" height="280" viewBox="0 0 320 280"></svg>
+    </div>
+    <div class="callout">
+      <strong>Aufbau filling order:</strong> 1s, 2s, 2p, 3s, 3p, 4s, 3d, 4p, 5s, 4d, 5p, 6s, 4f, 5d, 6p, 7s, 5f, 6d, 7p...
+    </div>
+
+    <h3 class="sub-heading">Interactive Electron Configuration Builder</h3>
+    <div class="interactive-box">
+      <h4>Select an element (Z = 1-36)</h4>
+      <div class="btn-row" id="econfigBtns" style="max-height:120px;overflow-y:auto;"></div>
+      <div class="econfig-display" id="econfigDisplay">Select an element above</div>
+      <div class="orbital-boxes" id="orbitalBoxes"></div>
+    </div>
+
+    <h3 class="sub-heading">Hund's Rule: p-Orbital Filling</h3>
+    <div class="interactive-box">
+      <h4>Watch how 2p fills for N, O, F, Ne</h4>
+      <div class="btn-row">
+        <button class="btn" onclick="showHunds('N')">N (5e-)</button>
+        <button class="btn" onclick="showHunds('O')">O (6e-)</button>
+        <button class="btn" onclick="showHunds('F')">F (7e-)</button>
+        <button class="btn" onclick="showHunds('Ne')">Ne (8e-)</button>
+      </div>
+      <div id="hundsDisplay" class="orbital-boxes" style="justify-content:flex-start;padding-left:1rem;"></div>
+      <div id="hundsExplain" style="font-size:.73rem;color:var(--text-dim);margin-top:.6rem;text-align:center;"></div>
+    </div>
+
+    <h3 class="sub-heading">Practice</h3>
+    <div id="s3Practice"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 4: Quantum Numbers
+     ═══════════════════════════════════════════════════ -->
+<div class="card" data-section="4">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">4</div>
+    <div class="title">Quantum Numbers</div>
+    <div class="chevron">&#9660;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Each electron in an atom is described by four quantum numbers. Together they specify the electron's energy level, orbital shape, orientation, and spin direction. No two electrons can share all four quantum numbers (Pauli exclusion principle).
+    </p>
+
+    <h3 class="sub-heading">The Four Quantum Numbers</h3>
+    <div class="qn-grid">
+      <div class="qn-card">
+        <div class="qn-symbol" style="color:var(--primary)">n</div>
+        <div class="qn-name">Principal Quantum Number</div>
+        <div class="qn-desc">Energy level / shell size<br>Values: 1, 2, 3, 4...<br>Higher n = larger orbital, higher energy</div>
+      </div>
+      <div class="qn-card">
+        <div class="qn-symbol" style="color:var(--amber)">l</div>
+        <div class="qn-name">Angular Momentum (Azimuthal)</div>
+        <div class="qn-desc">Orbital shape<br>Values: 0 to (n-1)<br>0=s, 1=p, 2=d, 3=f</div>
+      </div>
+      <div class="qn-card">
+        <div class="qn-symbol" style="color:var(--green)">m<sub>l</sub></div>
+        <div class="qn-name">Magnetic Quantum Number</div>
+        <div class="qn-desc">Orbital orientation<br>Values: -l to +l<br>Determines spatial direction</div>
+      </div>
+      <div class="qn-card">
+        <div class="qn-symbol" style="color:var(--pink)">m<sub>s</sub></div>
+        <div class="qn-name">Spin Quantum Number</div>
+        <div class="qn-desc">Electron spin<br>Values: +1/2 or -1/2<br>Two electrons per orbital max</div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Orbital Shape Viewer</h3>
+    <div class="interactive-box">
+      <h4>Click to view orbital shapes</h4>
+      <div class="btn-row">
+        <button class="btn active" onclick="showOrbital('s')" id="orbBtn_s">s orbital (l=0)</button>
+        <button class="btn" onclick="showOrbital('p')" id="orbBtn_p">p orbital (l=1)</button>
+        <button class="btn" onclick="showOrbital('d')" id="orbBtn_d">d orbital (l=2)</button>
+      </div>
+      <div class="orbital-viewer">
+        <svg id="orbitalShapeSvg" width="300" height="260" viewBox="0 0 300 260"></svg>
+      </div>
+      <div id="orbitalShapeInfo" style="text-align:center;font-size:.73rem;color:var(--text-dim);"></div>
+    </div>
+
+    <h3 class="sub-heading">Quantum Numbers & the Periodic Table</h3>
+    <div class="pt-blocks">
+      <div class="pt-block" style="background:var(--primary-dim);border-color:var(--primary);color:var(--primary);width:80px;">
+        s-block<br><span style="font-size:.6rem;color:var(--text-dim)">Groups 1-2</span>
+      </div>
+      <div class="pt-block" style="background:var(--amber-dim);border-color:var(--amber);color:var(--amber);width:200px;">
+        d-block (transition metals)<br><span style="font-size:.6rem;color:var(--text-dim)">Groups 3-12</span>
+      </div>
+      <div class="pt-block" style="background:var(--green-dim);border-color:var(--green);color:var(--green);width:120px;">
+        p-block<br><span style="font-size:.6rem;color:var(--text-dim)">Groups 13-18</span>
+      </div>
+    </div>
+    <div class="pt-blocks" style="margin-top:.3rem;">
+      <div class="pt-block" style="background:var(--pink-dim);border-color:var(--pink);color:var(--pink);width:280px;">
+        f-block (lanthanides & actinides)<br><span style="font-size:.6rem;color:var(--text-dim)">Below main table</span>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:1rem;">
+      <strong>Connection:</strong> The block an element is in tells you the type of orbital its last electron occupies. Na is in the s-block, so its last electron is in an s orbital (3s1).
+    </div>
+
+    <h3 class="sub-heading">Practice</h3>
+    <div id="s4Practice"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 5: Quick Quiz
+     ═══════════════════════════════════════════════════ -->
+<div class="card" data-section="5">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">5</div>
+    <div class="title">Quick Quiz</div>
+    <div class="chevron">&#9660;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Test your knowledge across all topics. Select the best answer for each question. Your score updates as you go.
+    </p>
+    <div class="quiz-score-bar" id="quizScoreBar" style="color:var(--primary)">Score: 0 / 10</div>
+    <div id="quizContainer"></div>
+    <div class="quiz-score-bar" id="quizFinal" style="display:none;"></div>
+  </div>
+</div>
+
+</div><!-- container -->
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   DATA
+   ═══════════════════════════════════════════════════════ */
+const ELEMENTS = [
+  { sym:'H',  name:'Hydrogen',  Z:1,  N:0,  shells:[1] },
+  { sym:'He', name:'Helium',    Z:2,  N:2,  shells:[2] },
+  { sym:'Li', name:'Lithium',   Z:3,  N:4,  shells:[2,1] },
+  { sym:'C',  name:'Carbon',    Z:6,  N:6,  shells:[2,4] },
+  { sym:'O',  name:'Oxygen',    Z:8,  N:8,  shells:[2,6] },
+  { sym:'Na', name:'Sodium',    Z:11, N:12, shells:[2,8,1] },
+  { sym:'Cl', name:'Chlorine',  Z:17, N:18, shells:[2,8,7] },
+  { sym:'Fe', name:'Iron',      Z:26, N:30, shells:[2,8,14,2] },
+  { sym:'U',  name:'Uranium',   Z:92, N:146,shells:[2,8,18,32,21,9,2] }
+];
+
+const ECONFIG_SYMS = [
+  'H','He','Li','Be','B','C','N','O','F','Ne',
+  'Na','Mg','Al','Si','P','S','Cl','Ar',
+  'K','Ca','Sc','Ti','V','Cr','Mn','Fe','Co','Ni','Cu','Zn',
+  'Ga','Ge','As','Se','Br','Kr'
+];
+
+const FILLING_ORDER = [
+  {sub:'1s',n:1,l:0,max:2},{sub:'2s',n:2,l:0,max:2},{sub:'2p',n:2,l:1,max:6},
+  {sub:'3s',n:3,l:0,max:2},{sub:'3p',n:3,l:1,max:6},{sub:'4s',n:4,l:0,max:2},
+  {sub:'3d',n:3,l:2,max:10},{sub:'4p',n:4,l:1,max:6},{sub:'5s',n:5,l:0,max:2},
+  {sub:'4d',n:4,l:2,max:10},{sub:'5p',n:5,l:1,max:6},{sub:'6s',n:6,l:0,max:2},
+  {sub:'4f',n:4,l:3,max:14},{sub:'5d',n:5,l:2,max:10},{sub:'6p',n:6,l:1,max:6},
+  {sub:'7s',n:7,l:0,max:2},{sub:'5f',n:5,l:3,max:14},{sub:'6d',n:6,l:2,max:10},
+  {sub:'7p',n:7,l:1,max:6}
+];
+
+/* ═══════════════════════════════════════════════════════
+   CARD COLLAPSE
+   ═══════════════════════════════════════════════════════ */
+function toggleCard(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+/* ═══════════════════════════════════════════════════════
+   PROGRESS
+   ═══════════════════════════════════════════════════════ */
+const sectionComplete = {};
+function markComplete(sectionNum) {
+  sectionComplete[sectionNum] = true;
+  const card = document.querySelector(`.card[data-section="${sectionNum}"]`);
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+function updateProgress() {
+  const done = Object.keys(sectionComplete).length;
+  const pct = (done / 5) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = done + ' / 5 sections';
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION 1: ATOM VIEWER
+   ═══════════════════════════════════════════════════════ */
+let currentElement = ELEMENTS[0];
+
+function initAtomViewer() {
+  const wrap = document.getElementById('elementBtns');
+  ELEMENTS.forEach((el, i) => {
+    const b = document.createElement('button');
+    b.className = 'btn' + (i === 0 ? ' active' : '');
+    b.textContent = el.sym;
+    b.onclick = () => {
+      wrap.querySelectorAll('.btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      currentElement = el;
+      drawAtom();
+    };
+    wrap.appendChild(b);
+  });
+  drawAtom();
+}
+
+function drawAtom() {
+  const svg = document.getElementById('atomSvg');
+  const el = currentElement;
+  const cx = 170, cy = 170;
+  let html = '';
+
+  // Background glow
+  html += `<defs>
+    <radialGradient id="nucleusGlow">
+      <stop offset="0%" stop-color="rgba(239,68,68,.3)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>`;
+  html += `<circle cx="${cx}" cy="${cy}" r="60" fill="url(#nucleusGlow)"/>`;
+
+  // Electron shells (orbits)
+  const shellRadii = [70, 100, 130, 155];
+  const maxShells = Math.min(el.shells.length, shellRadii.length);
+  for (let s = 0; s < maxShells; s++) {
+    html += `<circle cx="${cx}" cy="${cy}" r="${shellRadii[s]}" fill="none" stroke="rgba(99,102,241,.25)" stroke-width="1" stroke-dasharray="4,3"/>`;
+  }
+
+  // For very large atoms, show simplified
+  if (el.shells.length > 4) {
+    for (let s = 0; s < 4; s++) {
+      html += `<circle cx="${cx}" cy="${cy}" r="${shellRadii[s]}" fill="none" stroke="rgba(99,102,241,.25)" stroke-width="1" stroke-dasharray="4,3"/>`;
+    }
+  }
+
+  // Nucleus particles (up to ~20 for clarity)
+  const displayP = Math.min(el.Z, 12);
+  const displayN = Math.min(el.N, 12);
+  const totalNucleons = displayP + displayN;
+  const nucleonR = totalNucleons <= 4 ? 8 : totalNucleons <= 10 ? 6 : 5;
+  const spread = totalNucleons <= 4 ? 10 : totalNucleons <= 10 ? 14 : 18;
+
+  // Place nucleons in a tight cluster
+  const nucleons = [];
+  for (let i = 0; i < displayP; i++) nucleons.push({type:'p'});
+  for (let i = 0; i < displayN; i++) nucleons.push({type:'n'});
+
+  // Spiral packing
+  nucleons.forEach((nuc, i) => {
+    const angle = i * 2.39996; // golden angle
+    const r = spread * Math.sqrt(i) * 0.55;
+    const nx = cx + r * Math.cos(angle);
+    const ny = cy + r * Math.sin(angle);
+    const color = nuc.type === 'p' ? '#ef4444' : '#6b7280';
+    const labelColor = nuc.type === 'p' ? '#fff' : '#ddd';
+    html += `<circle cx="${nx}" cy="${ny}" r="${nucleonR}" fill="${color}" stroke="${nuc.type==='p'?'#dc2626':'#4b5563'}" stroke-width="1"/>`;
+    if (nucleonR >= 6) {
+      html += `<text x="${nx}" y="${ny}" text-anchor="middle" dominant-baseline="central" fill="${labelColor}" font-size="${nucleonR-1}" font-family="JetBrains Mono" font-weight="700">${nuc.type==='p'?'+':'0'}</text>`;
+    }
+  });
+
+  // Show "..." for large nuclei
+  if (el.Z > 12 || el.N > 12) {
+    html += `<text x="${cx}" y="${cy+30}" text-anchor="middle" fill="var(--text-dim)" font-size="10" font-family="JetBrains Mono">(${el.Z}p + ${el.N}n)</text>`;
+  }
+
+  // Electrons on shells
+  for (let s = 0; s < maxShells; s++) {
+    const eCount = el.shells[s];
+    const r = shellRadii[s];
+    for (let e = 0; e < eCount; e++) {
+      const angle = (e / eCount) * Math.PI * 2 - Math.PI / 2;
+      const ex = cx + r * Math.cos(angle);
+      const ey = cy + r * Math.sin(angle);
+      html += `<circle cx="${ex}" cy="${ey}" r="4" fill="#6366f1" stroke="#818cf8" stroke-width="1"/>`;
+      html += `<text x="${ex}" y="${ey}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="5" font-family="JetBrains Mono" font-weight="700">-</text>`;
+    }
+  }
+
+  // Element label
+  html += `<text x="${cx}" y="20" text-anchor="middle" fill="#fff" font-size="16" font-family="JetBrains Mono" font-weight="700">${el.sym} - ${el.name}</text>`;
+
+  svg.innerHTML = html;
+
+  document.getElementById('atomInfo').innerHTML = `
+    <span style="color:#ef4444">${el.Z} protons</span> &nbsp;|&nbsp;
+    <span style="color:#6b7280">${el.N} neutrons</span> &nbsp;|&nbsp;
+    <span style="color:#6366f1">${el.Z} electrons</span> &nbsp;|&nbsp;
+    Mass number: <span style="color:var(--amber)">${el.Z + el.N}</span>
+  `;
+}
+
+/* ── S1 Practice ──────────────────────────────────── */
+function initS1Practice() {
+  const problems = [
+    { q: 'How many protons does Chlorine (Cl) have?', a: '17' },
+    { q: 'How many neutrons does Carbon-14 have? (Z=6)', a: '8' },
+    { q: 'A neutral atom of Sodium (Na, Z=11) has how many electrons?', a: '11' }
+  ];
+  const wrap = document.getElementById('s1Practice');
+  problems.forEach((p, i) => {
+    wrap.innerHTML += makePracticeHTML('s1p' + i, p.q);
+  });
+  window.s1Answers = problems.map(p => p.a);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION 2: ISOTOPES
+   ═══════════════════════════════════════════════════════ */
+function drawIsotopeAtoms() {
+  const svgs = document.querySelectorAll('.iso-atom');
+  const configs = [
+    { p: 6, n: 6 },
+    { p: 6, n: 7 },
+    { p: 6, n: 8 }
+  ];
+  svgs.forEach((svg, idx) => {
+    const cx = 50, cy = 50;
+    let html = '';
+    const cfg = configs[idx];
+    const nucleons = [];
+    for (let i = 0; i < cfg.p; i++) nucleons.push('p');
+    for (let i = 0; i < cfg.n; i++) nucleons.push('n');
+    nucleons.forEach((type, i) => {
+      const angle = i * 2.39996;
+      const r = 6 * Math.sqrt(i) * 0.55;
+      const nx = cx + r * Math.cos(angle);
+      const ny = cy + r * Math.sin(angle);
+      const color = type === 'p' ? '#ef4444' : '#6b7280';
+      html += `<circle cx="${nx}" cy="${ny}" r="4.5" fill="${color}" stroke="${type==='p'?'#dc2626':'#4b5563'}" stroke-width=".8"/>`;
+    });
+    // Electrons at shell radius
+    const shellR = 35;
+    for (let e = 0; e < 6; e++) {
+      const angle = (e / 6) * Math.PI * 2 - Math.PI / 2;
+      html += `<circle cx="${cx + shellR*Math.cos(angle)}" cy="${cy + shellR*Math.sin(angle)}" r="3" fill="#6366f1" stroke="#818cf8" stroke-width=".5"/>`;
+    }
+    html += `<circle cx="${cx}" cy="${cy}" r="${shellR}" fill="none" stroke="rgba(99,102,241,.2)" stroke-width="1" stroke-dasharray="3,2"/>`;
+    svg.innerHTML = html;
+  });
+}
+
+/* ── Weighted Average Calc ────────────────────────── */
+let isoCalcData = { sym:'Cu', m1:63, mass1:62.930, m2:65, mass2:64.928, pct1:69.17 };
+
+function setIsotopeCalc(sym, m1, mass1, m2, mass2, pct) {
+  isoCalcData = { sym, m1, mass1, m2, mass2, pct1: pct };
+  document.getElementById('isoSlider').value = pct;
+  document.querySelectorAll('#isoCalcCu,#isoCalcCl,#isoCalcBr').forEach(b => b.classList.remove('active'));
+  document.getElementById('isoCalc' + sym).classList.add('active');
+  updateIsotopeCalc();
+}
+
+function updateIsotopeCalc() {
+  const pct1 = parseFloat(document.getElementById('isoSlider').value);
+  const pct2 = 100 - pct1;
+  const d = isoCalcData;
+  document.getElementById('isoLabel1').textContent = `${d.sym}-${d.m1} (${d.mass1} amu)`;
+  document.getElementById('isoLabel2').textContent = `${d.sym}-${d.m2} (${d.mass2} amu)`;
+  document.getElementById('isoPercent1').textContent = pct1.toFixed(2) + '%';
+  document.getElementById('isoPercent2').textContent = pct2.toFixed(2) + '%';
+  const avg = (pct1/100)*d.mass1 + (pct2/100)*d.mass2;
+  document.getElementById('isoCalcResult').textContent = `Weighted average: ${avg.toFixed(3)} amu`;
+}
+
+/* ── S2 Practice ──────────────────────────────────── */
+function initS2Practice() {
+  const problems = [
+    { q: 'Silver has two isotopes: Ag-107 (106.905 amu, 51.84%) and Ag-109 (108.905 amu, 48.16%). Calculate the average atomic mass. (round to 2 decimal places)', a: '107.87' },
+    { q: 'Boron has B-10 (10.013 amu, 19.9%) and B-11 (11.009 amu, 80.1%). Calculate average atomic mass. (round to 2 decimal places)', a: '10.81' },
+    { q: 'An element has isotopes X-35 (34.97 amu, 75.8%) and X-37 (36.97 amu, 24.2%). Calculate the average atomic mass. (round to 2 decimal places)', a: '35.45' }
+  ];
+  const wrap = document.getElementById('s2Practice');
+  problems.forEach((p, i) => {
+    wrap.innerHTML += makePracticeHTML('s2p' + i, p.q);
+  });
+  window.s2Answers = problems.map(p => p.a);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION 3: ELECTRON CONFIGURATION
+   ═══════════════════════════════════════════════════════ */
+function getElectronConfig(Z) {
+  // Handle Cr (24) and Cu (29) exceptions
+  let remaining = Z;
+  const config = [];
+  const order = [...FILLING_ORDER];
+
+  if (Z === 24) {
+    // Cr: [Ar] 3d5 4s1
+    return [{sub:'1s',e:2},{sub:'2s',e:2},{sub:'2p',e:6},{sub:'3s',e:2},{sub:'3p',e:6},{sub:'4s',e:1},{sub:'3d',e:5}];
+  }
+  if (Z === 29) {
+    // Cu: [Ar] 3d10 4s1
+    return [{sub:'1s',e:2},{sub:'2s',e:2},{sub:'2p',e:6},{sub:'3s',e:2},{sub:'3p',e:6},{sub:'4s',e:1},{sub:'3d',e:10}];
+  }
+
+  for (const orb of order) {
+    if (remaining <= 0) break;
+    const fill = Math.min(remaining, orb.max);
+    config.push({ sub: orb.sub, e: fill });
+    remaining -= fill;
+  }
+  return config;
+}
+
+function configToString(config) {
+  return config.map(c => c.sub + '<sup>' + c.e + '</sup>').join(' ');
+}
+
+function drawEnergyDiagram() {
+  const svg = document.getElementById('energySvg');
+  const levels = [
+    {sub:'1s',y:320,x:50},{sub:'2s',y:280,x:50},{sub:'2p',y:260,x:150},
+    {sub:'3s',y:220,x:50},{sub:'3p',y:200,x:150},{sub:'3d',y:160,x:270},
+    {sub:'4s',y:180,x:50},{sub:'4p',y:140,x:150},{sub:'4d',y:100,x:270},
+    {sub:'4f',y:60,x:390},{sub:'5s',y:120,x:50},{sub:'5p',y:80,x:150}
+  ];
+  let html = '';
+  // Energy axis
+  html += `<line x1="20" y1="340" x2="20" y2="20" stroke="var(--text-dim)" stroke-width="1.5"/>`;
+  html += `<polygon points="20,20 16,30 24,30" fill="var(--text-dim)"/>`;
+  html += `<text x="15" y="15" text-anchor="middle" fill="var(--text-dim)" font-size="10" font-family="JetBrains Mono">E</text>`;
+
+  levels.forEach(lv => {
+    const orbitals = lv.sub.endsWith('s') ? 1 : lv.sub.endsWith('p') ? 3 : lv.sub.endsWith('d') ? 5 : 7;
+    const w = orbitals * 28;
+    for (let i = 0; i < orbitals; i++) {
+      const lx = lv.x + i * 28;
+      html += `<line x1="${lx}" y1="${lv.y}" x2="${lx+20}" y2="${lv.y}" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round"/>`;
+    }
+    html += `<text x="${lv.x - 5}" y="${lv.y + 4}" text-anchor="end" fill="var(--text-dim)" font-size="10" font-family="JetBrains Mono">${lv.sub}</text>`;
+  });
+
+  svg.innerHTML = html;
+}
+
+function drawFillingOrder() {
+  const svg = document.getElementById('fillOrderSvg');
+  let html = '';
+  const rows = [
+    ['1s'],
+    ['2s','2p'],
+    ['3s','3p','3d'],
+    ['4s','4p','4d','4f'],
+    ['5s','5p','5d','5f'],
+    ['6s','6p','6d'],
+    ['7s','7p']
+  ];
+  const cellW = 36, cellH = 30, startX = 30, startY = 20, gapX = 42, gapY = 34;
+
+  rows.forEach((row, ri) => {
+    row.forEach((sub, ci) => {
+      const x = startX + ci * gapX;
+      const y = startY + ri * gapY;
+      html += `<rect x="${x}" y="${y}" width="${cellW}" height="${cellH}" rx="4" fill="var(--surface2)" stroke="var(--border)" stroke-width="1"/>`;
+      html += `<text x="${x+cellW/2}" y="${y+cellH/2+1}" text-anchor="middle" dominant-baseline="central" fill="var(--text)" font-size="10" font-family="JetBrains Mono" font-weight="600">${sub}</text>`;
+    });
+  });
+
+  // Diagonal arrows
+  const diagonals = [
+    [[0,0]],
+    [[1,0]],
+    [[2,0],[1,1]],
+    [[3,0],[2,1]],
+    [[4,0],[3,1],[2,2]],
+    [[5,0],[4,1],[3,2]],
+    [[6,0],[5,1],[4,2],[3,3]],
+    [[6,1],[5,2],[4,3]],
+    [[6,2],[5,3]]
+  ];
+  const colors = ['#ef4444','#f59e0b','#22c55e','#3b82f6','#6366f1','#ec4899','#f97316','#8b5cf6','#14b8a6'];
+
+  diagonals.forEach((diag, di) => {
+    const color = colors[di % colors.length];
+    for (let i = 0; i < diag.length - 1; i++) {
+      const [r1, c1] = diag[i];
+      const [r2, c2] = diag[i+1];
+      const x1 = startX + c1 * gapX + cellW/2;
+      const y1 = startY + r1 * gapY + cellH;
+      const x2 = startX + c2 * gapX + cellW/2;
+      const y2 = startY + r2 * gapY;
+      html += `<line x1="${x1}" y1="${y1+2}" x2="${x2}" y2="${y2-2}" stroke="${color}" stroke-width="1.5" opacity=".6" marker-end="url(#arrowhead${di})"/>`;
+    }
+    html += `<defs><marker id="arrowhead${di}" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0,0 6,3 0,6" fill="${color}" opacity=".6"/></marker></defs>`;
+  });
+
+  svg.innerHTML = html;
+}
+
+function initEconfigBuilder() {
+  const wrap = document.getElementById('econfigBtns');
+  ECONFIG_SYMS.forEach((sym, i) => {
+    const Z = i + 1;
+    const b = document.createElement('button');
+    b.className = 'btn';
+    b.textContent = `${Z} ${sym}`;
+    b.style.fontSize = '.65rem';
+    b.style.padding = '.3rem .5rem';
+    b.onclick = () => {
+      wrap.querySelectorAll('.btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      animateEconfig(Z);
+    };
+    wrap.appendChild(b);
+  });
+}
+
+function animateEconfig(Z) {
+  const config = getElectronConfig(Z);
+  const display = document.getElementById('econfigDisplay');
+  const boxesWrap = document.getElementById('orbitalBoxes');
+
+  // Build final config string
+  display.innerHTML = configToString(config);
+
+  // Build orbital box diagram
+  let boxHTML = '';
+  config.forEach(c => {
+    const subType = c.sub.slice(-1);
+    const numOrbitals = subType === 's' ? 1 : subType === 'p' ? 3 : subType === 'd' ? 5 : 7;
+    boxHTML += `<div class="orbital-group"><div class="orbital-group-boxes">`;
+
+    // Distribute electrons: Hund's rule
+    const orbs = Array(numOrbitals).fill(0);
+    let left = c.e;
+    // First pass: one electron per orbital
+    for (let i = 0; i < numOrbitals && left > 0; i++) { orbs[i]++; left--; }
+    // Second pass: pair up
+    for (let i = 0; i < numOrbitals && left > 0; i++) { orbs[i]++; left--; }
+
+    orbs.forEach(count => {
+      const filled = count > 0 ? ' filled' : '';
+      let arrows = '';
+      if (count >= 1) arrows += '<span class="arrow-up">&#8593;</span>';
+      if (count >= 2) arrows += '<span class="arrow-down">&#8595;</span>';
+      boxHTML += `<div class="orbital-cell${filled}">${arrows}</div>`;
+    });
+    boxHTML += `</div><div class="orbital-group-label">${c.sub}</div></div>`;
+  });
+  boxesWrap.innerHTML = boxHTML;
+
+  // Animate fill
+  const cells = boxesWrap.querySelectorAll('.orbital-cell');
+  cells.forEach((cell, i) => {
+    cell.style.opacity = '0';
+    cell.style.transform = 'scale(0.5)';
+    setTimeout(() => {
+      cell.style.transition = 'all .3s ease';
+      cell.style.opacity = '1';
+      cell.style.transform = 'scale(1)';
+    }, i * 60);
+  });
+}
+
+/* ── Hund's Rule Demo ─────────────────────────────── */
+function showHunds(element) {
+  const data = {
+    'N':  { config: [{sub:'1s',e:2},{sub:'2s',e:2},{sub:'2p',e:3}], explain: "Nitrogen: 3 electrons in 2p fill each orbital singly (all spin-up). This maximizes spin and lowers energy." },
+    'O':  { config: [{sub:'1s',e:2},{sub:'2s',e:2},{sub:'2p',e:4}], explain: "Oxygen: 4th electron must pair with one of the 2p orbitals. One orbital now has spin-up + spin-down." },
+    'F':  { config: [{sub:'1s',e:2},{sub:'2s',e:2},{sub:'2p',e:5}], explain: "Fluorine: 5 electrons in 2p -- two orbitals are paired, one has a single electron." },
+    'Ne': { config: [{sub:'1s',e:2},{sub:'2s',e:2},{sub:'2p',e:6}], explain: "Neon: All 2p orbitals are fully paired. Complete octet -- noble gas!" }
+  };
+  const d = data[element];
+  const wrap = document.getElementById('hundsDisplay');
+  let html = '';
+
+  d.config.forEach(c => {
+    const subType = c.sub.slice(-1);
+    const numOrbitals = subType === 's' ? 1 : subType === 'p' ? 3 : 5;
+    const orbs = Array(numOrbitals).fill(0);
+    let left = c.e;
+    for (let i = 0; i < numOrbitals && left > 0; i++) { orbs[i]++; left--; }
+    for (let i = 0; i < numOrbitals && left > 0; i++) { orbs[i]++; left--; }
+
+    html += `<div class="orbital-group"><div class="orbital-group-boxes">`;
+    orbs.forEach(count => {
+      let arrows = '';
+      if (count >= 1) arrows += '<span class="arrow-up">&#8593;</span>';
+      if (count >= 2) arrows += '<span class="arrow-down">&#8595;</span>';
+      html += `<div class="orbital-cell${count>0?' filled':''}">${arrows}</div>`;
+    });
+    html += `</div><div class="orbital-group-label">${c.sub}</div></div>`;
+  });
+
+  wrap.innerHTML = html;
+  document.getElementById('hundsExplain').textContent = d.explain;
+
+  // Animate
+  const cells = wrap.querySelectorAll('.orbital-cell');
+  cells.forEach((cell, i) => {
+    cell.style.opacity = '0';
+    setTimeout(() => {
+      cell.style.transition = 'opacity .3s';
+      cell.style.opacity = '1';
+    }, i * 80);
+  });
+}
+
+/* ── S3 Practice ──────────────────────────────────── */
+function initS3Practice() {
+  const problems = [
+    { q: 'Write the electron configuration for Nitrogen (Z=7). Format: 1s2 2s2 2p3', a: '1s2 2s2 2p3' },
+    { q: 'Write the electron configuration for Silicon (Z=14). Format: 1s2 2s2...', a: '1s2 2s2 2p6 3s2 3p2' },
+    { q: 'Write the electron configuration for Iron (Z=26). Format: 1s2 2s2...', a: '1s2 2s2 2p6 3s2 3p6 4s2 3d6' },
+    { q: 'Write the electron configuration for Chromium (Z=24). Hint: exception!', a: '1s2 2s2 2p6 3s2 3p6 4s1 3d5' },
+    { q: 'How many unpaired electrons does Nitrogen have?', a: '3' }
+  ];
+  const wrap = document.getElementById('s3Practice');
+  problems.forEach((p, i) => {
+    wrap.innerHTML += makePracticeHTML('s3p' + i, p.q);
+  });
+  window.s3Answers = problems.map(p => p.a);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION 4: QUANTUM NUMBERS
+   ═══════════════════════════════════════════════════════ */
+function showOrbital(type) {
+  document.querySelectorAll('#orbBtn_s,#orbBtn_p,#orbBtn_d').forEach(b => b.classList.remove('active'));
+  document.getElementById('orbBtn_' + type).classList.add('active');
+
+  const svg = document.getElementById('orbitalShapeSvg');
+  const info = document.getElementById('orbitalShapeInfo');
+  const cx = 150, cy = 130;
+  let html = '';
+
+  // Axes
+  html += `<line x1="30" y1="${cy}" x2="270" y2="${cy}" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,3"/>`;
+  html += `<line x1="${cx}" y1="20" x2="${cx}" y2="240" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,3"/>`;
+
+  if (type === 's') {
+    // Sphere
+    html += `<circle cx="${cx}" cy="${cy}" r="55" fill="rgba(99,102,241,.15)" stroke="var(--primary)" stroke-width="2"/>`;
+    html += `<circle cx="${cx}" cy="${cy}" r="3" fill="var(--primary)"/>`;
+    html += `<text x="${cx}" y="252" text-anchor="middle" fill="var(--text-dim)" font-size="11" font-family="JetBrains Mono">s orbital (sphere)</text>`;
+    info.textContent = 'l = 0, ml = 0. Spherical symmetry. 1 orbital per subshell, holds 2 electrons.';
+  } else if (type === 'p') {
+    // Two lobes (dumbbell shape)
+    // px
+    html += `<ellipse cx="${cx-45}" cy="${cy}" rx="35" ry="18" fill="rgba(34,197,94,.15)" stroke="var(--green)" stroke-width="2" transform="rotate(0,${cx},${cy})"/>`;
+    html += `<ellipse cx="${cx+45}" cy="${cy}" rx="35" ry="18" fill="rgba(236,72,153,.15)" stroke="var(--pink)" stroke-width="2" transform="rotate(0,${cx},${cy})"/>`;
+    html += `<circle cx="${cx}" cy="${cy}" r="4" fill="var(--text-dim)"/>`;
+    html += `<text x="40" y="${cy-22}" fill="var(--green)" font-size="10" font-family="JetBrains Mono">+ phase</text>`;
+    html += `<text x="210" y="${cy-22}" fill="var(--pink)" font-size="10" font-family="JetBrains Mono">- phase</text>`;
+    html += `<text x="${cx}" y="252" text-anchor="middle" fill="var(--text-dim)" font-size="11" font-family="JetBrains Mono">p orbital (dumbbell)</text>`;
+    info.textContent = 'l = 1, ml = -1, 0, +1. Dumbbell shape along x, y, or z axis. 3 orbitals per subshell, holds 6 electrons.';
+  } else {
+    // d orbital (clover shape) - dxy style
+    const lobeR = 30;
+    const angles = [45, 135, 225, 315];
+    const colors = [
+      {fill:'rgba(245,158,11,.15)', stroke:'var(--amber)'},
+      {fill:'rgba(99,102,241,.15)', stroke:'var(--primary)'},
+      {fill:'rgba(245,158,11,.15)', stroke:'var(--amber)'},
+      {fill:'rgba(99,102,241,.15)', stroke:'var(--primary)'}
+    ];
+    angles.forEach((a, i) => {
+      const rad = a * Math.PI / 180;
+      const lx = cx + 40 * Math.cos(rad);
+      const ly = cy + 40 * Math.sin(rad);
+      html += `<ellipse cx="${lx}" cy="${ly}" rx="${lobeR}" ry="16" fill="${colors[i].fill}" stroke="${colors[i].stroke}" stroke-width="2" transform="rotate(${a},${lx},${ly})"/>`;
+    });
+    html += `<circle cx="${cx}" cy="${cy}" r="4" fill="var(--text-dim)"/>`;
+    html += `<text x="${cx}" y="252" text-anchor="middle" fill="var(--text-dim)" font-size="11" font-family="JetBrains Mono">d orbital (clover)</text>`;
+    info.textContent = 'l = 2, ml = -2, -1, 0, +1, +2. Clover/rosette shapes. 5 orbitals per subshell, holds 10 electrons.';
+  }
+
+  svg.innerHTML = html;
+}
+
+/* ── S4 Practice ──────────────────────────────────── */
+function initS4Practice() {
+  const problems = [
+    { q: 'Give the four quantum numbers (n, l, ml, ms) for the last electron in Boron (Z=5). Format: n,l,ml,ms (e.g. 2,1,-1,+1/2)', a: '2,1,-1,+1/2' },
+    { q: 'What are the quantum numbers for the last electron in Sodium (Z=11)? Format: n,l,ml,ms', a: '3,0,0,+1/2' },
+    { q: 'For n=3, what are the possible values of l? (comma separated)', a: '0,1,2' },
+    { q: 'How many orbitals are in the 4f subshell?', a: '7' }
+  ];
+  const wrap = document.getElementById('s4Practice');
+  problems.forEach((p, i) => {
+    wrap.innerHTML += makePracticeHTML('s4p' + i, p.q);
+  });
+  window.s4Answers = problems.map(p => p.a);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION 5: QUIZ
+   ═══════════════════════════════════════════════════════ */
+const quizData = [
+  {
+    q: 'What defines the identity of an element?',
+    opts: ['Number of electrons', 'Number of neutrons', 'Number of protons', 'Mass number'],
+    correct: 2,
+    explain: 'The atomic number (number of protons) defines an element. Change the protons and you change the element.'
+  },
+  {
+    q: 'A neutral atom of Aluminum (Z=13) has how many electrons?',
+    opts: ['11', '13', '14', '27'],
+    correct: 1,
+    explain: 'A neutral atom has equal protons and electrons. Z=13 means 13 protons and 13 electrons.'
+  },
+  {
+    q: 'Which particle has essentially zero mass?',
+    opts: ['Proton', 'Neutron', 'Electron', 'Nucleus'],
+    correct: 2,
+    explain: 'The electron has a mass of only 0.00055 amu -- roughly 1/1836 of a proton.'
+  },
+  {
+    q: 'Carbon-14 has 6 protons. How many neutrons does it have?',
+    opts: ['6', '8', '12', '14'],
+    correct: 1,
+    explain: 'Neutrons = Mass number - Atomic number = 14 - 6 = 8.'
+  },
+  {
+    q: 'Two isotopes of chlorine are Cl-35 (75.76%) and Cl-37 (24.24%). The average atomic mass is closest to:',
+    opts: ['35.00 amu', '35.45 amu', '36.00 amu', '37.00 amu'],
+    correct: 1,
+    explain: 'Weighted average: 0.7576(34.97) + 0.2424(36.97) = 35.45 amu. Closer to Cl-35 since it is more abundant.'
+  },
+  {
+    q: 'What is the electron configuration of Phosphorus (Z=15)?',
+    opts: ['1s2 2s2 2p6 3s2 3p3', '1s2 2s2 2p6 3s3 3p2', '1s2 2s2 2p6 3s2 3p4', '1s2 2s2 2p5 3s2 3p4'],
+    correct: 0,
+    explain: 'P has 15 electrons: 1s2 2s2 2p6 (10 electrons in first two shells) then 3s2 3p3 (5 more).'
+  },
+  {
+    q: 'According to Hund\'s rule, how do 3 electrons fill three p orbitals?',
+    opts: ['All three in one orbital', 'Two in one, one in another', 'One in each orbital, all same spin', 'One in each orbital, alternating spins'],
+    correct: 2,
+    explain: 'Hund\'s rule: electrons fill degenerate orbitals singly with parallel spins before pairing.'
+  },
+  {
+    q: 'Chromium (Z=24) has an exceptional electron configuration. Its 4s and 3d occupancy is:',
+    opts: ['4s2 3d4', '4s1 3d5', '4s0 3d6', '4s2 3d5'],
+    correct: 1,
+    explain: 'Cr is an exception: a half-filled 3d5 subshell is extra stable, so one electron moves from 4s to 3d.'
+  },
+  {
+    q: 'What is the quantum number l for a d orbital?',
+    opts: ['0', '1', '2', '3'],
+    correct: 2,
+    explain: 'l values: s=0, p=1, d=2, f=3. The angular momentum quantum number determines orbital shape.'
+  },
+  {
+    q: 'How many orbitals are in the 3d subshell?',
+    opts: ['1', '3', '5', '7'],
+    correct: 2,
+    explain: 'For l=2 (d), ml ranges from -2 to +2, giving 5 possible values = 5 orbitals.'
+  }
+];
+
+let quizScore = 0;
+let quizAnswered = 0;
+
+function initQuiz() {
+  const wrap = document.getElementById('quizContainer');
+  let html = '';
+  quizData.forEach((q, i) => {
+    html += `<div class="quiz-question" id="qq${i}">
+      <div class="qq-num">Question ${i+1} of ${quizData.length}</div>
+      <div class="qq-text">${q.q}</div>
+      <div class="quiz-options">`;
+    q.opts.forEach((opt, j) => {
+      html += `<button class="quiz-opt" onclick="answerQuiz(${i},${j})">${opt}</button>`;
+    });
+    html += `</div><div class="quiz-explanation" id="qqexp${i}" style="display:none"></div></div>`;
+  });
+  wrap.innerHTML = html;
+}
+
+function answerQuiz(qi, oi) {
+  const qEl = document.getElementById('qq' + qi);
+  const btns = qEl.querySelectorAll('.quiz-opt');
+  if (btns[0].classList.contains('q-correct') || btns[0].classList.contains('q-incorrect') || btns[0].classList.contains('q-show-answer')) return;
+
+  quizAnswered++;
+  const correct = quizData[qi].correct;
+  if (oi === correct) {
+    quizScore++;
+    btns[oi].classList.add('q-correct');
+  } else {
+    btns[oi].classList.add('q-incorrect');
+    btns[correct].classList.add('q-show-answer');
+  }
+
+  // Show explanation
+  const exp = document.getElementById('qqexp' + qi);
+  exp.textContent = quizData[qi].explain;
+  exp.style.display = 'block';
+
+  // Update score
+  document.getElementById('quizScoreBar').textContent = `Score: ${quizScore} / ${quizData.length}`;
+  document.getElementById('quizScoreBar').style.color = quizScore >= quizAnswered * 0.7 ? 'var(--green)' : 'var(--amber)';
+
+  if (quizAnswered === quizData.length) {
+    const final = document.getElementById('quizFinal');
+    final.style.display = 'block';
+    const pct = Math.round((quizScore / quizData.length) * 100);
+    final.style.color = pct >= 80 ? 'var(--green)' : pct >= 60 ? 'var(--amber)' : 'var(--pink)';
+    final.textContent = `Final Score: ${quizScore}/${quizData.length} (${pct}%)` + (pct >= 80 ? ' -- Excellent!' : pct >= 60 ? ' -- Good effort!' : ' -- Keep studying!');
+    markComplete(5);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   PRACTICE PROBLEM HELPERS
+   ═══════════════════════════════════════════════════════ */
+function makePracticeHTML(id, question) {
+  return `<div class="practice-box" id="${id}">
+    <div class="p-question">${question}</div>
+    <div class="p-input-row">
+      <input type="text" id="${id}_input" onkeydown="if(event.key==='Enter')checkPractice('${id}')">
+      <button class="p-check" onclick="checkPractice('${id}')">Check</button>
+    </div>
+    <div class="p-feedback" id="${id}_fb"></div>
+  </div>`;
+}
+
+// Track practice completion per section
+const sectionPracticeState = {};
+
+function checkPractice(id) {
+  const input = document.getElementById(id + '_input');
+  const fb = document.getElementById(id + '_fb');
+  const val = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+
+  // Determine section and index
+  const match = id.match(/s(\d)p(\d)/);
+  if (!match) return;
+  const section = parseInt(match[1]);
+  const idx = parseInt(match[2]);
+  const answers = window['s' + section + 'Answers'];
+  const correct = answers[idx].toLowerCase().replace(/\s+/g, ' ');
+
+  // For numeric answers, allow close matches
+  let isCorrect = false;
+  const numVal = parseFloat(val);
+  const numCorrect = parseFloat(correct);
+  if (!isNaN(numVal) && !isNaN(numCorrect)) {
+    isCorrect = Math.abs(numVal - numCorrect) < 0.05;
+  } else {
+    isCorrect = val === correct;
+  }
+
+  if (isCorrect) {
+    fb.textContent = 'Correct!';
+    fb.style.color = 'var(--green)';
+    input.style.borderColor = 'var(--green)';
+
+    // Track completion
+    if (!sectionPracticeState[section]) sectionPracticeState[section] = new Set();
+    sectionPracticeState[section].add(idx);
+
+    const totalProblems = answers.length;
+    if (sectionPracticeState[section].size >= totalProblems) {
+      markComplete(section);
+    }
+  } else {
+    fb.innerHTML = `Not quite. Expected: <span style="color:var(--amber)">${answers[idx]}</span>`;
+    fb.style.color = 'var(--pink)';
+    input.style.borderColor = 'var(--pink)';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  initAtomViewer();
+  drawIsotopeAtoms();
+  updateIsotopeCalc();
+  initS1Practice();
+  initS2Practice();
+  drawEnergyDiagram();
+  drawFillingOrder();
+  initEconfigBuilder();
+  initS3Practice();
+  showOrbital('s');
+  initS4Practice();
+  initQuiz();
+});
+</script>
+</body>
+</html>

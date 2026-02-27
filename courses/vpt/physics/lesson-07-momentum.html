@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 7: Momentum &amp; Impulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.problem .unit-label{font-size:.7rem;color:var(--text-dim)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.graph-container{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.momentum-bar{display:flex;align-items:center;gap:8px;margin:6px 0}
+.momentum-bar .bar-label{font-size:.68rem;color:var(--text-dim);min-width:70px}
+.momentum-bar .bar-track{flex:1;height:22px;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;overflow:hidden;position:relative}
+.momentum-bar .bar-fill{height:100%;border-radius:3px;transition:width .3s ease}
+.momentum-bar .bar-val{font-size:.68rem;color:var(--text-bright);font-weight:600;min-width:80px;text-align:right}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.graph-container{grid-template-columns:1fr}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>07</span> Momentum &amp; Impulse</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: LINEAR MOMENTUM -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Linear Momentum</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Linear momentum</strong> is mass times velocity: <strong>p = mv</strong>. It is a <strong>vector quantity</strong> -- it has the same direction as velocity. Units: kg*m/s. Momentum measures how hard it is to stop a moving object. A large slow object can have the same momentum as a small fast one.
+    </p>
+    <div class="formula-box large">p = mv &nbsp;&nbsp;&nbsp; [kg &middot; m/s]</div>
+    <div class="key-point">Newton originally wrote F = dp/dt, not F = ma. The momentum formulation is more general because it handles changing mass (rockets, conveyor belts).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Momentum Comparison -- Ball vs Truck</div>
+      <div class="slider-row">
+        <label>Ball mass</label>
+        <input type="range" id="s1BallM" min="0.01" max="2" value="0.05" step="0.01" oninput="updateS1()">
+        <span class="slider-val" id="s1BallMVal">0.05 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Ball velocity</label>
+        <input type="range" id="s1BallV" min="1" max="900" value="400" step="1" oninput="updateS1()">
+        <span class="slider-val" id="s1BallVVal">400 m/s</span>
+      </div>
+      <div class="slider-row">
+        <label>Truck mass</label>
+        <input type="range" id="s1TruckM" min="500" max="20000" value="5000" step="100" oninput="updateS1()">
+        <span class="slider-val" id="s1TruckMVal">5000 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Truck velocity</label>
+        <input type="range" id="s1TruckV" min="0.1" max="40" value="4" step="0.1" oninput="updateS1()">
+        <span class="slider-val" id="s1TruckVVal">4.0 m/s</span>
+      </div>
+      <div style="margin-top:14px">
+        <div class="momentum-bar">
+          <span class="bar-label" style="color:var(--indigo)">Ball p</span>
+          <div class="bar-track"><div class="bar-fill" id="s1BarBall" style="background:var(--indigo);width:0%"></div></div>
+          <span class="bar-val" id="s1PBall">20.0 kg*m/s</span>
+        </div>
+        <div class="momentum-bar">
+          <span class="bar-label" style="color:var(--amber)">Truck p</span>
+          <div class="bar-track"><div class="bar-fill" id="s1BarTruck" style="background:var(--amber);width:0%"></div></div>
+          <span class="bar-val" id="s1PTruck">20000 kg*m/s</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Ball p = mv</span><br><span class="value indigo" id="s1RBall">20.0</span></div>
+        <div class="readout-item"><span class="label">Truck p = mv</span><br><span class="value amber" id="s1RTruck">20000</span></div>
+        <div class="readout-item"><span class="label">Ratio truck/ball</span><br><span class="value green" id="s1Ratio">1000x</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> A 5.56mm rifle bullet (4 g at 940 m/s) has momentum of 3.8 kg*m/s. A Nimitz-class carrier (100,000 tonnes at 15 knots ~ 7.7 m/s) has momentum of 770,000,000 kg*m/s -- about 200 million times more. That is why it takes miles to stop a carrier.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 0.145 kg baseball is thrown at 40 m/s. What is its momentum?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1" step="0.1" placeholder="p = ?" onkeydown="if(event.key==='Enter')checkNum('s1p1',5.8,0.2)">
+          <span class="unit-label">kg*m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p1',5.8,0.2)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A 2000 kg car has momentum of 30000 kg*m/s. What is its speed?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2" step="0.1" placeholder="v = ?" onkeydown="if(event.key==='Enter')checkNum('s1p2',15,0.5)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p2',15,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+      <div class="problem" id="s1p3">
+        <p><strong>3.</strong> A bullet (8 g, 700 m/s) and a bowling ball (7 kg, 0.8 m/s). Which has more momentum?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">The bullet -- it is much faster</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','correct')">The bowling ball (5.6 kg*m/s vs 5.6 kg*m/s) -- they are nearly equal!</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">Cannot compare without knowing direction</button>
+        </div>
+        <div class="feedback" id="s1p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: IMPULSE & FORCE-TIME GRAPHS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Impulse &amp; Force-Time Graphs</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Impulse</strong> is the change in momentum: <strong>J = F*dt = dp = m*dv</strong>. On a force-vs-time graph, impulse equals the <strong>area under the curve</strong>. A given impulse can come from a large force over a short time, or a small force over a long time. This is the principle behind airbags, crumple zones, and catching an egg gently.
+    </p>
+    <div class="formula-box large">J = F &middot; &Delta;t = &Delta;p = m(v_f - v_i)</div>
+    <div class="key-point">Catching an egg: same impulse is needed to stop it. Extend the time (soft hands) and the force drops. Drop it on concrete (tiny dt) and the force spikes -- the egg breaks.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Force-Time Pulse Shape</div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setFTShape('rect',this)">Rectangle</button>
+        <button class="scenario-tab" onclick="setFTShape('tri',this)">Triangle</button>
+        <button class="scenario-tab" onclick="setFTShape('curve',this)">Realistic Curve</button>
+      </div>
+      <svg id="ftSvg" width="100%" viewBox="0 0 700 300" style="display:block"></svg>
+      <div class="slider-row">
+        <label>Peak Force F</label>
+        <input type="range" id="ftForce" min="10" max="500" value="100" step="10" oninput="drawFT()">
+        <span class="slider-val" id="ftForceVal">100 N</span>
+      </div>
+      <div class="slider-row">
+        <label>Duration &Delta;t</label>
+        <input type="range" id="ftDt" min="0.01" max="2" value="0.5" step="0.01" oninput="drawFT()">
+        <span class="slider-val" id="ftDtVal">0.50 s</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Impulse J (area)</span><br><span class="value green" id="ftJ">50.0 N*s</span></div>
+        <div class="readout-item"><span class="label">Peak Force</span><br><span class="value pink" id="ftFpeak">100 N</span></div>
+        <div class="readout-item"><span class="label">Duration</span><br><span class="value amber" id="ftDtR">0.50 s</span></div>
+      </div>
+      <div style="margin-top:10px">
+        <div class="sub-label">Egg Demo: same impulse (stop a 0.06 kg egg from 3 m/s = 0.18 N*s)</div>
+        <div class="readout">
+          <div class="readout-item"><span class="label">Soft catch (0.3 s)</span><br><span class="value green">0.6 N</span></div>
+          <div class="readout-item"><span class="label">Hard drop (0.001 s)</span><br><span class="value pink">180 N -- crack!</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 0.4 kg ball hits a wall at 10 m/s and bounces back at 8 m/s. What is the impulse magnitude? (Remember: direction reversal means dv = v_f - v_i = -8 - 10 = -18)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1" step="0.1" placeholder="|J| = ?" onkeydown="if(event.key==='Enter')checkNum('s2p1',7.2,0.3)">
+          <span class="unit-label">N*s</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p1',7.2,0.3)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A 70 kg person jumps and is in contact with the ground for 0.5 s during landing. If they decelerate from 4 m/s to 0, what average force acts on them?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" step="1" placeholder="F_avg = ?" onkeydown="if(event.key==='Enter')checkNum('s2p2',560,20)">
+          <span class="unit-label">N</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p2',560,20)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem" id="s2p3">
+        <p><strong>3.</strong> Why do boxers "roll with the punch" instead of bracing against it?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">It reduces the total impulse delivered to their head</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','correct')">Same impulse, but extending contact time reduces the peak force</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">It increases their momentum so the punch has less effect</button>
+        </div>
+        <div class="feedback" id="s2p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: CONSERVATION OF MOMENTUM -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Conservation of Momentum</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      If no external force acts on a system, <strong>total momentum is conserved</strong>: p_before = p_after. This applies to collisions, explosions, and any interaction between objects. Three key collision types: <strong>elastic</strong> (KE conserved), <strong>perfectly inelastic</strong> (objects stick together, max KE loss), and <strong>explosion</strong> (one object splits into pieces).
+    </p>
+    <div class="formula-box large">m1*v1i + m2*v2i = m1*v1f + m2*v2f</div>
+    <div class="formula-box green">Elastic: KE_before = KE_after &nbsp;&nbsp; (both p and KE conserved)</div>
+    <div class="formula-box pink">Perfectly Inelastic: m1*v1i + m2*v2i = (m1+m2)*v_f</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Collision Simulator</div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setCollisionType('elastic',this)">Elastic</button>
+        <button class="scenario-tab" onclick="setCollisionType('inelastic',this)">Perfectly Inelastic</button>
+        <button class="scenario-tab" onclick="setCollisionType('explosion',this)">Explosion</button>
+      </div>
+      <svg id="collSvg" width="100%" viewBox="0 0 700 200" style="display:block;margin:8px 0"></svg>
+      <div class="slider-row">
+        <label>Mass 1 (kg)</label>
+        <input type="range" id="collM1" min="1" max="20" value="5" step="1" oninput="updateColl()">
+        <span class="slider-val" id="collM1Val">5 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>v1 initial</label>
+        <input type="range" id="collV1" min="-10" max="10" value="4" step="0.5" oninput="updateColl()">
+        <span class="slider-val" id="collV1Val">4.0 m/s</span>
+      </div>
+      <div class="slider-row">
+        <label>Mass 2 (kg)</label>
+        <input type="range" id="collM2" min="1" max="20" value="3" step="1" oninput="updateColl()">
+        <span class="slider-val" id="collM2Val">3 kg</span>
+      </div>
+      <div class="slider-row" id="collV2Row">
+        <label>v2 initial</label>
+        <input type="range" id="collV2" min="-10" max="10" value="-2" step="0.5" oninput="updateColl()">
+        <span class="slider-val" id="collV2Val">-2.0 m/s</span>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" onclick="runCollision()">Collide!</button>
+        <button class="btn" onclick="resetColl()">Reset</button>
+      </div>
+      <div class="sub-label">Momentum Bars (before &rarr; after)</div>
+      <div class="momentum-bar">
+        <span class="bar-label" style="color:var(--indigo)">Obj 1</span>
+        <div class="bar-track"><div class="bar-fill" id="collBar1" style="background:var(--indigo);width:0%"></div></div>
+        <span class="bar-val" id="collP1">--</span>
+      </div>
+      <div class="momentum-bar">
+        <span class="bar-label" style="color:var(--green)">Obj 2</span>
+        <div class="bar-track"><div class="bar-fill" id="collBar2" style="background:var(--green);width:0%"></div></div>
+        <span class="bar-val" id="collP2">--</span>
+      </div>
+      <div class="momentum-bar">
+        <span class="bar-label" style="color:var(--amber)">Total</span>
+        <div class="bar-track"><div class="bar-fill" id="collBarT" style="background:var(--amber);width:0%"></div></div>
+        <span class="bar-val" id="collPT">--</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">v1 final</span><br><span class="value indigo" id="collV1f">--</span></div>
+        <div class="readout-item"><span class="label">v2 final</span><br><span class="value green" id="collV2f">--</span></div>
+        <div class="readout-item"><span class="label">KE before</span><br><span class="value amber" id="collKEi">--</span></div>
+        <div class="readout-item"><span class="label">KE after</span><br><span class="value pink" id="collKEf">--</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> When a ship's 5-inch gun (shell mass ~31 kg, muzzle velocity ~800 m/s) fires, the ship recoils. For an 8000-tonne destroyer: v_recoil = 31*800 / 8,000,000 = 0.003 m/s. Tiny -- but that is conservation of momentum at work. Rapid fire accumulates impulse, which is why the ship compensates with engines.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 5 kg cart moving at 3 m/s collides with a stationary 10 kg cart. They stick together (perfectly inelastic). What is the final velocity?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="0.01" placeholder="v_f = ?" onkeydown="if(event.key==='Enter')checkNum('s3p1',1.0,0.1)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p1',1.0,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> In the above collision, what fraction of KE is lost? (KE_i = 0.5*5*9 = 22.5 J, KE_f = 0.5*15*1 = 7.5 J)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2" step="0.01" placeholder="fraction = ?" onkeydown="if(event.key==='Enter')checkNum('s3p2',0.67,0.05)">
+          <span class="unit-label">(decimal)</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p2',0.67,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> A 10 kg object at rest explodes into two pieces: 4 kg and 6 kg. The 4 kg piece flies right at 6 m/s. What is the 6 kg piece's velocity?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p3" step="0.1" placeholder="v = ?" onkeydown="if(event.key==='Enter')checkNum('s3p3',-4,0.2)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p3',-4,0.2)">Check</button>
+        </div>
+        <div class="feedback" id="s3p3-fb"></div>
+      </div>
+      <div class="problem" id="s3p4">
+        <p><strong>4.</strong> In an elastic collision, which quantities are conserved?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p4','wrong')">Only momentum</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p4','correct')">Both momentum and kinetic energy</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p4','wrong')">Only kinetic energy</button>
+        </div>
+        <div class="feedback" id="s3p4-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: 2D COLLISIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> 2D Collisions</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      In two dimensions, momentum is conserved <strong>independently along each axis</strong>: p_x(before) = p_x(after) and p_y(before) = p_y(after). A classic example is a billiard ball collision: one ball strikes a stationary ball at an angle, and both fly off in different directions. The total momentum vector is unchanged.
+    </p>
+    <div class="formula-box large">p_x: m1*v1x_i + m2*v2x_i = m1*v1x_f + m2*v2x_f</div>
+    <div class="formula-box amber">p_y: m1*v1y_i + m2*v2y_i = m1*v1y_f + m2*v2y_f</div>
+    <div class="key-point">In 2D elastic collisions between equal masses (one initially at rest), the two final velocity vectors are always perpendicular -- a key billiards fact.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: 2D Billiard Collision (equal masses, elastic)</div>
+      <svg id="twodSvg" width="100%" viewBox="0 0 700 350" style="display:block;margin:8px 0"></svg>
+      <div class="slider-row">
+        <label>Approach angle</label>
+        <input type="range" id="twodAngle" min="5" max="85" value="30" step="1" oninput="updateTwoD()">
+        <span class="slider-val" id="twodAngleVal">30 deg</span>
+      </div>
+      <div class="slider-row">
+        <label>Ball 1 speed</label>
+        <input type="range" id="twodSpeed" min="1" max="10" value="5" step="0.5" oninput="updateTwoD()">
+        <span class="slider-val" id="twodSpeedVal">5.0 m/s</span>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" onclick="runTwoD()">Collide!</button>
+        <button class="btn" onclick="resetTwoD()">Reset</button>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Ball 1 final speed</span><br><span class="value indigo" id="twodV1f">--</span></div>
+        <div class="readout-item"><span class="label">Ball 2 final speed</span><br><span class="value green" id="twodV2f">--</span></div>
+        <div class="readout-item"><span class="label">px conserved?</span><br><span class="value amber" id="twodPx">--</span></div>
+        <div class="readout-item"><span class="label">py conserved?</span><br><span class="value amber" id="twodPy">--</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A 2 kg ball moving at 3 m/s in the +x direction hits a stationary 2 kg ball. After collision, ball 1 moves at 30 degrees above x-axis at some speed. What is the y-component of ball 2's final momentum? (Hint: total p_y was zero before.)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="0.1" placeholder="p2y = ?" onkeydown="if(event.key==='Enter')checkNum('s4p1',-3,0.3)">
+          <span class="unit-label">kg*m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p1',-3,0.3)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> In an elastic 2D collision between equal masses (one at rest), the angle between the two final velocities is always:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">180 degrees (head-on rebound)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','correct')">90 degrees</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">45 degrees</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> A 5 kg object moving at 4 m/s in the +x direction collides with and sticks to a 5 kg object moving at 4 m/s in the +y direction. What is the speed of the combined object?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p3" step="0.01" placeholder="v_f = ?" onkeydown="if(event.key==='Enter')checkNum('s4p3',2.83,0.15)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p3',2.83,0.15)">Check</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: CENTER OF MASS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Center of Mass</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>center of mass</strong> (COM) is the average position of all mass in a system, weighted by mass. For discrete objects: <strong>x_cm = (m1*x1 + m2*x2 + ...) / M_total</strong>. The COM moves as if all external forces act on a single particle of mass M_total located at that point. Even when a firework explodes mid-flight, the COM follows the original parabolic trajectory.
+    </p>
+    <div class="formula-box large">x_cm = &Sigma;(m_i * x_i) / &Sigma;m_i</div>
+    <div class="key-point">The COM of a system obeys Newton's 2nd law: F_ext = M_total * a_cm. Internal forces (explosions, collisions) cannot change the COM's motion.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Center of Mass on a Number Line</div>
+      <svg id="comSvg" width="100%" viewBox="0 0 700 160" style="display:block;margin:8px 0"></svg>
+      <div class="slider-row">
+        <label>Mass 1 (kg)</label>
+        <input type="range" id="comM1" min="1" max="20" value="5" step="1" oninput="updateCOM()">
+        <span class="slider-val" id="comM1Val">5 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Pos 1 (m)</label>
+        <input type="range" id="comX1" min="0" max="10" value="2" step="0.5" oninput="updateCOM()">
+        <span class="slider-val" id="comX1Val">2.0 m</span>
+      </div>
+      <div class="slider-row">
+        <label>Mass 2 (kg)</label>
+        <input type="range" id="comM2" min="1" max="20" value="10" step="1" oninput="updateCOM()">
+        <span class="slider-val" id="comM2Val">10 kg</span>
+      </div>
+      <div class="slider-row">
+        <label>Pos 2 (m)</label>
+        <input type="range" id="comX2" min="0" max="10" value="8" step="0.5" oninput="updateCOM()">
+        <span class="slider-val" id="comX2Val">8.0 m</span>
+      </div>
+      <div class="slider-row">
+        <label>Mass 3 (kg)</label>
+        <input type="range" id="comM3" min="0" max="20" value="0" step="1" oninput="updateCOM()">
+        <span class="slider-val" id="comM3Val">0 (off)</span>
+      </div>
+      <div class="slider-row" id="comX3Row" style="display:none">
+        <label>Pos 3 (m)</label>
+        <input type="range" id="comX3" min="0" max="10" value="5" step="0.5" oninput="updateCOM()">
+        <span class="slider-val" id="comX3Val">5.0 m</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">x_cm</span><br><span class="value green" id="comXcm">6.0 m</span></div>
+        <div class="readout-item"><span class="label">Total mass</span><br><span class="value indigo" id="comMtot">15 kg</span></div>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: 2D Center of Mass (click grid to place masses)</div>
+      <svg id="com2dSvg" width="100%" viewBox="0 0 400 400" style="display:block;margin:8px 0;cursor:crosshair"></svg>
+      <div class="controls-row">
+        <span class="sub-label">Click mass:</span>
+        <button class="btn btn-sm scenario-tab active" id="com2dM1Btn" onclick="setCom2dMass(1,this)">1 kg</button>
+        <button class="btn btn-sm scenario-tab" id="com2dM3Btn" onclick="setCom2dMass(3,this)">3 kg</button>
+        <button class="btn btn-sm scenario-tab" id="com2dM5Btn" onclick="setCom2dMass(5,this)">5 kg</button>
+        <button class="btn btn-sm scenario-tab" id="com2dM10Btn" onclick="setCom2dMass(10,this)">10 kg</button>
+        <button class="btn" onclick="resetCom2d()">Clear</button>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">COM x</span><br><span class="value indigo" id="com2dX">--</span></div>
+        <div class="readout-item"><span class="label">COM y</span><br><span class="value green" id="com2dY">--</span></div>
+        <div class="readout-item"><span class="label">Total mass</span><br><span class="value amber" id="com2dMtot">0 kg</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Ship stability depends critically on the center of mass (center of gravity). Loading cargo unevenly shifts the CG, causing a list. If CG rises above the metacenter, the ship capsizes. Damage control teams pump ballast to shift the CG back to safe positions. Every fuel transfer changes the ship's CG -- computed continuously.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> Two masses: 3 kg at x = 0 and 7 kg at x = 10 m. Where is the center of mass?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1" step="0.1" placeholder="x_cm = ?" onkeydown="if(event.key==='Enter')checkNum('s5p1',7.0,0.2)">
+          <span class="unit-label">m</span>
+          <button class="btn btn-sm" onclick="checkNum('s5p1',7.0,0.2)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> Three masses on x-axis: 2 kg at x=1, 4 kg at x=3, 6 kg at x=7. What is x_cm?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p2" step="0.01" placeholder="x_cm = ?" onkeydown="if(event.key==='Enter')checkNum('s5p2',4.67,0.15)">
+          <span class="unit-label">m</span>
+          <button class="btn btn-sm" onclick="checkNum('s5p2',4.67,0.15)">Check</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem" id="s5p3">
+        <p><strong>3.</strong> A firework is launched vertically and explodes into fragments at its peak. What path does the center of mass of the fragments follow after the explosion?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">The COM stays at the explosion point</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','correct')">The COM continues on the original parabolic (free-fall) path downward</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">The COM flies outward with the fastest fragment</button>
+        </div>
+        <div class="feedback" id="s5p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUICK QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quick Quiz &mdash; Momentum &amp; Impulse</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Momentum basics</div>
+      <p class="q-text">A 1500 kg car travels at 20 m/s. What is its momentum?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">75 kg*m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">30,000 kg*m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">300,000 kg*m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">15,000 kg*m/s</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Impulse</div>
+      <p class="q-text">A 0.5 kg ball moving at 6 m/s is stopped by a catcher in 0.1 s. What average force did the catcher exert?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">3 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">30 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">60 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">300 N</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Impulse-momentum theorem</div>
+      <p class="q-text">An airbag reduces injury by:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">Reducing the total impulse</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">Reducing the passenger's momentum</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">Increasing the stopping time, thereby reducing the peak force</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">Absorbing all the kinetic energy instantly</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Conservation of momentum</div>
+      <p class="q-text">A 3 kg object moving at 4 m/s collides and sticks to a 1 kg object at rest. Final velocity?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">3 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">4 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">1 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">12 m/s</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Elastic collision</div>
+      <p class="q-text">In a head-on elastic collision between two equal masses, one initially at rest, what happens?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">Both move at half the initial speed</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">The first stops completely and the second moves at the first's original speed</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">Both bounce back at equal speeds</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">The second moves at twice the initial speed</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Explosion</div>
+      <p class="q-text">A 6 kg object at rest explodes into a 2 kg piece at +9 m/s and a 4 kg piece. What is the 4 kg piece's velocity?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">+9 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">-9 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">-4.5 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">+4.5 m/s</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- 2D momentum</div>
+      <p class="q-text">A ball moving in the +x direction strikes a stationary ball and deflects upward at 30 degrees. In which direction must the second ball move?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Straight in the +x direction</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">Downward and to the right (below the x-axis) to conserve p_y = 0</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Upward at 30 degrees (same as ball 1)</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Straight backward (-x direction)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Center of mass</div>
+      <p class="q-text">Two objects: 2 kg at x=0 and 8 kg at x=5 m. Where is the center of mass?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">2.5 m</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">4.0 m</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">3.0 m</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">1.0 m</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Recoil</div>
+      <p class="q-text">A 60 kg astronaut floating in space throws a 5 kg tool at 12 m/s. How fast does the astronaut recoil?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">1.0 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">12 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">0.5 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">2.4 m/s</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Perfectly inelastic KE loss</div>
+      <p class="q-text">Two identical 4 kg objects collide head-on, each at 5 m/s, and stick together. What is the final KE?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">0 J -- all KE is lost (they stop)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">50 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">100 J</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">25 J</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+var G = 9.8;
+
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(1) + ')';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: LINEAR MOMENTUM ==================== */
+function updateS1() {
+  var bm = +document.getElementById('s1BallM').value;
+  var bv = +document.getElementById('s1BallV').value;
+  var tm = +document.getElementById('s1TruckM').value;
+  var tv = +document.getElementById('s1TruckV').value;
+  document.getElementById('s1BallMVal').textContent = bm.toFixed(2) + ' kg';
+  document.getElementById('s1BallVVal').textContent = bv.toFixed(0) + ' m/s';
+  document.getElementById('s1TruckMVal').textContent = tm.toFixed(0) + ' kg';
+  document.getElementById('s1TruckVVal').textContent = tv.toFixed(1) + ' m/s';
+  var pb = bm * bv, pt = tm * tv;
+  document.getElementById('s1PBall').textContent = pb.toFixed(1) + ' kg*m/s';
+  document.getElementById('s1PTruck').textContent = pt.toFixed(1) + ' kg*m/s';
+  document.getElementById('s1RBall').textContent = pb.toFixed(1);
+  document.getElementById('s1RTruck').textContent = pt.toFixed(1);
+  var maxP = Math.max(pb, pt, 1);
+  document.getElementById('s1BarBall').style.width = (pb / maxP * 100).toFixed(1) + '%';
+  document.getElementById('s1BarTruck').style.width = (pt / maxP * 100).toFixed(1) + '%';
+  var ratio = pt > pb ? (pt / pb).toFixed(1) + 'x truck' : pb > pt ? (pb / pt).toFixed(1) + 'x ball' : 'Equal!';
+  document.getElementById('s1Ratio').textContent = ratio;
+}
+
+/* ==================== SECTION 2: FORCE-TIME GRAPH ==================== */
+var ftShape = 'rect';
+
+function setFTShape(shape, btn) {
+  ftShape = shape;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  drawFT();
+}
+
+function drawFT() {
+  var F = +document.getElementById('ftForce').value;
+  var dt = +document.getElementById('ftDt').value;
+  document.getElementById('ftForceVal').textContent = F + ' N';
+  document.getElementById('ftDtVal').textContent = dt.toFixed(2) + ' s';
+  var J;
+  if (ftShape === 'rect') J = F * dt;
+  else if (ftShape === 'tri') J = 0.5 * F * dt;
+  else J = 0.667 * F * dt;
+  document.getElementById('ftJ').textContent = J.toFixed(1) + ' N*s';
+  document.getElementById('ftFpeak').textContent = F + ' N';
+  document.getElementById('ftDtR').textContent = dt.toFixed(2) + ' s';
+  var svg = document.getElementById('ftSvg');
+  var ox = 70, oy = 20, gw = 560, gh = 220;
+  var maxF = 520, maxT = 2.2;
+  var scX = gw / maxT, scY = gh / maxF;
+  var h = '<defs><marker id="ftArr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#9ca3af"/></marker></defs>';
+  h += '<rect x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="#1a1d24" stroke="#363b47" rx="4"/>';
+  h += '<line x1="'+ox+'" y1="'+(oy+gh)+'" x2="'+(ox+gw)+'" y2="'+(oy+gh)+'" stroke="#9ca3af" stroke-width="1" marker-end="url(#ftArr)"/>';
+  h += '<line x1="'+ox+'" y1="'+(oy+gh)+'" x2="'+ox+'" y2="'+oy+'" stroke="#9ca3af" stroke-width="1" marker-end="url(#ftArr)"/>';
+  h += '<text x="'+(ox+gw/2)+'" y="'+(oy+gh+30)+'" text-anchor="middle" fill="#9ca3af" font-size="11">Time (s)</text>';
+  h += '<text x="'+(ox-10)+'" y="'+(oy+gh/2)+'" fill="#9ca3af" font-size="11" text-anchor="middle" transform="rotate(-90,'+(ox-10)+','+(oy+gh/2)+')">Force (N)</text>';
+  for (var ti = 0; ti <= 2; ti += 0.5) {
+    var tx = ox + ti * scX;
+    h += '<line x1="'+tx+'" y1="'+(oy+gh)+'" x2="'+tx+'" y2="'+(oy+gh+5)+'" stroke="#9ca3af" stroke-width="1"/>';
+    h += '<text x="'+tx+'" y="'+(oy+gh+16)+'" text-anchor="middle" fill="#9ca3af" font-size="9">'+ti.toFixed(1)+'</text>';
+  }
+  for (var fi = 0; fi <= 500; fi += 100) {
+    var fy = oy + gh - fi * scY;
+    h += '<line x1="'+(ox-4)+'" y1="'+fy+'" x2="'+ox+'" y2="'+fy+'" stroke="#9ca3af" stroke-width="1"/>';
+    if (fi > 0) h += '<text x="'+(ox-8)+'" y="'+(fy+3)+'" text-anchor="end" fill="#9ca3af" font-size="9">'+fi+'</text>';
+  }
+  var x0 = ox, y0 = oy + gh;
+  var x1 = ox + 0 * scX, x2 = ox + dt * scX;
+  var yF = oy + gh - F * scY;
+  var fillPts = '', linePts = '';
+  if (ftShape === 'rect') {
+    fillPts = x1+','+y0+' '+x1+','+yF+' '+x2+','+yF+' '+x2+','+y0;
+    linePts = 'M'+x1+','+y0+' L'+x1+','+yF+' L'+x2+','+yF+' L'+x2+','+y0;
+  } else if (ftShape === 'tri') {
+    var xMid = ox + (dt/2) * scX;
+    fillPts = x1+','+y0+' '+xMid+','+yF+' '+x2+','+y0;
+    linePts = 'M'+x1+','+y0+' L'+xMid+','+yF+' L'+x2+','+y0;
+  } else {
+    var nPts = 50;
+    fillPts = x1+','+y0+' ';
+    linePts = 'M'+x1+','+y0+' ';
+    for (var i = 0; i <= nPts; i++) {
+      var t = i / nPts;
+      var fv = F * Math.sin(Math.PI * t) * (1 - 0.3 * t);
+      var px = ox + (t * dt) * scX;
+      var py = oy + gh - fv * scY;
+      fillPts += px.toFixed(1)+','+py.toFixed(1)+' ';
+      linePts += (i===0?'':'L') + px.toFixed(1)+','+py.toFixed(1)+' ';
+    }
+    fillPts += x2+','+y0;
+  }
+  h += '<polygon points="'+fillPts+'" fill="rgba(99,102,241,0.25)" stroke="none"/>';
+  h += '<path d="'+linePts+'" fill="none" stroke="var(--indigo)" stroke-width="2.5"/>';
+  h += '<text x="'+((+x1+ +x2)/2)+'" y="'+((+yF+ +y0)/2)+'" text-anchor="middle" fill="var(--green)" font-size="12" font-weight="600">J = '+J.toFixed(1)+' N*s</text>';
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 3: COLLISION SIMULATOR ==================== */
+var collType = 'elastic';
+var collAnimId = null, collPhase = 'pre';
+var collResult = {};
+
+function setCollisionType(type, btn) {
+  collType = type;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  var v2row = document.getElementById('collV2Row');
+  if (type === 'explosion') {
+    v2row.style.display = 'none';
+    document.getElementById('collV1').value = 0;
+    document.getElementById('collV1Val').textContent = '0.0 m/s';
+  } else {
+    v2row.style.display = 'flex';
+  }
+  resetColl();
+}
+
+function updateColl() {
+  var m1 = +document.getElementById('collM1').value;
+  var v1 = +document.getElementById('collV1').value;
+  var m2 = +document.getElementById('collM2').value;
+  var v2 = +document.getElementById('collV2').value;
+  document.getElementById('collM1Val').textContent = m1 + ' kg';
+  document.getElementById('collV1Val').textContent = v1.toFixed(1) + ' m/s';
+  document.getElementById('collM2Val').textContent = m2 + ' kg';
+  document.getElementById('collV2Val').textContent = v2.toFixed(1) + ' m/s';
+  drawCollPre(m1, v1, m2, v2);
+}
+
+function drawCollPre(m1, v1, m2, v2) {
+  var svg = document.getElementById('collSvg');
+  var h = '<defs>';
+  h += '<marker id="cArr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#9ca3af"/></marker>';
+  h += '</defs>';
+  h += '<rect x="0" y="0" width="700" height="200" fill="#1a1d24" rx="6"/>';
+  h += '<line x1="0" y1="160" x2="700" y2="160" stroke="#363b47" stroke-width="2"/>';
+  var r1 = 15 + m1, r2 = 15 + m2;
+  var x1 = 200, x2 = 500, cy = 130;
+  h += '<circle cx="'+x1+'" cy="'+cy+'" r="'+r1+'" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+  h += '<text x="'+x1+'" y="'+(cy+4)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">'+m1+'kg</text>';
+  if (Math.abs(v1) > 0.1) {
+    var aLen = v1 * 8;
+    h += '<line x1="'+(x1+r1+4)+'" y1="'+cy+'" x2="'+(x1+r1+4+aLen)+'" y2="'+cy+'" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#cArr)"/>';
+    h += '<text x="'+(x1+r1+4+aLen/2)+'" y="'+(cy-10)+'" text-anchor="middle" fill="#f59e0b" font-size="9">v1='+v1.toFixed(1)+'</text>';
+  }
+  h += '<circle cx="'+x2+'" cy="'+cy+'" r="'+r2+'" fill="#22c55e" stroke="#4ade80" stroke-width="2"/>';
+  h += '<text x="'+x2+'" y="'+(cy+4)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">'+m2+'kg</text>';
+  if (collType !== 'explosion' && Math.abs(v2) > 0.1) {
+    var aLen2 = v2 * 8;
+    h += '<line x1="'+(x2-r2-4)+'" y1="'+cy+'" x2="'+(x2-r2-4+aLen2)+'" y2="'+cy+'" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#cArr)"/>';
+    h += '<text x="'+(x2-r2-4+aLen2/2)+'" y="'+(cy-10)+'" text-anchor="middle" fill="#f59e0b" font-size="9">v2='+v2.toFixed(1)+'</text>';
+  }
+  if (collType === 'explosion') {
+    h += '<text x="350" y="30" text-anchor="middle" fill="#9ca3af" font-size="11">Combined object at rest -- press Collide to explode</text>';
+  } else {
+    h += '<text x="350" y="30" text-anchor="middle" fill="#9ca3af" font-size="11">Before Collision</text>';
+  }
+  svg.innerHTML = h;
+  document.getElementById('collV1f').textContent = '--';
+  document.getElementById('collV2f').textContent = '--';
+  document.getElementById('collKEi').textContent = '--';
+  document.getElementById('collKEf').textContent = '--';
+  document.getElementById('collP1').textContent = '--';
+  document.getElementById('collP2').textContent = '--';
+  document.getElementById('collPT').textContent = '--';
+  document.getElementById('collBar1').style.width = '0%';
+  document.getElementById('collBar2').style.width = '0%';
+  document.getElementById('collBarT').style.width = '0%';
+}
+
+function runCollision() {
+  var m1 = +document.getElementById('collM1').value;
+  var v1i = +document.getElementById('collV1').value;
+  var m2 = +document.getElementById('collM2').value;
+  var v2i = +document.getElementById('collV2').value;
+  var v1f, v2f;
+  if (collType === 'elastic') {
+    v1f = ((m1 - m2) * v1i + 2 * m2 * v2i) / (m1 + m2);
+    v2f = ((m2 - m1) * v2i + 2 * m1 * v1i) / (m1 + m2);
+  } else if (collType === 'inelastic') {
+    var vf = (m1 * v1i + m2 * v2i) / (m1 + m2);
+    v1f = vf; v2f = vf;
+  } else {
+    v1f = -m2 * 3 / m1;
+    v2f = 3;
+  }
+  var kei = 0.5*m1*v1i*v1i + 0.5*m2*v2i*v2i;
+  var kef = 0.5*m1*v1f*v1f + 0.5*m2*v2f*v2f;
+  var p1f = m1*v1f, p2f = m2*v2f, ptf = p1f+p2f;
+  document.getElementById('collV1f').textContent = v1f.toFixed(2) + ' m/s';
+  document.getElementById('collV2f').textContent = v2f.toFixed(2) + ' m/s';
+  document.getElementById('collKEi').textContent = kei.toFixed(1) + ' J';
+  document.getElementById('collKEf').textContent = kef.toFixed(1) + ' J';
+  document.getElementById('collP1').textContent = p1f.toFixed(1);
+  document.getElementById('collP2').textContent = p2f.toFixed(1);
+  document.getElementById('collPT').textContent = ptf.toFixed(1) + ' kg*m/s';
+  var maxP = Math.max(Math.abs(p1f), Math.abs(p2f), Math.abs(ptf), 1);
+  document.getElementById('collBar1').style.width = (Math.abs(p1f)/maxP*100).toFixed(1)+'%';
+  document.getElementById('collBar1').style.background = p1f >= 0 ? 'var(--indigo)' : 'var(--pink)';
+  document.getElementById('collBar2').style.width = (Math.abs(p2f)/maxP*100).toFixed(1)+'%';
+  document.getElementById('collBar2').style.background = p2f >= 0 ? 'var(--green)' : 'var(--pink)';
+  document.getElementById('collBarT').style.width = (Math.abs(ptf)/maxP*100).toFixed(1)+'%';
+  // animate
+  collResult = {m1:m1,m2:m2,v1f:v1f,v2f:v2f};
+  if (collAnimId) cancelAnimationFrame(collAnimId);
+  var t = 0;
+  function step() {
+    t += 0.016;
+    if (t > 1.5) return;
+    drawCollPost(m1,m2,v1f,v2f,t);
+    collAnimId = requestAnimationFrame(step);
+  }
+  collAnimId = requestAnimationFrame(step);
+}
+
+function drawCollPost(m1,m2,v1f,v2f,t) {
+  var svg = document.getElementById('collSvg');
+  var r1 = 15+m1, r2 = 15+m2;
+  var cx = 350, cy = 130;
+  var x1, x2;
+  if (collType === 'inelastic') {
+    x1 = cx + v1f * t * 40;
+    x2 = x1;
+  } else {
+    x1 = cx + v1f * t * 40;
+    x2 = cx + v2f * t * 40;
+  }
+  var h = '<rect x="0" y="0" width="700" height="200" fill="#1a1d24" rx="6"/>';
+  h += '<line x1="0" y1="160" x2="700" y2="160" stroke="#363b47" stroke-width="2"/>';
+  h += '<text x="350" y="30" text-anchor="middle" fill="var(--green)" font-size="11" font-weight="600">After '+collType.charAt(0).toUpperCase()+collType.slice(1)+' Collision</text>';
+  if (collType === 'inelastic') {
+    var rC = r1 + r2 * 0.5;
+    h += '<circle cx="'+x1.toFixed(1)+'" cy="'+cy+'" r="'+rC+'" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+    h += '<text x="'+x1.toFixed(1)+'" y="'+(cy+4)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">'+(m1+m2)+'kg</text>';
+  } else {
+    h += '<circle cx="'+x1.toFixed(1)+'" cy="'+cy+'" r="'+r1+'" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+    h += '<text x="'+x1.toFixed(1)+'" y="'+(cy+4)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">'+m1+'kg</text>';
+    h += '<circle cx="'+x2.toFixed(1)+'" cy="'+cy+'" r="'+r2+'" fill="#22c55e" stroke="#4ade80" stroke-width="2"/>';
+    h += '<text x="'+x2.toFixed(1)+'" y="'+(cy+4)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">'+m2+'kg</text>';
+  }
+  svg.innerHTML = h;
+}
+
+function resetColl() {
+  if (collAnimId) cancelAnimationFrame(collAnimId);
+  collAnimId = null;
+  updateColl();
+}
+
+/* ==================== SECTION 4: 2D COLLISIONS ==================== */
+var twoDAnimId = null, twoDPhase = 'pre';
+
+function updateTwoD() {
+  var ang = +document.getElementById('twodAngle').value;
+  var spd = +document.getElementById('twodSpeed').value;
+  document.getElementById('twodAngleVal').textContent = ang + ' deg';
+  document.getElementById('twodSpeedVal').textContent = spd.toFixed(1) + ' m/s';
+  drawTwoDPre(ang, spd);
+}
+
+function drawTwoDPre(ang, spd) {
+  var svg = document.getElementById('twodSvg');
+  var w = 700, ht = 350;
+  var cx = w/2, cy = ht/2;
+  var h = '<rect x="0" y="0" width="'+w+'" height="'+ht+'" fill="#1a1d24" rx="6"/>';
+  h += '<line x1="50" y1="'+cy+'" x2="'+(w-50)+'" y2="'+cy+'" stroke="#363b47" stroke-width="1" stroke-dasharray="4,4"/>';
+  h += '<line x1="'+cx+'" y1="50" x2="'+cx+'" y2="'+(ht-50)+'" stroke="#363b47" stroke-width="1" stroke-dasharray="4,4"/>';
+  h += '<text x="'+(w-45)+'" y="'+(cy-5)+'" fill="#9ca3af" font-size="10">+x</text>';
+  h += '<text x="'+(cx+5)+'" y="55" fill="#9ca3af" font-size="10">+y</text>';
+  var b1x = cx - 120, b1y = cy;
+  var b2x = cx + 40, b2y = cy;
+  h += '<circle cx="'+b1x+'" cy="'+b1y+'" r="18" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+  h += '<text x="'+b1x+'" y="'+(b1y+4)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">1</text>';
+  var aLen = spd * 12;
+  h += '<line x1="'+(b1x+20)+'" y1="'+b1y+'" x2="'+(b1x+20+aLen)+'" y2="'+b1y+'" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#tdArr)"/>';
+  h += '<text x="'+(b1x+20+aLen/2)+'" y="'+(b1y-10)+'" text-anchor="middle" fill="#f59e0b" font-size="9">v1 = '+spd.toFixed(1)+' m/s</text>';
+  h += '<circle cx="'+b2x+'" cy="'+b2y+'" r="18" fill="#22c55e" stroke="#4ade80" stroke-width="2"/>';
+  h += '<text x="'+b2x+'" y="'+(b2y+4)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">2</text>';
+  h += '<text x="'+(b2x+25)+'" y="'+(b2y+4)+'" fill="#9ca3af" font-size="9">at rest</text>';
+  h += '<defs><marker id="tdArr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#f59e0b"/></marker></defs>';
+  h += '<text x="'+cx+'" y="30" text-anchor="middle" fill="#9ca3af" font-size="11">Deflection angle: '+ang+' degrees | Equal masses, elastic</text>';
+  svg.innerHTML = h;
+  document.getElementById('twodV1f').textContent = '--';
+  document.getElementById('twodV2f').textContent = '--';
+  document.getElementById('twodPx').textContent = '--';
+  document.getElementById('twodPy').textContent = '--';
+}
+
+function runTwoD() {
+  var ang = +document.getElementById('twodAngle').value;
+  var spd = +document.getElementById('twodSpeed').value;
+  var rad = ang * Math.PI / 180;
+  var v1f = spd * Math.sin(rad);
+  var v2f = spd * Math.cos(rad);
+  var v1fx = v1f * Math.cos(Math.PI/2 - rad);
+  var v1fy = v1f * Math.sin(Math.PI/2 - rad);
+  var v2fx = v2f * Math.cos(rad);
+  var v2fy = -v2f * Math.sin(rad);
+  var pxi = spd, pxf = v1fx + v2fx;
+  var pyi = 0, pyf = v1fy + v2fy;
+  document.getElementById('twodV1f').textContent = v1f.toFixed(2) + ' m/s at '+(90-ang)+' deg above x';
+  document.getElementById('twodV2f').textContent = v2f.toFixed(2) + ' m/s at '+ang+' deg below x';
+  document.getElementById('twodPx').textContent = pxi.toFixed(2) + ' -> ' + pxf.toFixed(2) + ' Yes!';
+  document.getElementById('twodPy').textContent = pyi.toFixed(2) + ' -> ' + pyf.toFixed(2) + ' Yes!';
+  if (twoDAnimId) cancelAnimationFrame(twoDAnimId);
+  var t = 0;
+  function step() {
+    t += 0.016;
+    if (t > 1.8) return;
+    drawTwoDPost(ang, spd, v1f, v2f, v1fx, v1fy, v2fx, v2fy, t);
+    twoDAnimId = requestAnimationFrame(step);
+  }
+  twoDAnimId = requestAnimationFrame(step);
+}
+
+function drawTwoDPost(ang, spd, v1f, v2f, v1fx, v1fy, v2fx, v2fy, t) {
+  var svg = document.getElementById('twodSvg');
+  var w = 700, ht = 350, cx = w/2, cy = ht/2;
+  var h = '<rect x="0" y="0" width="'+w+'" height="'+ht+'" fill="#1a1d24" rx="6"/>';
+  h += '<line x1="50" y1="'+cy+'" x2="'+(w-50)+'" y2="'+cy+'" stroke="#363b47" stroke-width="1" stroke-dasharray="4,4"/>';
+  h += '<line x1="'+cx+'" y1="50" x2="'+cx+'" y2="'+(ht-50)+'" stroke="#363b47" stroke-width="1" stroke-dasharray="4,4"/>';
+  h += '<defs><marker id="tdArr2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#f59e0b"/></marker>';
+  h += '<marker id="tdArrI" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#6366f1"/></marker>';
+  h += '<marker id="tdArrG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#22c55e"/></marker></defs>';
+  var sc = 30;
+  var b1x = cx + v1fx * t * sc;
+  var b1y = cy - v1fy * t * sc;
+  var b2x = cx + v2fx * t * sc;
+  var b2y = cy - v2fy * t * sc;
+  h += '<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#9ca3af" opacity="0.3"/>';
+  h += '<line x1="'+cx+'" y1="'+cy+'" x2="'+b1x.toFixed(1)+'" y2="'+b1y.toFixed(1)+'" stroke="#6366f1" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>';
+  h += '<line x1="'+cx+'" y1="'+cy+'" x2="'+b2x.toFixed(1)+'" y2="'+b2y.toFixed(1)+'" stroke="#22c55e" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>';
+  h += '<circle cx="'+b1x.toFixed(1)+'" cy="'+b1y.toFixed(1)+'" r="18" fill="#6366f1" stroke="#818cf8" stroke-width="2"/>';
+  h += '<text x="'+b1x.toFixed(1)+'" y="'+(b1y+4).toFixed(1)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">1</text>';
+  h += '<circle cx="'+b2x.toFixed(1)+'" cy="'+b2y.toFixed(1)+'" r="18" fill="#22c55e" stroke="#4ade80" stroke-width="2"/>';
+  h += '<text x="'+b2x.toFixed(1)+'" y="'+(b2y+4).toFixed(1)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="600">2</text>';
+  var vOx = 100, vOy = 60;
+  var vsc = 15;
+  h += '<text x="'+vOx+'" y="'+(vOy-10)+'" fill="#9ca3af" font-size="9">Momentum Vectors</text>';
+  h += '<line x1="'+vOx+'" y1="'+vOy+'" x2="'+(vOx+spd*vsc)+'" y2="'+vOy+'" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#tdArr2)"/>';
+  h += '<text x="'+(vOx+spd*vsc/2)+'" y="'+(vOy-5)+'" text-anchor="middle" fill="#f59e0b" font-size="8">p_total</text>';
+  h += '<line x1="'+vOx+'" y1="'+(vOy+20)+'" x2="'+(vOx+v1fx*vsc)+'" y2="'+(vOy+20-v1fy*vsc)+'" stroke="#6366f1" stroke-width="2" marker-end="url(#tdArrI)"/>';
+  h += '<text x="'+(vOx+v1fx*vsc+8)+'" y="'+(vOy+20-v1fy*vsc)+'" fill="#6366f1" font-size="8">p1</text>';
+  h += '<line x1="'+(vOx+v1fx*vsc)+'" y1="'+(vOy+20-v1fy*vsc)+'" x2="'+(vOx+v1fx*vsc+v2fx*vsc)+'" y2="'+(vOy+20-v1fy*vsc-v2fy*vsc)+'" stroke="#22c55e" stroke-width="2" marker-end="url(#tdArrG)"/>';
+  h += '<text x="'+(vOx+v1fx*vsc+v2fx*vsc+8)+'" y="'+(vOy+20-v1fy*vsc-v2fy*vsc)+'" fill="#22c55e" font-size="8">p2</text>';
+  h += '<text x="'+cx+'" y="30" text-anchor="middle" fill="var(--green)" font-size="11" font-weight="600">After Collision -- 90 degree separation</text>';
+  svg.innerHTML = h;
+}
+
+function resetTwoD() {
+  if (twoDAnimId) cancelAnimationFrame(twoDAnimId);
+  twoDAnimId = null;
+  updateTwoD();
+}
+
+/* ==================== SECTION 5: CENTER OF MASS ==================== */
+function updateCOM() {
+  var m1 = +document.getElementById('comM1').value;
+  var x1 = +document.getElementById('comX1').value;
+  var m2 = +document.getElementById('comM2').value;
+  var x2 = +document.getElementById('comX2').value;
+  var m3 = +document.getElementById('comM3').value;
+  var x3 = +document.getElementById('comX3').value;
+  document.getElementById('comM1Val').textContent = m1 + ' kg';
+  document.getElementById('comX1Val').textContent = x1.toFixed(1) + ' m';
+  document.getElementById('comM2Val').textContent = m2 + ' kg';
+  document.getElementById('comX2Val').textContent = x2.toFixed(1) + ' m';
+  document.getElementById('comM3Val').textContent = m3 > 0 ? m3 + ' kg' : '0 (off)';
+  document.getElementById('comX3Val').textContent = x3.toFixed(1) + ' m';
+  document.getElementById('comX3Row').style.display = m3 > 0 ? 'flex' : 'none';
+  var mt = m1 + m2 + m3;
+  var xcm = (m1*x1 + m2*x2 + (m3 > 0 ? m3*x3 : 0)) / mt;
+  document.getElementById('comXcm').textContent = xcm.toFixed(2) + ' m';
+  document.getElementById('comMtot').textContent = mt + ' kg';
+  drawCOM(m1,x1,m2,x2,m3,x3,xcm);
+}
+
+function drawCOM(m1,x1,m2,x2,m3,x3,xcm) {
+  var svg = document.getElementById('comSvg');
+  var ox = 50, oy = 40, gw = 600, gh = 60;
+  var h = '<rect x="'+ox+'" y="'+(oy+gh/2-1)+'" width="'+gw+'" height="2" fill="#363b47"/>';
+  for (var i = 0; i <= 10; i++) {
+    var tx = ox + i / 10 * gw;
+    h += '<line x1="'+tx+'" y1="'+(oy+gh/2-5)+'" x2="'+tx+'" y2="'+(oy+gh/2+5)+'" stroke="#9ca3af" stroke-width="1"/>';
+    h += '<text x="'+tx+'" y="'+(oy+gh/2+20)+'" text-anchor="middle" fill="#9ca3af" font-size="9">'+i+'</text>';
+  }
+  function drawMass(x, m, color, label) {
+    var px = ox + x / 10 * gw;
+    var r = 8 + m * 0.8;
+    h += '<circle cx="'+px+'" cy="'+(oy+gh/2)+'" r="'+r+'" fill="'+color+'" opacity="0.85"/>';
+    h += '<text x="'+px+'" y="'+(oy+gh/2-r-6)+'" text-anchor="middle" fill="'+color+'" font-size="9" font-weight="600">'+label+' ('+m+'kg)</text>';
+  }
+  drawMass(x1, m1, '#6366f1', 'm1');
+  drawMass(x2, m2, '#22c55e', 'm2');
+  if (m3 > 0) drawMass(x3, m3, '#f59e0b', 'm3');
+  var cmx = ox + xcm / 10 * gw;
+  h += '<polygon points="'+(cmx-8)+','+(oy+gh/2+30)+' '+(cmx+8)+','+(oy+gh/2+30)+' '+cmx+','+(oy+gh/2+18)+'" fill="#ec4899"/>';
+  h += '<text x="'+cmx+'" y="'+(oy+gh/2+44)+'" text-anchor="middle" fill="#ec4899" font-size="10" font-weight="600">COM = '+xcm.toFixed(2)+' m</text>';
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 5B: 2D COM ==================== */
+var com2dMasses = [];
+var com2dClickMass = 1;
+
+function setCom2dMass(m, btn) {
+  com2dClickMass = m;
+  document.querySelectorAll('#com2dM1Btn,#com2dM3Btn,#com2dM5Btn,#com2dM10Btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+}
+
+function resetCom2d() {
+  com2dMasses = [];
+  drawCom2d();
+  document.getElementById('com2dX').textContent = '--';
+  document.getElementById('com2dY').textContent = '--';
+  document.getElementById('com2dMtot').textContent = '0 kg';
+}
+
+function drawCom2d() {
+  var svg = document.getElementById('com2dSvg');
+  var s = 400, step = 40;
+  var h = '<rect x="0" y="0" width="'+s+'" height="'+s+'" fill="#1a1d24" rx="6"/>';
+  for (var i = 0; i <= 10; i++) {
+    var p = i * step;
+    h += '<line x1="'+p+'" y1="0" x2="'+p+'" y2="'+s+'" stroke="#363b47" stroke-width="0.5"/>';
+    h += '<line x1="0" y1="'+p+'" x2="'+s+'" y2="'+p+'" stroke="#363b47" stroke-width="0.5"/>';
+    h += '<text x="'+p+'" y="'+(s-4)+'" text-anchor="middle" fill="#9ca3af" font-size="7">'+i+'</text>';
+    h += '<text x="4" y="'+(s-p-4)+'" fill="#9ca3af" font-size="7">'+i+'</text>';
+  }
+  var mt = 0, mx = 0, my = 0;
+  for (var j = 0; j < com2dMasses.length; j++) {
+    var obj = com2dMasses[j];
+    var px = obj.x * step, py = s - obj.y * step;
+    var r = 6 + obj.m * 1.2;
+    var col = obj.m <= 1 ? '#6366f1' : obj.m <= 3 ? '#22c55e' : obj.m <= 5 ? '#f59e0b' : '#ec4899';
+    h += '<circle cx="'+px+'" cy="'+py+'" r="'+r+'" fill="'+col+'" opacity="0.85"/>';
+    h += '<text x="'+px+'" y="'+(py+3)+'" text-anchor="middle" fill="#fff" font-size="8" font-weight="600">'+obj.m+'</text>';
+    mt += obj.m; mx += obj.m * obj.x; my += obj.m * obj.y;
+  }
+  if (mt > 0) {
+    var comX = mx / mt, comY = my / mt;
+    var cpx = comX * step, cpy = s - comY * step;
+    h += '<line x1="'+(cpx-8)+'" y1="'+cpy+'" x2="'+(cpx+8)+'" y2="'+cpy+'" stroke="#ec4899" stroke-width="2.5"/>';
+    h += '<line x1="'+cpx+'" y1="'+(cpy-8)+'" x2="'+cpx+'" y2="'+(cpy+8)+'" stroke="#ec4899" stroke-width="2.5"/>';
+    h += '<circle cx="'+cpx+'" cy="'+cpy+'" r="12" fill="none" stroke="#ec4899" stroke-width="2" stroke-dasharray="4,3"/>';
+    h += '<text x="'+(cpx+16)+'" y="'+(cpy-4)+'" fill="#ec4899" font-size="9" font-weight="600">COM</text>';
+    document.getElementById('com2dX').textContent = comX.toFixed(2);
+    document.getElementById('com2dY').textContent = comY.toFixed(2);
+    document.getElementById('com2dMtot').textContent = mt + ' kg';
+  }
+  svg.innerHTML = h;
+}
+
+(function() {
+  var svg = document.getElementById('com2dSvg');
+  svg.addEventListener('click', function(e) {
+    var r = svg.getBoundingClientRect();
+    var fx = (e.clientX - r.left) / r.width * 400;
+    var fy = (e.clientY - r.top) / r.height * 400;
+    var gx = Math.round(fx / 40 * 2) / 2;
+    var gy = Math.round((400 - fy) / 40 * 2) / 2;
+    gx = Math.max(0, Math.min(10, gx));
+    gy = Math.max(0, Math.min(10, gy));
+    if (com2dMasses.length < 8) {
+      com2dMasses.push({x: gx, y: gy, m: com2dClickMass});
+      drawCom2d();
+    }
+  });
+})();
+
+/* ==================== INIT ==================== */
+updateProgress();
+updateS1();
+drawFT();
+updateColl();
+updateTwoD();
+updateCOM();
+drawCom2d();
+markComplete(1);
+</script>
+</body>
+</html>

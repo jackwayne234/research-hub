@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 14: Fluid Mechanics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.momentum-bar{display:flex;align-items:center;gap:8px;margin:6px 0}
+.momentum-bar .bar-label{font-size:.68rem;color:var(--text-dim);min-width:70px}
+.momentum-bar .bar-track{flex:1;height:22px;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;overflow:hidden;position:relative}
+.momentum-bar .bar-fill{height:100%;border-radius:3px;transition:width .3s ease}
+.momentum-bar .bar-val{font-size:.68rem;color:var(--text-bright);font-weight:600;min-width:80px;text-align:right}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>14</span> Fluid Mechanics</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 7 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: DENSITY & PRESSURE -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Density &amp; Pressure</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Density</strong> measures how tightly mass is packed into a volume: <strong>&rho; = m/V</strong>. Units: kg/m&sup3;. Water is 1000 kg/m&sup3;, air is about 1.2 kg/m&sup3;, steel is 7800 kg/m&sup3;. <strong>Pressure</strong> is force per unit area: <strong>P = F/A</strong>. Units: Pascals (Pa = N/m&sup2;). Atmospheric pressure at sea level is P&sub0; = 101,325 Pa (about 1 atm).
+    </p>
+    <div class="formula-box large">&rho; = m / V &nbsp;&nbsp;&nbsp; [kg/m&sup3;]</div>
+    <div class="formula-box green">P = F / A &nbsp;&nbsp;&nbsp; [Pa = N/m&sup2;]</div>
+
+    <p class="concept-text">
+      <strong>Hydrostatic pressure</strong> increases with depth. At depth h below the surface of a fluid with density &rho;: <strong>P = P&sub0; + &rho;gh</strong>. This comes from the weight of the fluid column above. <strong>Gauge pressure</strong> is the pressure above atmospheric: P_gauge = &rho;gh. <strong>Absolute pressure</strong> includes the atmosphere: P_abs = P_atm + &rho;gh.
+    </p>
+    <div class="formula-box pink">P = P&sub0; + &rho;gh &nbsp;&nbsp;&nbsp; (hydrostatic pressure)</div>
+    <div class="key-point">Pressure at a given depth is the same in all directions. It depends only on depth, not on the shape of the container (Pascal's vases).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Submarine Depth &amp; Pressure</div>
+      <svg id="depthSvg" width="100%" viewBox="0 0 700 320" style="display:block;margin:8px 0"></svg>
+      <div class="slider-row">
+        <label>Depth (m)</label>
+        <input type="range" id="s1Depth" min="0" max="1000" value="100" step="5" oninput="updateDepth()">
+        <span class="slider-val" id="s1DepthVal">100 m</span>
+      </div>
+      <div class="slider-row">
+        <label>Fluid density</label>
+        <input type="range" id="s1Rho" min="800" max="1300" value="1025" step="5" oninput="updateDepth()">
+        <span class="slider-val" id="s1RhoVal">1025 kg/m&sup3;</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Gauge pressure</span><br><span class="value green" id="s1Pgauge">1.00 MPa</span></div>
+        <div class="readout-item"><span class="label">Absolute pressure</span><br><span class="value indigo" id="s1Pabs">1.10 MPa</span></div>
+        <div class="readout-item"><span class="label">Atmospheres</span><br><span class="value amber" id="s1Atm">10.9 atm</span></div>
+        <div class="readout-item"><span class="label">Force on 1 m&sup2; hatch</span><br><span class="value pink" id="s1Force">1.10 MN</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> A submarine at 300 m depth in seawater (&rho; = 1025 kg/m&sup3;) experiences gauge pressure of about 3.01 MPa (30.1 atm). The hull must withstand this crushing force. US Navy submarines are rated to depths exceeding 240 m (classified exact figures). Every 10 m adds roughly 1 atm of pressure.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: PASCAL'S PRINCIPLE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Pascal&rsquo;s Principle</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Pascal's Principle:</strong> A change in pressure applied to an enclosed fluid is transmitted undiminished to every portion of the fluid and the walls of the container. This is the basis for <strong>hydraulic systems</strong>. If you push on a small piston with force F&sub1; over area A&sub1;, the pressure &Delta;P = F&sub1;/A&sub1; is transmitted to a large piston of area A&sub2;, producing force F&sub2; = &Delta;P &times; A&sub2;.
+    </p>
+    <div class="formula-box large">F&sub1; / A&sub1; = F&sub2; / A&sub2;</div>
+    <div class="formula-box green">Mechanical Advantage = A&sub2; / A&sub1; = F&sub2; / F&sub1;</div>
+    <div class="key-point">Energy is conserved: the small piston moves a larger distance. Work in = Work out (ideally): F&sub1; &times; d&sub1; = F&sub2; &times; d&sub2;. You trade distance for force.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Hydraulic Press</div>
+      <svg id="pascalSvg" width="100%" viewBox="0 0 700 300" style="display:block;margin:8px 0"></svg>
+      <div class="slider-row">
+        <label>Input force F&sub1;</label>
+        <input type="range" id="s2F1" min="10" max="500" value="100" step="10" oninput="updatePascal()">
+        <span class="slider-val" id="s2F1Val">100 N</span>
+      </div>
+      <div class="slider-row">
+        <label>Small piston A&sub1;</label>
+        <input type="range" id="s2A1" min="1" max="50" value="5" step="1" oninput="updatePascal()">
+        <span class="slider-val" id="s2A1Val">5 cm&sup2;</span>
+      </div>
+      <div class="slider-row">
+        <label>Large piston A&sub2;</label>
+        <input type="range" id="s2A2" min="10" max="500" value="100" step="5" oninput="updatePascal()">
+        <span class="slider-val" id="s2A2Val">100 cm&sup2;</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Pressure &Delta;P</span><br><span class="value indigo" id="s2Pressure">200 kPa</span></div>
+        <div class="readout-item"><span class="label">Output force F&sub2;</span><br><span class="value green" id="s2F2">2000 N</span></div>
+        <div class="readout-item"><span class="label">Mech. Advantage</span><br><span class="value amber" id="s2MA">20x</span></div>
+        <div class="readout-item"><span class="label">d&sub1;/d&sub2; ratio</span><br><span class="value pink" id="s2Dist">20x</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Hydraulic systems are everywhere on Navy ships -- aircraft catapults, weapons elevators, steering gear, and aircraft landing gear. A catapult uses hydraulic accumulators to deliver enormous force to launch a 20-tonne aircraft from a 90 m deck in under 3 seconds.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: ARCHIMEDES' PRINCIPLE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Archimedes&rsquo; Principle</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Archimedes' Principle:</strong> Any object submerged (fully or partially) in a fluid experiences an upward <strong>buoyant force</strong> equal to the weight of the fluid displaced: <strong>F_b = &rho;_fluid &times; V_displaced &times; g</strong>. If the buoyant force exceeds the object's weight, it floats. If not, it sinks. An object floats when <strong>&rho;_object &lt; &rho;_fluid</strong>. The fraction submerged equals &rho;_object / &rho;_fluid.
+    </p>
+    <div class="formula-box large">F_b = &rho;_fluid &middot; V_displaced &middot; g</div>
+    <div class="formula-box green">Floats if &rho;_object &lt; &rho;_fluid &nbsp;&nbsp;|&nbsp;&nbsp; Fraction submerged = &rho;_obj / &rho;_fluid</div>
+    <div class="formula-box pink">Apparent weight = W - F_b = mg - &rho;_fluid &middot; V &middot; g</div>
+    <div class="key-point">A steel ship floats because its average density (steel hull + air inside) is less than water. The volume of water displaced by the hull weighs more than the entire ship.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Float or Sink -- Adjust Object Density</div>
+      <svg id="archSvg" width="100%" viewBox="0 0 700 400" style="display:block;margin:8px 0"></svg>
+      <div class="slider-row">
+        <label>Object density</label>
+        <input type="range" id="s3RhoObj" min="100" max="3000" value="800" step="10" oninput="updateArch()">
+        <span class="slider-val" id="s3RhoObjVal">800 kg/m&sup3;</span>
+      </div>
+      <div class="slider-row">
+        <label>Fluid density</label>
+        <input type="range" id="s3RhoFluid" min="500" max="2000" value="1000" step="10" oninput="updateArch()">
+        <span class="slider-val" id="s3RhoFluidVal">1000 kg/m&sup3;</span>
+      </div>
+      <div class="sub-label">Object volume = 0.01 m&sup3;, side length ~ 0.215 m</div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Weight (mg)</span><br><span class="value pink" id="s3Weight">78.4 N</span></div>
+        <div class="readout-item"><span class="label">Buoyant force</span><br><span class="value green" id="s3Fb">78.4 N</span></div>
+        <div class="readout-item"><span class="label">Status</span><br><span class="value amber" id="s3Status">Floats</span></div>
+        <div class="readout-item"><span class="label">% Submerged</span><br><span class="value indigo" id="s3Pct">80%</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Submarines control buoyancy by filling or venting ballast tanks. On the surface, tanks hold air (average density &lt; seawater = float). To dive, tanks flood with seawater (average density &gt; seawater = sink). Trim tanks make fine adjustments to achieve neutral buoyancy at depth.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: FLUID FLOW & CONTINUITY -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Fluid Flow &amp; Continuity</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      An <strong>ideal fluid</strong> is incompressible, non-viscous, and has irrotational (laminar) flow. <strong>Streamlines</strong> are paths that fluid particles follow -- they never cross. The <strong>continuity equation</strong> says mass flow rate is constant along a pipe: what flows in must flow out. For an incompressible fluid, <strong>A&sub1;v&sub1; = A&sub2;v&sub2;</strong>. Where the pipe narrows, the fluid speeds up.
+    </p>
+    <div class="formula-box large">A&sub1;v&sub1; = A&sub2;v&sub2; &nbsp;&nbsp;&nbsp; (continuity equation)</div>
+    <div class="formula-box green">Q = Av &nbsp;&nbsp;&nbsp; [m&sup3;/s] &nbsp;&nbsp; (volume flow rate)</div>
+    <div class="key-point">Put your thumb over a garden hose nozzle: area decreases, velocity increases. Same flow rate Q, smaller A means larger v. This is the continuity equation in action.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Pipe Flow -- Continuity Equation</div>
+      <svg id="contSvg" width="100%" viewBox="0 0 700 250" style="display:block;margin:8px 0"></svg>
+      <div class="slider-row">
+        <label>Pipe 1 radius</label>
+        <input type="range" id="s4R1" min="1" max="10" value="6" step="0.5" oninput="updateCont()">
+        <span class="slider-val" id="s4R1Val">6.0 cm</span>
+      </div>
+      <div class="slider-row">
+        <label>Pipe 2 radius</label>
+        <input type="range" id="s4R2" min="1" max="10" value="3" step="0.5" oninput="updateCont()">
+        <span class="slider-val" id="s4R2Val">3.0 cm</span>
+      </div>
+      <div class="slider-row">
+        <label>v&sub1; (m/s)</label>
+        <input type="range" id="s4V1" min="0.5" max="10" value="2" step="0.5" oninput="updateCont()">
+        <span class="slider-val" id="s4V1Val">2.0 m/s</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">A&sub1;</span><br><span class="value indigo" id="s4A1">113.1 cm&sup2;</span></div>
+        <div class="readout-item"><span class="label">A&sub2;</span><br><span class="value green" id="s4A2">28.3 cm&sup2;</span></div>
+        <div class="readout-item"><span class="label">v&sub2;</span><br><span class="value pink" id="s4V2">8.0 m/s</span></div>
+        <div class="readout-item"><span class="label">Flow rate Q</span><br><span class="value amber" id="s4Q">226.2 cm&sup3;/s</span></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: BERNOULLI'S EQUATION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Bernoulli&rsquo;s Equation</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Bernoulli's Equation</strong> is energy conservation for flowing fluids. Along a streamline: <strong>P + &frac12;&rho;v&sup2; + &rho;gy = constant</strong>. Where speed is high, pressure is low (and vice versa). Applications: airplane lift (faster air over curved wing = lower pressure on top), Venturi tube (constriction speeds up flow, drops pressure), garden hose nozzle, and atomizers.
+    </p>
+    <div class="formula-box large">P + &frac12;&rho;v&sup2; + &rho;gy = constant</div>
+    <div class="formula-box green">P&sub1; + &frac12;&rho;v&sub1;&sup2; + &rho;gy&sub1; = P&sub2; + &frac12;&rho;v&sub2;&sup2; + &rho;gy&sub2;</div>
+    <div class="formula-box amber">Same height: P&sub1; + &frac12;&rho;v&sub1;&sup2; = P&sub2; + &frac12;&rho;v&sub2;&sup2;</div>
+    <div class="key-point">Bernoulli's equation only applies to ideal (inviscid, incompressible, steady) flow along a streamline. Real fluids have viscosity losses, but Bernoulli gives excellent approximations for many engineering problems.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Venturi Tube -- Pressure vs Velocity</div>
+      <svg id="bernSvg" width="100%" viewBox="0 0 700 320" style="display:block;margin:8px 0"></svg>
+      <div class="slider-row">
+        <label>Wide radius</label>
+        <input type="range" id="s5Rw" min="3" max="10" value="8" step="0.5" oninput="updateBern()">
+        <span class="slider-val" id="s5RwVal">8.0 cm</span>
+      </div>
+      <div class="slider-row">
+        <label>Narrow radius</label>
+        <input type="range" id="s5Rn" min="1" max="8" value="3" step="0.5" oninput="updateBern()">
+        <span class="slider-val" id="s5RnVal">3.0 cm</span>
+      </div>
+      <div class="slider-row">
+        <label>v wide (m/s)</label>
+        <input type="range" id="s5Vw" min="0.5" max="10" value="2" step="0.5" oninput="updateBern()">
+        <span class="slider-val" id="s5VwVal">2.0 m/s</span>
+      </div>
+      <div class="sub-label">Fluid: water (&rho; = 1000 kg/m&sup3;), same height (y terms cancel)</div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">v narrow</span><br><span class="value pink" id="s5Vn">14.2 m/s</span></div>
+        <div class="readout-item"><span class="label">P wide</span><br><span class="value indigo" id="s5Pw">101.3 kPa</span></div>
+        <div class="readout-item"><span class="label">P narrow</span><br><span class="value green" id="s5Pn">1.5 kPa</span></div>
+        <div class="readout-item"><span class="label">&Delta;P</span><br><span class="value amber" id="s5dP">99.8 kPa</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Bernoulli's principle explains venturi-type eductors used aboard ships for dewatering and firefighting -- high-velocity water flow through a constriction creates low pressure that draws in surrounding water. It also applies to the flow of air over flight decks affecting aircraft operations.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: PRACTICE PROBLEMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Practice Problems</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="practice-block" style="border-top:none;padding-top:0">
+      <div class="practice-title">Numerical Practice</div>
+
+      <div class="problem">
+        <p><strong>1.</strong> A swimming pool is 2.5 m deep. What is the gauge pressure at the bottom? (water &rho; = 1000 kg/m&sup3;, g = 9.8 m/s&sup2;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1" step="100" placeholder="P_gauge = ?" onkeydown="if(event.key==='Enter')checkNum('p1',24500,500)">
+          <span class="unit-label">Pa</span>
+          <button class="btn btn-sm" onclick="checkNum('p1',24500,500)">Check</button>
+        </div>
+        <div class="feedback" id="p1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>2.</strong> A hydraulic lift has a small piston of area 10 cm&sup2; and a large piston of area 500 cm&sup2;. You push on the small piston with 200 N. What force does the large piston exert?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2" step="100" placeholder="F2 = ?" onkeydown="if(event.key==='Enter')checkNum('p2',10000,200)">
+          <span class="unit-label">N</span>
+          <button class="btn btn-sm" onclick="checkNum('p2',10000,200)">Check</button>
+        </div>
+        <div class="feedback" id="p2-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>3.</strong> A block of wood (&rho; = 600 kg/m&sup3;) with volume 0.05 m&sup3; is placed in water (&rho; = 1000 kg/m&sup3;). What is the buoyant force when it floats? (Hint: when floating, F_b = weight)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p3" step="1" placeholder="F_b = ?" onkeydown="if(event.key==='Enter')checkNum('p3',294,10)">
+          <span class="unit-label">N</span>
+          <button class="btn btn-sm" onclick="checkNum('p3',294,10)">Check</button>
+        </div>
+        <div class="feedback" id="p3-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>4.</strong> Water flows through a pipe at 3 m/s with cross-sectional area 0.02 m&sup2;. The pipe narrows to 0.005 m&sup2;. What is the speed in the narrow section?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p4" step="1" placeholder="v2 = ?" onkeydown="if(event.key==='Enter')checkNum('p4',12,0.5)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('p4',12,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="p4-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>5.</strong> Water flows horizontally. At point 1: P = 200,000 Pa, v = 2 m/s. At point 2 (same height): v = 6 m/s. What is P at point 2? (&rho; = 1000 kg/m&sup3;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p5" step="100" placeholder="P2 = ?" onkeydown="if(event.key==='Enter')checkNum('p5',184000,1000)">
+          <span class="unit-label">Pa</span>
+          <button class="btn btn-sm" onclick="checkNum('p5',184000,1000)">Check</button>
+        </div>
+        <div class="feedback" id="p5-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">7</span> Quick Quiz &mdash; Fluid Mechanics</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Density</div>
+      <p class="q-text">An object has mass 4 kg and volume 0.002 m&sup3;. What is its density?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">2000 kg/m&sup3;</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">200 kg/m&sup3;</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">0.002 kg/m&sup3;</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">8 kg/m&sup3;</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Hydrostatic pressure</div>
+      <p class="q-text">A diver is 20 m below the surface of a lake (&rho; = 1000 kg/m&sup3;). The gauge pressure is approximately:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">20,000 Pa</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">196,000 Pa</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">101,325 Pa</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">2,000,000 Pa</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Pascal's principle</div>
+      <p class="q-text">In a hydraulic system, if the area ratio A2/A1 = 25, and you apply 80 N on the small piston, the output force is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">80 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">800 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">2000 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">3.2 N</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Archimedes</div>
+      <p class="q-text">A 5 kg object is fully submerged in water and has volume 0.003 m&sup3;. The buoyant force is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">49 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">29.4 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">5 N</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">3000 N</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Floating</div>
+      <p class="q-text">An object with density 750 kg/m&sup3; floats in water (1000 kg/m&sup3;). What fraction of the object is submerged?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">100%</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">75%</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">25%</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">50%</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Continuity</div>
+      <p class="q-text">Water flows at 4 m/s through a pipe of area 0.1 m&sup2;. The pipe narrows to 0.025 m&sup2;. The speed in the narrow section is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">1 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">4 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">16 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">8 m/s</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Bernoulli concept</div>
+      <p class="q-text">According to Bernoulli's equation, when fluid speed increases (at the same height), the pressure:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Increases</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">Decreases</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Stays the same</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Depends on density only</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Bernoulli calculation</div>
+      <p class="q-text">Horizontal water flow: P1 = 150,000 Pa, v1 = 3 m/s, v2 = 7 m/s. What is P2? (&rho; = 1000)</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">150,000 Pa</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">130,000 Pa</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">170,000 Pa</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">126,000 Pa</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Gauge vs absolute</div>
+      <p class="q-text">A tire gauge reads 220 kPa. The absolute pressure inside the tire is approximately:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">220 kPa</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">321 kPa</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">119 kPa</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">440 kPa</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Submarine buoyancy</div>
+      <p class="q-text">A submarine wants to descend from the surface. It should:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Empty the ballast tanks to increase weight</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">Flood the ballast tanks with seawater to increase average density</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Increase engine speed to push down</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Decrease hull volume by compression</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+var G = 9.8;
+
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(1) + ')';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: DEPTH & PRESSURE ==================== */
+function updateDepth() {
+  var depth = +document.getElementById('s1Depth').value;
+  var rho = +document.getElementById('s1Rho').value;
+  document.getElementById('s1DepthVal').textContent = depth + ' m';
+  document.getElementById('s1RhoVal').textContent = rho + ' kg/m\u00B3';
+  var Patm = 101325;
+  var Pgauge = rho * G * depth;
+  var Pabs = Patm + Pgauge;
+  var atm = Pabs / Patm;
+  document.getElementById('s1Pgauge').textContent = (Pgauge / 1e6).toFixed(3) + ' MPa';
+  document.getElementById('s1Pabs').textContent = (Pabs / 1e6).toFixed(3) + ' MPa';
+  document.getElementById('s1Atm').textContent = atm.toFixed(1) + ' atm';
+  document.getElementById('s1Force').textContent = (Pabs / 1e6).toFixed(3) + ' MN';
+  drawDepthSvg(depth, rho, Pgauge, Pabs);
+}
+
+function drawDepthSvg(depth, rho, Pg, Pa) {
+  var svg = document.getElementById('depthSvg');
+  var w = 700, h = 320;
+  var waterTop = 60, waterBot = 280;
+  var waterH = waterBot - waterTop;
+  var maxDepth = 1000;
+  var subY = waterTop + (depth / maxDepth) * waterH;
+  if (subY > waterBot - 20) subY = waterBot - 20;
+  var s = '';
+  // sky
+  s += '<rect x="0" y="0" width="'+w+'" height="'+waterTop+'" fill="#1a1d24"/>';
+  // water gradient
+  s += '<defs><linearGradient id="waterGrad" x1="0" y1="'+waterTop+'" x2="0" y2="'+waterBot+'" gradientUnits="userSpaceOnUse">';
+  s += '<stop offset="0%" stop-color="#1e3a5f"/><stop offset="100%" stop-color="#0a1628"/>';
+  s += '</linearGradient></defs>';
+  s += '<rect x="50" y="'+waterTop+'" width="600" height="'+waterH+'" fill="url(#waterGrad)" rx="4"/>';
+  // surface line
+  s += '<line x1="50" y1="'+waterTop+'" x2="650" y2="'+waterTop+'" stroke="#6366f1" stroke-width="2" stroke-dasharray="6,4"/>';
+  s += '<text x="60" y="'+(waterTop-8)+'" fill="#6366f1" font-size="10">Surface (P\u2080 = 1 atm)</text>';
+  // depth markers
+  for (var dm = 0; dm <= 1000; dm += 200) {
+    var dy = waterTop + (dm / maxDepth) * waterH;
+    s += '<line x1="50" y1="'+dy+'" x2="56" y2="'+dy+'" stroke="#9ca3af" stroke-width="1"/>';
+    s += '<text x="40" y="'+(dy+3)+'" fill="#9ca3af" font-size="8" text-anchor="end">'+dm+'m</text>';
+  }
+  // submarine
+  var subW = 80, subH = 24;
+  var sx = 350 - subW/2, sy = subY - subH/2;
+  s += '<ellipse cx="350" cy="'+subY+'" rx="'+(subW/2)+'" ry="'+(subH/2)+'" fill="#363b47" stroke="#6366f1" stroke-width="1.5"/>';
+  s += '<rect x="'+(350-4)+'" y="'+(subY-subH/2-8)+'" width="8" height="10" rx="2" fill="#363b47" stroke="#6366f1" stroke-width="1"/>';
+  // depth arrow
+  s += '<line x1="550" y1="'+waterTop+'" x2="550" y2="'+subY+'" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrAmber)"/>';
+  s += '<defs><marker id="arrAmber" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#f59e0b"/></marker></defs>';
+  s += '<text x="560" y="'+((waterTop+subY)/2)+'" fill="#f59e0b" font-size="10">h='+depth+'m</text>';
+  // pressure arrows on sub
+  var arrowLen = Math.min(30, 5 + (depth/1000)*25);
+  var dirs = [[0,-1],[0,1],[-1,0],[1,0]];
+  dirs.forEach(function(d) {
+    var ax = 350 + d[0]*(subW/2+2), ay = subY + d[1]*(subH/2+2);
+    var ex = ax + d[0]*arrowLen, ey = ay + d[1]*arrowLen;
+    s += '<line x1="'+ex+'" y1="'+ey+'" x2="'+ax+'" y2="'+ay+'" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arrPink)"/>';
+  });
+  s += '<defs><marker id="arrPink" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker></defs>';
+  s += '<text x="350" y="'+(subY+subH/2+25)+'" fill="#ec4899" font-size="10" text-anchor="middle">'+(Pa/1e6).toFixed(2)+' MPa</text>';
+  svg.innerHTML = s;
+}
+
+/* ==================== SECTION 2: PASCAL'S PRINCIPLE ==================== */
+function updatePascal() {
+  var F1 = +document.getElementById('s2F1').value;
+  var A1 = +document.getElementById('s2A1').value; // cm^2
+  var A2 = +document.getElementById('s2A2').value; // cm^2
+  document.getElementById('s2F1Val').textContent = F1 + ' N';
+  document.getElementById('s2A1Val').textContent = A1 + ' cm\u00B2';
+  document.getElementById('s2A2Val').textContent = A2 + ' cm\u00B2';
+  var pressure = F1 / (A1 * 1e-4); // Pa
+  var F2 = pressure * A2 * 1e-4;
+  var MA = A2 / A1;
+  document.getElementById('s2Pressure').textContent = (pressure / 1000).toFixed(1) + ' kPa';
+  document.getElementById('s2F2').textContent = F2.toFixed(0) + ' N';
+  document.getElementById('s2MA').textContent = MA.toFixed(1) + 'x';
+  document.getElementById('s2Dist').textContent = MA.toFixed(1) + 'x';
+  drawPascalSvg(F1, A1, A2, F2, MA);
+}
+
+function drawPascalSvg(F1, A1, A2, F2, MA) {
+  var svg = document.getElementById('pascalSvg');
+  var s = '';
+  // container
+  var fluidY = 180, fluidH = 80;
+  var lx = 100, rx = 450; // left and right piston centers
+  var lw = 20 + A1 * 0.8; // piston width proportional to area
+  var rw = 20 + A2 * 0.3;
+  if (lw > 100) lw = 100;
+  if (rw > 200) rw = 200;
+  // fluid body
+  s += '<rect x="'+(lx-lw/2)+'" y="'+fluidY+'" width="'+(rx-lx+rw/2+lw/2)+'" height="'+fluidH+'" rx="4" fill="rgba(99,102,241,0.15)" stroke="rgba(99,102,241,0.3)"/>';
+  // connecting tube
+  s += '<rect x="'+(lx+lw/2)+'" y="'+(fluidY+20)+'" width="'+(rx-lx-lw/2-rw/2)+'" height="40" fill="rgba(99,102,241,0.1)"/>';
+  // left piston
+  var lpY = fluidY - 10;
+  s += '<rect x="'+(lx-lw/2)+'" y="'+(lpY-40)+'" width="'+lw+'" height="50" rx="3" fill="#363b47" stroke="#6366f1" stroke-width="1.5"/>';
+  s += '<text x="'+lx+'" y="'+(lpY-50)+'" fill="#6366f1" font-size="10" text-anchor="middle">A\u2081='+A1+' cm\u00B2</text>';
+  // F1 arrow down
+  s += '<line x1="'+lx+'" y1="'+(lpY-80)+'" x2="'+lx+'" y2="'+(lpY-42)+'" stroke="#ec4899" stroke-width="2" marker-end="url(#arrDown)"/>';
+  s += '<text x="'+lx+'" y="'+(lpY-85)+'" fill="#ec4899" font-size="11" text-anchor="middle" font-weight="600">F\u2081='+F1+' N</text>';
+  // right piston
+  var rpY = fluidY - 10;
+  s += '<rect x="'+(rx-rw/2)+'" y="'+(rpY-20)+'" width="'+rw+'" height="30" rx="3" fill="#363b47" stroke="#22c55e" stroke-width="1.5"/>';
+  s += '<text x="'+rx+'" y="'+(rpY-30)+'" fill="#22c55e" font-size="10" text-anchor="middle">A\u2082='+A2+' cm\u00B2</text>';
+  // F2 arrow up
+  s += '<line x1="'+rx+'" y1="'+(rpY+20)+'" x2="'+rx+'" y2="'+(rpY-18)+'" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrUp)"/>';
+  s += '<text x="'+rx+'" y="'+(rpY+35)+'" fill="#22c55e" font-size="11" text-anchor="middle" font-weight="600">F\u2082='+F2.toFixed(0)+' N</text>';
+  // arrows
+  s += '<defs>';
+  s += '<marker id="arrDown" markerWidth="8" markerHeight="6" refX="4" refY="6" orient="auto"><path d="M0,0 L4,6 L8,0Z" fill="#ec4899"/></marker>';
+  s += '<marker id="arrUp" markerWidth="8" markerHeight="6" refX="4" refY="0" orient="auto"><path d="M0,6 L4,0 L8,6Z" fill="#22c55e"/></marker>';
+  s += '</defs>';
+  // pressure label
+  s += '<text x="'+((lx+rx)/2)+'" y="'+(fluidY+fluidH/2+4)+'" fill="#f59e0b" font-size="10" text-anchor="middle">\u0394P transmitted equally</text>';
+  // MA label
+  s += '<text x="'+((lx+rx)/2)+'" y="'+(fluidY+fluidH+20)+'" fill="#9ca3af" font-size="10" text-anchor="middle">Mech. Advantage = '+MA.toFixed(1)+'x</text>';
+  svg.innerHTML = s;
+}
+
+/* ==================== SECTION 3: ARCHIMEDES ==================== */
+function updateArch() {
+  var rhoObj = +document.getElementById('s3RhoObj').value;
+  var rhoFluid = +document.getElementById('s3RhoFluid').value;
+  document.getElementById('s3RhoObjVal').textContent = rhoObj + ' kg/m\u00B3';
+  document.getElementById('s3RhoFluidVal').textContent = rhoFluid + ' kg/m\u00B3';
+  var V = 0.01; // m^3
+  var m = rhoObj * V;
+  var W = m * G;
+  var sinks = rhoObj >= rhoFluid;
+  var fracSub, Fb;
+  if (sinks) {
+    fracSub = 1.0;
+    Fb = rhoFluid * V * G;
+  } else {
+    fracSub = rhoObj / rhoFluid;
+    Fb = W; // floating: Fb = W
+  }
+  document.getElementById('s3Weight').textContent = W.toFixed(1) + ' N';
+  document.getElementById('s3Fb').textContent = Fb.toFixed(1) + ' N';
+  document.getElementById('s3Status').textContent = sinks ? 'Sinks!' : 'Floats';
+  document.getElementById('s3Pct').textContent = (fracSub * 100).toFixed(0) + '%';
+  drawArchSvg(rhoObj, rhoFluid, fracSub, W, Fb, sinks);
+}
+
+function drawArchSvg(rhoObj, rhoFluid, fracSub, W, Fb, sinks) {
+  var svg = document.getElementById('archSvg');
+  var s = '';
+  var cx = 250, waterTop = 140, waterBot = 360;
+  var blockSize = 70;
+  // water
+  s += '<defs><linearGradient id="wGrad" x1="0" y1="'+waterTop+'" x2="0" y2="'+waterBot+'" gradientUnits="userSpaceOnUse">';
+  s += '<stop offset="0%" stop-color="rgba(99,102,241,0.15)"/><stop offset="100%" stop-color="rgba(99,102,241,0.08)"/>';
+  s += '</linearGradient></defs>';
+  s += '<rect x="80" y="'+waterTop+'" width="340" height="'+(waterBot-waterTop)+'" fill="url(#wGrad)" stroke="rgba(99,102,241,0.3)" rx="4"/>';
+  s += '<text x="90" y="'+(waterTop-8)+'" fill="#6366f1" font-size="10">\u03C1_fluid = '+rhoFluid+' kg/m\u00B3</text>';
+  // block position
+  var blockY;
+  if (sinks) {
+    blockY = waterBot - blockSize - 20; // sitting at bottom
+  } else {
+    // fraction submerged below waterline
+    var subPx = fracSub * blockSize;
+    blockY = waterTop - blockSize + subPx;
+  }
+  // block
+  var blockCol = sinks ? '#ec4899' : '#22c55e';
+  s += '<rect x="'+(cx-blockSize/2)+'" y="'+blockY+'" width="'+blockSize+'" height="'+blockSize+'" rx="4" fill="rgba('+
+    (sinks ? '236,72,153' : '34,197,94')+',0.2)" stroke="'+blockCol+'" stroke-width="1.5"/>';
+  s += '<text x="'+cx+'" y="'+(blockY+blockSize/2+4)+'" fill="'+blockCol+'" font-size="9" text-anchor="middle">\u03C1='+rhoObj+'</text>';
+  // waterline on block
+  if (!sinks && fracSub < 1) {
+    var wlY = waterTop;
+    s += '<line x1="'+(cx-blockSize/2-10)+'" y1="'+wlY+'" x2="'+(cx+blockSize/2+10)+'" y2="'+wlY+'" stroke="#6366f1" stroke-width="1" stroke-dasharray="4,3"/>';
+  }
+  // Force diagram on right side
+  var fdx = 550, fdy = 200;
+  s += '<text x="'+fdx+'" y="'+(fdy-80)+'" fill="#9ca3af" font-size="10" text-anchor="middle">Force Diagram</text>';
+  // dot for object
+  s += '<circle cx="'+fdx+'" cy="'+fdy+'" r="8" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1"/>';
+  // Weight arrow down
+  var wScale = Math.min(60, W * 0.5);
+  s += '<line x1="'+fdx+'" y1="'+(fdy+10)+'" x2="'+fdx+'" y2="'+(fdy+10+wScale)+'" stroke="#ec4899" stroke-width="2.5" marker-end="url(#arrFD)"/>';
+  s += '<text x="'+(fdx+12)+'" y="'+(fdy+15+wScale/2)+'" fill="#ec4899" font-size="9">W='+W.toFixed(1)+' N</text>';
+  // Buoyant force arrow up
+  var bScale = Math.min(60, Fb * 0.5);
+  s += '<line x1="'+fdx+'" y1="'+(fdy-10)+'" x2="'+fdx+'" y2="'+(fdy-10-bScale)+'" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrFU)"/>';
+  s += '<text x="'+(fdx+12)+'" y="'+(fdy-15-bScale/2)+'" fill="#22c55e" font-size="9">F_b='+Fb.toFixed(1)+' N</text>';
+  // net force
+  var net = Fb - W;
+  var netCol = net >= 0 ? '#f59e0b' : '#ec4899';
+  s += '<text x="'+fdx+'" y="'+(fdy+10+wScale+20)+'" fill="'+netCol+'" font-size="10" text-anchor="middle" font-weight="600">Net: '+(net>=0?'+':'')+net.toFixed(1)+' N '+(net>0?'\u2191':net<0?'\u2193':'')+'</text>';
+  s += '<defs>';
+  s += '<marker id="arrFD" markerWidth="8" markerHeight="6" refX="4" refY="6" orient="auto"><path d="M0,0 L4,6 L8,0Z" fill="#ec4899"/></marker>';
+  s += '<marker id="arrFU" markerWidth="8" markerHeight="6" refX="4" refY="0" orient="auto"><path d="M0,6 L4,0 L8,6Z" fill="#22c55e"/></marker>';
+  s += '</defs>';
+  svg.innerHTML = s;
+}
+
+/* ==================== SECTION 4: CONTINUITY ==================== */
+function updateCont() {
+  var r1 = +document.getElementById('s4R1').value; // cm
+  var r2 = +document.getElementById('s4R2').value; // cm
+  var v1 = +document.getElementById('s4V1').value;
+  document.getElementById('s4R1Val').textContent = r1.toFixed(1) + ' cm';
+  document.getElementById('s4R2Val').textContent = r2.toFixed(1) + ' cm';
+  document.getElementById('s4V1Val').textContent = v1.toFixed(1) + ' m/s';
+  var A1 = Math.PI * r1 * r1; // cm^2
+  var A2 = Math.PI * r2 * r2;
+  var v2 = (A1 * v1) / A2;
+  var Q = A1 * v1; // cm^2 * m/s = cm^2*m/s
+  document.getElementById('s4A1').textContent = A1.toFixed(1) + ' cm\u00B2';
+  document.getElementById('s4A2').textContent = A2.toFixed(1) + ' cm\u00B2';
+  document.getElementById('s4V2').textContent = v2.toFixed(1) + ' m/s';
+  document.getElementById('s4Q').textContent = Q.toFixed(1) + ' cm\u00B2\u00B7m/s';
+  drawContSvg(r1, r2, v1, v2);
+}
+
+function drawContSvg(r1, r2, v1, v2) {
+  var svg = document.getElementById('contSvg');
+  var s = '';
+  var cy = 125;
+  // pipe 1 (left)
+  var p1h = r1 * 8; if (p1h > 80) p1h = 80; if (p1h < 16) p1h = 16;
+  var p2h = r2 * 8; if (p2h > 80) p2h = 80; if (p2h < 16) p2h = 16;
+  var p1x = 60, p1w = 220;
+  var p2x = 420, p2w = 220;
+  var transW = p2x - (p1x + p1w); // transition zone
+  // pipe 1
+  s += '<rect x="'+p1x+'" y="'+(cy-p1h/2)+'" width="'+p1w+'" height="'+p1h+'" rx="3" fill="rgba(99,102,241,0.12)" stroke="rgba(99,102,241,0.4)" stroke-width="1.5"/>';
+  // pipe 2
+  s += '<rect x="'+p2x+'" y="'+(cy-p2h/2)+'" width="'+p2w+'" height="'+p2h+'" rx="3" fill="rgba(236,72,153,0.12)" stroke="rgba(236,72,153,0.4)" stroke-width="1.5"/>';
+  // transition (trapezoid)
+  var tx1 = p1x + p1w, tx2 = p2x;
+  s += '<path d="M'+tx1+','+(cy-p1h/2)+' L'+tx2+','+(cy-p2h/2)+' L'+tx2+','+(cy+p2h/2)+' L'+tx1+','+(cy+p1h/2)+' Z" fill="rgba(245,158,11,0.08)" stroke="rgba(245,158,11,0.3)" stroke-width="1"/>';
+  // flow arrows in pipe 1
+  var numArrows1 = 3;
+  var arrowLen1 = Math.min(30, v1 * 8);
+  for (var i = 0; i < numArrows1; i++) {
+    var ax = p1x + 30 + i * 60;
+    s += '<line x1="'+ax+'" y1="'+cy+'" x2="'+(ax+arrowLen1)+'" y2="'+cy+'" stroke="#6366f1" stroke-width="2" marker-end="url(#arrBlue)"/>';
+  }
+  // flow arrows in pipe 2 (faster = longer/more)
+  var arrowLen2 = Math.min(40, v2 * 4);
+  for (var i = 0; i < 3; i++) {
+    var ax = p2x + 20 + i * 60;
+    s += '<line x1="'+ax+'" y1="'+cy+'" x2="'+(ax+arrowLen2)+'" y2="'+cy+'" stroke="#ec4899" stroke-width="2" marker-end="url(#arrPinkC)"/>';
+  }
+  // labels
+  s += '<text x="'+(p1x+p1w/2)+'" y="'+(cy-p1h/2-10)+'" fill="#6366f1" font-size="10" text-anchor="middle">v\u2081 = '+v1.toFixed(1)+' m/s</text>';
+  s += '<text x="'+(p2x+p2w/2)+'" y="'+(cy-p2h/2-10)+'" fill="#ec4899" font-size="10" text-anchor="middle">v\u2082 = '+v2.toFixed(1)+' m/s</text>';
+  s += '<text x="'+(p1x+p1w/2)+'" y="'+(cy+p1h/2+16)+'" fill="#9ca3af" font-size="9" text-anchor="middle">r\u2081='+r1.toFixed(1)+' cm</text>';
+  s += '<text x="'+(p2x+p2w/2)+'" y="'+(cy+p2h/2+16)+'" fill="#9ca3af" font-size="9" text-anchor="middle">r\u2082='+r2.toFixed(1)+' cm</text>';
+  s += '<text x="350" y="240" fill="#f59e0b" font-size="11" text-anchor="middle" font-weight="600">A\u2081v\u2081 = A\u2082v\u2082</text>';
+  s += '<defs>';
+  s += '<marker id="arrBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#6366f1"/></marker>';
+  s += '<marker id="arrPinkC" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker>';
+  s += '</defs>';
+  svg.innerHTML = s;
+}
+
+/* ==================== SECTION 5: BERNOULLI ==================== */
+function updateBern() {
+  var Rw = +document.getElementById('s5Rw').value; // cm
+  var Rn = +document.getElementById('s5Rn').value; // cm
+  var vw = +document.getElementById('s5Vw').value;
+  document.getElementById('s5RwVal').textContent = Rw.toFixed(1) + ' cm';
+  document.getElementById('s5RnVal').textContent = Rn.toFixed(1) + ' cm';
+  document.getElementById('s5VwVal').textContent = vw.toFixed(1) + ' m/s';
+  var Aw = Math.PI * Rw * Rw; // cm^2
+  var An = Math.PI * Rn * Rn;
+  var vn = (Aw * vw) / An; // continuity
+  var rho = 1000;
+  var Pw = 101325; // 1 atm input
+  // Bernoulli: Pw + 0.5*rho*vw^2 = Pn + 0.5*rho*vn^2
+  var Pn = Pw + 0.5 * rho * (vw * vw - vn * vn);
+  var dP = Pw - Pn;
+  document.getElementById('s5Vn').textContent = vn.toFixed(1) + ' m/s';
+  document.getElementById('s5Pw').textContent = (Pw / 1000).toFixed(1) + ' kPa';
+  document.getElementById('s5Pn').textContent = (Pn / 1000).toFixed(1) + ' kPa';
+  document.getElementById('s5dP').textContent = (dP / 1000).toFixed(1) + ' kPa';
+  drawBernSvg(Rw, Rn, vw, vn, Pw, Pn);
+}
+
+function drawBernSvg(Rw, Rn, vw, vn, Pw, Pn) {
+  var svg = document.getElementById('bernSvg');
+  var s = '';
+  var cy = 140;
+  var wH = Rw * 6; if (wH > 80) wH = 80; if (wH < 20) wH = 20;
+  var nH = Rn * 6; if (nH > 60) nH = 60; if (nH < 10) nH = 10;
+  // Wide section left
+  s += '<rect x="40" y="'+(cy-wH/2)+'" width="180" height="'+wH+'" rx="3" fill="rgba(99,102,241,0.12)" stroke="rgba(99,102,241,0.4)" stroke-width="1.5"/>';
+  // Narrow section center
+  s += '<rect x="300" y="'+(cy-nH/2)+'" width="120" height="'+nH+'" rx="3" fill="rgba(236,72,153,0.12)" stroke="rgba(236,72,153,0.4)" stroke-width="1.5"/>';
+  // Wide section right
+  s += '<rect x="500" y="'+(cy-wH/2)+'" width="160" height="'+wH+'" rx="3" fill="rgba(99,102,241,0.12)" stroke="rgba(99,102,241,0.4)" stroke-width="1.5"/>';
+  // Transitions
+  s += '<path d="M220,'+(cy-wH/2)+' L300,'+(cy-nH/2)+' L300,'+(cy+nH/2)+' L220,'+(cy+wH/2)+' Z" fill="rgba(245,158,11,0.08)" stroke="rgba(245,158,11,0.3)"/>';
+  s += '<path d="M420,'+(cy-nH/2)+' L500,'+(cy-wH/2)+' L500,'+(cy+wH/2)+' L420,'+(cy+wH/2-wH+nH)+' Z" fill="rgba(245,158,11,0.08)" stroke="rgba(245,158,11,0.3)"/>';
+  // Flow arrows wide
+  s += '<line x1="80" y1="'+cy+'" x2="120" y2="'+cy+'" stroke="#6366f1" stroke-width="2" marker-end="url(#bArr1)"/>';
+  s += '<line x1="140" y1="'+cy+'" x2="180" y2="'+cy+'" stroke="#6366f1" stroke-width="2" marker-end="url(#bArr1)"/>';
+  // Flow arrows narrow (longer = faster)
+  s += '<line x1="320" y1="'+cy+'" x2="370" y2="'+cy+'" stroke="#ec4899" stroke-width="2.5" marker-end="url(#bArr2)"/>';
+  s += '<line x1="375" y1="'+cy+'" x2="410" y2="'+cy+'" stroke="#ec4899" stroke-width="2.5" marker-end="url(#bArr2)"/>';
+  // Flow arrows wide right
+  s += '<line x1="530" y1="'+cy+'" x2="570" y2="'+cy+'" stroke="#6366f1" stroke-width="2" marker-end="url(#bArr1)"/>';
+  // Pressure manometer tubes
+  var pBarMax = 100;
+  var pwBar = Math.max(5, Math.min(pBarMax, (Pw / 101325) * pBarMax));
+  var pnBar = Math.max(5, Math.min(pBarMax, Math.max(0, Pn / 101325) * pBarMax));
+  // wide manometer
+  var mwx = 130, mny = cy - wH/2 - 10;
+  s += '<rect x="'+(mwx-4)+'" y="'+(mny-pwBar)+'" width="8" height="'+pwBar+'" rx="2" fill="rgba(99,102,241,0.4)" stroke="#6366f1"/>';
+  s += '<text x="'+mwx+'" y="'+(mny-pwBar-8)+'" fill="#6366f1" font-size="9" text-anchor="middle">P\u2081</text>';
+  // narrow manometer
+  var mnx = 360;
+  s += '<rect x="'+(mnx-4)+'" y="'+(cy-nH/2-10-pnBar)+'" width="8" height="'+pnBar+'" rx="2" fill="rgba(236,72,153,0.4)" stroke="#ec4899"/>';
+  s += '<text x="'+mnx+'" y="'+(cy-nH/2-10-pnBar-8)+'" fill="#ec4899" font-size="9" text-anchor="middle">P\u2082</text>';
+  // Labels
+  s += '<text x="130" y="'+(cy+wH/2+20)+'" fill="#6366f1" font-size="10" text-anchor="middle">v='+vw.toFixed(1)+' m/s</text>';
+  s += '<text x="360" y="'+(cy+nH/2+20)+'" fill="#ec4899" font-size="10" text-anchor="middle">v='+vn.toFixed(1)+' m/s</text>';
+  s += '<text x="130" y="'+(cy+wH/2+34)+'" fill="#6366f1" font-size="9" text-anchor="middle">P='+(Pw/1000).toFixed(1)+' kPa</text>';
+  s += '<text x="360" y="'+(cy+nH/2+34)+'" fill="#ec4899" font-size="9" text-anchor="middle">P='+(Pn/1000).toFixed(1)+' kPa</text>';
+  s += '<text x="350" y="290" fill="#f59e0b" font-size="11" text-anchor="middle" font-weight="600">Higher speed \u2192 Lower pressure</text>';
+  s += '<defs>';
+  s += '<marker id="bArr1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#6366f1"/></marker>';
+  s += '<marker id="bArr2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker>';
+  s += '</defs>';
+  svg.innerHTML = s;
+}
+
+/* ==================== INIT ==================== */
+markComplete(1);
+updateDepth();
+updatePascal();
+updateArch();
+updateCont();
+updateBern();
+</script>
+</body>
+</html>

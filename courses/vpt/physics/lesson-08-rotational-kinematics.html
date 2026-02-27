@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 8: Rotational Kinematics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>08</span> Rotational Kinematics</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: ANGULAR POSITION & DISPLACEMENT -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Angular Position &amp; Displacement</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Angular position</strong> describes where an object is in its rotation, measured as the angle from a reference line. In physics we use <strong>radians</strong>, not degrees. One full revolution = 2pi rad = 360 degrees. The radian is defined so that <strong>arc length s = r * theta</strong>, where r is the radius and theta is in radians. This makes radians the natural unit for rotational physics.
+    </p>
+
+    <div class="formula-box large">s = r&theta; &nbsp;&nbsp;&nbsp; [arc length = radius &times; angle in rad]</div>
+    <div class="formula-box green">1 rev = 2&pi; rad = 360&deg; &nbsp;&nbsp;|&nbsp;&nbsp; 1 rad = 57.3&deg; &nbsp;&nbsp;|&nbsp;&nbsp; 1&deg; = &pi;/180 rad</div>
+
+    <div class="key-point">Angular displacement &Delta;&theta; = &theta;_f - &theta;_i. Positive is counterclockwise (CCW) by convention. Unlike linear displacement, &theta; has no physical dimension of length -- it is a ratio (arc/radius).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Angle Visualizer -- Radians, Degrees, Arc Length</div>
+      <svg id="s1Svg" width="100%" viewBox="0 0 700 340" style="display:block"></svg>
+      <div class="slider-row">
+        <label>Angle &theta;</label>
+        <input type="range" id="s1Theta" min="0" max="6.283" value="1.571" step="0.01" oninput="updateS1()">
+        <span class="slider-val" id="s1ThetaVal">1.57 rad</span>
+      </div>
+      <div class="slider-row">
+        <label>Radius r</label>
+        <input type="range" id="s1Radius" min="0.5" max="5" value="2" step="0.1" oninput="updateS1()">
+        <span class="slider-val" id="s1RadiusVal">2.0 m</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">&theta; (rad)</span><br><span class="value indigo" id="s1Rad">1.57</span></div>
+        <div class="readout-item"><span class="label">&theta; (deg)</span><br><span class="value green" id="s1Deg">90.0</span></div>
+        <div class="readout-item"><span class="label">Arc length s = r&theta;</span><br><span class="value amber" id="s1Arc">3.14 m</span></div>
+        <div class="readout-item"><span class="label">Revolutions</span><br><span class="value pink" id="s1Rev">0.25</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> Convert 150 degrees to radians. (Multiply by pi/180)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1" step="0.01" placeholder="rad = ?" onkeydown="if(event.key==='Enter')checkNum('s1p1',2.618,0.13)">
+          <span class="unit-label">rad</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p1',2.618,0.13)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A wheel of radius 0.3 m rotates through 4 rad. What arc length does a point on the rim trace?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2" step="0.01" placeholder="s = ?" onkeydown="if(event.key==='Enter')checkNum('s1p2',1.2,0.06)">
+          <span class="unit-label">m</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p2',1.2,0.06)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> How many radians in 3 full revolutions?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p3" step="0.01" placeholder="rad = ?" onkeydown="if(event.key==='Enter')checkNum('s1p3',18.85,0.94)">
+          <span class="unit-label">rad</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p3',18.85,0.94)">Check</button>
+        </div>
+        <div class="feedback" id="s1p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: ANGULAR VELOCITY & ACCELERATION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Angular Velocity &amp; Acceleration</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Angular velocity</strong> omega = d&theta;/dt is the rate of change of angular position (rad/s). <strong>Angular acceleration</strong> alpha = d&omega;/dt is the rate of change of angular velocity (rad/s&sup2;). Every rotational quantity has a linear analog at radius r from the axis.
+    </p>
+
+    <div class="formula-box large">&omega; = d&theta;/dt &nbsp;&nbsp; [rad/s] &nbsp;&nbsp;&nbsp;&nbsp; &alpha; = d&omega;/dt &nbsp;&nbsp; [rad/s&sup2;]</div>
+    <div class="formula-box green">v = r&omega; &nbsp;&nbsp;&nbsp; a_t = r&alpha; &nbsp;&nbsp;&nbsp; a_c = v&sup2;/r = &omega;&sup2;r</div>
+    <div class="formula-box pink">a_c points toward the center (centripetal) &nbsp;&nbsp;|&nbsp;&nbsp; a_t is tangent to the circle</div>
+
+    <div class="key-point">All points on a rigid body share the same &omega; and &alpha;, but points farther from the axis have greater linear speed v = r&omega;. The outside of a spinning disc moves faster than points near the center.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Angular vs Linear -- Rotating Wheel</div>
+      <svg id="s2Svg" width="100%" viewBox="0 0 700 340" style="display:block"></svg>
+      <div class="slider-row">
+        <label>&omega; (rad/s)</label>
+        <input type="range" id="s2Omega" min="0" max="20" value="5" step="0.5" oninput="updateS2()">
+        <span class="slider-val" id="s2OmegaVal">5.0 rad/s</span>
+      </div>
+      <div class="slider-row">
+        <label>Radius r (m)</label>
+        <input type="range" id="s2R" min="0.1" max="3" value="1.0" step="0.1" oninput="updateS2()">
+        <span class="slider-val" id="s2RVal">1.0 m</span>
+      </div>
+      <div class="slider-row">
+        <label>&alpha; (rad/s&sup2;)</label>
+        <input type="range" id="s2Alpha" min="0" max="10" value="2" step="0.5" oninput="updateS2()">
+        <span class="slider-val" id="s2AlphaVal">2.0 rad/s&sup2;</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">v = r&omega;</span><br><span class="value indigo" id="s2V">5.0 m/s</span></div>
+        <div class="readout-item"><span class="label">a_t = r&alpha;</span><br><span class="value green" id="s2At">2.0 m/s&sup2;</span></div>
+        <div class="readout-item"><span class="label">a_c = &omega;&sup2;r</span><br><span class="value pink" id="s2Ac">25.0 m/s&sup2;</span></div>
+        <div class="readout-item"><span class="label">|a_total|</span><br><span class="value amber" id="s2Atot">25.1 m/s&sup2;</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> A gas turbine in a ship's engine spins at ~15,000 RPM. That is &omega; = 15000 * 2&pi;/60 = 1571 rad/s. A blade tip at r = 0.25 m has v = 393 m/s -- faster than the speed of sound. The centripetal acceleration on that blade tip is &omega;&sup2;r = 617,000 m/s&sup2; or about 63,000 g's. That is why turbine blades need exotic alloys.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A wheel spins at &omega; = 12 rad/s. A point on the rim at r = 0.5 m has what tangential speed?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1" step="0.1" placeholder="v = ?" onkeydown="if(event.key==='Enter')checkNum('s2p1',6.0,0.3)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p1',6.0,0.3)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A centrifuge spins at &omega; = 100 rad/s with r = 0.15 m. What is the centripetal acceleration?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" step="1" placeholder="a_c = ?" onkeydown="if(event.key==='Enter')checkNum('s2p2',1500,75)">
+          <span class="unit-label">m/s&sup2;</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p2',1500,75)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> Convert 3600 RPM to rad/s. (RPM * 2&pi; / 60)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p3" step="0.1" placeholder="&omega; = ?" onkeydown="if(event.key==='Enter')checkNum('s2p3',376.99,18.85)">
+          <span class="unit-label">rad/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p3',376.99,18.85)">Check</button>
+        </div>
+        <div class="feedback" id="s2p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: ROTATIONAL KINEMATIC EQUATIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Rotational Kinematic Equations</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The rotational kinematic equations are <strong>identical in form</strong> to the linear ones -- just replace x with &theta;, v with &omega;, and a with &alpha;. They apply when angular acceleration is <strong>constant</strong>. These three equations let you solve any constant-&alpha; problem if you know three of the five variables (&theta;, &theta;_0, &omega;, &omega;_0, &alpha;, t).
+    </p>
+
+    <div class="formula-box large">&omega; = &omega;_0 + &alpha;t</div>
+    <div class="formula-box green">&theta; = &theta;_0 + &omega;_0 t + &frac12;&alpha;t&sup2;</div>
+    <div class="formula-box pink">&omega;&sup2; = &omega;_0&sup2; + 2&alpha;(&theta; - &theta;_0)</div>
+
+    <div class="sub-label">Side-by-side comparison: Linear vs Rotational</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0">
+      <div class="formula-box" style="font-size:.82rem">v = v_0 + at<br>x = x_0 + v_0 t + &frac12;at&sup2;<br>v&sup2; = v_0&sup2; + 2a&Delta;x</div>
+      <div class="formula-box amber" style="font-size:.82rem">&omega; = &omega;_0 + &alpha;t<br>&theta; = &theta;_0 + &omega;_0 t + &frac12;&alpha;t&sup2;<br>&omega;&sup2; = &omega;_0&sup2; + 2&alpha;&Delta;&theta;</div>
+    </div>
+
+    <div class="key-point">Strategy: identify your knowns and unknowns, then pick the equation that connects them -- exactly like 1D kinematics. If &alpha; = 0, the object spins at constant &omega; and &theta; = &theta;_0 + &omega;t.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Spinning Up / Braking -- Constant &alpha;</div>
+      <div class="slider-row">
+        <label>&omega;_0 (rad/s)</label>
+        <input type="range" id="s3W0" min="-10" max="30" value="0" step="0.5" oninput="updateS3()">
+        <span class="slider-val" id="s3W0Val">0 rad/s</span>
+      </div>
+      <div class="slider-row">
+        <label>&alpha; (rad/s&sup2;)</label>
+        <input type="range" id="s3Alpha" min="-5" max="10" value="2" step="0.5" oninput="updateS3()">
+        <span class="slider-val" id="s3AlphaVal">2.0 rad/s&sup2;</span>
+      </div>
+      <div class="slider-row">
+        <label>Time t (s)</label>
+        <input type="range" id="s3T" min="0" max="10" value="5" step="0.1" oninput="updateS3()">
+        <span class="slider-val" id="s3TVal">5.0 s</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">&omega;(t) = &omega;_0 + &alpha;t</span><br><span class="value indigo" id="s3Wf">10.0 rad/s</span></div>
+        <div class="readout-item"><span class="label">&Delta;&theta; = &omega;_0 t + &frac12;&alpha;t&sup2;</span><br><span class="value green" id="s3Dtheta">25.0 rad</span></div>
+        <div class="readout-item"><span class="label">Revolutions</span><br><span class="value amber" id="s3Revs">3.98</span></div>
+        <div class="readout-item"><span class="label">&omega;&sup2; check</span><br><span class="value pink" id="s3W2check">100.0</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A fan blade starts from rest and accelerates at &alpha; = 3 rad/s&sup2; for 4 s. What is the final angular velocity?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="0.1" placeholder="&omega; = ?" onkeydown="if(event.key==='Enter')checkNum('s3p1',12,0.6)">
+          <span class="unit-label">rad/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p1',12,0.6)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> In the above problem, how many radians did the blade turn through? (&theta; = &omega;_0 t + &frac12;&alpha;t&sup2;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2" step="0.1" placeholder="&theta; = ?" onkeydown="if(event.key==='Enter')checkNum('s3p2',24,1.2)">
+          <span class="unit-label">rad</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p2',24,1.2)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> A flywheel spinning at 50 rad/s is braked to rest (&omega;=0) over 20 rad. What is the angular deceleration? (Use &omega;&sup2; = &omega;_0&sup2; + 2&alpha;&Delta;&theta;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p3" step="0.1" placeholder="&alpha; = ?" onkeydown="if(event.key==='Enter')checkNum('s3p3',-62.5,3.1)">
+          <span class="unit-label">rad/s&sup2;</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p3',-62.5,3.1)">Check</button>
+        </div>
+        <div class="feedback" id="s3p3-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>4.</strong> A wheel accelerates from 10 rad/s at &alpha; = 4 rad/s&sup2;. How long until it reaches 30 rad/s?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p4" step="0.1" placeholder="t = ?" onkeydown="if(event.key==='Enter')checkNum('s3p4',5.0,0.25)">
+          <span class="unit-label">s</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p4',5.0,0.25)">Check</button>
+        </div>
+        <div class="feedback" id="s3p4-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: ROLLING MOTION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Rolling Motion</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Rolling without slipping</strong> means the contact point has zero velocity relative to the surface. This enforces the constraint <strong>v_cm = R&omega;</strong>. A rolling object has <strong>both</strong> translational KE and rotational KE. When rolling down an incline, gravitational PE converts into both forms, making a rolling object accelerate slower than a sliding one.
+    </p>
+
+    <div class="formula-box large">v_cm = R&omega; &nbsp;&nbsp;&nbsp; (rolling without slipping)</div>
+    <div class="formula-box green">KE_total = &frac12;mv&sup2; + &frac12;I&omega;&sup2; &nbsp;&nbsp; (translational + rotational)</div>
+    <div class="formula-box pink">Incline: a = g sin&theta; / (1 + I/mR&sup2;)</div>
+
+    <div class="key-point">Common moments of inertia: solid cylinder I = &frac12;mR&sup2;, hollow cylinder I = mR&sup2;, solid sphere I = 2/5 mR&sup2;, hollow sphere I = 2/3 mR&sup2;. Objects with more I (mass farther from axis) roll slower down inclines.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Rolling Down an Incline -- Shape Race</div>
+      <svg id="s4Svg" width="100%" viewBox="0 0 700 300" style="display:block;margin:8px 0"></svg>
+      <div class="slider-row">
+        <label>Incline angle</label>
+        <input type="range" id="s4Angle" min="5" max="60" value="30" step="1" oninput="updateS4()">
+        <span class="slider-val" id="s4AngleVal">30&deg;</span>
+      </div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setS4Shape('solid-cyl',this)">Solid Cylinder</button>
+        <button class="scenario-tab" onclick="setS4Shape('hollow-cyl',this)">Hollow Cylinder</button>
+        <button class="scenario-tab" onclick="setS4Shape('solid-sph',this)">Solid Sphere</button>
+        <button class="scenario-tab" onclick="setS4Shape('hollow-sph',this)">Hollow Sphere</button>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">I/mR&sup2;</span><br><span class="value indigo" id="s4c">0.500</span></div>
+        <div class="readout-item"><span class="label">a = g sin&theta;/(1+c)</span><br><span class="value green" id="s4a">3.27 m/s&sup2;</span></div>
+        <div class="readout-item"><span class="label">a_slide = g sin&theta;</span><br><span class="value pink" id="s4aSlide">4.90 m/s&sup2;</span></div>
+        <div class="readout-item"><span class="label">Fraction to rotation</span><br><span class="value amber" id="s4frac">33.3%</span></div>
+      </div>
+      <div class="sub-label">Race ranking (fastest to slowest down same incline):</div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">1st</span><br><span class="value green">Solid Sphere (c=0.4)</span></div>
+        <div class="readout-item"><span class="label">2nd</span><br><span class="value indigo">Solid Cylinder (c=0.5)</span></div>
+        <div class="readout-item"><span class="label">3rd</span><br><span class="value amber">Hollow Sphere (c=0.667)</span></div>
+        <div class="readout-item"><span class="label">4th</span><br><span class="value pink">Hollow Cylinder (c=1.0)</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Torpedoes like the Mk 48 spin about their long axis for gyroscopic stability (like a football spiral). The rolling kinetic energy is part of the total energy budget. Propeller shafts on surface ships are massive cylinders -- their rotational inertia means they take significant time and energy to spin up to full RPM, which is why engineering announces "ahead full" well before the ship actually accelerates.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A solid cylinder (I = &frac12;mR&sup2;) of mass 4 kg and radius 0.1 m rolls without slipping at v_cm = 3 m/s. What is its total KE? (KE = &frac12;mv&sup2; + &frac12;I&omega;&sup2;, and &omega; = v/R)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="0.1" placeholder="KE = ?" onkeydown="if(event.key==='Enter')checkNum('s4p1',27,1.35)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p1',27,1.35)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A solid sphere rolls down a 2 m high ramp from rest. What is its speed at the bottom? (Use energy: mgh = &frac12;mv&sup2;(1 + c), c = 2/5)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2" step="0.01" placeholder="v = ?" onkeydown="if(event.key==='Enter')checkNum('s4p2',5.29,0.26)">
+          <span class="unit-label">m/s</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p2',5.29,0.26)">Check</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+      <div class="problem" id="s4p3">
+        <p><strong>3.</strong> Two objects of equal mass roll down the same incline: a solid sphere and a hollow cylinder. Which reaches the bottom first?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','correct')">Solid sphere -- it has less rotational inertia (c = 0.4 vs 1.0)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">Hollow cylinder -- hollow objects are lighter per volume</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">They tie -- mass cancels out so shape does not matter</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: PRACTICE PROBLEMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Practice Problems</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">Mixed problems covering all rotational kinematics concepts. Use the formulas from sections 1-4. Show your work on paper, then check your numerical answer.</p>
+
+    <div class="problem">
+      <p><strong>1.</strong> A bicycle wheel (r = 0.35 m) rolls without slipping. The bike moves at 8 m/s. What is the angular velocity of the wheel?</p>
+      <div class="problem-input-row">
+        <input type="number" id="s5p1" step="0.1" placeholder="&omega; = ?" onkeydown="if(event.key==='Enter')checkNum('s5p1',22.86,1.14)">
+        <span class="unit-label">rad/s</span>
+        <button class="btn btn-sm" onclick="checkNum('s5p1',22.86,1.14)">Check</button>
+      </div>
+      <div class="feedback" id="s5p1-fb"></div>
+    </div>
+
+    <div class="problem">
+      <p><strong>2.</strong> A merry-go-round accelerates from rest at &alpha; = 0.5 rad/s&sup2; for 8 s, then spins at constant &omega; for 12 s. What is the total angular displacement? (Two phases: accelerating + constant speed)</p>
+      <div class="problem-input-row">
+        <input type="number" id="s5p2" step="0.1" placeholder="&theta; = ?" onkeydown="if(event.key==='Enter')checkNum('s5p2',64,3.2)">
+        <span class="unit-label">rad</span>
+        <button class="btn btn-sm" onclick="checkNum('s5p2',64,3.2)">Check</button>
+      </div>
+      <div class="feedback" id="s5p2-fb"></div>
+    </div>
+
+    <div class="problem">
+      <p><strong>3.</strong> A grinding wheel (solid disk, I = &frac12;mR&sup2;) of mass 2 kg and radius 0.12 m spins at 3000 RPM. What is its rotational kinetic energy? (Convert RPM to rad/s first.)</p>
+      <div class="problem-input-row">
+        <input type="number" id="s5p3" step="1" placeholder="KE = ?" onkeydown="if(event.key==='Enter')checkNum('s5p3',710.6,35.5)">
+        <span class="unit-label">J</span>
+        <button class="btn btn-sm" onclick="checkNum('s5p3',710.6,35.5)">Check</button>
+      </div>
+      <div class="feedback" id="s5p3-fb"></div>
+    </div>
+
+    <div class="problem">
+      <p><strong>4.</strong> A car tire (r = 0.32 m) rotates at 80 rad/s. The brakes apply a constant deceleration of &alpha; = -8 rad/s&sup2;. How many revolutions does the tire make before stopping?</p>
+      <div class="problem-input-row">
+        <input type="number" id="s5p4" step="0.1" placeholder="revs = ?" onkeydown="if(event.key==='Enter')checkNum('s5p4',63.66,3.18)">
+        <span class="unit-label">rev</span>
+        <button class="btn btn-sm" onclick="checkNum('s5p4',63.66,3.18)">Check</button>
+      </div>
+      <div class="feedback" id="s5p4-fb"></div>
+    </div>
+
+    <div class="problem">
+      <p><strong>5.</strong> A hollow sphere (I = 2/3 mR&sup2;) rolls without slipping down a 5 m high incline. What is its speed at the bottom? (mgh = &frac12;mv&sup2;(1 + 2/3))</p>
+      <div class="problem-input-row">
+        <input type="number" id="s5p5" step="0.01" placeholder="v = ?" onkeydown="if(event.key==='Enter')checkNum('s5p5',7.67,0.38)">
+        <span class="unit-label">m/s</span>
+        <button class="btn btn-sm" onclick="checkNum('s5p5',7.67,0.38)">Check</button>
+      </div>
+      <div class="feedback" id="s5p5-fb"></div>
+    </div>
+
+    <div class="problem">
+      <p><strong>6.</strong> A point on the edge of a 0.2 m radius disk has centripetal acceleration of 200 m/s&sup2;. What is the angular velocity of the disk?</p>
+      <div class="problem-input-row">
+        <input type="number" id="s5p6" step="0.1" placeholder="&omega; = ?" onkeydown="if(event.key==='Enter')checkNum('s5p6',31.62,1.58)">
+        <span class="unit-label">rad/s</span>
+        <button class="btn btn-sm" onclick="checkNum('s5p6',31.62,1.58)">Check</button>
+      </div>
+      <div class="feedback" id="s5p6-fb"></div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUICK QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quick Quiz &mdash; Rotational Kinematics</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Radian basics</div>
+      <p class="q-text">How many radians are in one full revolution?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">&pi; rad</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">2&pi; rad</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">360 rad</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">1 rad</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Arc length</div>
+      <p class="q-text">A wheel of radius 0.5 m rotates through 4 rad. What arc length does a point on the rim travel?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">2.0 m</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">8.0 m</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">0.125 m</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">4.0 m</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Angular velocity</div>
+      <p class="q-text">A disk spins at 600 RPM. What is its angular velocity in rad/s?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">600 rad/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">10 rad/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">20&pi; rad/s (about 62.8 rad/s)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">100&pi; rad/s</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Linear-angular relation</div>
+      <p class="q-text">Two points on a spinning disk: point A at r = 0.1 m and point B at r = 0.3 m. How does the tangential speed of B compare to A?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Same speed -- same &omega;</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">B is 3 times faster (v = r&omega;)</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">B is 9 times faster</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">A is faster -- closer to center</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Centripetal acceleration</div>
+      <p class="q-text">A point on a wheel at r = 0.2 m has &omega; = 10 rad/s. What is its centripetal acceleration?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">2 m/s&sup2;</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">20 m/s&sup2;</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">100 m/s&sup2;</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">200 m/s&sup2;</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Kinematic equation</div>
+      <p class="q-text">A wheel starts from rest with &alpha; = 4 rad/s&sup2;. What is its angular velocity after 3 seconds?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">12 rad/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">6 rad/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">18 rad/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">36 rad/s</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Stopping distance</div>
+      <p class="q-text">A wheel spinning at 20 rad/s decelerates at &alpha; = -5 rad/s&sup2;. How many radians does it turn before stopping?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">4 rad</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">80 rad</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">40 rad</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">100 rad</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Rolling constraint</div>
+      <p class="q-text">A ball of radius 0.05 m rolls without slipping at v_cm = 2 m/s. What is &omega;?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">0.1 rad/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">10 rad/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">40 rad/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">100 rad/s</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Rolling KE</div>
+      <p class="q-text">A solid cylinder (I = &frac12;mR&sup2;) rolls without slipping. What fraction of its total KE is rotational?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">1/2</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">1/3</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">2/5</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">2/3</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Incline race</div>
+      <p class="q-text">A solid sphere, solid cylinder, and hollow cylinder all roll from rest down the same incline. Which arrives at the bottom first?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">Solid sphere -- smallest I/mR&sup2; ratio (2/5)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Solid cylinder -- medium I means medium speed</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Hollow cylinder -- all the mass is at the rim for faster rolling</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">They all tie -- mass and shape cancel</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(1) + ')';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: ANGLE VISUALIZER ==================== */
+function updateS1() {
+  var theta = +document.getElementById('s1Theta').value;
+  var r = +document.getElementById('s1Radius').value;
+  document.getElementById('s1ThetaVal').textContent = theta.toFixed(2) + ' rad';
+  document.getElementById('s1RadiusVal').textContent = r.toFixed(1) + ' m';
+  var deg = theta * 180 / Math.PI;
+  var arc = r * theta;
+  var rev = theta / (2 * Math.PI);
+  document.getElementById('s1Rad').textContent = theta.toFixed(2);
+  document.getElementById('s1Deg').textContent = deg.toFixed(1);
+  document.getElementById('s1Arc').textContent = arc.toFixed(2) + ' m';
+  document.getElementById('s1Rev').textContent = rev.toFixed(3);
+  drawS1(theta);
+}
+
+function drawS1(theta) {
+  var svg = document.getElementById('s1Svg');
+  var cx = 200, cy = 170, R = 120;
+  var h = '';
+  // background
+  h += '<rect x="0" y="0" width="700" height="340" fill="#1a1d24" rx="6"/>';
+  // circle outline
+  h += '<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="none" stroke="#363b47" stroke-width="1.5" stroke-dasharray="4,4"/>';
+  // reference line (0 rad)
+  h += '<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+R)+'" y2="'+cy+'" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="3,3"/>';
+  h += '<text x="'+(cx+R+8)+'" y="'+(cy+4)+'" fill="#9ca3af" font-size="11">0 rad</text>';
+  // swept arc
+  var nSegs = Math.max(2, Math.ceil(theta * 20));
+  var arcPath = 'M' + (cx + R*0.3) + ',' + cy;
+  for (var i = 1; i <= nSegs; i++) {
+    var a = -i * theta / nSegs;
+    arcPath += ' L' + (cx + R*0.3 * Math.cos(a)) + ',' + (cy + R*0.3 * Math.sin(a));
+  }
+  h += '<path d="'+arcPath+'" fill="none" stroke="'+getComputedStyle(document.documentElement).getPropertyValue('--indigo').trim()+'" stroke-width="2.5"/>';
+  // filled wedge
+  var wedgePath = 'M'+cx+','+cy+' L'+(cx+R)+','+cy;
+  for (var i = 1; i <= nSegs; i++) {
+    var a = -i * theta / nSegs;
+    wedgePath += ' L' + (cx + R * Math.cos(a)) + ',' + (cy + R * Math.sin(a));
+  }
+  wedgePath += ' Z';
+  h += '<path d="'+wedgePath+'" fill="rgba(99,102,241,0.12)" stroke="none"/>';
+  // radius line at angle
+  var ex = cx + R * Math.cos(-theta);
+  var ey = cy + R * Math.sin(-theta);
+  h += '<line x1="'+cx+'" y1="'+cy+'" x2="'+ex+'" y2="'+ey+'" stroke="#6366f1" stroke-width="2"/>';
+  // arc length highlight on rim
+  var arcRimPath = 'M' + (cx+R) + ',' + cy;
+  for (var i = 1; i <= nSegs; i++) {
+    var a = -i * theta / nSegs;
+    arcRimPath += ' L' + (cx + R * Math.cos(a)) + ',' + (cy + R * Math.sin(a));
+  }
+  h += '<path d="'+arcRimPath+'" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>';
+  // dot at end
+  h += '<circle cx="'+ex+'" cy="'+ey+'" r="5" fill="#6366f1"/>';
+  h += '<circle cx="'+(cx+R)+'" cy="'+cy+'" r="4" fill="#9ca3af"/>';
+  // center dot
+  h += '<circle cx="'+cx+'" cy="'+cy+'" r="3" fill="#e2e4e9"/>';
+  // labels
+  var midA = -theta / 2;
+  var labelR = R * 0.55;
+  h += '<text x="'+(cx + labelR * Math.cos(midA))+'" y="'+(cy + labelR * Math.sin(midA))+'" fill="#6366f1" font-size="13" font-weight="600" text-anchor="middle">&theta;</text>';
+  // arc length label
+  var arcLabelR = R + 18;
+  var arcLabelA = -theta * 0.5;
+  h += '<text x="'+(cx + arcLabelR * Math.cos(arcLabelA))+'" y="'+(cy + arcLabelR * Math.sin(arcLabelA))+'" fill="#f59e0b" font-size="11" font-weight="600" text-anchor="middle">s = r&theta;</text>';
+  // r label
+  h += '<text x="'+(cx + R*0.5*Math.cos(-theta) - 12*Math.sin(-theta))+'" y="'+(cy + R*0.5*Math.sin(-theta) + 12*Math.cos(-theta))+'" fill="#22c55e" font-size="11" text-anchor="middle">r</text>';
+
+  // Right side: key conversions
+  var rx = 440, ry = 40;
+  h += '<text x="'+rx+'" y="'+ry+'" fill="#e2e4e9" font-size="13" font-weight="600">Key Conversions</text>';
+  h += '<text x="'+rx+'" y="'+(ry+28)+'" fill="#9ca3af" font-size="11">1 rev = 2&pi; = 6.283 rad</text>';
+  h += '<text x="'+rx+'" y="'+(ry+50)+'" fill="#9ca3af" font-size="11">1 rad = 57.30&deg;</text>';
+  h += '<text x="'+rx+'" y="'+(ry+72)+'" fill="#9ca3af" font-size="11">&pi;/2 = 90&deg;  |  &pi; = 180&deg;</text>';
+  h += '<text x="'+rx+'" y="'+(ry+94)+'" fill="#9ca3af" font-size="11">3&pi;/2 = 270&deg;  |  2&pi; = 360&deg;</text>';
+
+  // Common angles on circle
+  var angles = [{a:Math.PI/2, l:'&pi;/2'},{a:Math.PI, l:'&pi;'},{a:3*Math.PI/2, l:'3&pi;/2'}];
+  for (var i = 0; i < angles.length; i++) {
+    var ax = cx + (R+30) * Math.cos(-angles[i].a);
+    var ay = cy + (R+30) * Math.sin(-angles[i].a);
+    h += '<text x="'+ax+'" y="'+ay+'" fill="#363b47" font-size="9" text-anchor="middle">'+angles[i].l+'</text>';
+    var tx = cx + R * Math.cos(-angles[i].a);
+    var ty = cy + R * Math.sin(-angles[i].a);
+    h += '<circle cx="'+tx+'" cy="'+ty+'" r="2" fill="#363b47"/>';
+  }
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 2: ANGULAR VS LINEAR ==================== */
+function updateS2() {
+  var omega = +document.getElementById('s2Omega').value;
+  var r = +document.getElementById('s2R').value;
+  var alpha = +document.getElementById('s2Alpha').value;
+  document.getElementById('s2OmegaVal').textContent = omega.toFixed(1) + ' rad/s';
+  document.getElementById('s2RVal').textContent = r.toFixed(1) + ' m';
+  document.getElementById('s2AlphaVal').textContent = alpha.toFixed(1) + ' rad/s\u00B2';
+  var v = r * omega;
+  var at = r * alpha;
+  var ac = omega * omega * r;
+  var atot = Math.sqrt(at * at + ac * ac);
+  document.getElementById('s2V').textContent = v.toFixed(1) + ' m/s';
+  document.getElementById('s2At').textContent = at.toFixed(1) + ' m/s\u00B2';
+  document.getElementById('s2Ac').textContent = ac.toFixed(1) + ' m/s\u00B2';
+  document.getElementById('s2Atot').textContent = atot.toFixed(1) + ' m/s\u00B2';
+  drawS2(omega, r, alpha);
+}
+
+function drawS2(omega, r, alpha) {
+  var svg = document.getElementById('s2Svg');
+  var cx = 200, cy = 170, R = 110;
+  var h = '';
+  h += '<rect x="0" y="0" width="700" height="340" fill="#1a1d24" rx="6"/>';
+  // wheel
+  h += '<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="none" stroke="#363b47" stroke-width="2"/>';
+  h += '<circle cx="'+cx+'" cy="'+cy+'" r="3" fill="#e2e4e9"/>';
+  // spokes
+  for (var i = 0; i < 8; i++) {
+    var a = i * Math.PI / 4;
+    h += '<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+R*Math.cos(a))+'" y2="'+(cy+R*Math.sin(a))+'" stroke="#363b47" stroke-width="1"/>';
+  }
+  // point on rim (top)
+  var ptAngle = -Math.PI / 4;
+  var px = cx + R * Math.cos(ptAngle);
+  var py = cy + R * Math.sin(ptAngle);
+  h += '<circle cx="'+px+'" cy="'+py+'" r="7" fill="#6366f1"/>';
+  // v tangent arrow (perpendicular to radius, CCW)
+  var vScale = Math.min(omega * r * 6, 100);
+  var vx = -Math.sin(ptAngle) * vScale;
+  var vy = Math.cos(ptAngle) * vScale;
+  if (vScale > 5) {
+    h += '<line x1="'+px+'" y1="'+py+'" x2="'+(px+vx)+'" y2="'+(py+vy)+'" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrG)"/>';
+    h += '<text x="'+(px+vx+8)+'" y="'+(py+vy-4)+'" fill="#22c55e" font-size="11" font-weight="600">v = r&omega;</text>';
+  }
+  // a_c arrow (toward center)
+  var acScale = Math.min(omega*omega*r*0.8, 80);
+  var acx = (cx - px);
+  var acy = (cy - py);
+  var acLen = Math.sqrt(acx*acx + acy*acy);
+  if (acLen > 0 && acScale > 3) {
+    acx = acx/acLen * acScale;
+    acy = acy/acLen * acScale;
+    h += '<line x1="'+px+'" y1="'+py+'" x2="'+(px+acx)+'" y2="'+(py+acy)+'" stroke="#ec4899" stroke-width="2.5" marker-end="url(#arrP)"/>';
+    h += '<text x="'+(px+acx*0.5 - 15)+'" y="'+(py+acy*0.5 + 15)+'" fill="#ec4899" font-size="10">a_c</text>';
+  }
+  // a_t arrow (tangent, same direction as v if alpha > 0)
+  var atScale = Math.min(alpha * r * 8, 70);
+  if (atScale > 3) {
+    var atx = -Math.sin(ptAngle) * atScale;
+    var aty = Math.cos(ptAngle) * atScale;
+    h += '<line x1="'+px+'" y1="'+py+'" x2="'+(px+atx*0.7)+'" y2="'+(py+aty*0.7)+'" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrA)"/>';
+    h += '<text x="'+(px+atx*0.7+8)+'" y="'+(py+aty*0.7+12)+'" fill="#f59e0b" font-size="10">a_t</text>';
+  }
+  // omega arrow (curved)
+  if (omega > 0) {
+    h += '<path d="M'+(cx+30)+','+cy+' A30,30 0 0,0 '+cx+','+(cy-30)+'" fill="none" stroke="#6366f1" stroke-width="2" marker-end="url(#arrI)"/>';
+    h += '<text x="'+(cx+35)+'" y="'+(cy-20)+'" fill="#6366f1" font-size="12" font-weight="600">&omega;</text>';
+  }
+  // r label
+  h += '<text x="'+(cx + R*0.4*Math.cos(ptAngle) + 10)+'" y="'+(cy + R*0.4*Math.sin(ptAngle))+'" fill="#9ca3af" font-size="11">r</text>';
+
+  // Arrow markers
+  h += '<defs>';
+  h += '<marker id="arrG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#22c55e"/></marker>';
+  h += '<marker id="arrP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#ec4899"/></marker>';
+  h += '<marker id="arrA" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#f59e0b"/></marker>';
+  h += '<marker id="arrI" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#6366f1"/></marker>';
+  h += '</defs>';
+
+  // Right side: formulas summary
+  var rx = 400, ry = 40;
+  h += '<text x="'+rx+'" y="'+ry+'" fill="#e2e4e9" font-size="13" font-weight="600">Linear-Angular Relations</text>';
+  h += '<text x="'+rx+'" y="'+(ry+28)+'" fill="#22c55e" font-size="11">v = r&omega; = '+(r*omega).toFixed(1)+' m/s</text>';
+  h += '<text x="'+rx+'" y="'+(ry+50)+'" fill="#f59e0b" font-size="11">a_t = r&alpha; = '+(r*alpha).toFixed(1)+' m/s\u00B2</text>';
+  h += '<text x="'+rx+'" y="'+(ry+72)+'" fill="#ec4899" font-size="11">a_c = &omega;\u00B2r = '+(omega*omega*r).toFixed(1)+' m/s\u00B2</text>';
+  h += '<text x="'+rx+'" y="'+(ry+106)+'" fill="#9ca3af" font-size="10">a_c always points toward center</text>';
+  h += '<text x="'+rx+'" y="'+(ry+122)+'" fill="#9ca3af" font-size="10">a_t is tangent (speeds up/slows down)</text>';
+  h += '<text x="'+rx+'" y="'+(ry+144)+'" fill="#e2e4e9" font-size="11">|a_total| = \u221A(a_c\u00B2 + a_t\u00B2)</text>';
+  h += '<text x="'+rx+'" y="'+(ry+164)+'" fill="#e2e4e9" font-size="11">= '+Math.sqrt(Math.pow(omega*omega*r,2)+Math.pow(r*alpha,2)).toFixed(1)+' m/s\u00B2</text>';
+
+  // Inner vs outer comparison
+  var r2 = r * 0.5;
+  h += '<text x="'+rx+'" y="'+(ry+200)+'" fill="#e2e4e9" font-size="12" font-weight="600">Inner (r/2) vs Outer (r)</text>';
+  h += '<text x="'+rx+'" y="'+(ry+222)+'" fill="#9ca3af" font-size="10">Same &omega;, different v:</text>';
+  h += '<text x="'+rx+'" y="'+(ry+240)+'" fill="#6366f1" font-size="10">v_inner = '+(r2*omega).toFixed(1)+' m/s | v_outer = '+(r*omega).toFixed(1)+' m/s</text>';
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 3: KINEMATIC EQUATIONS ==================== */
+function updateS3() {
+  var w0 = +document.getElementById('s3W0').value;
+  var alpha = +document.getElementById('s3Alpha').value;
+  var t = +document.getElementById('s3T').value;
+  document.getElementById('s3W0Val').textContent = w0.toFixed(1) + ' rad/s';
+  document.getElementById('s3AlphaVal').textContent = alpha.toFixed(1) + ' rad/s\u00B2';
+  document.getElementById('s3TVal').textContent = t.toFixed(1) + ' s';
+  var wf = w0 + alpha * t;
+  var dtheta = w0 * t + 0.5 * alpha * t * t;
+  var revs = dtheta / (2 * Math.PI);
+  var w2check = w0*w0 + 2 * alpha * dtheta;
+  document.getElementById('s3Wf').textContent = wf.toFixed(1) + ' rad/s';
+  document.getElementById('s3Dtheta').textContent = dtheta.toFixed(1) + ' rad';
+  document.getElementById('s3Revs').textContent = revs.toFixed(2);
+  document.getElementById('s3W2check').textContent = w2check.toFixed(1) + ' = \u03C9\u00B2';
+}
+
+/* ==================== SECTION 4: ROLLING MOTION ==================== */
+var s4Shape = 'solid-cyl';
+var s4ShapeData = {
+  'solid-cyl': {c: 0.5, name: 'Solid Cylinder', formula: 'I = \u00BDmR\u00B2'},
+  'hollow-cyl': {c: 1.0, name: 'Hollow Cylinder', formula: 'I = mR\u00B2'},
+  'solid-sph': {c: 0.4, name: 'Solid Sphere', formula: 'I = \u2155mR\u00B2'},
+  'hollow-sph': {c: 2/3, name: 'Hollow Sphere', formula: 'I = \u2154mR\u00B2'}
+};
+
+function setS4Shape(shape, btn) {
+  s4Shape = shape;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  updateS4();
+}
+
+function updateS4() {
+  var angle = +document.getElementById('s4Angle').value;
+  document.getElementById('s4AngleVal').textContent = angle + '\u00B0';
+  var data = s4ShapeData[s4Shape];
+  var c = data.c;
+  var sinA = Math.sin(angle * Math.PI / 180);
+  var g = 9.8;
+  var a = g * sinA / (1 + c);
+  var aSlide = g * sinA;
+  var frac = c / (1 + c) * 100;
+  document.getElementById('s4c').textContent = c.toFixed(3);
+  document.getElementById('s4a').textContent = a.toFixed(2) + ' m/s\u00B2';
+  document.getElementById('s4aSlide').textContent = aSlide.toFixed(2) + ' m/s\u00B2';
+  document.getElementById('s4frac').textContent = frac.toFixed(1) + '%';
+  drawS4(angle, c, a, aSlide);
+}
+
+function drawS4(angle, c, a, aSlide) {
+  var svg = document.getElementById('s4Svg');
+  var h = '';
+  h += '<rect x="0" y="0" width="700" height="300" fill="#1a1d24" rx="6"/>';
+  // incline
+  var rad = angle * Math.PI / 180;
+  var x0 = 80, y0 = 260;
+  var rampLen = 400;
+  var x1 = x0 + rampLen * Math.cos(rad);
+  var y1 = y0 - rampLen * Math.sin(rad);
+  h += '<line x1="'+x0+'" y1="'+y0+'" x2="'+(x0+rampLen)+'" y2="'+y0+'" stroke="#363b47" stroke-width="1.5"/>';
+  h += '<line x1="'+(x0+rampLen)+'" y1="'+y0+'" x2="'+(x0+rampLen)+'" y2="'+(y0-rampLen*Math.sin(rad))+'" stroke="#363b47" stroke-width="1.5"/>';
+  h += '<polygon points="'+x0+','+y0+' '+(x0+rampLen)+','+y0+' '+(x0+rampLen)+','+(y0-rampLen*Math.sin(rad))+'" fill="rgba(99,102,241,0.06)" stroke="#6366f1" stroke-width="2"/>';
+  // angle arc
+  var arcR = 40;
+  h += '<path d="M'+(x0+arcR)+','+y0+' A'+arcR+','+arcR+' 0 0,0 '+(x0+arcR*Math.cos(rad))+','+(y0-arcR*Math.sin(rad))+'" fill="none" stroke="#f59e0b" stroke-width="1.5"/>';
+  h += '<text x="'+(x0+arcR+12)+'" y="'+(y0-8)+'" fill="#f59e0b" font-size="11">&theta;='+angle+'&deg;</text>';
+  // rolling object on ramp (near top)
+  var objPos = 0.75;
+  var objX = x0 + rampLen * objPos * Math.cos(rad);
+  var objY = y0 - rampLen * objPos * Math.sin(rad);
+  var objR = 20;
+  // offset perpendicular to ramp surface
+  objX -= objR * Math.sin(rad);
+  objY -= objR * Math.cos(rad);
+  if (s4Shape === 'solid-cyl' || s4Shape === 'hollow-cyl') {
+    var fillC = s4Shape === 'solid-cyl' ? 'rgba(99,102,241,0.3)' : 'rgba(236,72,153,0.15)';
+    var strokeC = s4Shape === 'solid-cyl' ? '#6366f1' : '#ec4899';
+    h += '<circle cx="'+objX+'" cy="'+objY+'" r="'+objR+'" fill="'+fillC+'" stroke="'+strokeC+'" stroke-width="2"/>';
+    if (s4Shape === 'hollow-cyl') {
+      h += '<circle cx="'+objX+'" cy="'+objY+'" r="'+(objR-5)+'" fill="#1a1d24" stroke="'+strokeC+'" stroke-width="1"/>';
+    }
+  } else {
+    var fillC = s4Shape === 'solid-sph' ? 'rgba(34,197,94,0.25)' : 'rgba(245,158,11,0.2)';
+    var strokeC = s4Shape === 'solid-sph' ? '#22c55e' : '#f59e0b';
+    h += '<circle cx="'+objX+'" cy="'+objY+'" r="'+objR+'" fill="'+fillC+'" stroke="'+strokeC+'" stroke-width="2"/>';
+    if (s4Shape === 'hollow-sph') {
+      h += '<circle cx="'+objX+'" cy="'+objY+'" r="'+(objR-4)+'" fill="none" stroke="'+strokeC+'" stroke-width="1" stroke-dasharray="3,3"/>';
+    }
+  }
+  // center dot
+  h += '<circle cx="'+objX+'" cy="'+objY+'" r="2.5" fill="#e2e4e9"/>';
+  // spokes
+  for (var i = 0; i < 4; i++) {
+    var sa = i * Math.PI / 2 + 0.3;
+    h += '<line x1="'+objX+'" y1="'+objY+'" x2="'+(objX+objR*0.8*Math.cos(sa))+'" y2="'+(objY+objR*0.8*Math.sin(sa))+'" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>';
+  }
+  // v_cm arrow along ramp
+  var arrLen = 50;
+  h += '<line x1="'+objX+'" y1="'+objY+'" x2="'+(objX+arrLen*Math.cos(rad))+'" y2="'+(objY-arrLen*Math.sin(rad))+'" stroke="#22c55e" stroke-width="2.5" marker-end="url(#arrGr)"/>';
+  h += '<text x="'+(objX+arrLen*Math.cos(rad)+8)+'" y="'+(objY-arrLen*Math.sin(rad)-6)+'" fill="#22c55e" font-size="10">v_cm</text>';
+  // omega arrow
+  h += '<text x="'+(objX-30)+'" y="'+(objY-25)+'" fill="#6366f1" font-size="11" font-weight="600">&omega;</text>';
+
+  // Info panel
+  var rx = 520, ry = 30;
+  var data = s4ShapeData[s4Shape];
+  h += '<text x="'+rx+'" y="'+ry+'" fill="#e2e4e9" font-size="13" font-weight="600">'+data.name+'</text>';
+  h += '<text x="'+rx+'" y="'+(ry+22)+'" fill="#9ca3af" font-size="10">'+data.formula+'</text>';
+  h += '<text x="'+rx+'" y="'+(ry+44)+'" fill="#9ca3af" font-size="10">c = I/mR\u00B2 = '+c.toFixed(3)+'</text>';
+  h += '<text x="'+rx+'" y="'+(ry+74)+'" fill="#22c55e" font-size="11">a_roll = '+a.toFixed(2)+' m/s\u00B2</text>';
+  h += '<text x="'+rx+'" y="'+(ry+94)+'" fill="#ec4899" font-size="11">a_slide = '+aSlide.toFixed(2)+' m/s\u00B2</text>';
+  h += '<text x="'+rx+'" y="'+(ry+120)+'" fill="#f59e0b" font-size="10">'+frac.toFixed(1)+'% of KE goes to rotation</text>';
+  h += '<text x="'+rx+'" y="'+(ry+150)+'" fill="#9ca3af" font-size="10">v_cm = R&omega;</text>';
+  h += '<text x="'+rx+'" y="'+(ry+168)+'" fill="#9ca3af" font-size="10">KE = \u00BDmv\u00B2 + \u00BDI&omega;\u00B2</text>';
+  h += '<text x="'+rx+'" y="'+(ry+186)+'" fill="#9ca3af" font-size="10">= \u00BDmv\u00B2(1 + c)</text>';
+
+  var frac = c / (1+c) * 100;
+
+  h += '<defs><marker id="arrGr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#22c55e"/></marker></defs>';
+  svg.innerHTML = h;
+}
+
+/* ==================== INIT ==================== */
+updateS1();
+updateS2();
+updateS3();
+updateS4();
+markComplete(1);
+</script>
+</body>
+</html>

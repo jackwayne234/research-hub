@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 15: Optimization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.step-box{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:12px 0}
+.step-box .step-label{font-size:.68rem;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.step-box .step-content{font-size:.78rem;line-height:1.8}
+.step-box .step-content strong{color:var(--text-bright)}
+.table-grid{width:100%;border-collapse:collapse;margin:14px 0;font-size:.74rem}
+.table-grid th{background:var(--bg-input);color:var(--indigo);padding:10px 12px;text-align:left;border:1px solid var(--border);font-weight:600}
+.table-grid td{padding:10px 12px;border:1px solid var(--border);color:var(--text)}
+.table-grid tr:nth-child(even) td{background:rgba(99,102,241,.04)}
+@keyframes popCorrect{0%{transform:scale(1)}40%{transform:scale(1.06)}70%{transform:scale(.97)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .4s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.table-grid{font-size:.65rem}.table-grid th,.table-grid td{padding:6px 8px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>15</span> Optimization</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: CRITICAL POINTS IN 2D -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Critical Points in 2D</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      For a function f(x, y), a <strong>critical point</strong> is a location where both partial derivatives vanish simultaneously. This is the 2D analogue of setting f'(x) = 0 in single-variable calculus. The gradient <strong>∇f</strong> collects both partial derivatives into one vector, so the condition is simply <strong>∇f = 0</strong>.
+    </p>
+
+    <div class="formula-box large">∇f = 0 &nbsp; ⟹ &nbsp; f_x = 0 &nbsp; and &nbsp; f_y = 0</div>
+
+    <p class="concept-text">
+      Critical points are candidates for extrema, but they are not guaranteed to be extrema. Three geometrically distinct types arise on a surface z = f(x, y):
+    </p>
+
+    <table class="table-grid">
+      <thead><tr><th>Type</th><th>Geometry</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--green);font-weight:600">Local Maximum</td><td>Peak</td><td>f is larger at (a,b) than at nearby points in all directions</td></tr>
+        <tr><td style="color:var(--indigo);font-weight:600">Local Minimum</td><td>Valley</td><td>f is smaller at (a,b) than at nearby points in all directions</td></tr>
+        <tr><td style="color:var(--pink);font-weight:600">Saddle Point</td><td>Saddle / Pass</td><td>f increases in some directions, decreases in others</td></tr>
+      </tbody>
+    </table>
+
+    <p class="concept-text">
+      The gradient is zero at all three types because the surface is momentarily "flat" in every horizontal direction -- no matter which way you step from the point, the first-order change in f is zero. The <em>second</em>-order behavior is what distinguishes the types (covered in Section 2).
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Surface Visualizer -- Critical Point Types</div>
+      <p class="concept-text" style="margin-bottom:10px;font-size:.75rem">Select a surface type to see its critical point geometry. The colored dot marks (0, 0, 0), a critical point of each function.</p>
+      <div class="controls-row">
+        <button class="btn btn-sm" onclick="setSurface('min')" id="btnMin">Valley (Min)</button>
+        <button class="btn btn-sm" onclick="setSurface('max')" id="btnMax">Peak (Max)</button>
+        <button class="btn btn-sm" onclick="setSurface('saddle')" id="btnSaddle">Saddle</button>
+      </div>
+      <canvas id="surfaceCanvas" width="620" height="300" style="width:100%;border-radius:8px;margin-top:8px;background:var(--bg)"></canvas>
+      <div class="readout">
+        <div class="readout-item"><div class="label">Function</div><div class="value indigo" id="surfaceFormula">f(x,y) = x² + y²</div></div>
+        <div class="readout-item"><div class="label">Critical Point</div><div class="value green">(0, 0)</div></div>
+        <div class="readout-item"><div class="label">Type</div><div class="value amber" id="surfaceType">Local Minimum</div></div>
+      </div>
+    </div>
+
+    <div class="key-point">
+      Finding critical points: set f_x = 0 and f_y = 0, then solve the system (possibly nonlinear). You may find zero, one, or many critical points.
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> In sonar beam steering, the array gain function G(theta, phi) has critical points at the angles of maximum sensitivity (local maxima) and minimum sensitivity (saddle points or minima). Finding ∇G = 0 locates the beam's main lobe and sidelobe structure -- critical for distinguishing a torpedo from background noise.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> Find the critical point of f(x, y) = x² + 4y² - 2x + 8y + 5. Solve f_x = 0 and f_y = 0. What is the x-coordinate of the critical point?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1-ans" placeholder="x = ?">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s1p1',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> For f(x, y) = x² - y², the origin (0,0) is a critical point because f_x = 2x = 0 and f_y = -2y = 0 there. What type of critical point is it?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">Local maximum -- f peaks at the origin</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">Local minimum -- f bottoms out at the origin</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','correct')">Saddle point -- f increases along x-axis, decreases along y-axis</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: SECOND DERIVATIVE TEST -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> The Second Derivative Test</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Once you have a critical point (a, b), you need to determine its type. The <strong>Hessian matrix</strong> H captures all second-order curvature information. At the critical point, compute:
+    </p>
+
+    <div class="formula-box large">H = [[f_xx, f_xy], [f_yx, f_yy]]</div>
+
+    <p class="concept-text">
+      The key quantity is the <strong>discriminant</strong> (determinant of H):
+    </p>
+
+    <div class="formula-box large">D = det(H) = f_xx · f_yy - (f_xy)²</div>
+
+    <p class="concept-text">
+      The second derivative test rules:
+    </p>
+
+    <table class="table-grid">
+      <thead><tr><th>Condition</th><th>Conclusion</th></tr></thead>
+      <tbody>
+        <tr><td>D &gt; 0 and f_xx &gt; 0</td><td style="color:var(--indigo)">Local minimum (bowl curving up)</td></tr>
+        <tr><td>D &gt; 0 and f_xx &lt; 0</td><td style="color:var(--green)">Local maximum (bowl curving down)</td></tr>
+        <tr><td>D &lt; 0</td><td style="color:var(--pink)">Saddle point (different curvatures in different directions)</td></tr>
+        <tr><td>D = 0</td><td style="color:var(--amber)">Inconclusive -- test fails, need higher-order analysis</td></tr>
+      </tbody>
+    </table>
+
+    <p class="concept-text">
+      Geometric intuition: D &gt; 0 means the surface curves the <em>same way</em> in all directions (either always up or always down). D &lt; 0 means curvature flips sign -- up in one direction, down in another -- which is exactly a saddle.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Hessian Discriminant Explorer</div>
+      <p class="concept-text" style="margin-bottom:8px;font-size:.75rem">Adjust the second partial derivatives of f(x,y) = ax² + bxy + cy² at (0,0). Watch how D classifies the critical point.</p>
+      <div class="slider-row">
+        <label>f_xx (a):</label>
+        <input type="range" min="-3" max="3" step="0.1" value="1" id="slA" oninput="updateHessian()">
+        <span class="slider-val" id="valA">1.0</span>
+      </div>
+      <div class="slider-row">
+        <label>f_xy (b):</label>
+        <input type="range" min="-3" max="3" step="0.1" value="0" id="slB" oninput="updateHessian()">
+        <span class="slider-val" id="valB">0.0</span>
+      </div>
+      <div class="slider-row">
+        <label>f_yy (c):</label>
+        <input type="range" min="-3" max="3" step="0.1" value="1" id="slC" oninput="updateHessian()">
+        <span class="slider-val" id="valC">1.0</span>
+      </div>
+      <canvas id="hessianCanvas" width="620" height="240" style="width:100%;border-radius:8px;margin-top:8px;background:var(--bg)"></canvas>
+      <div class="readout">
+        <div class="readout-item"><div class="label">f_xx · f_yy</div><div class="value indigo" id="hFxxFyy">1.00</div></div>
+        <div class="readout-item"><div class="label">(f_xy)²</div><div class="value pink" id="hFxy2">0.00</div></div>
+        <div class="readout-item"><div class="label">D = det(H)</div><div class="value" id="hD" style="font-weight:700">1.00</div></div>
+        <div class="readout-item"><div class="label">Classification</div><div class="value" id="hClass" style="color:var(--indigo)">Local Min</div></div>
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Worked Example -- Saddle Point with D &lt; 0</div>
+      <div class="step-content">
+        f(x,y) = x² - 3y² + 6y &nbsp;&nbsp; Critical points: f_x = 2x = 0, f_y = -6y + 6 = 0 &rarr; (0, 1)<br><br>
+        Second partials: f_xx = 2, f_xy = 0, f_yy = -6<br><br>
+        D = f_xx · f_yy - (f_xy)² = (2)(-6) - (0)² = <strong>-12 &lt; 0</strong><br><br>
+        Conclusion: <strong>(0, 1) is a saddle point.</strong> The surface rises along x-direction (f_xx = 2 &gt; 0) but falls along y-direction (f_yy = -6 &lt; 0). A ship at sea on this potential energy surface would slide away -- it's an unstable equilibrium.
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> In potential energy surfaces for molecular systems (important in materials used in naval engineering), stable equilibrium positions are local minima (D &gt; 0, f_xx &gt; 0). Saddle points (D &lt; 0) are transition states -- the energy "pass" a system crosses when changing configuration. Identifying saddle points is key to predicting corrosion pathways in hull materials.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s2p1">
+        <p><strong>3.</strong> For f(x,y) = x² + xy + y², compute D at the critical point (0,0). Here f_xx = 2, f_xy = 1, f_yy = 2. What is D?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1-ans" placeholder="D = ?">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s2p1',3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem" id="s2p2">
+        <p><strong>4.</strong> With D = 3 &gt; 0 and f_xx = 2 &gt; 0, what is the classification of (0,0) for the above function?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">Local maximum</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','correct')">Local minimum</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">Saddle point</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">Inconclusive</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: GLOBAL EXTREMA -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Global Extrema on Closed Regions</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The second derivative test only finds <em>local</em> extrema. To find the <strong>global</strong> (absolute) maximum and minimum of f on a closed, bounded region D, you must check two sets of candidates:
+    </p>
+
+    <div class="formula-box">Global extrema occur at: interior critical points OR boundary points</div>
+
+    <p class="concept-text">
+      <strong>Strategy for a closed region:</strong>
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Step 1 -- Interior</div>
+      <div class="step-content">Solve ∇f = 0 inside the region. Evaluate f at each interior critical point.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 2 -- Boundary</div>
+      <div class="step-content">Parameterize each piece of the boundary, reducing f to a single-variable function. Apply single-variable optimization on each piece.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Step 3 -- Compare</div>
+      <div class="step-content">Collect all candidate values. The largest is the global max, the smallest is the global min.</div>
+    </div>
+
+    <div class="key-point">
+      Never skip the boundary check. The global max or min can easily live on the boundary, not the interior.
+    </div>
+
+    <p class="concept-text">
+      <strong>Worked Example -- Optimize on a disk:</strong> Find the global extrema of f(x,y) = x² + y² - 2x on the disk x² + y² &le; 4.
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Interior critical points</div>
+      <div class="step-content">
+        f_x = 2x - 2 = 0 &rarr; x = 1 &nbsp;&nbsp; f_y = 2y = 0 &rarr; y = 0<br>
+        Critical point: (1, 0). Check: 1² + 0² = 1 &le; 4. ✓ Inside disk.<br>
+        f(1, 0) = 1 + 0 - 2 = <strong>-1</strong>
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Boundary -- parameterize the circle x² + y² = 4</div>
+      <div class="step-content">
+        Set x = 2cos(t), y = 2sin(t) for t ∈ [0, 2π]<br>
+        f(t) = 4cos²(t) + 4sin²(t) - 4cos(t) = 4 - 4cos(t)<br>
+        Minimize/maximize: df/dt = 4sin(t) = 0 &rarr; t = 0, π<br>
+        &nbsp;&nbsp;t = 0: point (2, 0), f = 4 - 4(1) = <strong>0</strong><br>
+        &nbsp;&nbsp;t = π: point (-2, 0), f = 4 - 4(-1) = <strong>8</strong>
+      </div>
+    </div>
+    <div class="step-box">
+      <div class="step-label">Compare all candidates</div>
+      <div class="step-content">
+        Candidates: f(1,0) = -1, f(2,0) = 0, f(-2,0) = 8<br>
+        <strong>Global minimum: -1 at (1, 0)</strong> &nbsp;&nbsp; <strong>Global maximum: 8 at (-2, 0)</strong>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Disk Optimization Visualizer</div>
+      <p class="concept-text" style="font-size:.75rem;margin-bottom:8px">Level curves of f(x,y) = x² + y² - 2x on the disk of radius R. Colored markers show critical candidates.</p>
+      <div class="slider-row">
+        <label>Disk radius R:</label>
+        <input type="range" min="1" max="3" step="0.1" value="2" id="slR" oninput="updateDisk()">
+        <span class="slider-val" id="valR">2.0</span>
+      </div>
+      <canvas id="diskCanvas" width="620" height="280" style="width:100%;border-radius:8px;margin-top:8px;background:var(--bg)"></canvas>
+      <div class="readout">
+        <div class="readout-item"><div class="label">Interior min</div><div class="value green" id="diskIntMin">-1 at (1,0)</div></div>
+        <div class="readout-item"><div class="label">Boundary max</div><div class="value pink" id="diskBdMax">8 at (-2,0)</div></div>
+        <div class="readout-item"><div class="label">Global min</div><div class="value indigo" id="diskGMin">-1</div></div>
+        <div class="readout-item"><div class="label">Global max</div><div class="value amber" id="diskGMax">8</div></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Fuel-optimal ship routing is a global optimization over a closed region (the navigable ocean polygon bounded by coastlines, exclusion zones, and sea state limits). The fuel-minimizing path may lie on the boundary of a storm avoidance zone -- which is why closed-region optimization methodology is used by Naval routing software to certify that no interior shortcut was missed.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s3p1">
+        <p><strong>5.</strong> For f(x,y) = 3 - x² - y² on the disk x² + y² &le; 9, what is the global maximum value?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1-ans" placeholder="max = ?">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s3p1',3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem" id="s3p2">
+        <p><strong>6.</strong> For the same function on the same disk, where does the global minimum occur?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">At the origin (0, 0)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','correct')">On the boundary circle x² + y² = 9, giving f = -6</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">At an interior critical point other than the origin</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: LAGRANGE MULTIPLIERS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Lagrange Multipliers</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Constrained optimization:</strong> Maximize or minimize f(x, y) subject to a constraint g(x, y) = c. You cannot freely roam the xy-plane -- you are restricted to the curve g(x,y) = c.
+    </p>
+
+    <div class="formula-box large">∇f = λ∇g &nbsp; and &nbsp; g(x, y) = c</div>
+
+    <p class="concept-text">
+      <strong>λ</strong> (lambda) is the <em>Lagrange multiplier</em>. It is an unknown scalar you solve for alongside x and y.
+    </p>
+
+    <p class="concept-text">
+      <strong>Geometric interpretation:</strong> At a constrained extremum, the level curve of f is tangent to the constraint curve g = c. This tangency means the two curves share the same normal direction at that point -- their gradients are parallel. That parallel condition is exactly ∇f = λ∇g.
+    </p>
+
+    <div class="key-point">
+      ∇f = λ∇g means: the gradient of f points in the same direction as the gradient of g. No component of ∇f points along the constraint -- if it did, you could move along the constraint to increase f, contradicting optimality.
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Worked Example -- Minimize x² + y² subject to x + 2y = 5</div>
+      <div class="step-content">
+        <strong>Set up the system:</strong> f(x,y) = x² + y², g(x,y) = x + 2y, c = 5<br><br>
+        ∇f = (2x, 2y) &nbsp;&nbsp; ∇g = (1, 2)<br><br>
+        ∇f = λ∇g gives:<br>
+        &nbsp;&nbsp; 2x = λ·1 &nbsp;&rarr; λ = 2x<br>
+        &nbsp;&nbsp; 2y = λ·2 &nbsp;&rarr; λ = y<br><br>
+        So 2x = y. Substitute into constraint: x + 2(2x) = 5 &rarr; 5x = 5 &rarr; <strong>x = 1</strong><br>
+        y = 2x = <strong>2</strong><br>
+        f(1, 2) = 1 + 4 = <strong>5</strong><br><br>
+        The minimum distance² from the origin to the line x + 2y = 5 is 5, at the point (1, 2).
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Lagrange Multiplier Interactive -- Draggable Constraint Point</div>
+      <p class="concept-text" style="font-size:.75rem;margin-bottom:8px">Drag the point along the constraint line x + 2y = 5. The arrows show ∇f (pink) and ∇g (green). At the optimum (1, 2), they become parallel -- ∇f = λ∇g.</p>
+      <canvas id="lagrangeCanvas" width="620" height="340" style="width:100%;border-radius:8px;margin-top:8px;background:var(--bg);cursor:ew-resize" onmousedown="lagrangeMouseDown(event)" onmousemove="lagrangeMouseMove(event)" onmouseup="lagrangeMouseUp(event)" ontouchstart="lagrangeTouchStart(event)" ontouchmove="lagrangeTouchMove(event)" ontouchend="lagrangeMouseUp(event)"></canvas>
+      <div class="readout">
+        <div class="readout-item"><div class="label">Point (x, y)</div><div class="value indigo" id="lgPoint">(1.00, 2.00)</div></div>
+        <div class="readout-item"><div class="label">f = x² + y²</div><div class="value amber" id="lgF">5.00</div></div>
+        <div class="readout-item"><div class="label">Angle ∇f vs ∇g</div><div class="value" id="lgAngle" style="color:var(--green)">0.0°</div></div>
+        <div class="readout-item"><div class="label">At optimum?</div><div class="value" id="lgOpt" style="color:var(--green)">Yes</div></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Optimal torpedo intercept geometry is a Lagrange problem: minimize intercept time f(x,y) = travel distance subject to the constraint g(x,y) = 0 that the torpedo and target meet at the same point and time. The torpedo's heading satisfies a ∇f = λ∇g condition derived from the kinematics. The Lagrange multiplier λ turns out to be proportional to the closing speed.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s4p1">
+        <p><strong>7.</strong> Use Lagrange multipliers to maximize f(x,y) = xy subject to x + y = 8. Set up: ∇f = (y, x), ∇g = (1, 1). From ∇f = λ∇g: y = λ and x = λ, so x = y. Substitute into constraint: 2x = 8. What is the maximum value of f?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1-ans" placeholder="max xy = ?">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s4p1',16,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>8.</strong> At a Lagrange optimum, what is geometrically true about the level curves of f and the constraint curve g = c?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">They are perpendicular -- the level curve crosses the constraint at 90°</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','correct')">They are tangent -- the level curve of f just touches the constraint curve without crossing</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">They are parallel and never intersect</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: MULTIPLE CONSTRAINTS & 3D -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Multiple Constraints &amp; 3D Lagrange</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When you have <strong>two constraints</strong> in three dimensions, you are optimizing f(x, y, z) subject to g(x, y, z) = c₁ and h(x, y, z) = c₂. Each constraint defines a surface in 3D; their intersection is a curve. You optimize f along that curve.
+    </p>
+
+    <div class="formula-box large">∇f = λ∇g + μ∇h</div>
+
+    <p class="concept-text">
+      Now two multipliers λ and μ appear. The system becomes:
+    </p>
+
+    <div class="formula-box">f_x = λg_x + μh_x &nbsp;&nbsp; f_y = λg_y + μh_y &nbsp;&nbsp; f_z = λg_z + μh_z</div>
+    <div class="formula-box green">g(x,y,z) = c₁ &nbsp;&nbsp;&nbsp;&nbsp; h(x,y,z) = c₂</div>
+
+    <p class="concept-text">
+      That is 5 equations in 5 unknowns (x, y, z, λ, μ). In general this system is harder to solve -- you often need substitution, symmetry arguments, or numerical methods.
+    </p>
+
+    <div class="key-point">
+      Geometric picture: ∇f must lie in the plane spanned by ∇g and ∇h. Equivalently, ∇f, ∇g, and ∇h must be coplanar at the optimum. No component of ∇f can be tangent to the constraint curve -- if it were, you could improve f by moving along the curve.
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Application -- Optimize over a 3D curve</div>
+      <div class="step-content">
+        <strong>Problem:</strong> Minimize f(x,y,z) = x² + y² + z² subject to x + y + z = 3 and x - y = 0.<br><br>
+        Constraints: g = x + y + z, h = x - y &nbsp;&nbsp; ∇g = (1,1,1), ∇h = (1,-1,0)<br>
+        ∇f = (2x, 2y, 2z) = λ(1,1,1) + μ(1,-1,0)<br><br>
+        System: 2x = λ+μ, 2y = λ-μ, 2z = λ<br>
+        From h = 0: x = y &rarr; μ = 0 &rarr; 2x = λ, 2y = λ, 2z = λ &rarr; x = y = z<br>
+        From g = 3: 3x = 3 &rarr; x = y = z = 1<br>
+        <strong>Minimum: f(1,1,1) = 3</strong>
+      </div>
+    </div>
+
+    <table class="table-grid">
+      <thead><tr><th>Scenario</th><th>Constraints</th><th>Feasible Set</th><th>Lagrange Condition</th></tr></thead>
+      <tbody>
+        <tr><td>1 variable free</td><td>0</td><td>Full R²</td><td>∇f = 0</td></tr>
+        <tr><td>1 constraint in R²</td><td>1 curve</td><td>Curve in R²</td><td>∇f = λ∇g</td></tr>
+        <tr><td>1 constraint in R³</td><td>1 surface</td><td>Surface in R³</td><td>∇f = λ∇g</td></tr>
+        <tr><td>2 constraints in R³</td><td>2 surfaces</td><td>Curve in R³</td><td>∇f = λ∇g + μ∇h</td></tr>
+      </tbody>
+    </table>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Submarine depth-control problems involve two constraints: the hull must stay below a minimum depth (pressure constraint g = c₁) and the propulsion system must operate within power limits (energy constraint h = c₂). Optimal control of ballast and propulsion simultaneously uses the two-constraint Lagrange framework, with λ and μ representing the "shadow prices" of violating each constraint by one unit.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s5p1">
+        <p><strong>9.</strong> For two-constraint Lagrange optimization with g and h, how many total equations must you solve to find the optimum (counting both multiplier equations and constraint equations) when optimizing f(x,y,z)?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">3 equations (one per variable)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">4 equations</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','correct')">5 equations (3 gradient + 2 constraints) in 5 unknowns (x, y, z, λ, μ)</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>10.</strong> When optimizing f(x,y,z) subject to g = c and h = k, at the optimum the gradient ∇f must lie in the plane spanned by ∇g and ∇h. This is equivalent to saying which of the following?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">∇f · ∇g = 0 (∇f perpendicular to ∇g)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','correct')">∇f = λ∇g + μ∇h for some scalars λ, μ (∇f is a linear combination of ∇g and ∇h)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">∇f = 0 (free optimization, no constraints)</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: PHYSICS OPTIMIZATION APPLICATIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Physics Optimization Applications</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Physics is saturated with optimization. The deepest laws of nature -- from classical mechanics to quantum field theory -- are statements that some functional is extremized. This section shows three foundational physics examples and their Lagrange-style structure.
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Principle of Least Action (δS = 0)</div>
+      <div class="step-content">
+        The action S = ∫L dt (where L = T - V is the Lagrangian) is extremized over all possible paths from point A to point B. The path a physical system actually takes makes δS = 0 -- a variational (infinite-dimensional) version of ∇f = 0. This generates Newton's laws, Maxwell's equations, and all of quantum mechanics from a single principle.
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Principle of Minimum Energy (Equilibrium)</div>
+      <div class="step-content">
+        A physical system settles at a configuration that minimizes its potential energy V subject to constraints (rigid rods, surfaces, etc.). This is literally the Lagrange multiplier problem: minimize V(x,y,z) subject to constraint equations from the geometry. The Lagrange multipliers are the <strong>constraint forces</strong> (normal forces, tension) -- the forces you never had to compute directly.
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Fermat's Principle (Shortest Optical Path)</div>
+      <div class="step-content">
+        Light travels the path that minimizes total travel time T = d₁/v₁ + d₂/v₂ where d₁, d₂ are path lengths in media with speeds v₁, v₂. Minimizing T over the choice of interface crossing point derives Snell's Law: n₁ sin(θ₁) = n₂ sin(θ₂). This is a single-variable constrained optimization -- the constraint is that the path must pass through the interface.
+      </div>
+    </div>
+
+    <div class="formula-box pink">Snell's Law from Fermat: n₁ sin θ₁ = n₂ sin θ₂</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Fermat's Principle Simulator -- Drag the Source Point</div>
+      <p class="concept-text" style="font-size:.75rem;margin-bottom:8px">Light travels from S (in medium 1, speed v₁) to D (in medium 2, speed v₂). The red dot on the interface is the crossing point -- drag it left/right to see how total time changes. The actual optimum satisfies Snell's Law.</p>
+      <div class="slider-row">
+        <label>n₂ / n₁ ratio:</label>
+        <input type="range" min="0.5" max="3" step="0.05" value="1.5" id="slN" oninput="updateFermat()">
+        <span class="slider-val" id="valN">1.50</span>
+      </div>
+      <canvas id="fermatCanvas" width="620" height="300" style="width:100%;border-radius:8px;margin-top:8px;background:var(--bg);cursor:ew-resize" onmousedown="fermatMouseDown(event)" onmousemove="fermatMouseMove(event)" onmouseup="fermatMouseUp(event)" ontouchstart="fermatTouchStart(event)" ontouchmove="fermatTouchMove(event)" ontouchend="fermatMouseUp(event)"></canvas>
+      <div class="readout">
+        <div class="readout-item"><div class="label">θ₁ (incidence)</div><div class="value indigo" id="fermatT1">--</div></div>
+        <div class="readout-item"><div class="label">θ₂ (refraction)</div><div class="value green" id="fermatT2">--</div></div>
+        <div class="readout-item"><div class="label">Total time T</div><div class="value amber" id="fermatTime">--</div></div>
+        <div class="readout-item"><div class="label">Snell satisfied?</div><div class="value" id="fermatSnell" style="color:var(--green)">--</div></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Sonar uses Fermat's principle in a layered ocean. Sound speed varies with depth (creating the SOFAR channel -- Sound Fixing And Ranging). The actual acoustic ray path minimizes travel time through layers with different sound speeds, satisfying Snell's Law at each layer boundary. Naval sonar operators use refraction models based on exactly this optimization to predict where sound travels and where hydrophones will receive it -- directly relevant to submarine detection.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s6p1">
+        <p><strong>11.</strong> Light travels from medium 1 (n₁ = 1.0) to medium 2 (n₂ = 1.5). The angle of incidence is θ₁ = 30°. By Snell's Law n₁ sin θ₁ = n₂ sin θ₂, find sin(θ₂). Enter the value rounded to 2 decimal places.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p1-ans" step="0.01" placeholder="sin θ₂ = ?">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s6p1',0.33,0.02)">Check</button>
+        </div>
+        <div class="feedback" id="s6p1-fb"></div>
+      </div>
+      <div class="problem" id="s6p2">
+        <p><strong>12.</strong> In the principle of least action, the statement δS = 0 is analogous to which optimization condition from multivariable calculus?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','wrong')">D &gt; 0 (the discriminant being positive)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','correct')">∇f = 0 (setting the gradient equal to zero to find critical points)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','wrong')">∇f = λ∇g (constrained optimization with one Lagrange multiplier)</button>
+        </div>
+        <div class="feedback" id="s6p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="quiz">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num" style="background:var(--amber-dim);color:var(--amber)">Q</span> Final Quiz -- 10 Questions</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / <span id="quizTotal">10</span></span>
+      <span style="font-size:.75rem;color:var(--text-dim)" id="quizPct">0%</span>
+    </div>
+
+    <div class="quiz-q" id="qq1">
+      <div class="q-num">Question 1</div>
+      <div class="q-text">A critical point of f(x,y) satisfies ∇f = 0. This means exactly which of the following?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">f_x = 0 but f_y may be nonzero</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',true)">f_x = 0 AND f_y = 0 simultaneously</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">f(x,y) = 0 at that point</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">The second derivatives are zero</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq2">
+      <div class="q-num">Question 2</div>
+      <div class="q-text">The Hessian discriminant D = f_xx·f_yy - (f_xy)² at a critical point gives D = -5. What is the conclusion?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">Local minimum (bowl curving upward)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">Local maximum (bowl curving downward)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',true)">Saddle point</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">Inconclusive -- need more information</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq3">
+      <div class="q-num">Question 3</div>
+      <div class="q-text">At a critical point, D &gt; 0 and f_xx = -4. What type of extremum is this?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">Local minimum</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',true)">Local maximum</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">Saddle point</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">Inconclusive</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq4">
+      <div class="q-num">Question 4</div>
+      <div class="q-text">To find global extrema of f on a closed bounded region, you must check:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">Only the interior critical points where ∇f = 0</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">Only the boundary of the region</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',true)">Both interior critical points AND boundary candidates</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">Only saddle points, since they cannot be global extrema</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq5">
+      <div class="q-num">Question 5</div>
+      <div class="q-text">To optimize f on the boundary of the disk x² + y² ≤ R², you parameterize the circle as x = R·cos(t), y = R·sin(t). This reduces the problem to:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">A 2D optimization in x and y still</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',true)">A single-variable optimization in t over [0, 2π]</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">A Lagrange multiplier problem with two constraints</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">Setting the Hessian determinant to zero</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq6">
+      <div class="q-num">Question 6</div>
+      <div class="q-text">The Lagrange condition ∇f = λ∇g for constrained optimization says geometrically that at the optimum:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">∇f is perpendicular to ∇g</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">f and g have the same value</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',true)">The level curve of f is tangent to the constraint curve g = c</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">∇f = 0 (free unconstrained extremum)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq7">
+      <div class="q-num">Question 7</div>
+      <div class="q-text">Minimize f(x,y) = x² + y² subject to 3x + 4y = 25. Solving via Lagrange multipliers (∇f = λ∇g gives 2x = 3λ, 2y = 4λ) yields x = 3, y = 4. What is the minimum value of f?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">7</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">20</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',true)">25</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">50</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq8">
+      <div class="q-num">Question 8</div>
+      <div class="q-text">In the two-constraint Lagrange problem ∇f = λ∇g + μ∇h, what does the Lagrange multiplier μ physically represent in a mechanics problem?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">The value of f at the optimum</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',true)">The constraint force (or "shadow price") associated with the constraint h = c</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">The angle between ∇f and ∇g</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">The discriminant of the Hessian matrix</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq9">
+      <div class="q-num">Question 9</div>
+      <div class="q-text">Fermat's principle states that light travels the path that minimizes travel time. When applied to a planar interface between two media, this optimization derives:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">The principle of least action (δS = 0)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">The Euler-Lagrange equation for field theory</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',true)">Snell's Law: n₁ sin θ₁ = n₂ sin θ₂</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">The Hessian discriminant condition D &gt; 0</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq10">
+      <div class="q-num">Question 10</div>
+      <div class="q-text">A potential energy function V(x,y) has a critical point at (2, 3) with D = 15 &gt; 0 and V_xx = 4 &gt; 0. What is the physical meaning in a mechanics context?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">The system is in unstable equilibrium -- small perturbations grow</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">The system is at a saddle -- it will slide off in some direction</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',true)">The system is in stable equilibrium -- it oscillates back after small perturbations (local minimum of V)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">The test is inconclusive -- D = 15 is not large enough</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ================================================================
+// GLOBAL STATE
+// ================================================================
+const TOTAL_SECTIONS = 6;
+let completedSections = new Set();
+let quizScore = 0;
+let quizAnswered = {};
+
+// ================================================================
+// SECTION TOGGLE & PROGRESS
+// ================================================================
+function toggleSection(header) {
+  const card = header.parentElement;
+  const isOpen = card.classList.contains('open');
+  card.classList.toggle('open', !isOpen);
+  if (!isOpen && card.dataset.section !== 'quiz') {
+    const sec = parseInt(card.dataset.section);
+    if (sec >= 1 && sec <= TOTAL_SECTIONS) {
+      completedSections.add(sec);
+      card.classList.add('completed');
+      updateProgress();
+    }
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round((completedSections.size / TOTAL_SECTIONS) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+// ================================================================
+// PRACTICE PROBLEM CHECKERS
+// ================================================================
+function checkNum(id, answer, tol) {
+  const el = document.getElementById(id + '-ans');
+  const fb = document.getElementById(id + '-fb');
+  const val = parseFloat(el.value);
+  if (isNaN(val)) { fb.textContent = 'Enter a number.'; fb.className = 'feedback incorrect'; return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.textContent = 'Correct! ' + getNumHint(id);
+    fb.className = 'feedback correct';
+    el.parentElement.parentElement.classList.add('pop');
+    setTimeout(() => el.parentElement.parentElement.classList.remove('pop'), 400);
+  } else {
+    fb.textContent = 'Not quite. Try again -- expected approximately ' + answer + '.';
+    fb.className = 'feedback incorrect';
+    el.parentElement.parentElement.classList.add('shake');
+    setTimeout(() => el.parentElement.parentElement.classList.remove('shake'), 400);
+  }
+}
+
+function getNumHint(id) {
+  const hints = {
+    's1p1': 'f_x = 2x - 2 = 0 gives x = 1.',
+    's2p1': 'D = f_xx·f_yy - (f_xy)² = 2·2 - 1 = 3.',
+    's3p1': 'Interior critical point (0,0) gives f = 3. That is the global maximum since the function decreases outward.',
+    's4p1': 'x = y = 4, so xy = 16.',
+    's6p1': 'sin θ₂ = (n₁/n₂) sin θ₁ = (1/1.5)·0.5 = 0.333.'
+  };
+  return hints[id] || '';
+}
+
+function checkMC(btn, id, result) {
+  const container = document.getElementById(id);
+  const fb = document.getElementById(id + '-fb');
+  const allBtns = container.querySelectorAll('.mc-btn');
+  allBtns.forEach(b => b.classList.add('disabled'));
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.textContent = 'Correct!';
+    fb.className = 'feedback correct';
+    btn.classList.add('pop');
+    setTimeout(() => btn.classList.remove('pop'), 400);
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = 'Not quite -- review the section above.';
+    fb.className = 'feedback incorrect';
+    btn.classList.add('shake');
+    setTimeout(() => btn.classList.remove('shake'), 400);
+  }
+}
+
+// ================================================================
+// QUIZ
+// ================================================================
+function quizAnswer(btn, qId, isCorrect) {
+  if (quizAnswered[qId]) return;
+  quizAnswered[qId] = true;
+  const container = document.getElementById(qId);
+  const allBtns = container.querySelectorAll('.choice-btn');
+  allBtns.forEach(b => b.classList.add('disabled'));
+  if (isCorrect) {
+    btn.classList.add('selected-correct');
+    quizScore++;
+    btn.classList.add('pop');
+    setTimeout(() => btn.classList.remove('pop'), 400);
+  } else {
+    btn.classList.add('selected-wrong');
+    btn.classList.add('shake');
+    setTimeout(() => btn.classList.remove('shake'), 400);
+    allBtns.forEach(b => {
+      if (b.onclick && b.onclick.toString().includes('true')) b.classList.add('reveal-correct');
+    });
+  }
+  document.getElementById('quizScore').textContent = quizScore;
+  const pct = Math.round((quizScore / 10) * 100);
+  document.getElementById('quizPct').textContent = pct + '%';
+}
+
+// ================================================================
+// SURFACE VISUALIZER (Section 1)
+// ================================================================
+let currentSurface = 'min';
+
+const surfaceDefs = {
+  min:    { formula: 'f(x,y) = x² + y²',       type: 'Local Minimum', fn: (x,y)=>x*x+y*y,       color:'#6366f1' },
+  max:    { formula: 'f(x,y) = -(x² + y²)',     type: 'Local Maximum', fn: (x,y)=>-(x*x+y*y),     color:'#22c55e' },
+  saddle: { formula: 'f(x,y) = x² - y²',        type: 'Saddle Point',  fn: (x,y)=>x*x-y*y,        color:'#ec4899' }
+};
+
+function setSurface(type) {
+  currentSurface = type;
+  ['btnMin','btnMax','btnSaddle'].forEach(id => document.getElementById(id).classList.remove('btn-primary'));
+  const map = { min:'btnMin', max:'btnMax', saddle:'btnSaddle' };
+  document.getElementById(map[type]).classList.add('btn-primary');
+  document.getElementById('surfaceFormula').textContent = surfaceDefs[type].formula;
+  document.getElementById('surfaceType').textContent = surfaceDefs[type].type;
+  drawSurface();
+}
+
+function drawSurface() {
+  const canvas = document.getElementById('surfaceCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const def = surfaceDefs[currentSurface];
+
+  // Draw isometric-style contour plot (top-down level curve visualization)
+  const cx = W/2, cy = H/2;
+  const scale = 55;
+  const N = 30;
+  const range = 2.5;
+  const step = (2*range)/N;
+
+  // Draw grid
+  ctx.strokeStyle = 'rgba(54,59,71,0.4)';
+  ctx.lineWidth = 0.5;
+  for (let i=0;i<=N;i++) {
+    const x = -range + i*step;
+    const px = cx + x*scale;
+    ctx.beginPath(); ctx.moveTo(px, cy-H*0.45); ctx.lineTo(px, cy+H*0.45); ctx.stroke();
+    const py = cy - (i - N/2)*scale*0.7;
+  }
+
+  // Draw level curves
+  const levels = [-2,-1.5,-1,-0.5,0,0.5,1,1.5,2];
+  const colors = ['#6366f1','#818cf8','#a5b4fc','#c7d2fe','#e2e8f0','#fca5a5','#f87171','#ef4444','#dc2626'];
+
+  levels.forEach((lev, li) => {
+    ctx.beginPath();
+    ctx.strokeStyle = def.color + Math.floor(180 + li*8).toString(16).slice(-2);
+    ctx.lineWidth = 1;
+    // Marching squares approximation: draw on a grid
+    for (let i=0;i<N;i++) {
+      for (let j=0;j<N;j++) {
+        const x0 = -range + i*step, x1 = x0+step;
+        const y0 = -range + j*step, y1 = y0+step;
+        const f00 = def.fn(x0,y0)-lev, f10 = def.fn(x1,y0)-lev;
+        const f01 = def.fn(x0,y1)-lev, f11 = def.fn(x1,y1)-lev;
+        // simple sign crossing detector
+        const crossings = [];
+        if (Math.sign(f00)!==Math.sign(f10)) crossings.push([ x0+(x1-x0)*f00/(f00-f10), y0 ]);
+        if (Math.sign(f10)!==Math.sign(f11)) crossings.push([ x1, y0+(y1-y0)*f10/(f10-f11) ]);
+        if (Math.sign(f01)!==Math.sign(f11)) crossings.push([ x0+(x1-x0)*f01/(f01-f11), y1 ]);
+        if (Math.sign(f00)!==Math.sign(f01)) crossings.push([ x0, y0+(y1-y0)*f00/(f00-f01) ]);
+        if (crossings.length >= 2) {
+          ctx.beginPath();
+          ctx.moveTo(cx+crossings[0][0]*scale, cy-crossings[0][1]*scale);
+          ctx.lineTo(cx+crossings[1][0]*scale, cy-crossings[1][1]*scale);
+          ctx.strokeStyle = def.color + '99';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+  });
+
+  // Axes
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx-W*0.48,cy); ctx.lineTo(cx+W*0.48,cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx,cy-H*0.45); ctx.lineTo(cx,cy+H*0.45); ctx.stroke();
+
+  // Labels
+  ctx.fillStyle = '#9ca3af'; ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'center';
+  ctx.fillText('x', cx+W*0.46, cy+14);
+  ctx.fillText('y', cx+8, cy-H*0.43);
+
+  // Critical point marker
+  ctx.beginPath();
+  ctx.arc(cx, cy, 8, 0, Math.PI*2);
+  ctx.fillStyle = def.color;
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Type label
+  ctx.fillStyle = def.color;
+  ctx.font = '600 12px JetBrains Mono';
+  ctx.textAlign = 'left';
+  ctx.fillText(def.type + ' at (0,0)', 16, 24);
+}
+
+// ================================================================
+// HESSIAN EXPLORER (Section 2)
+// ================================================================
+function updateHessian() {
+  const a = parseFloat(document.getElementById('slA').value);
+  const b = parseFloat(document.getElementById('slB').value);
+  const c = parseFloat(document.getElementById('slC').value);
+  document.getElementById('valA').textContent = a.toFixed(1);
+  document.getElementById('valB').textContent = b.toFixed(1);
+  document.getElementById('valC').textContent = c.toFixed(1);
+
+  const fxxfyy = a * c;
+  const fxy2 = b * b;
+  const D = fxxfyy - fxy2;
+
+  document.getElementById('hFxxFyy').textContent = fxxfyy.toFixed(2);
+  document.getElementById('hFxy2').textContent = fxy2.toFixed(2);
+  document.getElementById('hD').textContent = D.toFixed(2);
+
+  let cls, col;
+  if (Math.abs(D) < 0.01) { cls = 'Inconclusive'; col = 'var(--amber)'; }
+  else if (D < 0) { cls = 'Saddle Point'; col = 'var(--pink)'; }
+  else if (a > 0) { cls = 'Local Min'; col = 'var(--indigo)'; }
+  else if (a < 0) { cls = 'Local Max'; col = 'var(--green)'; }
+  else { cls = 'Inconclusive'; col = 'var(--amber)'; }
+
+  const el = document.getElementById('hClass');
+  el.textContent = cls; el.style.color = col;
+  document.getElementById('hD').style.color = D < 0 ? 'var(--pink)' : D > 0 ? 'var(--green)' : 'var(--amber)';
+
+  drawHessian(a, b, c, D, cls);
+}
+
+function drawHessian(a, b, c, D, cls) {
+  const canvas = document.getElementById('hessianCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const cx = W/2, cy = H/2;
+  const scale = 50;
+  const N = 30;
+  const range = 2.2;
+  const step = (2*range)/N;
+
+  // Contour plot of f(x,y) = ax² + bxy + cy²
+  const fn = (x,y) => a*x*x + b*x*y + c*y*y;
+  const levels = [-4,-3,-2,-1.5,-1,-0.5,0.5,1,1.5,2,3,4];
+  const colPos = '#6366f1', colNeg = '#ec4899';
+
+  levels.forEach(lev => {
+    for (let i=0;i<N;i++) {
+      for (let j=0;j<N;j++) {
+        const x0=-range+i*step,x1=x0+step,y0=-range+j*step,y1=y0+step;
+        const f00=fn(x0,y0)-lev,f10=fn(x1,y0)-lev,f01=fn(x0,y1)-lev,f11=fn(x1,y1)-lev;
+        const cr=[];
+        if(Math.sign(f00)!==Math.sign(f10)) cr.push([x0+(x1-x0)*f00/(f00-f10),y0]);
+        if(Math.sign(f10)!==Math.sign(f11)) cr.push([x1,y0+(y1-y0)*f10/(f10-f11)]);
+        if(Math.sign(f01)!==Math.sign(f11)) cr.push([x0+(x1-x0)*f01/(f01-f11),y1]);
+        if(Math.sign(f00)!==Math.sign(f01)) cr.push([x0,y0+(y1-y0)*f00/(f00-f01)]);
+        if(cr.length>=2){
+          ctx.beginPath();
+          ctx.moveTo(cx+cr[0][0]*scale,cy-cr[0][1]*scale);
+          ctx.lineTo(cx+cr[1][0]*scale,cy-cr[1][1]*scale);
+          ctx.strokeStyle = lev>0?colPos+'88':colNeg+'88';
+          ctx.lineWidth=1;
+          ctx.stroke();
+        }
+      }
+    }
+  });
+
+  // Axes
+  ctx.strokeStyle='#363b47';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-W*0.48,cy);ctx.lineTo(cx+W*0.48,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-H*0.46);ctx.lineTo(cx,cy+H*0.46);ctx.stroke();
+  ctx.fillStyle='#9ca3af';ctx.font='11px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText('x',cx+W*0.46,cy+14);
+  ctx.fillText('y',cx+8,cy-H*0.43);
+
+  // Critical point at origin
+  const col = D<0?'#ec4899':D>0&&a>0?'#6366f1':D>0&&a<0?'#22c55e':'#f59e0b';
+  ctx.beginPath();ctx.arc(cx,cy,7,0,Math.PI*2);
+  ctx.fillStyle=col;ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+
+  ctx.fillStyle=col;ctx.font='600 11px JetBrains Mono';ctx.textAlign='left';
+  ctx.fillText(cls+' (D='+D.toFixed(2)+')',14,20);
+}
+
+// ================================================================
+// DISK VISUALIZER (Section 3)
+// ================================================================
+function updateDisk() {
+  const R = parseFloat(document.getElementById('slR').value);
+  document.getElementById('valR').textContent = R.toFixed(1);
+  const fn = (x,y) => x*x+y*y-2*x;
+  // Interior critical: f_x=2x-2=0 -> x=1, f_y=2y=0 -> y=0. Inside if 1<=R.
+  let intX=1,intY=0,intF=fn(1,0),intLabel='(1, 0)';
+  const inside = (R>=1);
+  // Boundary: f(t)=4-4cos(t) for R=2, general: R² - 2R·cos(t), extremes at t=0,pi
+  const bdMax = R*R-2*R*(-1); // t=pi: (-R,0)
+  const bdMin2 = R*R-2*R;    // t=0: (R,0)
+  const bdMaxLabel = '(-'+R.toFixed(1)+', 0)';
+  const bdMinLabel = '('+R.toFixed(1)+', 0)';
+
+  const candidates = [bdMax, bdMin2];
+  if(inside) candidates.push(intF);
+  const gMax = Math.max(...candidates);
+  const gMin = Math.min(...candidates);
+
+  document.getElementById('diskIntMin').textContent = inside ? intF.toFixed(2)+' at (1,0)' : 'Outside disk';
+  document.getElementById('diskBdMax').textContent = bdMax.toFixed(2)+' at '+bdMaxLabel;
+  document.getElementById('diskGMin').textContent = gMin.toFixed(2);
+  document.getElementById('diskGMax').textContent = gMax.toFixed(2);
+  drawDisk(R);
+}
+
+function drawDisk(R) {
+  const canvas = document.getElementById('diskCanvas');
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const cx=W/2,cy=H/2;
+  const scale=65;
+  const fn=(x,y)=>x*x+y*y-2*x;
+
+  // Level curves
+  const N=40,range=3.5,step=(2*range)/N;
+  const levels=[-1.5,-1,-0.5,0,0.5,1,2,3,5,7,9];
+  levels.forEach(lev=>{
+    for(let i=0;i<N;i++){
+      for(let j=0;j<N;j++){
+        const x0=-range+i*step,x1=x0+step,y0=-range+j*step,y1=y0+step;
+        const f00=fn(x0,y0)-lev,f10=fn(x1,y0)-lev,f01=fn(x0,y1)-lev,f11=fn(x1,y1)-lev;
+        const cr=[];
+        if(Math.sign(f00)!==Math.sign(f10))cr.push([x0+(x1-x0)*f00/(f00-f10),y0]);
+        if(Math.sign(f10)!==Math.sign(f11))cr.push([x1,y0+(y1-y0)*f10/(f10-f11)]);
+        if(Math.sign(f01)!==Math.sign(f11))cr.push([x0+(x1-x0)*f01/(f01-f11),y1]);
+        if(Math.sign(f00)!==Math.sign(f01))cr.push([x0,y0+(y1-y0)*f00/(f00-f01)]);
+        if(cr.length>=2){
+          ctx.beginPath();
+          ctx.moveTo(cx+cr[0][0]*scale,cy-cr[0][1]*scale);
+          ctx.lineTo(cx+cr[1][0]*scale,cy-cr[1][1]*scale);
+          ctx.strokeStyle='rgba(99,102,241,0.35)';ctx.lineWidth=1;ctx.stroke();
+        }
+      }
+    }
+  });
+
+  // Disk boundary
+  ctx.beginPath();ctx.arc(cx,cy,R*scale,0,Math.PI*2);
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=2.5;ctx.stroke();
+  ctx.fillStyle='rgba(245,158,11,0.05)';ctx.fill();
+
+  // Axes
+  ctx.strokeStyle='#363b47';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(16,cy);ctx.lineTo(W-16,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,16);ctx.lineTo(cx,H-16);ctx.stroke();
+
+  // Interior critical point (1,0)
+  if(R>=1){
+    ctx.beginPath();ctx.arc(cx+scale,cy,7,0,Math.PI*2);
+    ctx.fillStyle='#6366f1';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#6366f1';ctx.font='10px JetBrains Mono';ctx.textAlign='left';
+    ctx.fillText('min f=-1',cx+scale+10,cy-8);
+  }
+
+  // Boundary max (-R,0)
+  ctx.beginPath();ctx.arc(cx-R*scale,cy,7,0,Math.PI*2);
+  ctx.fillStyle='#ec4899';ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle='#ec4899';ctx.font='10px JetBrains Mono';ctx.textAlign='right';
+  ctx.fillText('max f='+(R*R+2*R).toFixed(1),cx-R*scale-10,cy-8);
+
+  // Boundary right (R,0)
+  ctx.beginPath();ctx.arc(cx+R*scale,cy,5,0,Math.PI*2);
+  ctx.fillStyle='#22c55e';ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+}
+
+// ================================================================
+// LAGRANGE INTERACTIVE (Section 4)
+// ================================================================
+// Constraint: x + 2y = 5. Parameterize by t: x = t, y = (5-t)/2
+// f = t² + ((5-t)/2)² = t² + (25-10t+t²)/4 = (5t²-10t+25)/4
+// df/dt = (10t-10)/4 = 0 -> t=1, x=1,y=2 (optimum)
+let lgT = 1; // current parameter t = x on the line
+let lgDragging = false;
+
+function lagrangeX(t){ return t; }
+function lagrangeY(t){ return (5-t)/2; }
+function lgToCanvas(x,y,W,H){
+  const cx=W/2,cy=H/2,sc=50;
+  return [cx+x*sc, cy-y*sc];
+}
+
+function drawLagrange() {
+  const canvas = document.getElementById('lagrangeCanvas');
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const cx=W/2,cy=H/2,sc=50;
+  const fn=(x,y)=>x*x+y*y;
+
+  // Level curves of f = x²+y²
+  const N=50,range=6,step=(2*range)/N;
+  [1,2,3,4,5,6,7,8,9,10,12,15,18].forEach(lev=>{
+    for(let i=0;i<N;i++){
+      for(let j=0;j<N;j++){
+        const x0=-range+i*step,x1=x0+step,y0=-range+j*step,y1=y0+step;
+        const f00=fn(x0,y0)-lev,f10=fn(x1,y0)-lev,f01=fn(x0,y1)-lev,f11=fn(x1,y1)-lev;
+        const cr=[];
+        if(Math.sign(f00)!==Math.sign(f10))cr.push([x0+(x1-x0)*f00/(f00-f10),y0]);
+        if(Math.sign(f10)!==Math.sign(f11))cr.push([x1,y0+(y1-y0)*f10/(f10-f11)]);
+        if(Math.sign(f01)!==Math.sign(f11))cr.push([x0+(x1-x0)*f01/(f01-f11),y1]);
+        if(Math.sign(f00)!==Math.sign(f01))cr.push([x0,y0+(y1-y0)*f00/(f00-f01)]);
+        if(cr.length>=2){
+          const alpha = lev===5?'ff':(lev<5?'55':'33');
+          ctx.beginPath();
+          ctx.moveTo(cx+cr[0][0]*sc,cy-cr[0][1]*sc);
+          ctx.lineTo(cx+cr[1][0]*sc,cy-cr[1][1]*sc);
+          ctx.strokeStyle='#6366f1'+alpha;ctx.lineWidth=lev===5?2:1;ctx.stroke();
+        }
+      }
+    }
+  });
+
+  // Constraint line x+2y=5 from t=-1 to t=7
+  const [lx0,ly0]=lgToCanvas(-1,(5-(-1))/2,W,H);
+  const [lx1,ly1]=lgToCanvas(7,(5-7)/2,W,H);
+  ctx.beginPath();ctx.moveTo(lx0,ly0);ctx.lineTo(lx1,ly1);
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=2.5;ctx.stroke();
+  ctx.fillStyle='#f59e0b';ctx.font='11px JetBrains Mono';
+  ctx.textAlign='left';ctx.fillText('x + 2y = 5',lx1+8,ly1+4);
+
+  // Axes
+  ctx.strokeStyle='#363b47';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(12,cy);ctx.lineTo(W-12,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,12);ctx.lineTo(cx,H-12);ctx.stroke();
+  ctx.fillStyle='#9ca3af';ctx.font='10px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText('x',W-18,cy+14);ctx.fillText('y',cx+10,18);
+
+  const x=lgT, y=(5-lgT)/2;
+  const fVal=x*x+y*y;
+  // ∇f = (2x, 2y), ∇g = (1, 2)
+  const gfx=2*x, gfy=2*y, ggx=1, ggy=2;
+  const fMag=Math.sqrt(gfx*gfx+gfy*gfy);
+  const gMag=Math.sqrt(ggx*ggx+ggy*ggy);
+  const dot=gfx*ggx+gfy*ggy;
+  const cosA=dot/(fMag*gMag+1e-9);
+  const angle=Math.acos(Math.min(1,Math.max(-1,cosA)))*180/Math.PI;
+
+  // Draw gradient arrows
+  const [px,py]=lgToCanvas(x,y,W,H);
+  const arrowScale=12;
+
+  // ∇f arrow (pink)
+  ctx.beginPath();ctx.moveTo(px,py);
+  ctx.lineTo(px+gfx*arrowScale,py-gfy*arrowScale);
+  ctx.strokeStyle='#ec4899';ctx.lineWidth=2.5;ctx.stroke();
+  drawArrowHead(ctx,px+gfx*arrowScale,py-gfy*arrowScale,Math.atan2(-gfy,gfx),'#ec4899');
+  ctx.fillStyle='#ec4899';ctx.font='600 10px JetBrains Mono';ctx.textAlign='left';
+  ctx.fillText('∇f',px+gfx*arrowScale+6,py-gfy*arrowScale);
+
+  // ∇g arrow (green)
+  ctx.beginPath();ctx.moveTo(px,py);
+  ctx.lineTo(px+ggx*arrowScale*2.5,py-ggy*arrowScale*2.5);
+  ctx.strokeStyle='#22c55e';ctx.lineWidth=2.5;ctx.stroke();
+  drawArrowHead(ctx,px+ggx*arrowScale*2.5,py-ggy*arrowScale*2.5,Math.atan2(-ggy,ggx),'#22c55e');
+  ctx.fillStyle='#22c55e';ctx.font='600 10px JetBrains Mono';ctx.textAlign='right';
+  ctx.fillText('∇g',px+ggx*arrowScale*2.5-6,py-ggy*arrowScale*2.5-6);
+
+  // Current point
+  ctx.beginPath();ctx.arc(px,py,8,0,Math.PI*2);
+  const atOpt=Math.abs(x-1)<0.15&&Math.abs(y-2)<0.15;
+  ctx.fillStyle=atOpt?'#f59e0b':'#ec4899';ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+
+  // Optimum marker
+  const [ox,oy]=lgToCanvas(1,2,W,H);
+  ctx.beginPath();ctx.arc(ox,oy,5,0,Math.PI*2);
+  ctx.fillStyle='#f59e0b55';ctx.fill();
+  ctx.strokeStyle='#f59e0b';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#f59e0b';ctx.font='10px JetBrains Mono';ctx.textAlign='right';
+  ctx.fillText('optimum (1,2)',ox-10,oy+15);
+
+  // Update readouts
+  document.getElementById('lgPoint').textContent='('+x.toFixed(2)+', '+y.toFixed(2)+')';
+  document.getElementById('lgF').textContent=fVal.toFixed(2);
+  document.getElementById('lgAngle').textContent=angle.toFixed(1)+'°';
+  const lgOptEl=document.getElementById('lgOpt');
+  if(atOpt){lgOptEl.textContent='Yes';lgOptEl.style.color='var(--green)';}
+  else{lgOptEl.textContent='No';lgOptEl.style.color='var(--pink)';}
+}
+
+function drawArrowHead(ctx,x,y,angle,color){
+  ctx.save();ctx.translate(x,y);ctx.rotate(angle);
+  ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-10,-5);ctx.lineTo(-10,5);ctx.closePath();
+  ctx.fillStyle=color;ctx.fill();ctx.restore();
+}
+
+function lagrangeMouseDown(e){lgDragging=true;lagrangeMouseMove(e);}
+function lagrangeMouseUp(){lgDragging=false;}
+function lagrangeMouseMove(e){
+  if(!lgDragging)return;
+  const canvas=document.getElementById('lagrangeCanvas');
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=canvas.width/rect.width;
+  const mx=(e.clientX-rect.left)*scaleX;
+  const cx=canvas.width/2;
+  const sc=50;
+  lgT=(mx-cx)/sc;
+  lgT=Math.max(-1,Math.min(7,lgT));
+  drawLagrange();
+}
+function lagrangeTouchStart(e){e.preventDefault();lgDragging=true;lagrangeTouchMove(e);}
+function lagrangeTouchMove(e){
+  if(!lgDragging)return;e.preventDefault();
+  const touch=e.touches[0];
+  const fakeEvt={clientX:touch.clientX,clientY:touch.clientY};
+  lagrangeMouseMove(fakeEvt);
+}
+
+// ================================================================
+// FERMAT'S PRINCIPLE SIMULATOR (Section 6)
+// ================================================================
+// Source S at top-left, Detector D at bottom-right, interface is horizontal midline
+// S = (50, 60), D = (570, 240) in canvas coords. Interface at y=150.
+// Interface crossing at (fermatX, 150). Parameterize by fermatX.
+let fermatX = 310;
+let fermatDragging = false;
+
+function updateFermat(){
+  document.getElementById('valN').textContent=parseFloat(document.getElementById('slN').value).toFixed(2);
+  drawFermat();
+}
+
+function drawFermat(){
+  const canvas=document.getElementById('fermatCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  const n=parseFloat(document.getElementById('slN').value);
+  const Sx=80,Sy=70;   // Source
+  const Dx=540,Dy=230; // Detector
+  const IY=150;        // Interface y
+  const v1=1.0,v2=1/n; // v2 = c/n
+
+  // Background colors
+  ctx.fillStyle='rgba(99,102,241,0.06)';
+  ctx.fillRect(0,0,W,IY);
+  ctx.fillStyle='rgba(34,197,94,0.06)';
+  ctx.fillRect(0,IY,W,H-IY);
+
+  // Interface line
+  ctx.strokeStyle='#363b47';ctx.lineWidth=2;
+  ctx.setLineDash([8,4]);
+  ctx.beginPath();ctx.moveTo(0,IY);ctx.lineTo(W,IY);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.fillStyle='#6366f1';ctx.font='11px JetBrains Mono';ctx.textAlign='left';
+  ctx.fillText('Medium 1 (v₁ = c)',12,20);
+  ctx.fillStyle='#22c55e';ctx.fillText('Medium 2 (v₂ = c/'+n.toFixed(2)+')',12,IY+20);
+
+  // Travel time function curve along bottom
+  const tMin=80,tMax=W-60;
+  ctx.beginPath();
+  let firstPt=true;
+  for(let ix=tMin;ix<=tMax;ix++){
+    const d1=Math.sqrt((ix-Sx)**2+(IY-Sy)**2)/v1;
+    const d2=Math.sqrt((Dx-ix)**2+(Dy-IY)**2)/v2;
+    const T=(d1+d2);
+    // Map T to canvas: we need min/max
+    if(firstPt){
+      ctx.moveTo(ix,H-20-(T-200)*0.08); // rough scale
+      firstPt=false;
+    } else {
+      ctx.lineTo(ix,H-20-(T-200)*0.08);
+    }
+  }
+  ctx.strokeStyle='rgba(245,158,11,0.4)';ctx.lineWidth=1.5;ctx.stroke();
+
+  // Compute optimal x analytically via Snell
+  // sin(theta1) = (fermatX-Sx)/(d1), n1*sin1 = n2*sin2
+  // Numerical: find x minimizing T
+  let bestX=tMin,bestT=1e12;
+  for(let ix=tMin;ix<=tMax;ix++){
+    const d1=Math.sqrt((ix-Sx)**2+(IY-Sy)**2);
+    const d2=Math.sqrt((Dx-ix)**2+(Dy-IY)**2);
+    const T=d1/v1+d2/v2;
+    if(T<bestT){bestT=T;bestX=ix;}
+  }
+
+  // Current path
+  const d1=Math.sqrt((fermatX-Sx)**2+(IY-Sy)**2);
+  const d2=Math.sqrt((Dx-fermatX)**2+(Dy-IY)**2);
+  const T=d1/v1+d2/v2;
+  const isOpt=Math.abs(fermatX-bestX)<8;
+
+  // Draw path
+  ctx.beginPath();ctx.moveTo(Sx,Sy);ctx.lineTo(fermatX,IY);ctx.lineTo(Dx,Dy);
+  ctx.strokeStyle=isOpt?'#f59e0b':'#ec4899';ctx.lineWidth=2.5;ctx.stroke();
+
+  // Normal line (dashed vertical at interface point)
+  ctx.setLineDash([4,4]);ctx.strokeStyle='#9ca3af55';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(fermatX,IY-40);ctx.lineTo(fermatX,IY+40);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Angles
+  const sin1=(fermatX-Sx)/d1;
+  const sin2=(Dx-fermatX)/d2;
+  const theta1=Math.asin(Math.min(1,Math.max(-1,sin1)))*180/Math.PI;
+  const theta2=Math.asin(Math.min(1,Math.max(-1,sin2)))*180/Math.PI;
+
+  // Arc for theta1
+  ctx.beginPath();ctx.arc(fermatX,IY,25,-Math.PI/2,-Math.PI/2+Math.atan2(IY-Sy,fermatX-Sx));
+  ctx.strokeStyle='#6366f1';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#6366f1';ctx.font='10px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText('θ₁',fermatX-20,IY-30);
+
+  // Arc for theta2
+  ctx.beginPath();ctx.arc(fermatX,IY,25,Math.PI/2,Math.PI/2-Math.atan2(Dy-IY,Dx-fermatX),true);
+  ctx.strokeStyle='#22c55e';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#22c55e';ctx.font='10px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText('θ₂',fermatX+22,IY+30);
+
+  // Source and detector points
+  ctx.beginPath();ctx.arc(Sx,Sy,7,0,Math.PI*2);
+  ctx.fillStyle='#6366f1';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle='#6366f1';ctx.font='600 10px JetBrains Mono';ctx.textAlign='right';
+  ctx.fillText('S',Sx-10,Sy+4);
+
+  ctx.beginPath();ctx.arc(Dx,Dy,7,0,Math.PI*2);
+  ctx.fillStyle='#22c55e';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle='#22c55e';ctx.font='600 10px JetBrains Mono';ctx.textAlign='left';
+  ctx.fillText('D',Dx+10,Dy+4);
+
+  // Interface crossing point
+  ctx.beginPath();ctx.arc(fermatX,IY,7,0,Math.PI*2);
+  ctx.fillStyle=isOpt?'#f59e0b':'#ec4899';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+
+  // Optimal dot
+  ctx.beginPath();ctx.arc(bestX,IY,5,0,Math.PI*2);
+  ctx.fillStyle='rgba(245,158,11,0.4)';ctx.fill();ctx.strokeStyle='#f59e0b';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#f59e0b';ctx.font='9px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText('min T',bestX,IY-12);
+
+  // Snell check
+  const snellLHS=1.0*sin1;
+  const snellRHS=n*sin2;
+  const snellOk=Math.abs(snellLHS-snellRHS)<0.05;
+
+  document.getElementById('fermatT1').textContent=theta1.toFixed(1)+'°';
+  document.getElementById('fermatT2').textContent=theta2.toFixed(1)+'°';
+  document.getElementById('fermatTime').textContent=T.toFixed(2)+' units';
+  const snellEl=document.getElementById('fermatSnell');
+  snellEl.textContent=snellOk?'Yes (n₁sinθ₁ ≈ n₂sinθ₂)':'No -- drag to min T';
+  snellEl.style.color=snellOk?'var(--green)':'var(--pink)';
+}
+
+function fermatMouseDown(e){fermatDragging=true;fermatMouseMove(e);}
+function fermatMouseUp(){fermatDragging=false;}
+function fermatMouseMove(e){
+  if(!fermatDragging)return;
+  const canvas=document.getElementById('fermatCanvas');
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=canvas.width/rect.width;
+  fermatX=Math.max(80,Math.min(540,(e.clientX-rect.left)*scaleX));
+  drawFermat();
+}
+function fermatTouchStart(e){e.preventDefault();fermatDragging=true;fermatTouchMove(e);}
+function fermatTouchMove(e){
+  if(!fermatDragging)return;e.preventDefault();
+  const t=e.touches[0];
+  fermatMouseMove({clientX:t.clientX,clientY:t.clientY});
+}
+
+// ================================================================
+// INIT
+// ================================================================
+window.addEventListener('DOMContentLoaded', () => {
+  setSurface('min');
+  updateHessian();
+  updateDisk();
+  drawLagrange();
+  drawFermat();
+});
+
+window.addEventListener('resize', () => {
+  drawSurface();
+  drawHessian(
+    parseFloat(document.getElementById('slA').value),
+    parseFloat(document.getElementById('slB').value),
+    parseFloat(document.getElementById('slC').value),
+    0, ''
+  );
+  updateDisk();
+  drawLagrange();
+  drawFermat();
+});
+</script>
+</body>
+</html>

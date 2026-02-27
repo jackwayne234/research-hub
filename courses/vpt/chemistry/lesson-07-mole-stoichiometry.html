@@ -1,0 +1,2460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 7: The Mole &amp; Stoichiometry</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  background: #1e2128;
+  color: #c9cdd5;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.65;
+  min-height: 100vh;
+  padding: 0 0 4rem;
+}
+
+/* ── Palette ──────────────────────────────────────── */
+:root {
+  --bg: #1e2128;
+  --surface: #262a33;
+  --surface2: #2e323d;
+  --border: #363b47;
+  --text: #c9cdd5;
+  --text-dim: #8b90a0;
+  --primary: #6366f1;
+  --primary-dim: rgba(99,102,241,.15);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,.15);
+  --pink: #ec4899;
+  --pink-dim: rgba(236,72,153,.15);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,.15);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,.15);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,.15);
+  --cyan: #06b6d4;
+  --cyan-dim: rgba(6,182,212,.15);
+}
+
+/* ── Header ───────────────────────────────────────── */
+.page-header {
+  text-align: center;
+  padding: 2.5rem 1rem 1rem;
+}
+.page-header h1 {
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.page-header .subtitle {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-top: .3rem;
+}
+
+/* ── Progress Bar ─────────────────────────────────── */
+.progress-wrap {
+  max-width: 740px;
+  margin: 1.2rem auto .5rem;
+  padding: 0 1rem;
+}
+.progress-bar-outer {
+  background: var(--surface);
+  border-radius: 8px;
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-bar-inner {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), #818cf8);
+  border-radius: 8px;
+  transition: width .5s cubic-bezier(.34,1.56,.64,1);
+}
+.progress-label {
+  font-size: .7rem;
+  color: var(--text-dim);
+  text-align: right;
+  margin-top: .3rem;
+}
+
+/* ── Container ────────────────────────────────────── */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ── Collapsible Card ─────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: border-color .3s;
+}
+.card.completed { border-color: var(--green); }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background .2s;
+}
+.card-header:hover { background: var(--surface2); }
+.card-header .num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--primary-dim);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: .8rem;
+  flex-shrink: 0;
+}
+.card.completed .card-header .num {
+  background: var(--green-dim);
+  color: var(--green);
+}
+.card-header .title {
+  flex: 1;
+  font-weight: 600;
+  font-size: .9rem;
+  color: #eee;
+}
+.card-header .chevron {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.card.open .card-header .chevron { transform: rotate(180deg); }
+.card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .5s ease, padding .3s ease;
+}
+.card.open .card-body {
+  max-height: 80000px;
+  padding: 0 1.2rem 1.5rem;
+}
+
+/* ── Section Internals ────────────────────────────── */
+.section-desc {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+h3.sub-heading {
+  font-size: .85rem;
+  color: var(--primary);
+  margin: 1.5rem 0 .8rem;
+  font-weight: 600;
+}
+h3.sub-heading:first-of-type { margin-top: .5rem; }
+
+/* ── Interactive Box ──────────────────────────────── */
+.interactive-box {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid var(--border);
+}
+.interactive-box h4 {
+  font-size: .82rem;
+  color: var(--primary);
+  margin-bottom: .8rem;
+}
+
+/* ── Buttons ──────────────────────────────────────── */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: .8rem;
+}
+.btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  padding: .45rem .9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn:hover { border-color: var(--primary); color: #fff; }
+.btn.active {
+  background: var(--primary-dim);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.btn.correct {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+.btn.incorrect {
+  background: var(--pink-dim);
+  border-color: var(--pink);
+  color: var(--pink);
+}
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  font-weight: 600;
+}
+.btn-primary:hover { background: #5558e6; }
+
+/* ── Feedback ─────────────────────────────────────── */
+.feedback {
+  font-size: .75rem;
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  margin-top: .6rem;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity .3s cubic-bezier(.34,1.56,.64,1), transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none;
+}
+.feedback.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.feedback.correct-fb { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+.feedback.incorrect-fb { background: var(--pink-dim); color: var(--pink); border: 1px solid var(--pink); }
+
+/* ── Explanation Block ────────────────────────────── */
+.explanation {
+  font-size: .78rem;
+  color: var(--text);
+  background: var(--surface2);
+  border-left: 3px solid var(--primary);
+  padding: .8rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 1.2rem;
+  line-height: 1.7;
+}
+
+/* ── Formula Display ─────────────────────────────── */
+.formula-display {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+}
+
+/* ── Data Table ──────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .72rem;
+  margin-bottom: 1.2rem;
+}
+.data-table th {
+  background: var(--surface2);
+  color: var(--primary);
+  font-weight: 600;
+  text-align: left;
+  padding: .6rem .7rem;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: .5rem .7rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.data-table tr:hover td { background: rgba(99,102,241,.05); }
+
+/* ── Input ────────────────────────────────────────── */
+.text-input {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .8rem;
+  padding: .5rem .8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: #fff;
+  outline: none;
+  width: 100%;
+  max-width: 320px;
+  transition: border-color .2s;
+}
+.text-input:focus { border-color: var(--primary); }
+.text-input.correct-input { border-color: var(--green); background: var(--green-dim); }
+.text-input.incorrect-input { border-color: var(--pink); background: var(--pink-dim); }
+
+.input-row {
+  display: flex;
+  gap: .6rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: .5rem;
+}
+
+/* ── Problem Counter ─────────────────────────────── */
+.problem-counter {
+  font-size: .7rem;
+  color: var(--text-dim);
+  margin-bottom: .8rem;
+}
+.problem-counter span { color: var(--primary); font-weight: 600; }
+
+/* ── Score Display ───────────────────────────────── */
+.score-display {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .75rem;
+  color: var(--green);
+  background: var(--green-dim);
+  padding: .3rem .7rem;
+  border-radius: 6px;
+  margin-left: .5rem;
+}
+
+/* ── Chemical Formula Formatting ─────────────────── */
+.chem { font-weight: 600; color: #fff; }
+.chem sub { font-size: .75em; }
+.chem sup { font-size: .7em; color: var(--amber); }
+
+/* ── Section Score Bar ───────────────────────────── */
+.section-score {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-top: 1rem;
+  padding: .6rem .8rem;
+  background: var(--surface2);
+  border-radius: 8px;
+  font-size: .75rem;
+}
+.section-score .score-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.section-score .score-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 3px;
+  transition: width .4s cubic-bezier(.34,1.56,.64,1);
+  width: 0%;
+}
+.section-score .score-text {
+  color: var(--text-dim);
+  min-width: 50px;
+  text-align: right;
+}
+
+/* ── Scale Visual ───────────────────────────────── */
+.scale-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+.scale-box {
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  text-align: center;
+  min-width: 140px;
+  transition: border-color .3s;
+}
+.scale-box .scale-label {
+  font-size: .6rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: .3rem;
+}
+.scale-box .scale-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+}
+.scale-box .scale-unit {
+  font-size: .7rem;
+  color: var(--amber);
+  margin-top: .2rem;
+}
+.scale-equals {
+  font-size: 1.5rem;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* ── Fun Fact Cards ─────────────────────────────── */
+.fact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: .8rem;
+  margin-bottom: 1.2rem;
+}
+.fact-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+}
+.fact-card .fact-emoji {
+  font-size: 1.5rem;
+  margin-bottom: .4rem;
+}
+.fact-card .fact-text {
+  font-size: .72rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+.fact-card .fact-highlight {
+  color: var(--amber);
+  font-weight: 600;
+}
+
+/* ── Periodic Table Mini ────────────────────────── */
+.pt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 4px;
+  margin-bottom: 1rem;
+}
+.pt-el {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: .35rem .2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  font-size: .6rem;
+}
+.pt-el:hover {
+  border-color: var(--primary);
+  background: var(--primary-dim);
+  transform: scale(1.08);
+}
+.pt-el.selected {
+  border-color: var(--amber);
+  background: var(--amber-dim);
+}
+.pt-el .pt-symbol {
+  font-weight: 700;
+  font-size: .8rem;
+  color: #fff;
+}
+.pt-el .pt-mass {
+  color: var(--text-dim);
+  font-size: .55rem;
+}
+.pt-el .pt-name {
+  color: var(--text-dim);
+  font-size: .5rem;
+}
+
+/* ── Molecule Builder ───────────────────────────── */
+.mol-builder {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.mol-atoms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  flex: 1;
+  min-width: 200px;
+}
+.mol-atom-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem;
+  padding: .3rem .6rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+}
+.mol-atom-btn:hover { border-color: var(--primary); }
+.mol-atom-btn .mol-count {
+  background: var(--primary-dim);
+  color: var(--primary);
+  padding: 0 .35rem;
+  border-radius: 4px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+}
+.mol-result {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  min-width: 220px;
+  flex-shrink: 0;
+}
+.mol-result .mol-formula {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: .5rem;
+}
+.mol-result .mol-step {
+  font-size: .7rem;
+  color: var(--text);
+  margin-bottom: .2rem;
+}
+.mol-result .mol-total {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--green);
+  margin-top: .5rem;
+  padding-top: .5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Mole Map ───────────────────────────────────── */
+.mole-map {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .4rem;
+  margin: 1.5rem 0;
+}
+.mole-map-row {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.map-node {
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: .7rem 1.2rem;
+  text-align: center;
+  font-size: .8rem;
+  font-weight: 600;
+  color: #fff;
+  min-width: 100px;
+}
+.map-node.highlight { border-color: var(--primary); }
+.map-arrow {
+  font-size: .7rem;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.3;
+}
+.map-arrow .map-factor {
+  display: block;
+  font-size: .6rem;
+  color: var(--amber);
+  font-weight: 600;
+}
+
+/* ── Converter Widget ───────────────────────────── */
+.converter-row {
+  display: flex;
+  gap: .8rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: .8rem;
+}
+.converter-group {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+.converter-group label {
+  font-size: .65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.converter-group select {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem;
+  padding: .45rem .6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+}
+.converter-group select:focus { border-color: var(--primary); }
+.dim-analysis {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .8rem 1rem;
+  font-size: .75rem;
+  color: var(--text);
+  margin-top: .5rem;
+  line-height: 1.8;
+  overflow-x: auto;
+}
+.dim-step { color: var(--amber); font-weight: 600; }
+
+/* ── Pie Chart ──────────────────────────────────── */
+.pie-container {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+.pie-chart {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+}
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+.pie-legend-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .72rem;
+  color: var(--text);
+}
+.pie-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* ── Equation Balancer ──────────────────────────── */
+.equation-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+  font-size: .9rem;
+  color: #fff;
+}
+.coeff-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .2rem;
+}
+.coeff-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+}
+.coeff-btn:hover { border-color: var(--primary); color: #fff; }
+.coeff-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--amber);
+  min-width: 24px;
+  text-align: center;
+}
+.eq-compound {
+  font-weight: 600;
+}
+.eq-arrow { color: var(--text-dim); font-size: 1.2rem; }
+.eq-plus { color: var(--text-dim); }
+.atom-count-table {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: .8rem 0 1rem;
+  flex-wrap: wrap;
+}
+.atom-count-side {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .6rem .8rem;
+  font-size: .72rem;
+  min-width: 120px;
+}
+.atom-count-side .side-label {
+  font-size: .6rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: .4rem;
+  text-align: center;
+}
+.atom-row {
+  display: flex;
+  justify-content: space-between;
+  gap: .8rem;
+  padding: .15rem 0;
+}
+.atom-row .atom-sym { color: #fff; font-weight: 600; }
+.atom-row .atom-num { font-weight: 600; }
+.atom-row .atom-num.balanced { color: var(--green); }
+.atom-row .atom-num.unbalanced { color: var(--pink); }
+.balanced-badge {
+  text-align: center;
+  font-size: .8rem;
+  color: var(--green);
+  font-weight: 600;
+  padding: .5rem;
+  display: none;
+}
+.balanced-badge.show { display: block; }
+
+/* ── Quiz ─────────────────────────────────────────── */
+.quiz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.quiz-score {
+  font-size: .85rem;
+  color: var(--green);
+  font-weight: 600;
+}
+.quiz-problem {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: .8rem;
+}
+.quiz-problem .q-num {
+  font-size: .65rem;
+  color: var(--text-dim);
+  margin-bottom: .4rem;
+}
+.quiz-problem .q-text {
+  font-size: .82rem;
+  color: #eee;
+  margin-bottom: .6rem;
+  line-height: 1.6;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 600px) {
+  .page-header { padding: 1.5rem .8rem .8rem; }
+  .card-header { padding: .8rem 1rem; }
+  .card.open .card-body { padding: 0 1rem 1.2rem; }
+  .interactive-box { padding: .8rem; }
+  .formula-display { font-size: .95rem; padding: .8rem; }
+  .text-input { max-width: 100%; }
+  .data-table { font-size: .65rem; }
+  .data-table th, .data-table td { padding: .4rem .5rem; }
+  .quiz-problem { padding: .8rem; }
+  .scale-visual { gap: .8rem; }
+  .scale-box { padding: .8rem 1rem; min-width: 100px; }
+  .scale-box .scale-value { font-size: 1rem; }
+  .fact-grid { grid-template-columns: 1fr; }
+  .pt-grid { grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); }
+  .pt-el { padding: .25rem .15rem; }
+  .pt-el .pt-symbol { font-size: .7rem; }
+  .pt-el .pt-mass { font-size: .48rem; }
+  .pt-el .pt-name { display: none; }
+  .mol-builder { flex-direction: column; }
+  .mol-result { min-width: 100%; }
+  .pie-chart { width: 150px; height: 150px; }
+  .converter-row { flex-direction: column; gap: .5rem; }
+  .equation-display { font-size: .75rem; gap: .4rem; }
+  .atom-count-table { gap: .8rem; }
+  .mole-map-row { gap: .5rem; }
+  .map-node { padding: .5rem .8rem; font-size: .7rem; min-width: 80px; }
+}
+
+/* ── Shake Animation ─────────────────────────────── */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.shake { animation: shake .4s ease; }
+
+/* ── Spring Pop ──────────────────────────────────── */
+@keyframes springPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+  70% { transform: scale(.97); }
+  100% { transform: scale(1); }
+}
+.spring-pop { animation: springPop .4s cubic-bezier(.34,1.56,.64,1); }
+
+/* ── Completion Badge ────────────────────────────── */
+.completion-badge {
+  display: none;
+  align-items: center;
+  gap: .4rem;
+  font-size: .7rem;
+  color: var(--green);
+  margin-top: .6rem;
+}
+.completion-badge.show { display: flex; }
+
+/* ── Navy Context Box ────────────────────────────── */
+.navy-context {
+  background: var(--blue-dim);
+  border: 1px solid var(--blue);
+  border-radius: 8px;
+  padding: .8rem 1rem;
+  margin-bottom: 1.2rem;
+  font-size: .75rem;
+  color: var(--blue);
+  line-height: 1.6;
+}
+.navy-context strong { color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  HEADER                                            -->
+<!-- ═══════════════════════════════════════════════════ -->
+<header class="page-header">
+  <h1>Week 7: The Mole &amp; Stoichiometry</h1>
+  <div class="subtitle">Avogadro's number, molar mass, conversions, percent composition, and balancing equations</div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 30 problems completed</div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SECTION 1: AVOGADRO'S NUMBER & THE MOLE          -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="card open" id="card1">
+  <div class="card-header" onclick="toggleCard('card1')">
+    <div class="num">1</div>
+    <div class="title">Avogadro's Number &amp; The Mole</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      The <strong style="color:#fff">mole</strong> is chemistry's counting unit -- the bridge between the atomic world and the lab bench.
+      Just as "a dozen" means 12, "a mole" means exactly <strong style="color:var(--amber)">6.022 &times; 10<sup>23</sup></strong> particles (atoms, molecules, ions, etc.).
+      This is <strong>Avogadro's number</strong> (N<sub>A</sub>).
+    </p>
+
+    <h3 class="sub-heading">Visual Scale</h3>
+    <div class="scale-visual">
+      <div class="scale-box">
+        <div class="scale-label">One Mole</div>
+        <div class="scale-value">1 mol</div>
+        <div class="scale-unit">of any substance</div>
+      </div>
+      <div class="scale-equals">=</div>
+      <div class="scale-box" style="border-color:var(--amber)">
+        <div class="scale-label">Avogadro's Number</div>
+        <div class="scale-value" style="font-size:1rem">6.022 &times; 10<sup>23</sup></div>
+        <div class="scale-unit">particles</div>
+      </div>
+      <div class="scale-equals">=</div>
+      <div class="scale-box" style="border-color:var(--green)">
+        <div class="scale-label">Molar Mass</div>
+        <div class="scale-value" style="font-size:1rem">M g</div>
+        <div class="scale-unit">grams (from periodic table)</div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">How Big Is a Mole?</h3>
+    <div class="fact-grid">
+      <div class="fact-card">
+        <div class="fact-text">A mole of <span class="fact-highlight">sand grains</span> would cover the entire Earth about <span class="fact-highlight">2 meters deep</span></div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-text">A mole of <span class="fact-highlight">pennies</span> would give every person on Earth about <span class="fact-highlight">$1 trillion</span></div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-text">A mole of <span class="fact-highlight">water molecules</span> is just <span class="fact-highlight">18.015 grams</span> -- barely a tablespoon</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-text">A mole of <span class="fact-highlight">seconds</span> is about <span class="fact-highlight">19 quadrillion years</span> -- longer than the universe has existed</div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Conversion Tool</h3>
+    <div class="interactive-box">
+      <h4>Grams &rarr; Moles &rarr; Atoms</h4>
+      <div class="converter-row">
+        <div class="converter-group">
+          <label>Element</label>
+          <select id="conv1-element" onchange="updateConv1()">
+            <option value="1.008" data-name="H">H (1.008)</option>
+            <option value="12.011" data-name="C" selected>C (12.011)</option>
+            <option value="15.999" data-name="O">O (15.999)</option>
+            <option value="22.990" data-name="Na">Na (22.990)</option>
+            <option value="26.982" data-name="Al">Al (26.982)</option>
+            <option value="55.845" data-name="Fe">Fe (55.845)</option>
+            <option value="63.546" data-name="Cu">Cu (63.546)</option>
+            <option value="196.967" data-name="Au">Au (196.967)</option>
+          </select>
+        </div>
+        <div class="converter-group">
+          <label>Grams</label>
+          <input type="number" class="text-input" id="conv1-grams" placeholder="e.g. 24" style="max-width:140px" oninput="updateConv1()">
+        </div>
+      </div>
+      <div class="dim-analysis" id="conv1-result" style="display:none"></div>
+    </div>
+
+    <h3 class="sub-heading">Practice Problems</h3>
+    <div class="interactive-box" id="s1-practice">
+      <div class="problem-counter">Problem <span id="s1-current">1</span> of <span>3</span>
+        <span class="score-display" id="s1-score-display">0/0</span>
+      </div>
+      <div class="formula-display" id="s1-prompt"></div>
+      <div class="input-row">
+        <input type="text" class="text-input" id="s1-input" placeholder="Type your answer..." autocomplete="off" spellcheck="false">
+        <button class="btn btn-primary" onclick="checkS1()">Check</button>
+        <button class="btn" onclick="skipS1()" style="color:var(--text-dim)">Skip</button>
+      </div>
+      <div class="feedback" id="s1-feedback"></div>
+      <div class="section-score">
+        <span style="color:var(--text-dim)">Score:</span>
+        <div class="score-bar"><div class="score-fill" id="s1-fill"></div></div>
+        <span class="score-text" id="s1-score-text">0/3</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SECTION 2: MOLAR MASS                             -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="card" id="card2">
+  <div class="card-header" onclick="toggleCard('card2')">
+    <div class="num">2</div>
+    <div class="title">Molar Mass</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      The <strong style="color:#fff">molar mass</strong> of an element equals its atomic mass from the periodic table, in grams per mole (g/mol).
+      For compounds, add up the molar masses of all atoms in the formula.
+    </p>
+
+    <h3 class="sub-heading">Element Selector</h3>
+    <p class="section-desc">Click an element to see its molar mass. Then use the molecule builder below.</p>
+    <div class="pt-grid" id="pt-grid"></div>
+    <div class="formula-display" id="pt-info" style="font-size:.85rem;min-height:48px">Click an element above</div>
+
+    <h3 class="sub-heading">Molecule Builder</h3>
+    <p class="section-desc">Select atoms and see the molar mass calculated step by step.</p>
+    <div class="interactive-box">
+      <div class="mol-builder">
+        <div style="flex:1;min-width:200px">
+          <div class="btn-row" id="mol-add-btns"></div>
+          <div class="mol-atoms" id="mol-atoms-list"></div>
+          <div style="margin-top:.6rem">
+            <button class="btn" onclick="resetMolBuilder()" style="color:var(--text-dim)">Reset</button>
+          </div>
+        </div>
+        <div class="mol-result" id="mol-result">
+          <div class="mol-formula" id="mol-formula">--</div>
+          <div id="mol-steps"></div>
+          <div class="mol-total" id="mol-total">Total: 0.000 g/mol</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Practice Problems</h3>
+    <div class="interactive-box" id="s2-practice">
+      <div class="problem-counter">Problem <span id="s2-current">1</span> of <span>4</span>
+        <span class="score-display" id="s2-score-display">0/0</span>
+      </div>
+      <div class="formula-display" id="s2-prompt"></div>
+      <div class="input-row">
+        <input type="text" class="text-input" id="s2-input" placeholder="e.g. 58.44" autocomplete="off" spellcheck="false">
+        <button class="btn btn-primary" onclick="checkS2()">Check</button>
+        <button class="btn" onclick="skipS2()" style="color:var(--text-dim)">Skip</button>
+      </div>
+      <div class="feedback" id="s2-feedback"></div>
+      <div class="section-score">
+        <span style="color:var(--text-dim)">Score:</span>
+        <div class="score-bar"><div class="score-fill" id="s2-fill"></div></div>
+        <span class="score-text" id="s2-score-text">0/4</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SECTION 3: MOLE CONVERSIONS                       -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="card" id="card3">
+  <div class="card-header" onclick="toggleCard('card3')">
+    <div class="num">3</div>
+    <div class="title">Mole Conversions</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      The "mole map" shows how to convert between grams, moles, and particles using molar mass and Avogadro's number as conversion factors.
+    </p>
+
+    <h3 class="sub-heading">The Mole Map</h3>
+    <div class="mole-map">
+      <div class="mole-map-row">
+        <div class="map-node highlight">Grams</div>
+        <div class="map-arrow">
+          <span class="map-factor">&divide; molar mass</span>
+          &rarr;
+          <br>&larr;
+          <span class="map-factor">&times; molar mass</span>
+        </div>
+        <div class="map-node highlight" style="border-color:var(--amber)">Moles</div>
+        <div class="map-arrow">
+          <span class="map-factor">&times; 6.022&times;10<sup>23</sup></span>
+          &rarr;
+          <br>&larr;
+          <span class="map-factor">&divide; 6.022&times;10<sup>23</sup></span>
+        </div>
+        <div class="map-node highlight" style="border-color:var(--green)">Particles</div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Interactive Converter</h3>
+    <div class="interactive-box">
+      <h4>Dimensional Analysis Calculator</h4>
+      <div class="converter-row">
+        <div class="converter-group">
+          <label>Substance</label>
+          <select id="conv3-substance" onchange="updateConv3()">
+            <option value="18.015" data-name="H2O">H&#8322;O (18.015 g/mol)</option>
+            <option value="44.009" data-name="CO2">CO&#8322; (44.009 g/mol)</option>
+            <option value="58.44" data-name="NaCl">NaCl (58.44 g/mol)</option>
+            <option value="32.00" data-name="O2">O&#8322; (32.00 g/mol)</option>
+            <option value="55.845" data-name="Fe">Fe (55.845 g/mol)</option>
+            <option value="28.014" data-name="N2">N&#8322; (28.014 g/mol)</option>
+          </select>
+        </div>
+        <div class="converter-group">
+          <label>From</label>
+          <select id="conv3-from" onchange="updateConv3()">
+            <option value="grams">Grams</option>
+            <option value="moles">Moles</option>
+            <option value="particles">Particles</option>
+          </select>
+        </div>
+        <div class="converter-group">
+          <label>Value</label>
+          <input type="number" class="text-input" id="conv3-value" placeholder="e.g. 36" style="max-width:140px" oninput="updateConv3()">
+        </div>
+        <div class="converter-group">
+          <label>To</label>
+          <select id="conv3-to" onchange="updateConv3()">
+            <option value="moles">Moles</option>
+            <option value="grams">Grams</option>
+            <option value="particles">Particles</option>
+          </select>
+        </div>
+      </div>
+      <div class="dim-analysis" id="conv3-result" style="display:none"></div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy Context:</strong> Emergency air banks (EABs) on submarines carry compressed O&#8322;.
+      A standard EAB bottle holds about 2,200 psi of O&#8322; -- roughly 320 g of O&#8322;.
+      That is 320 g &divide; 32.00 g/mol = <strong>10.0 moles of O&#8322;</strong>, or about
+      6.022 &times; 10<sup>24</sup> oxygen molecules. Each mole of O&#8322; provides 22.4 L at STP.
+    </div>
+
+    <h3 class="sub-heading">Practice Problems</h3>
+    <div class="interactive-box" id="s3-practice">
+      <div class="problem-counter">Problem <span id="s3-current">1</span> of <span>5</span>
+        <span class="score-display" id="s3-score-display">0/0</span>
+      </div>
+      <div class="formula-display" id="s3-prompt"></div>
+      <div class="input-row">
+        <input type="text" class="text-input" id="s3-input" placeholder="Type your answer..." autocomplete="off" spellcheck="false">
+        <button class="btn btn-primary" onclick="checkS3()">Check</button>
+        <button class="btn" onclick="skipS3()" style="color:var(--text-dim)">Skip</button>
+      </div>
+      <div class="feedback" id="s3-feedback"></div>
+      <div class="section-score">
+        <span style="color:var(--text-dim)">Score:</span>
+        <div class="score-bar"><div class="score-fill" id="s3-fill"></div></div>
+        <span class="score-text" id="s3-score-text">0/5</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SECTION 4: PERCENT COMPOSITION                    -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="card" id="card4">
+  <div class="card-header" onclick="toggleCard('card4')">
+    <div class="num">4</div>
+    <div class="title">Percent Composition</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Percent composition tells you the mass percent of each element in a compound:
+      <strong style="color:#fff">% = (mass of element in 1 mol / molar mass of compound) &times; 100</strong>
+    </p>
+
+    <h3 class="sub-heading">Interactive Pie Chart</h3>
+    <div class="interactive-box">
+      <h4>Enter a formula to see its percent composition</h4>
+      <div class="converter-row">
+        <div class="converter-group">
+          <label>Formula</label>
+          <select id="pie-formula" onchange="updatePieChart()">
+            <option value="H2O">H&#8322;O</option>
+            <option value="CO2">CO&#8322;</option>
+            <option value="NaCl">NaCl</option>
+            <option value="H2SO4">H&#8322;SO&#8324;</option>
+            <option value="C6H12O6">C&#8326;H&#8321;&#8322;O&#8326; (Glucose)</option>
+            <option value="C7H5N3O6" selected>C&#8327;H&#8325;N&#8323;O&#8326; (TNT)</option>
+            <option value="Fe2O3">Fe&#8322;O&#8323;</option>
+          </select>
+        </div>
+      </div>
+      <div class="pie-container">
+        <canvas id="pie-canvas" width="180" height="180"></canvas>
+        <div class="pie-legend" id="pie-legend"></div>
+      </div>
+      <div class="dim-analysis" id="pie-breakdown"></div>
+    </div>
+
+    <h3 class="sub-heading">Practice Problems</h3>
+    <div class="interactive-box" id="s4-practice">
+      <div class="problem-counter">Problem <span id="s4-current">1</span> of <span>4</span>
+        <span class="score-display" id="s4-score-display">0/0</span>
+      </div>
+      <div class="formula-display" id="s4-prompt"></div>
+      <div class="input-row">
+        <input type="text" class="text-input" id="s4-input" placeholder="Type your answer..." autocomplete="off" spellcheck="false">
+        <button class="btn btn-primary" onclick="checkS4()">Check</button>
+        <button class="btn" onclick="skipS4()" style="color:var(--text-dim)">Skip</button>
+      </div>
+      <div class="feedback" id="s4-feedback"></div>
+      <div class="section-score">
+        <span style="color:var(--text-dim)">Score:</span>
+        <div class="score-bar"><div class="score-fill" id="s4-fill"></div></div>
+        <span class="score-text" id="s4-score-text">0/4</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SECTION 5: BALANCING EQUATIONS & STOICHIOMETRY    -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="card" id="card5">
+  <div class="card-header" onclick="toggleCard('card5')">
+    <div class="num">5</div>
+    <div class="title">Balancing Equations &amp; Stoichiometry</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      A balanced chemical equation has the same number of each type of atom on both sides -- this is the Law of Conservation of Mass.
+      Stoichiometry uses the balanced equation's coefficients as <strong style="color:#fff">mole ratios</strong> to convert between substances.
+    </p>
+
+    <h3 class="sub-heading">Interactive Equation Balancer</h3>
+    <div class="interactive-box" id="balancer-box">
+      <h4>Adjust coefficients to balance the equation</h4>
+      <div class="converter-row" style="margin-bottom:.6rem">
+        <div class="converter-group">
+          <label>Equation</label>
+          <select id="bal-select" onchange="loadBalancer()">
+            <option value="0">H&#8322; + O&#8322; &rarr; H&#8322;O</option>
+            <option value="1">Fe + O&#8322; &rarr; Fe&#8322;O&#8323;</option>
+            <option value="2">CH&#8324; + O&#8322; &rarr; CO&#8322; + H&#8322;O</option>
+            <option value="3">N&#8322; + H&#8322; &rarr; NH&#8323;</option>
+          </select>
+        </div>
+      </div>
+      <div class="equation-display" id="bal-equation"></div>
+      <div class="atom-count-table" id="bal-atoms"></div>
+      <div class="balanced-badge" id="bal-badge">Balanced!</div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy Context -- JP-5 Fuel Combustion:</strong>
+      JP-5 jet fuel is approximately C&#8321;&#8322;H&#8322;&#8326;. Its balanced combustion equation is:<br>
+      2 C&#8321;&#8322;H&#8322;&#8326; + 37 O&#8322; &rarr; 24 CO&#8322; + 26 H&#8322;O<br>
+      This tells us that for every 2 moles of JP-5 burned, 37 moles of O&#8322; are consumed and 24 moles of CO&#8322; are produced.
+    </div>
+
+    <h3 class="sub-heading">Stoichiometry Practice</h3>
+    <div class="interactive-box" id="s5-practice">
+      <div class="problem-counter">Problem <span id="s5-current">1</span> of <span>4</span>
+        <span class="score-display" id="s5-score-display">0/0</span>
+      </div>
+      <div class="formula-display" id="s5-prompt"></div>
+      <div class="input-row">
+        <input type="text" class="text-input" id="s5-input" placeholder="Type your answer..." autocomplete="off" spellcheck="false">
+        <button class="btn btn-primary" onclick="checkS5()">Check</button>
+        <button class="btn" onclick="skipS5()" style="color:var(--text-dim)">Skip</button>
+      </div>
+      <div class="feedback" id="s5-feedback"></div>
+      <div class="section-score">
+        <span style="color:var(--text-dim)">Score:</span>
+        <div class="score-bar"><div class="score-fill" id="s5-fill"></div></div>
+        <span class="score-text" id="s5-score-text">0/4</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SECTION 6: QUICK QUIZ                             -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="card" id="card6">
+  <div class="card-header" onclick="toggleCard('card6')">
+    <div class="num">6</div>
+    <div class="title">Quick Quiz</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <div class="quiz-header">
+      <div class="problem-counter">Question <span id="quiz-current">1</span> of <span>10</span></div>
+      <div class="quiz-score" id="quiz-score">Score: 0 / 0</div>
+    </div>
+    <div class="quiz-problem" id="quiz-problem">
+      <div class="q-num" id="quiz-qnum">Question 1</div>
+      <div class="q-text" id="quiz-qtext"></div>
+      <div class="input-row">
+        <input type="text" class="text-input" id="quiz-input" placeholder="Type your answer..." autocomplete="off" spellcheck="false">
+        <button class="btn btn-primary" onclick="checkQuiz()">Check</button>
+        <button class="btn" onclick="skipQuiz()" style="color:var(--text-dim)">Skip</button>
+      </div>
+      <div class="feedback" id="quiz-feedback"></div>
+    </div>
+    <div class="section-score">
+      <span style="color:var(--text-dim)">Score:</span>
+      <div class="score-bar"><div class="score-fill" id="quiz-fill"></div></div>
+      <span class="score-text" id="quiz-score-text">0/10</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                        -->
+<!-- ═══════════════════════════════════════════════════ -->
+<script>
+/* ── Globals ──────────────────────────────────────── */
+const totalProblems = 30;
+let solvedTotal = 0;
+const sectionComplete = { s1: false, s2: false, s3: false, s4: false, s5: false, s6: false };
+
+function updateProgress() {
+  const pct = Math.round((solvedTotal / totalProblems) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = solvedTotal + ' / ' + totalProblems + ' problems completed';
+}
+
+/* ── Card Toggle ─────────────────────────────────── */
+function toggleCard(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+}
+
+/* ── Helper: normalize answer string ─────────────── */
+function norm(s) {
+  return s.trim().toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/[''`]/g, '')
+    .replace(/\u2013/g, '-')
+    .replace(/\u2014/g, '-');
+}
+
+/* ── Helper: show feedback ───────────────────────── */
+function showFeedback(elId, isCorrect, msg) {
+  const el = document.getElementById(elId);
+  el.className = 'feedback show ' + (isCorrect ? 'correct-fb' : 'incorrect-fb');
+  el.innerHTML = msg;
+}
+
+function clearFeedback(elId) {
+  const el = document.getElementById(elId);
+  el.className = 'feedback';
+  el.innerHTML = '';
+}
+
+/* ── Helper: spring pop animation ────────────────── */
+function springPop(el) {
+  el.classList.remove('spring-pop');
+  void el.offsetWidth;
+  el.classList.add('spring-pop');
+}
+
+function shakeEl(el) {
+  el.classList.remove('shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+}
+
+/* ── Helper: mark input correct/incorrect ────────── */
+function markInput(inputEl, isCorrect) {
+  inputEl.classList.remove('correct-input', 'incorrect-input');
+  inputEl.classList.add(isCorrect ? 'correct-input' : 'incorrect-input');
+  if (isCorrect) {
+    springPop(inputEl);
+  } else {
+    shakeEl(inputEl);
+  }
+  setTimeout(() => inputEl.classList.remove('correct-input', 'incorrect-input'), 1500);
+}
+
+/* ── Helper: update section score ────────────────── */
+function updateSectionScore(fillId, textId, correct, total) {
+  document.getElementById(fillId).style.width = (total > 0 ? (correct / total * 100) : 0) + '%';
+  document.getElementById(textId).textContent = correct + '/' + total;
+}
+
+/* ── Helper: mark section complete ───────────────── */
+function markSectionComplete(cardId, sectionKey) {
+  if (!sectionComplete[sectionKey]) {
+    sectionComplete[sectionKey] = true;
+    document.getElementById(cardId).classList.add('completed');
+  }
+}
+
+/* ── Helper: check numeric answer within tolerance ── */
+function numClose(userVal, correctVal, tolerance) {
+  const u = parseFloat(userVal);
+  if (isNaN(u)) return false;
+  return Math.abs(u - correctVal) <= tolerance;
+}
+
+/* ── Element Data ────────────────────────────────── */
+const elements = {
+  H:  { name: 'Hydrogen',  mass: 1.008,   z: 1 },
+  He: { name: 'Helium',    mass: 4.003,   z: 2 },
+  Li: { name: 'Lithium',   mass: 6.941,   z: 3 },
+  Be: { name: 'Beryllium', mass: 9.012,   z: 4 },
+  B:  { name: 'Boron',     mass: 10.81,   z: 5 },
+  C:  { name: 'Carbon',    mass: 12.011,  z: 6 },
+  N:  { name: 'Nitrogen',  mass: 14.007,  z: 7 },
+  O:  { name: 'Oxygen',    mass: 15.999,  z: 8 },
+  F:  { name: 'Fluorine',  mass: 18.998,  z: 9 },
+  Ne: { name: 'Neon',      mass: 20.180,  z: 10 },
+  Na: { name: 'Sodium',    mass: 22.990,  z: 11 },
+  Mg: { name: 'Magnesium', mass: 24.305,  z: 12 },
+  Al: { name: 'Aluminum',  mass: 26.982,  z: 13 },
+  Si: { name: 'Silicon',   mass: 28.086,  z: 14 },
+  P:  { name: 'Phosphorus',mass: 30.974,  z: 15 },
+  S:  { name: 'Sulfur',    mass: 32.06,   z: 16 },
+  Cl: { name: 'Chlorine',  mass: 35.45,   z: 17 },
+  Ar: { name: 'Argon',     mass: 39.948,  z: 18 },
+  K:  { name: 'Potassium', mass: 39.098,  z: 19 },
+  Ca: { name: 'Calcium',   mass: 40.078,  z: 20 },
+  Fe: { name: 'Iron',      mass: 55.845,  z: 26 },
+  Cu: { name: 'Copper',    mass: 63.546,  z: 29 },
+  Zn: { name: 'Zinc',      mass: 65.38,   z: 30 },
+  Br: { name: 'Bromine',   mass: 79.904,  z: 35 },
+  Ag: { name: 'Silver',    mass: 107.868, z: 47 },
+  Au: { name: 'Gold',      mass: 196.967, z: 79 }
+};
+
+const NA = 6.022e23;
+
+/* ═══════════════════════════════════════════════════ */
+/*  SECTION 1: AVOGADRO'S NUMBER & THE MOLE          */
+/* ═══════════════════════════════════════════════════ */
+
+/* -- Conversion Tool -- */
+function updateConv1() {
+  const massG = parseFloat(document.getElementById('conv1-grams').value);
+  const molarMass = parseFloat(document.getElementById('conv1-element').value);
+  const elName = document.getElementById('conv1-element').selectedOptions[0].getAttribute('data-name');
+  const result = document.getElementById('conv1-result');
+
+  if (isNaN(massG) || massG <= 0) {
+    result.style.display = 'none';
+    return;
+  }
+
+  const moles = massG / molarMass;
+  const atoms = moles * NA;
+
+  result.style.display = 'block';
+  result.innerHTML =
+    '<span class="dim-step">Step 1:</span> ' + massG.toFixed(3) + ' g ' + elName +
+    ' &times; (1 mol / ' + molarMass.toFixed(3) + ' g) = <strong>' + moles.toFixed(4) + ' mol</strong><br>' +
+    '<span class="dim-step">Step 2:</span> ' + moles.toFixed(4) + ' mol &times; 6.022 &times; 10<sup>23</sup> atoms/mol = <strong>' +
+    atoms.toExponential(3) + ' atoms</strong>';
+}
+
+/* -- Practice Problems -- */
+const s1Problems = [
+  {
+    promptHTML: 'How many moles are in 24.022 g of carbon (C = 12.011 g/mol)?',
+    answer: 2.0,
+    tolerance: 0.05,
+    unit: 'mol',
+    explanation: '24.022 g &divide; 12.011 g/mol = 2.000 mol'
+  },
+  {
+    promptHTML: 'How many atoms are in 2.0 moles of iron (Fe)?',
+    answer: 1.2044e24,
+    tolerance: 1e22,
+    unit: '',
+    acceptText: ['1.204e24', '1.2044e24', '1.204e+24', '1.2044e+24', '1.204 x 10^24', '1.2044 x 10^24', '1.2e24', '1.20e24'],
+    explanation: '2.0 mol &times; 6.022 &times; 10<sup>23</sup> = 1.204 &times; 10<sup>24</sup> atoms'
+  },
+  {
+    promptHTML: 'What is the mass (in grams) of 0.500 mol of gold (Au = 196.967 g/mol)?',
+    answer: 98.48,
+    tolerance: 0.5,
+    unit: 'g',
+    explanation: '0.500 mol &times; 196.967 g/mol = 98.48 g'
+  }
+];
+
+let s1Idx = 0, s1Correct = 0, s1Attempted = 0;
+
+function loadS1() {
+  if (s1Idx >= s1Problems.length) {
+    markSectionComplete('card1', 's1');
+    return;
+  }
+  const p = s1Problems[s1Idx];
+  document.getElementById('s1-current').textContent = s1Idx + 1;
+  document.getElementById('s1-prompt').innerHTML = p.promptHTML;
+  document.getElementById('s1-input').value = '';
+  document.getElementById('s1-input').classList.remove('correct-input', 'incorrect-input');
+  clearFeedback('s1-feedback');
+  document.getElementById('s1-input').focus();
+}
+
+function checkS1() {
+  const input = document.getElementById('s1-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const p = s1Problems[s1Idx];
+  let correct = false;
+
+  if (p.acceptText) {
+    const normVal = norm(val).replace(/\s/g, '');
+    correct = p.acceptText.some(a => norm(a).replace(/\s/g, '') === normVal);
+  }
+  if (!correct) {
+    correct = numClose(val, p.answer, p.tolerance);
+  }
+
+  s1Attempted++;
+  if (correct) {
+    s1Correct++;
+    solvedTotal++;
+    updateProgress();
+    showFeedback('s1-feedback', true, 'Correct! ' + p.explanation);
+    markInput(input, true);
+  } else {
+    showFeedback('s1-feedback', false, 'Not quite. Answer: <strong>' + (p.acceptText ? p.acceptText[0] : p.answer.toFixed(2)) + '</strong>. ' + p.explanation);
+    markInput(input, false);
+    solvedTotal++;
+    updateProgress();
+  }
+  document.getElementById('s1-score-display').textContent = s1Correct + '/' + s1Attempted;
+  updateSectionScore('s1-fill', 's1-score-text', s1Correct, s1Problems.length);
+  s1Idx++;
+  setTimeout(() => loadS1(), 1500);
+}
+
+function skipS1() {
+  const p = s1Problems[s1Idx];
+  s1Attempted++;
+  solvedTotal++;
+  updateProgress();
+  showFeedback('s1-feedback', false, 'Skipped. Answer: <strong>' + (p.acceptText ? p.acceptText[0] : p.answer.toFixed(2)) + '</strong>. ' + p.explanation);
+  document.getElementById('s1-score-display').textContent = s1Correct + '/' + s1Attempted;
+  updateSectionScore('s1-fill', 's1-score-text', s1Correct, s1Problems.length);
+  s1Idx++;
+  setTimeout(() => loadS1(), 1500);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  SECTION 2: MOLAR MASS                             */
+/* ═══════════════════════════════════════════════════ */
+
+/* -- Periodic Table Mini -- */
+const ptElements = ['H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al','Si','P','S','Cl','Ar','K','Ca','Fe','Cu','Zn','Br','Ag','Au'];
+
+function buildPT() {
+  const grid = document.getElementById('pt-grid');
+  ptElements.forEach(sym => {
+    const el = elements[sym];
+    const div = document.createElement('div');
+    div.className = 'pt-el';
+    div.innerHTML = '<div class="pt-symbol">' + sym + '</div><div class="pt-mass">' + el.mass + '</div><div class="pt-name">' + el.name + '</div>';
+    div.onclick = () => {
+      document.querySelectorAll('.pt-el').forEach(e => e.classList.remove('selected'));
+      div.classList.add('selected');
+      document.getElementById('pt-info').innerHTML =
+        '<span style="color:var(--amber)">' + sym + '</span> &mdash; ' + el.name +
+        ' &mdash; Molar mass: <strong>' + el.mass + ' g/mol</strong> &mdash; Z = ' + el.z;
+      springPop(div);
+    };
+    grid.appendChild(div);
+  });
+}
+
+/* -- Molecule Builder -- */
+const molElements = ['H','C','N','O','S','Na','Cl','Fe','P','Ca'];
+let molCounts = {};
+
+function initMolBuilder() {
+  const btnRow = document.getElementById('mol-add-btns');
+  molElements.forEach(sym => {
+    molCounts[sym] = 0;
+    const btn = document.createElement('button');
+    btn.className = 'mol-atom-btn';
+    btn.innerHTML = sym + ' <span class="mol-count" id="mol-cnt-' + sym + '">0</span>';
+    btn.onclick = () => {
+      molCounts[sym]++;
+      document.getElementById('mol-cnt-' + sym).textContent = molCounts[sym];
+      updateMolResult();
+    };
+    btn.oncontextmenu = (e) => {
+      e.preventDefault();
+      if (molCounts[sym] > 0) {
+        molCounts[sym]--;
+        document.getElementById('mol-cnt-' + sym).textContent = molCounts[sym];
+        updateMolResult();
+      }
+    };
+    btnRow.appendChild(btn);
+  });
+
+  const hint = document.createElement('div');
+  hint.style.cssText = 'font-size:.6rem;color:var(--text-dim);margin-top:.4rem';
+  hint.textContent = 'Left-click to add, right-click to remove';
+  btnRow.parentElement.insertBefore(hint, btnRow.nextSibling);
+}
+
+function updateMolResult() {
+  let formula = '';
+  let steps = '';
+  let total = 0;
+  let hasAtoms = false;
+
+  molElements.forEach(sym => {
+    if (molCounts[sym] > 0) {
+      hasAtoms = true;
+      formula += sym + (molCounts[sym] > 1 ? '<sub>' + molCounts[sym] + '</sub>' : '');
+      const contribution = molCounts[sym] * elements[sym].mass;
+      total += contribution;
+      steps += '<div class="mol-step">' + molCounts[sym] + ' &times; ' + sym +
+        ' (' + elements[sym].mass + ') = ' + contribution.toFixed(3) + ' g/mol</div>';
+    }
+  });
+
+  document.getElementById('mol-formula').innerHTML = hasAtoms ? formula : '--';
+  document.getElementById('mol-steps').innerHTML = steps;
+  document.getElementById('mol-total').innerHTML = 'Total: <strong>' + total.toFixed(3) + ' g/mol</strong>';
+}
+
+function resetMolBuilder() {
+  molElements.forEach(sym => {
+    molCounts[sym] = 0;
+    document.getElementById('mol-cnt-' + sym).textContent = '0';
+  });
+  updateMolResult();
+}
+
+/* -- Practice Problems -- */
+const s2Problems = [
+  {
+    promptHTML: 'Calculate the molar mass of NaCl (g/mol)',
+    answer: 58.44,
+    tolerance: 0.05,
+    explanation: 'Na (22.990) + Cl (35.45) = 58.44 g/mol'
+  },
+  {
+    promptHTML: 'Calculate the molar mass of H<sub>2</sub>SO<sub>4</sub> (g/mol)',
+    answer: 98.079,
+    tolerance: 0.05,
+    explanation: '2(1.008) + 32.06 + 4(15.999) = 2.016 + 32.06 + 63.996 = 98.072 g/mol'
+  },
+  {
+    promptHTML: 'Calculate the molar mass of C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> (glucose, g/mol)',
+    answer: 180.156,
+    tolerance: 0.1,
+    explanation: '6(12.011) + 12(1.008) + 6(15.999) = 72.066 + 12.096 + 95.994 = 180.156 g/mol'
+  },
+  {
+    promptHTML: 'Calculate the molar mass of Fe<sub>2</sub>O<sub>3</sub> (g/mol)',
+    answer: 159.688,
+    tolerance: 0.1,
+    explanation: '2(55.845) + 3(15.999) = 111.690 + 47.997 = 159.687 g/mol'
+  }
+];
+
+let s2Idx = 0, s2Correct = 0, s2Attempted = 0;
+
+function loadS2() {
+  if (s2Idx >= s2Problems.length) {
+    markSectionComplete('card2', 's2');
+    return;
+  }
+  const p = s2Problems[s2Idx];
+  document.getElementById('s2-current').textContent = s2Idx + 1;
+  document.getElementById('s2-prompt').innerHTML = p.promptHTML;
+  document.getElementById('s2-input').value = '';
+  document.getElementById('s2-input').classList.remove('correct-input', 'incorrect-input');
+  clearFeedback('s2-feedback');
+  document.getElementById('s2-input').focus();
+}
+
+function checkS2() {
+  const input = document.getElementById('s2-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const p = s2Problems[s2Idx];
+  const correct = numClose(val, p.answer, p.tolerance);
+
+  s2Attempted++;
+  if (correct) {
+    s2Correct++;
+    solvedTotal++;
+    updateProgress();
+    showFeedback('s2-feedback', true, 'Correct! ' + p.explanation);
+    markInput(input, true);
+  } else {
+    showFeedback('s2-feedback', false, 'Not quite. Answer: <strong>' + p.answer.toFixed(3) + ' g/mol</strong>. ' + p.explanation);
+    markInput(input, false);
+    solvedTotal++;
+    updateProgress();
+  }
+  document.getElementById('s2-score-display').textContent = s2Correct + '/' + s2Attempted;
+  updateSectionScore('s2-fill', 's2-score-text', s2Correct, s2Problems.length);
+  s2Idx++;
+  setTimeout(() => loadS2(), 1500);
+}
+
+function skipS2() {
+  const p = s2Problems[s2Idx];
+  s2Attempted++;
+  solvedTotal++;
+  updateProgress();
+  showFeedback('s2-feedback', false, 'Skipped. Answer: <strong>' + p.answer.toFixed(3) + ' g/mol</strong>. ' + p.explanation);
+  document.getElementById('s2-score-display').textContent = s2Correct + '/' + s2Attempted;
+  updateSectionScore('s2-fill', 's2-score-text', s2Correct, s2Problems.length);
+  s2Idx++;
+  setTimeout(() => loadS2(), 1500);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  SECTION 3: MOLE CONVERSIONS                       */
+/* ═══════════════════════════════════════════════════ */
+
+/* -- Interactive Converter -- */
+function updateConv3() {
+  const molarMass = parseFloat(document.getElementById('conv3-substance').value);
+  const substName = document.getElementById('conv3-substance').selectedOptions[0].getAttribute('data-name');
+  const fromUnit = document.getElementById('conv3-from').value;
+  const toUnit = document.getElementById('conv3-to').value;
+  const val = parseFloat(document.getElementById('conv3-value').value);
+  const result = document.getElementById('conv3-result');
+
+  if (isNaN(val) || val <= 0) {
+    result.style.display = 'none';
+    return;
+  }
+
+  if (fromUnit === toUnit) {
+    result.style.display = 'block';
+    result.innerHTML = '<span class="dim-step">Same units:</span> ' + val + ' ' + fromUnit;
+    return;
+  }
+
+  let html = '';
+  let finalVal;
+
+  if (fromUnit === 'grams' && toUnit === 'moles') {
+    finalVal = val / molarMass;
+    html = '<span class="dim-step">Step 1:</span> ' + val.toFixed(3) + ' g ' + substName +
+      ' &times; (1 mol / ' + molarMass.toFixed(3) + ' g) = <strong>' + finalVal.toFixed(4) + ' mol</strong>';
+  } else if (fromUnit === 'grams' && toUnit === 'particles') {
+    const moles = val / molarMass;
+    finalVal = moles * NA;
+    html = '<span class="dim-step">Step 1:</span> ' + val.toFixed(3) + ' g &times; (1 mol / ' + molarMass.toFixed(3) + ' g) = ' + moles.toFixed(4) + ' mol<br>' +
+      '<span class="dim-step">Step 2:</span> ' + moles.toFixed(4) + ' mol &times; 6.022 &times; 10<sup>23</sup> = <strong>' + finalVal.toExponential(3) + ' particles</strong>';
+  } else if (fromUnit === 'moles' && toUnit === 'grams') {
+    finalVal = val * molarMass;
+    html = '<span class="dim-step">Step 1:</span> ' + val.toFixed(4) + ' mol &times; ' + molarMass.toFixed(3) + ' g/mol = <strong>' + finalVal.toFixed(3) + ' g</strong>';
+  } else if (fromUnit === 'moles' && toUnit === 'particles') {
+    finalVal = val * NA;
+    html = '<span class="dim-step">Step 1:</span> ' + val.toFixed(4) + ' mol &times; 6.022 &times; 10<sup>23</sup> = <strong>' + finalVal.toExponential(3) + ' particles</strong>';
+  } else if (fromUnit === 'particles' && toUnit === 'moles') {
+    finalVal = val / NA;
+    html = '<span class="dim-step">Step 1:</span> ' + val.toExponential(3) + ' particles &divide; 6.022 &times; 10<sup>23</sup> = <strong>' + finalVal.toFixed(4) + ' mol</strong>';
+  } else if (fromUnit === 'particles' && toUnit === 'grams') {
+    const moles = val / NA;
+    finalVal = moles * molarMass;
+    html = '<span class="dim-step">Step 1:</span> ' + val.toExponential(3) + ' particles &divide; 6.022 &times; 10<sup>23</sup> = ' + moles.toFixed(4) + ' mol<br>' +
+      '<span class="dim-step">Step 2:</span> ' + moles.toFixed(4) + ' mol &times; ' + molarMass.toFixed(3) + ' g/mol = <strong>' + finalVal.toFixed(3) + ' g</strong>';
+  }
+
+  result.style.display = 'block';
+  result.innerHTML = html;
+}
+
+/* -- Practice Problems -- */
+const s3Problems = [
+  {
+    promptHTML: 'Convert 36.03 g of H<sub>2</sub>O to moles. (M = 18.015 g/mol)',
+    answer: 2.0,
+    tolerance: 0.05,
+    explanation: '36.03 g &divide; 18.015 g/mol = 2.000 mol'
+  },
+  {
+    promptHTML: 'How many grams are in 3.50 mol of NaCl? (M = 58.44 g/mol)',
+    answer: 204.54,
+    tolerance: 0.5,
+    explanation: '3.50 mol &times; 58.44 g/mol = 204.54 g'
+  },
+  {
+    promptHTML: 'Convert 1.806 &times; 10<sup>24</sup> molecules of CO<sub>2</sub> to moles.',
+    answer: 3.0,
+    tolerance: 0.05,
+    explanation: '1.806 &times; 10<sup>24</sup> &divide; 6.022 &times; 10<sup>23</sup> = 3.00 mol'
+  },
+  {
+    promptHTML: 'How many molecules are in 0.250 mol of H<sub>2</sub>O?',
+    answer: 1.506e23,
+    tolerance: 1e21,
+    acceptText: ['1.506e23', '1.51e23', '1.5e23', '1.506e+23', '1.51e+23', '1.505e23', '1.505e+23'],
+    explanation: '0.250 mol &times; 6.022 &times; 10<sup>23</sup> = 1.506 &times; 10<sup>23</sup> molecules'
+  },
+  {
+    promptHTML: 'How many moles of O<sub>2</sub> are in a 320 g emergency air bank? (M = 32.00 g/mol)',
+    answer: 10.0,
+    tolerance: 0.1,
+    explanation: '320 g &divide; 32.00 g/mol = 10.0 mol O<sub>2</sub>'
+  }
+];
+
+let s3Idx = 0, s3Correct = 0, s3Attempted = 0;
+
+function loadS3() {
+  if (s3Idx >= s3Problems.length) {
+    markSectionComplete('card3', 's3');
+    return;
+  }
+  const p = s3Problems[s3Idx];
+  document.getElementById('s3-current').textContent = s3Idx + 1;
+  document.getElementById('s3-prompt').innerHTML = p.promptHTML;
+  document.getElementById('s3-input').value = '';
+  document.getElementById('s3-input').classList.remove('correct-input', 'incorrect-input');
+  clearFeedback('s3-feedback');
+  document.getElementById('s3-input').focus();
+}
+
+function checkS3() {
+  const input = document.getElementById('s3-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const p = s3Problems[s3Idx];
+  let correct = false;
+
+  if (p.acceptText) {
+    const normVal = norm(val).replace(/\s/g, '');
+    correct = p.acceptText.some(a => norm(a).replace(/\s/g, '') === normVal);
+  }
+  if (!correct) {
+    correct = numClose(val, p.answer, p.tolerance);
+  }
+
+  s3Attempted++;
+  if (correct) {
+    s3Correct++;
+    solvedTotal++;
+    updateProgress();
+    showFeedback('s3-feedback', true, 'Correct! ' + p.explanation);
+    markInput(input, true);
+  } else {
+    const ansText = p.acceptText ? p.acceptText[0] : p.answer.toFixed(2);
+    showFeedback('s3-feedback', false, 'Not quite. Answer: <strong>' + ansText + '</strong>. ' + p.explanation);
+    markInput(input, false);
+    solvedTotal++;
+    updateProgress();
+  }
+  document.getElementById('s3-score-display').textContent = s3Correct + '/' + s3Attempted;
+  updateSectionScore('s3-fill', 's3-score-text', s3Correct, s3Problems.length);
+  s3Idx++;
+  setTimeout(() => loadS3(), 1500);
+}
+
+function skipS3() {
+  const p = s3Problems[s3Idx];
+  s3Attempted++;
+  solvedTotal++;
+  updateProgress();
+  const ansText = p.acceptText ? p.acceptText[0] : p.answer.toFixed(2);
+  showFeedback('s3-feedback', false, 'Skipped. Answer: <strong>' + ansText + '</strong>. ' + p.explanation);
+  document.getElementById('s3-score-display').textContent = s3Correct + '/' + s3Attempted;
+  updateSectionScore('s3-fill', 's3-score-text', s3Correct, s3Problems.length);
+  s3Idx++;
+  setTimeout(() => loadS3(), 1500);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  SECTION 4: PERCENT COMPOSITION                    */
+/* ═══════════════════════════════════════════════════ */
+
+/* -- Formula Parser -- */
+function parseFormula(formula) {
+  const result = {};
+  const regex = /([A-Z][a-z]?)(\d*)/g;
+  let match;
+  while ((match = regex.exec(formula)) !== null) {
+    if (match[1]) {
+      const sym = match[1];
+      const count = match[2] ? parseInt(match[2]) : 1;
+      result[sym] = (result[sym] || 0) + count;
+    }
+  }
+  return result;
+}
+
+function getMolarMass(formula) {
+  const parsed = parseFormula(formula);
+  let total = 0;
+  for (const sym in parsed) {
+    if (elements[sym]) {
+      total += elements[sym].mass * parsed[sym];
+    }
+  }
+  return { parsed, total };
+}
+
+const pieColors = ['#6366f1', '#22c55e', '#ec4899', '#f59e0b', '#3b82f6', '#06b6d4', '#ef4444', '#a855f7'];
+
+function updatePieChart() {
+  const formula = document.getElementById('pie-formula').value;
+  const { parsed, total } = getMolarMass(formula);
+
+  // Build breakdown
+  let breakdownHTML = '<strong>Molar mass breakdown of ' + formula + ':</strong><br>';
+  const slices = [];
+  let colorIdx = 0;
+
+  for (const sym in parsed) {
+    if (elements[sym]) {
+      const mass = elements[sym].mass * parsed[sym];
+      const pct = (mass / total) * 100;
+      slices.push({ sym, count: parsed[sym], mass, pct, color: pieColors[colorIdx % pieColors.length] });
+      breakdownHTML += '<span class="dim-step">' + sym + ':</span> ' +
+        parsed[sym] + ' &times; ' + elements[sym].mass + ' = ' + mass.toFixed(3) +
+        ' g/mol (' + pct.toFixed(1) + '%)<br>';
+      colorIdx++;
+    }
+  }
+  breakdownHTML += '<span class="dim-step">Total:</span> ' + total.toFixed(3) + ' g/mol';
+
+  document.getElementById('pie-breakdown').innerHTML = breakdownHTML;
+
+  // Draw pie chart
+  const canvas = document.getElementById('pie-canvas');
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const r = Math.min(cx, cy) - 5;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  let startAngle = -Math.PI / 2;
+  slices.forEach(s => {
+    const sliceAngle = (s.pct / 100) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startAngle, startAngle + sliceAngle);
+    ctx.closePath();
+    ctx.fillStyle = s.color;
+    ctx.fill();
+    ctx.strokeStyle = '#1e2128';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    startAngle += sliceAngle;
+  });
+
+  // Center hole for donut effect
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.45, 0, Math.PI * 2);
+  ctx.fillStyle = '#1e2128';
+  ctx.fill();
+
+  // Center text
+  ctx.fillStyle = '#fff';
+  ctx.font = '600 12px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(total.toFixed(1), cx, cy - 6);
+  ctx.fillStyle = '#8b90a0';
+  ctx.font = '10px JetBrains Mono';
+  ctx.fillText('g/mol', cx, cy + 8);
+
+  // Legend
+  const legend = document.getElementById('pie-legend');
+  legend.innerHTML = '';
+  slices.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'pie-legend-item';
+    item.innerHTML = '<div class="pie-swatch" style="background:' + s.color + '"></div>' +
+      '<span>' + s.sym + ' &mdash; ' + s.pct.toFixed(1) + '%</span>';
+    legend.appendChild(item);
+  });
+}
+
+/* -- Practice Problems -- */
+const s4Problems = [
+  {
+    promptHTML: 'What is the percent oxygen in H<sub>2</sub>O? (answer to 1 decimal)',
+    answer: 88.8,
+    tolerance: 0.5,
+    explanation: 'O mass: 15.999 / 18.015 &times; 100 = 88.8%'
+  },
+  {
+    promptHTML: 'What is the percent nitrogen in C<sub>7</sub>H<sub>5</sub>N<sub>3</sub>O<sub>6</sub> (TNT)? (to 1 decimal)',
+    answer: 18.5,
+    tolerance: 0.5,
+    explanation: '3(14.007) = 42.021 / 227.131 &times; 100 = 18.5%'
+  },
+  {
+    promptHTML: 'What is the percent iron in Fe<sub>2</sub>O<sub>3</sub>? (to 1 decimal)',
+    answer: 69.9,
+    tolerance: 0.5,
+    explanation: '2(55.845) = 111.69 / 159.69 &times; 100 = 69.9%'
+  },
+  {
+    promptHTML: 'A compound is 40.0% C, 6.7% H, and 53.3% O. What is its empirical formula? (e.g. CH2O)',
+    answer: 0,
+    tolerance: 0,
+    acceptText: ['ch2o'],
+    explanation: 'C: 40.0/12.011=3.33, H: 6.7/1.008=6.65, O: 53.3/15.999=3.33. Ratio 1:2:1 = CH<sub>2</sub>O'
+  }
+];
+
+let s4Idx = 0, s4Correct = 0, s4Attempted = 0;
+
+function loadS4() {
+  if (s4Idx >= s4Problems.length) {
+    markSectionComplete('card4', 's4');
+    return;
+  }
+  const p = s4Problems[s4Idx];
+  document.getElementById('s4-current').textContent = s4Idx + 1;
+  document.getElementById('s4-prompt').innerHTML = p.promptHTML;
+  document.getElementById('s4-input').value = '';
+  document.getElementById('s4-input').classList.remove('correct-input', 'incorrect-input');
+  clearFeedback('s4-feedback');
+  document.getElementById('s4-input').focus();
+}
+
+function checkS4() {
+  const input = document.getElementById('s4-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const p = s4Problems[s4Idx];
+  let correct = false;
+
+  if (p.acceptText) {
+    const normVal = norm(val).replace(/\s/g, '');
+    correct = p.acceptText.some(a => norm(a).replace(/\s/g, '') === normVal);
+  }
+  if (!correct && p.tolerance > 0) {
+    correct = numClose(val, p.answer, p.tolerance);
+  }
+
+  s4Attempted++;
+  if (correct) {
+    s4Correct++;
+    solvedTotal++;
+    updateProgress();
+    showFeedback('s4-feedback', true, 'Correct! ' + p.explanation);
+    markInput(input, true);
+  } else {
+    const ansText = p.acceptText ? p.acceptText[0] : p.answer.toFixed(1);
+    showFeedback('s4-feedback', false, 'Not quite. Answer: <strong>' + ansText + '</strong>. ' + p.explanation);
+    markInput(input, false);
+    solvedTotal++;
+    updateProgress();
+  }
+  document.getElementById('s4-score-display').textContent = s4Correct + '/' + s4Attempted;
+  updateSectionScore('s4-fill', 's4-score-text', s4Correct, s4Problems.length);
+  s4Idx++;
+  setTimeout(() => loadS4(), 1500);
+}
+
+function skipS4() {
+  const p = s4Problems[s4Idx];
+  s4Attempted++;
+  solvedTotal++;
+  updateProgress();
+  const ansText = p.acceptText ? p.acceptText[0] : p.answer.toFixed(1);
+  showFeedback('s4-feedback', false, 'Skipped. Answer: <strong>' + ansText + '</strong>. ' + p.explanation);
+  document.getElementById('s4-score-display').textContent = s4Correct + '/' + s4Attempted;
+  updateSectionScore('s4-fill', 's4-score-text', s4Correct, s4Problems.length);
+  s4Idx++;
+  setTimeout(() => loadS4(), 1500);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  SECTION 5: BALANCING EQUATIONS & STOICHIOMETRY    */
+/* ═══════════════════════════════════════════════════ */
+
+const balancerEquations = [
+  {
+    reactants: [
+      { formula: 'H<sub>2</sub>', atoms: { H: 2 } },
+      { formula: 'O<sub>2</sub>', atoms: { O: 2 } }
+    ],
+    products: [
+      { formula: 'H<sub>2</sub>O', atoms: { H: 2, O: 1 } }
+    ],
+    answer: [2, 1, 2]
+  },
+  {
+    reactants: [
+      { formula: 'Fe', atoms: { Fe: 1 } },
+      { formula: 'O<sub>2</sub>', atoms: { O: 2 } }
+    ],
+    products: [
+      { formula: 'Fe<sub>2</sub>O<sub>3</sub>', atoms: { Fe: 2, O: 3 } }
+    ],
+    answer: [4, 3, 2]
+  },
+  {
+    reactants: [
+      { formula: 'CH<sub>4</sub>', atoms: { C: 1, H: 4 } },
+      { formula: 'O<sub>2</sub>', atoms: { O: 2 } }
+    ],
+    products: [
+      { formula: 'CO<sub>2</sub>', atoms: { C: 1, O: 2 } },
+      { formula: 'H<sub>2</sub>O', atoms: { H: 2, O: 1 } }
+    ],
+    answer: [1, 2, 1, 2]
+  },
+  {
+    reactants: [
+      { formula: 'N<sub>2</sub>', atoms: { N: 2 } },
+      { formula: 'H<sub>2</sub>', atoms: { H: 2 } }
+    ],
+    products: [
+      { formula: 'NH<sub>3</sub>', atoms: { N: 1, H: 3 } }
+    ],
+    answer: [1, 3, 2]
+  }
+];
+
+let balCoeffs = [];
+let balEqIdx = 0;
+let balancerSolved = {};
+
+function loadBalancer() {
+  balEqIdx = parseInt(document.getElementById('bal-select').value);
+  const eq = balancerEquations[balEqIdx];
+  const numCompounds = eq.reactants.length + eq.products.length;
+  balCoeffs = new Array(numCompounds).fill(1);
+  renderBalancer();
+}
+
+function renderBalancer() {
+  const eq = balancerEquations[balEqIdx];
+  const eqDiv = document.getElementById('bal-equation');
+  let html = '';
+  let coeffIdx = 0;
+
+  eq.reactants.forEach((r, i) => {
+    if (i > 0) html += ' <span class="eq-plus">+</span> ';
+    html += renderCoeffControl(coeffIdx, r.formula);
+    coeffIdx++;
+  });
+
+  html += ' <span class="eq-arrow">&rarr;</span> ';
+
+  eq.products.forEach((p, i) => {
+    if (i > 0) html += ' <span class="eq-plus">+</span> ';
+    html += renderCoeffControl(coeffIdx, p.formula);
+    coeffIdx++;
+  });
+
+  eqDiv.innerHTML = html;
+
+  // Count atoms
+  const allAtoms = new Set();
+  eq.reactants.forEach(r => Object.keys(r.atoms).forEach(a => allAtoms.add(a)));
+  eq.products.forEach(p => Object.keys(p.atoms).forEach(a => allAtoms.add(a)));
+
+  const leftCounts = {};
+  const rightCounts = {};
+  allAtoms.forEach(a => { leftCounts[a] = 0; rightCounts[a] = 0; });
+
+  let ci = 0;
+  eq.reactants.forEach(r => {
+    for (const a in r.atoms) {
+      leftCounts[a] += r.atoms[a] * balCoeffs[ci];
+    }
+    ci++;
+  });
+  eq.products.forEach(p => {
+    for (const a in p.atoms) {
+      rightCounts[a] += p.atoms[a] * balCoeffs[ci];
+    }
+    ci++;
+  });
+
+  let leftHTML = '<div class="side-label">Reactants</div>';
+  let rightHTML = '<div class="side-label">Products</div>';
+  let allBalanced = true;
+
+  allAtoms.forEach(a => {
+    const balanced = leftCounts[a] === rightCounts[a];
+    if (!balanced) allBalanced = false;
+    const cls = balanced ? 'balanced' : 'unbalanced';
+    leftHTML += '<div class="atom-row"><span class="atom-sym">' + a + '</span><span class="atom-num ' + cls + '">' + leftCounts[a] + '</span></div>';
+    rightHTML += '<div class="atom-row"><span class="atom-sym">' + a + '</span><span class="atom-num ' + cls + '">' + rightCounts[a] + '</span></div>';
+  });
+
+  document.getElementById('bal-atoms').innerHTML =
+    '<div class="atom-count-side">' + leftHTML + '</div>' +
+    '<div class="atom-count-side">' + rightHTML + '</div>';
+
+  const badge = document.getElementById('bal-badge');
+  if (allBalanced && !balancerSolved[balEqIdx]) {
+    badge.classList.add('show');
+    badge.textContent = 'Balanced!';
+    balancerSolved[balEqIdx] = true;
+    springPop(badge);
+  } else if (!allBalanced) {
+    badge.classList.remove('show');
+  }
+}
+
+function renderCoeffControl(idx, formula) {
+  return '<div class="coeff-control">' +
+    '<button class="coeff-btn" onclick="changeCoeff(' + idx + ', 1)">+</button>' +
+    '<span class="coeff-value" id="coeff-' + idx + '">' + balCoeffs[idx] + '</span>' +
+    '<button class="coeff-btn" onclick="changeCoeff(' + idx + ', -1)">&minus;</button>' +
+    '</div>' +
+    '<span class="eq-compound">' + formula + '</span>';
+}
+
+function changeCoeff(idx, delta) {
+  balCoeffs[idx] = Math.max(1, Math.min(10, balCoeffs[idx] + delta));
+  renderBalancer();
+}
+
+/* -- Stoichiometry Practice -- */
+const s5Problems = [
+  {
+    promptHTML: '2 H<sub>2</sub> + O<sub>2</sub> &rarr; 2 H<sub>2</sub>O<br>How many moles of H<sub>2</sub>O are produced from 4.0 mol H<sub>2</sub>?',
+    answer: 4.0,
+    tolerance: 0.1,
+    explanation: 'Mole ratio H<sub>2</sub>:H<sub>2</sub>O = 2:2 = 1:1. So 4.0 mol H<sub>2</sub> produces 4.0 mol H<sub>2</sub>O.'
+  },
+  {
+    promptHTML: 'N<sub>2</sub> + 3 H<sub>2</sub> &rarr; 2 NH<sub>3</sub><br>How many moles of NH<sub>3</sub> are produced from 6.0 mol H<sub>2</sub>?',
+    answer: 4.0,
+    tolerance: 0.1,
+    explanation: 'Mole ratio H<sub>2</sub>:NH<sub>3</sub> = 3:2. So 6.0 &times; (2/3) = 4.0 mol NH<sub>3</sub>.'
+  },
+  {
+    promptHTML: 'CH<sub>4</sub> + 2 O<sub>2</sub> &rarr; CO<sub>2</sub> + 2 H<sub>2</sub>O<br>How many moles of O<sub>2</sub> are needed to react with 3.5 mol CH<sub>4</sub>?',
+    answer: 7.0,
+    tolerance: 0.1,
+    explanation: 'Mole ratio CH<sub>4</sub>:O<sub>2</sub> = 1:2. So 3.5 &times; 2 = 7.0 mol O<sub>2</sub>.'
+  },
+  {
+    promptHTML: '2 C<sub>12</sub>H<sub>26</sub> + 37 O<sub>2</sub> &rarr; 24 CO<sub>2</sub> + 26 H<sub>2</sub>O<br>How many moles of CO<sub>2</sub> from 5.0 mol JP-5 (C<sub>12</sub>H<sub>26</sub>)?',
+    answer: 60.0,
+    tolerance: 0.5,
+    explanation: 'Mole ratio C<sub>12</sub>H<sub>26</sub>:CO<sub>2</sub> = 2:24 = 1:12. So 5.0 &times; 12 = 60.0 mol CO<sub>2</sub>.'
+  }
+];
+
+let s5Idx = 0, s5Correct = 0, s5Attempted = 0;
+
+function loadS5() {
+  if (s5Idx >= s5Problems.length) {
+    markSectionComplete('card5', 's5');
+    return;
+  }
+  const p = s5Problems[s5Idx];
+  document.getElementById('s5-current').textContent = s5Idx + 1;
+  document.getElementById('s5-prompt').innerHTML = p.promptHTML;
+  document.getElementById('s5-input').value = '';
+  document.getElementById('s5-input').classList.remove('correct-input', 'incorrect-input');
+  clearFeedback('s5-feedback');
+  document.getElementById('s5-input').focus();
+}
+
+function checkS5() {
+  const input = document.getElementById('s5-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const p = s5Problems[s5Idx];
+  const correct = numClose(val, p.answer, p.tolerance);
+
+  s5Attempted++;
+  if (correct) {
+    s5Correct++;
+    solvedTotal++;
+    updateProgress();
+    showFeedback('s5-feedback', true, 'Correct! ' + p.explanation);
+    markInput(input, true);
+  } else {
+    showFeedback('s5-feedback', false, 'Not quite. Answer: <strong>' + p.answer.toFixed(1) + '</strong>. ' + p.explanation);
+    markInput(input, false);
+    solvedTotal++;
+    updateProgress();
+  }
+  document.getElementById('s5-score-display').textContent = s5Correct + '/' + s5Attempted;
+  updateSectionScore('s5-fill', 's5-score-text', s5Correct, s5Problems.length);
+  s5Idx++;
+  setTimeout(() => loadS5(), 1500);
+}
+
+function skipS5() {
+  const p = s5Problems[s5Idx];
+  s5Attempted++;
+  solvedTotal++;
+  updateProgress();
+  showFeedback('s5-feedback', false, 'Skipped. Answer: <strong>' + p.answer.toFixed(1) + '</strong>. ' + p.explanation);
+  document.getElementById('s5-score-display').textContent = s5Correct + '/' + s5Attempted;
+  updateSectionScore('s5-fill', 's5-score-text', s5Correct, s5Problems.length);
+  s5Idx++;
+  setTimeout(() => loadS5(), 1500);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  SECTION 6: QUICK QUIZ                             */
+/* ═══════════════════════════════════════════════════ */
+const quizProblems = [
+  {
+    text: 'How many particles are in 1 mole of any substance?',
+    answer: ['6.022e23', '6.022 x 10^23', '6.022x10^23', '6.022 * 10^23', '6.02e23', '6.02 x 10^23', '6.022e+23'],
+    explanation: "Avogadro's number: 6.022 x 10^23"
+  },
+  {
+    text: 'What is the molar mass of water (H<sub>2</sub>O) in g/mol? (to 2 decimals)',
+    answer: ['18.02', '18.015', '18.01'],
+    numAnswer: 18.015,
+    numTolerance: 0.02,
+    explanation: '2(1.008) + 15.999 = 18.015 g/mol'
+  },
+  {
+    text: 'How many moles are in 44.0 g of CO<sub>2</sub>? (M = 44.009 g/mol)',
+    answer: ['1.0', '1', '1.00'],
+    numAnswer: 1.0,
+    numTolerance: 0.02,
+    explanation: '44.0 / 44.009 = 1.00 mol'
+  },
+  {
+    text: 'What is the molar mass of H<sub>2</sub>SO<sub>4</sub> in g/mol? (to 1 decimal)',
+    answer: ['98.1', '98.08', '98.0', '98.07'],
+    numAnswer: 98.08,
+    numTolerance: 0.1,
+    explanation: '2(1.008) + 32.06 + 4(15.999) = 98.08 g/mol'
+  },
+  {
+    text: 'What is the percent oxygen in CO<sub>2</sub>? (to 1 decimal)',
+    answer: ['72.7'],
+    numAnswer: 72.7,
+    numTolerance: 0.5,
+    explanation: '2(15.999) / 44.009 x 100 = 72.7%'
+  },
+  {
+    text: 'Balance: _Fe + _O<sub>2</sub> &rarr; _Fe<sub>2</sub>O<sub>3</sub>. What coefficient goes in front of Fe?',
+    answer: ['4'],
+    numAnswer: 4,
+    numTolerance: 0,
+    explanation: '4 Fe + 3 O<sub>2</sub> &rarr; 2 Fe<sub>2</sub>O<sub>3</sub>'
+  },
+  {
+    text: 'Given 2 H<sub>2</sub> + O<sub>2</sub> &rarr; 2 H<sub>2</sub>O, how many moles of O<sub>2</sub> react with 6 mol H<sub>2</sub>?',
+    answer: ['3', '3.0'],
+    numAnswer: 3.0,
+    numTolerance: 0.1,
+    explanation: 'Ratio H<sub>2</sub>:O<sub>2</sub> = 2:1. So 6/2 = 3 mol O<sub>2</sub>.'
+  },
+  {
+    text: 'How many grams are in 2.5 mol of NaCl? (M = 58.44 g/mol)',
+    answer: ['146.1', '146.10'],
+    numAnswer: 146.1,
+    numTolerance: 0.5,
+    explanation: '2.5 x 58.44 = 146.1 g'
+  },
+  {
+    text: 'What is the percent hydrogen in CH<sub>4</sub>? (to 1 decimal)',
+    answer: ['25.1'],
+    numAnswer: 25.1,
+    numTolerance: 0.5,
+    explanation: '4(1.008) / 16.043 x 100 = 25.1%'
+  },
+  {
+    text: 'A compound is 52.2% C, 13.0% H, and 34.8% O. What is its empirical formula?',
+    answer: ['c2h6o', 'c2h6o1'],
+    explanation: 'C: 52.2/12.011=4.35, H: 13.0/1.008=12.9, O: 34.8/15.999=2.18. Ratio 2:6:1 = C<sub>2</sub>H<sub>6</sub>O (ethanol)'
+  }
+];
+
+let quizIdx = 0, quizCorrectCount = 0, quizAttempted = 0;
+
+function loadQuiz() {
+  if (quizIdx >= quizProblems.length) {
+    markSectionComplete('card6', 's6');
+    document.getElementById('quiz-qnum').textContent = 'Complete!';
+    document.getElementById('quiz-qtext').innerHTML = 'You scored <strong>' + quizCorrectCount + ' / ' + quizProblems.length + '</strong>. ' +
+      (quizCorrectCount >= 8 ? 'Excellent work!' : quizCorrectCount >= 6 ? 'Good job! Review the ones you missed.' : 'Keep practicing -- revisit the sections above.');
+    document.getElementById('quiz-input').style.display = 'none';
+    document.querySelector('#quiz-problem .btn-primary').style.display = 'none';
+    document.querySelector('#quiz-problem .btn:last-of-type').style.display = 'none';
+    return;
+  }
+  const p = quizProblems[quizIdx];
+  document.getElementById('quiz-current').textContent = quizIdx + 1;
+  document.getElementById('quiz-qnum').textContent = 'Question ' + (quizIdx + 1);
+  document.getElementById('quiz-qtext').innerHTML = p.text;
+  document.getElementById('quiz-input').value = '';
+  document.getElementById('quiz-input').style.display = '';
+  document.getElementById('quiz-input').classList.remove('correct-input', 'incorrect-input');
+  clearFeedback('quiz-feedback');
+  document.getElementById('quiz-input').focus();
+}
+
+function checkQuiz() {
+  const input = document.getElementById('quiz-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const p = quizProblems[quizIdx];
+
+  let correct = false;
+  const normVal = norm(val).replace(/\s/g, '');
+  correct = p.answer.some(a => norm(a).replace(/\s/g, '') === normVal);
+
+  if (!correct && p.numAnswer !== undefined) {
+    correct = numClose(val, p.numAnswer, p.numTolerance);
+  }
+
+  quizAttempted++;
+  if (correct) {
+    quizCorrectCount++;
+    solvedTotal++;
+    updateProgress();
+    showFeedback('quiz-feedback', true, 'Correct! ' + p.explanation);
+    markInput(input, true);
+  } else {
+    showFeedback('quiz-feedback', false, 'Answer: <strong>' + p.answer[0] + '</strong>. ' + p.explanation);
+    markInput(input, false);
+    solvedTotal++;
+    updateProgress();
+  }
+  document.getElementById('quiz-score').textContent = 'Score: ' + quizCorrectCount + ' / ' + quizAttempted;
+  updateSectionScore('quiz-fill', 'quiz-score-text', quizCorrectCount, quizProblems.length);
+  quizIdx++;
+  setTimeout(() => loadQuiz(), 1500);
+}
+
+function skipQuiz() {
+  const p = quizProblems[quizIdx];
+  quizAttempted++;
+  solvedTotal++;
+  updateProgress();
+  showFeedback('quiz-feedback', false, 'Skipped. Answer: <strong>' + p.answer[0] + '</strong>. ' + p.explanation);
+  document.getElementById('quiz-score').textContent = 'Score: ' + quizCorrectCount + ' / ' + quizAttempted;
+  updateSectionScore('quiz-fill', 'quiz-score-text', quizCorrectCount, quizProblems.length);
+  quizIdx++;
+  setTimeout(() => loadQuiz(), 1500);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  ENTER KEY HANDLERS                                 */
+/* ═══════════════════════════════════════════════════ */
+document.getElementById('s1-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkS1(); });
+document.getElementById('s2-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkS2(); });
+document.getElementById('s3-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkS3(); });
+document.getElementById('s4-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkS4(); });
+document.getElementById('s5-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkS5(); });
+document.getElementById('quiz-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkQuiz(); });
+
+/* ═══════════════════════════════════════════════════ */
+/*  INIT                                               */
+/* ═══════════════════════════════════════════════════ */
+buildPT();
+initMolBuilder();
+updatePieChart();
+loadBalancer();
+loadS1();
+loadS2();
+loadS3();
+loadS4();
+loadS5();
+loadQuiz();
+
+</script>
+</body>
+</html>

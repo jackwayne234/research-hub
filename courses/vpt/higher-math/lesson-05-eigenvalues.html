@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 5: Eigenvalues &amp; Eigenvectors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.matrix-input{display:inline-grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
+.matrix-input.m3{grid-template-columns:1fr 1fr 1fr}
+.matrix-input input{width:60px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 6px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.82rem;outline:none;transition:border-color var(--transition)}
+.matrix-input input:focus{border-color:var(--indigo)}
+.matrix-bracket{display:inline-flex;align-items:center;gap:4px}
+.matrix-bracket::before,.matrix-bracket::after{content:'';display:block;width:4px;height:100%;border:2px solid var(--text-dim);min-height:60px}
+.matrix-bracket::before{border-right:none;border-radius:4px 0 0 4px}
+.matrix-bracket::after{border-left:none;border-radius:0 4px 4px 0}
+.step-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin:12px 0}
+.step-box .step-title{font-size:.72rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.step-box .step-content{font-size:.78rem;line-height:1.8;color:var(--text)}
+.step-box .step-content strong{color:var(--text-bright)}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@keyframes springBounce{0%{transform:scale(1,1)}25%{transform:scale(1.1,0.9)}50%{transform:scale(0.95,1.05)}75%{transform:scale(1.02,0.98)}100%{transform:scale(1,1)}}
+.spring-mass{cursor:grab}
+.spring-mass:active{cursor:grabbing}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.matrix-input input{width:48px;padding:6px 4px;font-size:.75rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>05</span> Eigenvalues &amp; Eigenvectors</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: WHAT ARE EIGENVALUES? -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> What Are Eigenvalues?</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When a matrix A acts on most vectors, the result points in a completely different direction. But certain special vectors only get <strong>scaled</strong> -- they stay on the same line through the origin. These are called <strong>eigenvectors</strong>, and the scale factor is the <strong>eigenvalue</strong>.
+    </p>
+
+    <div class="formula-box large">Av = &lambda;v</div>
+
+    <p class="concept-text">
+      Here, <strong>v</strong> is a nonzero eigenvector and <strong>&lambda;</strong> (lambda) is the corresponding eigenvalue. The eigenvalue can be positive (same direction), negative (flipped), zero (collapsed to origin), or even complex. The eigenvector v must be nonzero -- otherwise the equation is trivially satisfied for any &lambda;.
+    </p>
+
+    <div class="key-point">Eigenvectors are the "natural directions" of a transformation. The matrix stretches, compresses, or flips along these directions without rotating.</div>
+
+    <p class="concept-text">
+      <strong>Geometric interpretation:</strong> Think of a matrix as a machine that warps space. Most vectors get both stretched and rotated. Eigenvectors are the lucky ones that only get stretched (or compressed or flipped). The eigenvalue tells you the stretch factor. If &lambda; = 2, the eigenvector doubles in length. If &lambda; = -1, it flips direction. If &lambda; = 0, it gets crushed to the origin.
+    </p>
+
+    <div class="formula-box green">&lambda; &gt; 0 : stretch in same direction &nbsp;|&nbsp; &lambda; &lt; 0 : flip &amp; stretch &nbsp;|&nbsp; &lambda; = 0 : collapse to origin</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Eigenvector Visualizer</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Enter a 2x2 matrix. The SVG shows how every direction transforms. Eigenvectors (vectors that stay on their line) are highlighted in green.</p>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+        <div>
+          <div style="font-size:.68rem;color:var(--text-dim);margin-bottom:4px">Matrix A:</div>
+          <div class="matrix-bracket">
+            <div class="matrix-input">
+              <input type="number" id="eig_a" value="2" step="0.1" oninput="drawEigenViz()">
+              <input type="number" id="eig_b" value="1" step="0.1" oninput="drawEigenViz()">
+              <input type="number" id="eig_c" value="1" step="0.1" oninput="drawEigenViz()">
+              <input type="number" id="eig_d" value="2" step="0.1" oninput="drawEigenViz()">
+            </div>
+          </div>
+        </div>
+        <div class="scenario-tabs" style="margin:0">
+          <button class="scenario-tab" onclick="setEigPreset(2,1,1,2,this)">[[2,1],[1,2]]</button>
+          <button class="scenario-tab" onclick="setEigPreset(3,0,0,1,this)">Diagonal</button>
+          <button class="scenario-tab" onclick="setEigPreset(0,-1,1,0,this)">Rotation 90</button>
+          <button class="scenario-tab" onclick="setEigPreset(2,1,0,2,this)">Repeated &lambda;</button>
+          <button class="scenario-tab" onclick="setEigPreset(1,2,0,3,this)">Upper Tri</button>
+        </div>
+      </div>
+      <svg id="eigSvg" width="100%" viewBox="-4 -4 8 8" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-height:400px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Eigenvalue &lambda;1</span><br><span class="value green" id="eigL1">--</span></div>
+        <div class="readout-item"><span class="label">Eigenvalue &lambda;2</span><br><span class="value pink" id="eigL2">--</span></div>
+        <div class="readout-item"><span class="label">Trace (a+d)</span><br><span class="value indigo" id="eigTrace">--</span></div>
+        <div class="readout-item"><span class="label">det(A)</span><br><span class="value amber" id="eigDet">--</span></div>
+      </div>
+    </div>
+
+    <div class="key-point">Quick check: &lambda;1 + &lambda;2 = trace(A) and &lambda;1 * &lambda;2 = det(A). This is always true for 2x2 matrices.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> If Av = 3v for a nonzero vector v, what is the eigenvalue?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1-in" placeholder="&lambda; = ?">
+          <button class="btn btn-sm" onclick="checkNum('s1p1-in',3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-in-fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> Can the zero vector be an eigenvector?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">Yes -- Av = &lambda;v is satisfied for v = 0 with any &lambda;</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','correct')">No -- eigenvectors must be nonzero by definition</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">Only if &lambda; = 0</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+      <div class="problem" id="s1p3">
+        <p><strong>3.</strong> For a 2x2 matrix with eigenvalues &lambda;1 = 5 and &lambda;2 = -2, what is the determinant?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p3-in" placeholder="det = ?">
+          <button class="btn btn-sm" onclick="checkNum('s1p3-in',-10,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p3-in-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: THE CHARACTERISTIC EQUATION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> The Characteristic Equation</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Starting from Av = &lambda;v, we rearrange to get <strong>(A - &lambda;I)v = 0</strong>. For a nonzero solution v to exist, the matrix (A - &lambda;I) must be singular. That means its determinant must be zero.
+    </p>
+
+    <div class="formula-box large">det(A - &lambda;I) = 0</div>
+
+    <p class="concept-text">
+      This is the <strong>characteristic equation</strong>. For an n x n matrix, expanding the determinant gives a polynomial of degree n in &lambda; -- the <strong>characteristic polynomial</strong>. Its roots are the eigenvalues.
+    </p>
+
+    <div class="step-box">
+      <div class="step-title">Worked Example: 2x2 Matrix</div>
+      <div class="step-content">
+        <p>Let A = [[4, 1], [2, 3]]. Find the eigenvalues.</p>
+        <p><strong>Step 1:</strong> Form A - &lambda;I = [[4-&lambda;, 1], [2, 3-&lambda;]]</p>
+        <p><strong>Step 2:</strong> Compute det(A - &lambda;I) = (4-&lambda;)(3-&lambda;) - (1)(2)</p>
+        <p><strong>Step 3:</strong> Expand: &lambda;&sup2; - 7&lambda; + 12 - 2 = &lambda;&sup2; - 7&lambda; + 10</p>
+        <p><strong>Step 4:</strong> Factor: (&lambda; - 5)(&lambda; - 2) = 0</p>
+        <p><strong>Result:</strong> &lambda;1 = 5, &lambda;2 = 2</p>
+        <p style="color:var(--text-dim);font-size:.72rem;margin-top:8px">Check: 5 + 2 = 7 = trace(A) = 4 + 3. Also: 5 * 2 = 10 = det(A) = 4*3 - 1*2.</p>
+      </div>
+    </div>
+
+    <div class="formula-box pink">2x2 shortcut: &lambda;&sup2; - tr(A)&lambda; + det(A) = 0 &nbsp; &rarr; &nbsp; &lambda; = [tr &plusmn; sqrt(tr&sup2; - 4det)] / 2</div>
+
+    <div class="step-box">
+      <div class="step-title">Worked Example: 3x3 Matrix</div>
+      <div class="step-content">
+        <p>Let A = [[2, 0, 0], [0, 3, 1], [0, 1, 3]]. Find the eigenvalues.</p>
+        <p><strong>Step 1:</strong> A - &lambda;I = [[2-&lambda;, 0, 0], [0, 3-&lambda;, 1], [0, 1, 3-&lambda;]]</p>
+        <p><strong>Step 2:</strong> Block triangular -- expand along first row:</p>
+        <p>det = (2-&lambda;) * det([[3-&lambda;, 1], [1, 3-&lambda;]]) = (2-&lambda;)[(3-&lambda;)&sup2; - 1]</p>
+        <p><strong>Step 3:</strong> (3-&lambda;)&sup2; - 1 = &lambda;&sup2; - 6&lambda; + 8 = (&lambda;-4)(&lambda;-2)</p>
+        <p><strong>Step 4:</strong> det = (2-&lambda;)(&lambda;-4)(&lambda;-2) = -(2-&lambda;)&sup2;(4-&lambda;) hmm... actually:</p>
+        <p>det = (2-&lambda;)(&lambda;-4)(&lambda;-2) = -(2-&lambda;)(&lambda;-4)(-(2-&lambda;)) = ... let me be careful:</p>
+        <p>(2-&lambda;)[(&lambda;-4)(&lambda;-2)] = 0 gives &lambda; = 2 (double root), &lambda; = 4</p>
+        <p><strong>Result:</strong> &lambda;1 = 2 (algebraic multiplicity 2), &lambda;2 = 4</p>
+      </div>
+    </div>
+
+    <div class="key-point">The characteristic polynomial of an n x n matrix is always degree n, so there are exactly n eigenvalues (counting multiplicity, possibly complex).</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Characteristic Polynomial Calculator</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Enter a 2x2 matrix to see its characteristic polynomial and eigenvalues computed step by step.</p>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+        <div>
+          <div style="font-size:.68rem;color:var(--text-dim);margin-bottom:4px">Matrix A:</div>
+          <div class="matrix-bracket">
+            <div class="matrix-input">
+              <input type="number" id="cp_a" value="4" step="1" oninput="computeCharPoly()">
+              <input type="number" id="cp_b" value="1" step="1" oninput="computeCharPoly()">
+              <input type="number" id="cp_c" value="2" step="1" oninput="computeCharPoly()">
+              <input type="number" id="cp_d" value="3" step="1" oninput="computeCharPoly()">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="cpSteps" style="font-size:.78rem;line-height:2;color:var(--text)"></div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s2p1">
+        <p><strong>1.</strong> Find the eigenvalues of A = [[5, 0], [0, 3]]. What is the larger eigenvalue?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1-in" placeholder="&lambda;max = ?">
+          <button class="btn btn-sm" onclick="checkNum('s2p1-in',5,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-in-fb"></div>
+      </div>
+      <div class="problem" id="s2p2">
+        <p><strong>2.</strong> For A = [[1, 4], [2, 3]], the characteristic polynomial is &lambda;&sup2; - 4&lambda; - 5 = 0. What are the eigenvalues?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">&lambda; = 4 and &lambda; = -5</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','correct')">&lambda; = 5 and &lambda; = -1</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">&lambda; = 2 and &lambda; = -2</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem" id="s2p3">
+        <p><strong>3.</strong> A 3x3 matrix has eigenvalues 1, 2, and 4. What is its determinant? (Hint: det = product of eigenvalues)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p3-in" placeholder="det = ?">
+          <button class="btn btn-sm" onclick="checkNum('s2p3-in',8,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p3-in-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: FINDING EIGENVECTORS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Finding Eigenvectors</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Once you have an eigenvalue &lambda;, the corresponding eigenvectors are the nonzero vectors in the <strong>null space</strong> of (A - &lambda;I). That is, solve the homogeneous system (A - &lambda;I)v = 0.
+    </p>
+
+    <div class="formula-box large">Eigenvectors of &lambda; = Nul(A - &lambda;I) \ {0}</div>
+
+    <p class="concept-text">
+      The set of all eigenvectors corresponding to &lambda;, together with the zero vector, forms the <strong>eigenspace</strong> E&lambda;. This is a subspace of R^n. Its dimension is the <strong>geometric multiplicity</strong> of &lambda;.
+    </p>
+
+    <div class="step-box">
+      <div class="step-title">Worked Example: Finding Eigenvectors</div>
+      <div class="step-content">
+        <p>A = [[4, 1], [2, 3]], eigenvalues &lambda;1 = 5, &lambda;2 = 2 (from Section 2).</p>
+        <br>
+        <p><strong>For &lambda;1 = 5:</strong></p>
+        <p>A - 5I = [[-1, 1], [2, -2]] &rarr; Row reduce: [[1, -1], [0, 0]]</p>
+        <p>x1 - x2 = 0, so x1 = x2. Free variable: x2 = t</p>
+        <p>v = t[1, 1]. Eigenvector: <strong>[1, 1]</strong> (or any nonzero scalar multiple)</p>
+        <br>
+        <p><strong>For &lambda;2 = 2:</strong></p>
+        <p>A - 2I = [[2, 1], [2, 1]] &rarr; Row reduce: [[2, 1], [0, 0]]</p>
+        <p>2x1 + x2 = 0, so x2 = -2x1. Free variable: x1 = t</p>
+        <p>v = t[1, -2]. Eigenvector: <strong>[1, -2]</strong></p>
+      </div>
+    </div>
+
+    <div class="formula-box green">Geometric multiplicity &le; Algebraic multiplicity (always)</div>
+
+    <div class="key-point">An eigenvector is never unique -- any nonzero scalar multiple of an eigenvector is also an eigenvector for the same eigenvalue. The eigenspace is an entire subspace (line, plane, etc.).</div>
+
+    <p class="concept-text">
+      <strong>The process, summarized:</strong>
+    </p>
+    <div class="step-box">
+      <div class="step-title">Algorithm: Find All Eigenvalues &amp; Eigenvectors</div>
+      <div class="step-content">
+        <p><strong>Step 1:</strong> Compute det(A - &lambda;I) = 0 to find eigenvalues</p>
+        <p><strong>Step 2:</strong> For each eigenvalue &lambda;i, form the matrix (A - &lambda;iI)</p>
+        <p><strong>Step 3:</strong> Row reduce (A - &lambda;iI) to echelon form</p>
+        <p><strong>Step 4:</strong> Find the null space -- each free variable gives one eigenvector direction</p>
+        <p><strong>Step 5:</strong> Write the eigenspace E&lambda;i = span{v1, v2, ...}</p>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s3p1">
+        <p><strong>1.</strong> A = [[3, 0], [0, 7]]. This is diagonal. What is the eigenvector for &lambda; = 7?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','wrong')">[1, 0]</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','correct')">[0, 1] (or any scalar multiple)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','wrong')">[1, 1]</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','wrong')">[7, 3]</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem" id="s3p2">
+        <p><strong>2.</strong> For A = [[2, 1], [0, 2]], &lambda; = 2 (repeated). A - 2I = [[0, 1], [0, 0]]. What is the eigenspace dimension (geometric multiplicity)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2-in" placeholder="dim = ?">
+          <button class="btn btn-sm" onclick="checkNum('s3p2-in',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-in-fb"></div>
+      </div>
+      <div class="problem" id="s3p3">
+        <p><strong>3.</strong> If a 3x3 matrix has eigenvalue &lambda; = 4 with algebraic multiplicity 3, what are the possible geometric multiplicities?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p3','correct')">1, 2, or 3 (geometric mult. is between 1 and algebraic mult.)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p3','wrong')">Only 3 -- they must be equal</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p3','wrong')">0, 1, 2, or 3</button>
+        </div>
+        <div class="feedback" id="s3p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: DIAGONALIZATION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Diagonalization</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A matrix A is <strong>diagonalizable</strong> if we can write it as A = PDP&sup1;, where D is a diagonal matrix of eigenvalues and P is the matrix whose columns are the corresponding eigenvectors.
+    </p>
+
+    <div class="formula-box large">A = PDP&sup1;</div>
+
+    <div class="formula-box green">
+      P = [v1 | v2 | ... | vn], &nbsp; D = diag(&lambda;1, &lambda;2, ..., &lambda;n)
+    </div>
+
+    <p class="concept-text">
+      <strong>When is A diagonalizable?</strong> A is diagonalizable if and only if it has n linearly independent eigenvectors. This is guaranteed when all eigenvalues are distinct. If eigenvalues repeat, you need the geometric multiplicity to equal the algebraic multiplicity for each eigenvalue.
+    </p>
+
+    <div class="key-point">A matrix with n distinct eigenvalues is always diagonalizable. A matrix with repeated eigenvalues might or might not be diagonalizable.</div>
+
+    <p class="concept-text">
+      <strong>The power of diagonalization:</strong> Computing A^n becomes trivial. Since D is diagonal, D^n just raises each diagonal entry to the nth power.
+    </p>
+
+    <div class="formula-box pink">A^n = PD^nP&sup1; &nbsp; where &nbsp; D^n = diag(&lambda;1^n, &lambda;2^n, ..., &lambda;n^n)</div>
+
+    <div class="step-box">
+      <div class="step-title">Worked Example: Diagonalize and Compute A^10</div>
+      <div class="step-content">
+        <p>A = [[4, 1], [2, 3]]. We found &lambda;1 = 5, v1 = [1,1] and &lambda;2 = 2, v2 = [1,-2].</p>
+        <br>
+        <p><strong>Step 1:</strong> P = [[1, 1], [1, -2]], D = [[5, 0], [0, 2]]</p>
+        <p><strong>Step 2:</strong> P&sup1; = (1/(-3)) * [[-2, -1], [-1, 1]] = [[2/3, 1/3], [1/3, -1/3]]</p>
+        <p><strong>Step 3:</strong> A^10 = P * D^10 * P&sup1; = P * [[5^10, 0], [0, 2^10]] * P&sup1;</p>
+        <p>5^10 = 9,765,625 and 2^10 = 1,024</p>
+        <p>This is vastly easier than multiplying A by itself 10 times!</p>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Matrix Power via Diagonalization</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Choose a matrix and power n. See how A^n is computed using PD^nP^{-1} vs direct multiplication.</p>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+        <div>
+          <div style="font-size:.68rem;color:var(--text-dim);margin-bottom:4px">Matrix A:</div>
+          <div class="matrix-bracket">
+            <div class="matrix-input">
+              <input type="number" id="diag_a" value="2" step="1" oninput="computeDiag()">
+              <input type="number" id="diag_b" value="1" step="1" oninput="computeDiag()">
+              <input type="number" id="diag_c" value="1" step="1" oninput="computeDiag()">
+              <input type="number" id="diag_d" value="2" step="1" oninput="computeDiag()">
+            </div>
+          </div>
+        </div>
+        <div class="slider-row" style="flex:1;min-width:200px">
+          <label>Power n:</label>
+          <input type="range" id="diagPower" min="1" max="20" value="3" oninput="computeDiag()">
+          <span class="slider-val" id="diagPowerVal">3</span>
+        </div>
+      </div>
+      <div id="diagSteps" style="font-size:.78rem;line-height:2;color:var(--text)"></div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy Application:</strong> Matrix powers appear in discrete-time systems. If you model a ship's state vector at each time step as x(k+1) = Ax(k), then x(n) = A^n * x(0). Diagonalization makes predicting far-future states computationally efficient -- critical for real-time navigation and control systems.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s4p1">
+        <p><strong>1.</strong> Is A = [[2, 1], [0, 2]] diagonalizable?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p1','wrong')">Yes -- it has eigenvalue &lambda; = 2</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p1','correct')">No -- &lambda; = 2 has algebraic mult. 2 but geometric mult. 1 (not enough eigenvectors)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p1','wrong')">Cannot determine without more information</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> If D = diag(3, -1) and we want D^5, what are the diagonal entries?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','correct')">243 and -1 (since 3^5 = 243, (-1)^5 = -1)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">15 and -5</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">243 and 1</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: PHYSICS APPLICATIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Physics Applications</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Eigenvalues and eigenvectors are not just abstract algebra -- they are the <strong>language of physics</strong>. Nearly every physical system that can be described by a matrix has its essential physics encoded in the eigenvalues and eigenvectors.
+    </p>
+
+    <!-- Quantum Mechanics -->
+    <div class="sub-label">Quantum Mechanics: Energy Levels</div>
+
+    <div class="formula-box large">H&psi; = E&psi;</div>
+
+    <p class="concept-text">
+      The <strong>Schrodinger equation</strong> is literally an eigenvalue problem. The Hamiltonian operator H plays the role of the matrix, the wave function &psi; is the eigenvector, and the energy E is the eigenvalue. Allowed energy levels of a quantum system are exactly the eigenvalues of H.
+    </p>
+
+    <div class="formula-box green">
+      Eigenvalues of H &nbsp; = &nbsp; allowed energy levels E1, E2, E3, ...
+    </div>
+
+    <div class="key-point">When you measure the energy of a quantum system, you can only get eigenvalues of H. The probability of getting energy E_n depends on how much the state overlaps with eigenvector &psi;_n. This is why eigenvalues determine everything measurable in quantum mechanics.</div>
+
+    <!-- Inertia Tensor -->
+    <div class="sub-label">Principal Axes: Inertia Tensor</div>
+
+    <p class="concept-text">
+      A rigid body's rotational behavior is described by the <strong>inertia tensor</strong> I, a 3x3 symmetric matrix. Its eigenvalues are the <strong>principal moments of inertia</strong> (I1, I2, I3), and its eigenvectors are the <strong>principal axes</strong> -- the natural rotation axes of the body.
+    </p>
+
+    <div class="formula-box pink">I&omega; = &lambda;&omega; &nbsp; &rarr; &nbsp; principal moments I1, I2, I3</div>
+
+    <p class="concept-text">
+      When a rigid body spins around a principal axis, there is no wobble -- the angular momentum and angular velocity point in the same direction. Around any other axis, the body precesses.
+    </p>
+
+    <div class="navy-context">
+      <strong>Navy Application -- Ship Stability:</strong> The inertia tensor of a ship determines how it rolls, pitches, and yaws. The principal moments of inertia (eigenvalues) tell you which rotational modes are "easy" (small moment) vs "hard" (large moment). Naval architects design hull shapes so that the principal axes align with desired stability characteristics. The eigenvalues of the inertia tensor directly determine the natural periods of roll, pitch, and yaw oscillations.
+    </div>
+
+    <!-- Normal Modes -->
+    <div class="sub-label">Normal Modes of Coupled Oscillators</div>
+
+    <p class="concept-text">
+      Consider two masses connected by springs. The equations of motion can be written as M*x'' = -K*x, or equivalently x'' = -M^{-1}K*x. The eigenvalues of M^{-1}K give the squared natural frequencies &omega;&sup2;, and the eigenvectors give the <strong>normal modes</strong> -- patterns of motion where all parts oscillate at the same frequency.
+    </p>
+
+    <div class="formula-box amber">K*v = &omega;&sup2; M*v &nbsp; &rarr; &nbsp; Normal mode frequencies &omega;1, &omega;2, ...</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Coupled Oscillator Normal Modes</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Two masses connected by three springs. Adjust spring stiffness and masses to see how normal modes change. Click a mode to animate it.</p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px">
+        <div class="slider-row" style="flex:1;min-width:200px">
+          <label>k (outer):</label>
+          <input type="range" id="springK" min="0.5" max="5" step="0.1" value="1" oninput="updateSprings()">
+          <span class="slider-val" id="springKVal">1.0</span>
+        </div>
+        <div class="slider-row" style="flex:1;min-width:200px">
+          <label>k_c (coupling):</label>
+          <input type="range" id="springKc" min="0" max="5" step="0.1" value="1" oninput="updateSprings()">
+          <span class="slider-val" id="springKcVal">1.0</span>
+        </div>
+        <div class="slider-row" style="flex:1;min-width:200px">
+          <label>mass m:</label>
+          <input type="range" id="springM" min="0.5" max="5" step="0.1" value="1" oninput="updateSprings()">
+          <span class="slider-val" id="springMVal">1.0</span>
+        </div>
+      </div>
+
+      <svg id="springSvg" width="100%" viewBox="0 0 600 200" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius)"></svg>
+
+      <div class="scenario-tabs" style="margin-top:12px">
+        <button class="scenario-tab active" id="modeBtn1" onclick="animateMode(1)">Mode 1 (in phase)</button>
+        <button class="scenario-tab" id="modeBtn2" onclick="animateMode(2)">Mode 2 (out of phase)</button>
+        <button class="scenario-tab" onclick="stopSpringAnim()">Stop</button>
+      </div>
+
+      <div class="readout">
+        <div class="readout-item"><span class="label">&omega;1 (mode 1)</span><br><span class="value green" id="springW1">--</span></div>
+        <div class="readout-item"><span class="label">&omega;2 (mode 2)</span><br><span class="value pink" id="springW2">--</span></div>
+        <div class="readout-item"><span class="label">Mode 1 shape</span><br><span class="value amber" id="springMode1">--</span></div>
+        <div class="readout-item"><span class="label">Mode 2 shape</span><br><span class="value amber" id="springMode2">--</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy Application -- Structural Vibration:</strong> Ship hulls, propeller shafts, and mast structures are all coupled vibrating systems. Eigenvalue analysis determines the natural resonance frequencies. If engine RPM matches a natural frequency (eigenvalue), violent resonance occurs. Naval engineers use eigenvalue analysis to ensure operating frequencies stay away from structural resonances -- this is literally a matter of hull integrity and crew safety.
+    </div>
+
+    <div class="key-point">In physics, eigenvalues are always physically meaningful quantities: energy levels, resonant frequencies, principal moments, stability thresholds. Eigenvectors are the natural patterns: wave functions, normal modes, principal axes.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s5p1">
+        <p><strong>1.</strong> In quantum mechanics, if H&psi; = E&psi;, what does E represent?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">The wave function amplitude</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','correct')">An allowed energy level (eigenvalue of the Hamiltonian)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">The position of the particle</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> Two equal masses on springs have stiffness matrix eigenvalues &omega;&sup2; = 1 and &omega;&sup2; = 3. What are the natural frequencies?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','correct')">&omega; = 1 and &omega; = sqrt(3) = 1.73</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">&omega; = 1 and &omega; = 3</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">&omega; = 1 and &omega; = 9</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem" id="s5p3">
+        <p><strong>3.</strong> A ship's inertia tensor has eigenvalues I1=100, I2=500, I3=600 (kg*m^2). Which axis has the fastest natural oscillation (smallest moment of inertia)?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','correct')">Axis 1 (I1 = 100) -- smallest moment means easiest to rotate, fastest oscillation</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">Axis 3 (I3 = 600) -- largest moment</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">Cannot determine without eigenvectors</button>
+        </div>
+        <div class="feedback" id="s5p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: FINAL QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">Q</span> Final Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Definition</div>
+      <p class="q-text">If Av = &lambda;v, what is &lambda; called?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Eigenvector</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">Eigenvalue</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Determinant</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Singular value</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Characteristic Equation</div>
+      <p class="q-text">To find eigenvalues, you solve:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">det(A) = 0</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">A - &lambda;I = 0</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">det(A - &lambda;I) = 0</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">trace(A) = &lambda;</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- 2x2 Eigenvalues</div>
+      <p class="q-text">A = [[6, -1], [2, 3]]. The characteristic polynomial is &lambda;&sup2; - 9&lambda; + 20 = 0. What are the eigenvalues?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">&lambda; = 4 and &lambda; = 5</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">&lambda; = 9 and &lambda; = 20</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">&lambda; = 2 and &lambda; = 10</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">&lambda; = -4 and &lambda; = -5</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Eigenvector Property</div>
+      <p class="q-text">If v is an eigenvector of A with eigenvalue &lambda;, what is A(3v)?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">3v</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">3&lambda;v (since A(3v) = 3Av = 3&lambda;v)</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">&lambda;v</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">9&lambda;v</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Trace and Determinant</div>
+      <p class="q-text">A 2x2 matrix has eigenvalues 3 and 7. What is its trace?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">21</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">10 (sum of eigenvalues)</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">4</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">Cannot determine</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Diagonalization</div>
+      <p class="q-text">A 3x3 matrix has eigenvalues 1, 1, 2. Is it necessarily diagonalizable?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Yes -- all matrices with real eigenvalues are diagonalizable</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">Not necessarily -- depends on whether &lambda;=1 has geometric multiplicity 2</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">No -- repeated eigenvalues always prevent diagonalization</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Yes -- because it has at least 2 distinct eigenvalues</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Matrix Powers</div>
+      <p class="q-text">If A = PDP^{-1} and D = diag(2, -1), what is the (1,1) entry of D^4?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">16 (since 2^4 = 16)</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">8</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">4</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">-1</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Quantum Mechanics</div>
+      <p class="q-text">In the Schrodinger equation H&psi; = E&psi;, what role does E play?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">The eigenvector of the system</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">The wave function</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">The eigenvalue (energy level) of the Hamiltonian</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">The position operator</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Normal Modes</div>
+      <p class="q-text">In a coupled oscillator system, what do the eigenvectors of the stiffness matrix represent?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">The spring constants</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">The damping ratios</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">The normal modes (patterns of motion at a single frequency)</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">The mass distribution</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Invertibility</div>
+      <p class="q-text">A matrix has eigenvalues 3, -2, and 0. Is it invertible?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Yes -- it has 3 distinct eigenvalues</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">No -- det = product of eigenvalues = 0, so it is singular</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Yes -- det = 3 * (-2) * 0 = 6, which is nonzero</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Cannot determine without the eigenvectors</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again.';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: EIGENVECTOR VISUALIZER ==================== */
+function setEigPreset(a, b, c, d, btn) {
+  document.getElementById('eig_a').value = a;
+  document.getElementById('eig_b').value = b;
+  document.getElementById('eig_c').value = c;
+  document.getElementById('eig_d').value = d;
+  if (btn) {
+    btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(t){t.classList.remove('active')});
+    btn.classList.add('active');
+  }
+  drawEigenViz();
+}
+
+function eigenvalues2x2(a, b, c, d) {
+  var tr = a + d;
+  var det = a * d - b * c;
+  var disc = tr * tr - 4 * det;
+  if (disc >= 0) {
+    var sq = Math.sqrt(disc);
+    return { l1: (tr + sq) / 2, l2: (tr - sq) / 2, complex: false };
+  } else {
+    var sq = Math.sqrt(-disc);
+    return { l1r: tr / 2, l1i: sq / 2, complex: true };
+  }
+}
+
+function drawEigenViz() {
+  var a = +document.getElementById('eig_a').value;
+  var b = +document.getElementById('eig_b').value;
+  var c = +document.getElementById('eig_c').value;
+  var d = +document.getElementById('eig_d').value;
+
+  var tr = a + d;
+  var det = a * d - b * c;
+  var eig = eigenvalues2x2(a, b, c, d);
+
+  document.getElementById('eigTrace').textContent = tr.toFixed(2);
+  document.getElementById('eigDet').textContent = det.toFixed(2);
+
+  var svg = document.getElementById('eigSvg');
+  var h = '';
+
+  // defs for arrow markers
+  h += '<defs>';
+  h += '<marker id="arrGreen" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--green)"/></marker>';
+  h += '<marker id="arrPink" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--pink)"/></marker>';
+  h += '<marker id="arrDim" markerWidth="0.25" markerHeight="0.16" refX="0.25" refY="0.08" orient="auto"><path d="M0,0 L0.25,0.08 L0,0.16Z" fill="rgba(226,228,233,0.3)"/></marker>';
+  h += '<marker id="arrAmber" markerWidth="0.25" markerHeight="0.16" refX="0.25" refY="0.08" orient="auto"><path d="M0,0 L0.25,0.08 L0,0.16Z" fill="var(--amber)"/></marker>';
+  h += '</defs>';
+
+  // background grid
+  for (var i = -3; i <= 3; i++) {
+    h += '<line x1="'+i+'" y1="-3.5" x2="'+i+'" y2="3.5" stroke="#363b47" stroke-width="0.02"/>';
+    h += '<line x1="-3.5" y1="'+i+'" x2="3.5" y2="'+i+'" stroke="#363b47" stroke-width="0.02"/>';
+  }
+  h += '<line x1="-3.5" y1="0" x2="3.5" y2="0" stroke="#9ca3af" stroke-width="0.03"/>';
+  h += '<line x1="0" y1="-3.5" x2="0" y2="3.5" stroke="#9ca3af" stroke-width="0.03"/>';
+
+  // draw a circle of input vectors and their transformed outputs
+  var N = 24;
+  for (var i = 0; i < N; i++) {
+    var theta = (2 * Math.PI * i) / N;
+    var vx = Math.cos(theta);
+    var vy = Math.sin(theta);
+    // transformed: [a*vx + b*vy, c*vx + d*vy]
+    var tx = a * vx + b * vy;
+    var ty = c * vx + d * vy;
+    // draw original (faint) and transformed
+    h += '<line x1="0" y1="0" x2="'+vx+'" y2="'+(-vy)+'" stroke="rgba(226,228,233,0.15)" stroke-width="0.02"/>';
+    h += '<line x1="0" y1="0" x2="'+tx+'" y2="'+(-ty)+'" stroke="rgba(99,102,241,0.25)" stroke-width="0.03" marker-end="url(#arrDim)"/>';
+  }
+
+  // draw eigenvectors if real
+  if (!eig.complex) {
+    var l1 = eig.l1, l2 = eig.l2;
+    document.getElementById('eigL1').textContent = l1.toFixed(3);
+    document.getElementById('eigL2').textContent = l2.toFixed(3);
+
+    // eigenvector for l1: solve (A - l1*I)v = 0
+    // [a-l1, b; c, d-l1]v = 0
+    // if b != 0: v = [b, l1-a] (from first row: (a-l1)*x + b*y = 0 => y = (l1-a)/b * x)
+    // if b == 0 and c != 0: v = [l1-d, c]
+    // if both 0: v = [1, 0] for a, [0, 1] for d
+    function getEigenvector(lam) {
+      var r1 = a - lam, r2 = d - lam;
+      if (Math.abs(b) > 1e-8) return { x: b, y: lam - a };
+      if (Math.abs(c) > 1e-8) return { x: lam - d, y: c };
+      // diagonal case
+      if (Math.abs(r1) < 1e-8) return { x: 1, y: 0 };
+      return { x: 0, y: 1 };
+    }
+
+    var v1 = getEigenvector(l1);
+    var v2 = getEigenvector(l2);
+
+    // normalize for display
+    function norm(v) { var n = Math.sqrt(v.x*v.x + v.y*v.y); return n > 1e-10 ? { x: v.x/n, y: v.y/n } : v; }
+    var n1 = norm(v1), n2 = norm(v2);
+
+    // draw eigenspace lines (full extent)
+    h += '<line x1="'+(n1.x*-3.5)+'" y1="'+(n1.y*3.5)+'" x2="'+(n1.x*3.5)+'" y2="'+(n1.y*-3.5)+'" stroke="rgba(34,197,94,0.2)" stroke-width="0.04" stroke-dasharray="0.15,0.1"/>';
+    h += '<line x1="'+(n2.x*-3.5)+'" y1="'+(n2.y*3.5)+'" x2="'+(n2.x*3.5)+'" y2="'+(n2.y*-3.5)+'" stroke="rgba(236,72,153,0.2)" stroke-width="0.04" stroke-dasharray="0.15,0.1"/>';
+
+    // original eigenvectors
+    var scale = 1.5;
+    h += '<line x1="0" y1="0" x2="'+(n1.x*scale)+'" y2="'+(-n1.y*scale)+'" stroke="var(--green)" stroke-width="0.07" marker-end="url(#arrGreen)"/>';
+    h += '<line x1="0" y1="0" x2="'+(n2.x*scale)+'" y2="'+(-n2.y*scale)+'" stroke="var(--pink)" stroke-width="0.07" marker-end="url(#arrPink)"/>';
+
+    // transformed eigenvectors (should be on same line, scaled by lambda)
+    var t1x = n1.x * l1 * scale, t1y = n1.y * l1 * scale;
+    var t2x = n2.x * l2 * scale, t2y = n2.y * l2 * scale;
+    h += '<line x1="0" y1="0" x2="'+t1x+'" y2="'+(-t1y)+'" stroke="var(--green)" stroke-width="0.04" stroke-dasharray="0.1,0.06" marker-end="url(#arrGreen)"/>';
+    h += '<line x1="0" y1="0" x2="'+t2x+'" y2="'+(-t2y)+'" stroke="var(--pink)" stroke-width="0.04" stroke-dasharray="0.1,0.06" marker-end="url(#arrPink)"/>';
+
+    // labels
+    h += '<text x="'+(n1.x*scale+0.2)+'" y="'+(-n1.y*scale-0.15)+'" fill="var(--green)" font-size="0.3">v1 (&lambda;='+l1.toFixed(1)+')</text>';
+    h += '<text x="'+(n2.x*scale+0.2)+'" y="'+(-n2.y*scale-0.15)+'" fill="var(--pink)" font-size="0.3">v2 (&lambda;='+l2.toFixed(1)+')</text>';
+  } else {
+    document.getElementById('eigL1').textContent = eig.l1r.toFixed(2) + ' + ' + eig.l1i.toFixed(2) + 'i';
+    document.getElementById('eigL2').textContent = eig.l1r.toFixed(2) + ' - ' + eig.l1i.toFixed(2) + 'i';
+    h += '<text x="-2" y="-2.5" fill="var(--amber)" font-size="0.35">Complex eigenvalues</text>';
+    h += '<text x="-2" y="-2" fill="var(--text-dim)" font-size="0.28">No real eigenvectors -- rotation/spiral</text>';
+  }
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 2: CHARACTERISTIC POLY CALCULATOR ==================== */
+function computeCharPoly() {
+  var a = +document.getElementById('cp_a').value;
+  var b = +document.getElementById('cp_b').value;
+  var c = +document.getElementById('cp_c').value;
+  var d = +document.getElementById('cp_d').value;
+
+  var tr = a + d;
+  var det = a * d - b * c;
+  var disc = tr * tr - 4 * det;
+
+  var html = '';
+  html += '<div style="color:var(--text-dim)"><strong style="color:var(--indigo)">Step 1:</strong> A - &lambda;I = [[' + a + '-&lambda;, ' + b + '], [' + c + ', ' + d + '-&lambda;]]</div>';
+  html += '<div style="color:var(--text-dim)"><strong style="color:var(--indigo)">Step 2:</strong> det(A - &lambda;I) = (' + a + '-&lambda;)(' + d + '-&lambda;) - (' + b + ')(' + c + ')</div>';
+  html += '<div style="color:var(--text-dim)"><strong style="color:var(--indigo)">Step 3:</strong> = &lambda;&sup2; - ' + tr.toFixed(2) + '&lambda; + ' + det.toFixed(2) + '</div>';
+  html += '<div style="color:var(--text-dim);margin-top:4px"><strong style="color:var(--amber)">Discriminant:</strong> ' + tr.toFixed(2) + '&sup2; - 4(' + det.toFixed(2) + ') = ' + disc.toFixed(2) + '</div>';
+
+  if (disc >= 0) {
+    var sq = Math.sqrt(disc);
+    var l1 = (tr + sq) / 2, l2 = (tr - sq) / 2;
+    html += '<div style="margin-top:8px;color:var(--green);font-weight:600">&lambda;1 = ' + l1.toFixed(4) + ', &lambda;2 = ' + l2.toFixed(4) + '</div>';
+    html += '<div style="font-size:.7rem;color:var(--text-dim);margin-top:4px">Check: &lambda;1 + &lambda;2 = ' + (l1+l2).toFixed(4) + ' = trace = ' + tr.toFixed(2) + '. &lambda;1 * &lambda;2 = ' + (l1*l2).toFixed(4) + ' = det = ' + det.toFixed(2) + '.</div>';
+  } else {
+    var sq = Math.sqrt(-disc);
+    html += '<div style="margin-top:8px;color:var(--pink);font-weight:600">&lambda; = ' + (tr/2).toFixed(4) + ' &plusmn; ' + (sq/2).toFixed(4) + 'i (complex pair)</div>';
+    html += '<div style="font-size:.7rem;color:var(--text-dim);margin-top:4px">Complex eigenvalues occur when discriminant < 0. The matrix represents a rotation-scaling with no real eigenvectors.</div>';
+  }
+
+  document.getElementById('cpSteps').innerHTML = html;
+}
+
+/* ==================== SECTION 4: DIAGONALIZATION INTERACTIVE ==================== */
+function computeDiag() {
+  var a = +document.getElementById('diag_a').value;
+  var b = +document.getElementById('diag_b').value;
+  var c = +document.getElementById('diag_c').value;
+  var d = +document.getElementById('diag_d').value;
+  var n = +document.getElementById('diagPower').value;
+  document.getElementById('diagPowerVal').textContent = n;
+
+  var eig = eigenvalues2x2(a, b, c, d);
+  var html = '';
+
+  if (eig.complex) {
+    html += '<div style="color:var(--pink)">Complex eigenvalues -- diagonalization requires complex numbers. Eigenvalues: ' + eig.l1r.toFixed(2) + ' &plusmn; ' + eig.l1i.toFixed(2) + 'i</div>';
+    document.getElementById('diagSteps').innerHTML = html;
+    return;
+  }
+
+  var l1 = eig.l1, l2 = eig.l2;
+
+  // get eigenvectors
+  function getEV(lam) {
+    var r1 = a - lam;
+    if (Math.abs(b) > 1e-8) return [b, lam - a];
+    if (Math.abs(c) > 1e-8) return [lam - d, c];
+    if (Math.abs(r1) < 1e-8) return [1, 0];
+    return [0, 1];
+  }
+
+  var v1 = getEV(l1), v2 = getEV(l2);
+  var detP = v1[0]*v2[1] - v1[1]*v2[0];
+
+  if (Math.abs(detP) < 1e-10) {
+    html += '<div style="color:var(--amber)">Not diagonalizable -- eigenvectors are not linearly independent (det(P) = 0). &lambda;1 = &lambda;2 = ' + l1.toFixed(2) + ' but only 1 independent eigenvector.</div>';
+    document.getElementById('diagSteps').innerHTML = html;
+    return;
+  }
+
+  // P inverse: (1/detP) * [[v2[1], -v2[0]], [-v1[1], v1[0]]]... actually standard 2x2 inverse
+  var piA = v2[1]/detP, piB = -v2[0]/detP, piC = -v1[1]/detP, piD = v1[0]/detP;
+
+  // compute A^n = P * D^n * P^-1
+  var l1n = Math.pow(l1, n), l2n = Math.pow(l2, n);
+  // result = P * diag(l1n, l2n) * Pinv
+  var rA = v1[0]*l1n*piA + v2[0]*l2n*piC;
+  var rB = v1[0]*l1n*piB + v2[0]*l2n*piD;
+  var rC = v1[1]*l1n*piA + v2[1]*l2n*piC;
+  var rD = v1[1]*l1n*piB + v2[1]*l2n*piD;
+
+  html += '<div style="color:var(--text-dim)"><strong style="color:var(--green)">&lambda;1 = ' + l1.toFixed(3) + '</strong>, v1 = [' + v1[0].toFixed(2) + ', ' + v1[1].toFixed(2) + ']</div>';
+  html += '<div style="color:var(--text-dim)"><strong style="color:var(--pink)">&lambda;2 = ' + l2.toFixed(3) + '</strong>, v2 = [' + v2[0].toFixed(2) + ', ' + v2[1].toFixed(2) + ']</div>';
+  html += '<div style="color:var(--text-dim);margin-top:8px"><strong style="color:var(--indigo)">P</strong> = [[' + v1[0].toFixed(2) + ', ' + v2[0].toFixed(2) + '], [' + v1[1].toFixed(2) + ', ' + v2[1].toFixed(2) + ']]</div>';
+  html += '<div style="color:var(--text-dim)"><strong style="color:var(--indigo)">D</strong> = diag(' + l1.toFixed(3) + ', ' + l2.toFixed(3) + ')</div>';
+  html += '<div style="color:var(--text-dim)"><strong style="color:var(--indigo)">D^' + n + '</strong> = diag(' + l1n.toFixed(2) + ', ' + l2n.toFixed(2) + ')</div>';
+  html += '<div style="margin-top:8px;padding:12px;background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:6px">';
+  html += '<div style="font-size:.72rem;color:var(--indigo);font-weight:600;margin-bottom:4px">A^' + n + ' = PD^' + n + 'P^{-1} =</div>';
+  html += '<div style="font-size:.85rem;color:var(--text-bright);font-weight:600">[[' + rA.toFixed(2) + ', ' + rB.toFixed(2) + '], [' + rC.toFixed(2) + ', ' + rD.toFixed(2) + ']]</div>';
+  html += '</div>';
+
+  document.getElementById('diagSteps').innerHTML = html;
+}
+
+/* ==================== SECTION 5: COUPLED SPRINGS ==================== */
+var springAnimId = null;
+var springAnimMode = 0;
+var springAnimT = 0;
+
+function updateSprings() {
+  var k = +document.getElementById('springK').value;
+  var kc = +document.getElementById('springKc').value;
+  var m = +document.getElementById('springM').value;
+  document.getElementById('springKVal').textContent = k.toFixed(1);
+  document.getElementById('springKcVal').textContent = kc.toFixed(1);
+  document.getElementById('springMVal').textContent = m.toFixed(1);
+
+  // stiffness matrix for two masses: K = [[(k+kc)/m, -kc/m], [-kc/m, (k+kc)/m]]
+  // eigenvalues: (k+kc)/m +/- kc/m = k/m and (k+2kc)/m
+  var w1sq = k / m;
+  var w2sq = (k + 2 * kc) / m;
+  var w1 = Math.sqrt(Math.max(0, w1sq));
+  var w2 = Math.sqrt(Math.max(0, w2sq));
+
+  document.getElementById('springW1').textContent = w1.toFixed(3) + ' rad/s';
+  document.getElementById('springW2').textContent = w2.toFixed(3) + ' rad/s';
+  document.getElementById('springMode1').textContent = '[1, 1] (in phase)';
+  document.getElementById('springMode2').textContent = '[1, -1] (out of phase)';
+
+  drawSprings(0, 0);
+}
+
+function drawSprings(dx1, dx2) {
+  var svg = document.getElementById('springSvg');
+  var h = '';
+
+  // walls
+  h += '<rect x="10" y="40" width="8" height="120" fill="var(--border)" rx="2"/>';
+  h += '<rect x="582" y="40" width="8" height="120" fill="var(--border)" rx="2"/>';
+
+  // masses at rest positions: 170 and 430, shifted by dx
+  var m1x = 170 + dx1 * 80;
+  var m2x = 430 + dx2 * 80;
+
+  // draw springs (zigzag)
+  function drawSpring(x1, x2, y, color) {
+    var len = x2 - x1;
+    var segs = 12;
+    var segLen = len / segs;
+    var amp = 8;
+    var path = 'M' + x1 + ',' + y;
+    for (var i = 1; i < segs; i++) {
+      var sx = x1 + i * segLen;
+      var sy = y + (i % 2 === 0 ? -amp : amp);
+      path += ' L' + sx + ',' + sy;
+    }
+    path += ' L' + x2 + ',' + y;
+    h += '<path d="' + path + '" fill="none" stroke="' + color + '" stroke-width="2"/>';
+  }
+
+  // spring 1: wall to mass 1
+  drawSpring(18, m1x - 30, 100, 'var(--green)');
+  // spring 2 (coupling): mass 1 to mass 2
+  drawSpring(m1x + 30, m2x - 30, 100, 'var(--amber)');
+  // spring 3: mass 2 to wall
+  drawSpring(m2x + 30, 582, 100, 'var(--green)');
+
+  // masses
+  h += '<rect x="' + (m1x - 30) + '" y="70" width="60" height="60" rx="8" fill="var(--indigo)" opacity="0.8"/>';
+  h += '<text x="' + m1x + '" y="105" fill="white" font-size="14" text-anchor="middle" font-weight="600">m1</text>';
+  h += '<rect x="' + (m2x - 30) + '" y="70" width="60" height="60" rx="8" fill="var(--pink)" opacity="0.8"/>';
+  h += '<text x="' + m2x + '" y="105" fill="white" font-size="14" text-anchor="middle" font-weight="600">m2</text>';
+
+  // spring labels
+  h += '<text x="' + ((18 + m1x - 30) / 2) + '" y="145" fill="var(--green)" font-size="10" text-anchor="middle">k</text>';
+  h += '<text x="' + ((m1x + 30 + m2x - 30) / 2) + '" y="145" fill="var(--amber)" font-size="10" text-anchor="middle">k_c</text>';
+  h += '<text x="' + ((m2x + 30 + 582) / 2) + '" y="145" fill="var(--green)" font-size="10" text-anchor="middle">k</text>';
+
+  // displacement arrows
+  if (Math.abs(dx1) > 0.05) {
+    var arrDir = dx1 > 0 ? 1 : -1;
+    h += '<line x1="' + m1x + '" y1="160" x2="' + (m1x + arrDir * 25) + '" y2="160" stroke="var(--indigo)" stroke-width="2" marker-end="url(#sArr)"/>';
+  }
+  if (Math.abs(dx2) > 0.05) {
+    var arrDir = dx2 > 0 ? 1 : -1;
+    h += '<line x1="' + m2x + '" y1="160" x2="' + (m2x + arrDir * 25) + '" y2="160" stroke="var(--pink)" stroke-width="2" marker-end="url(#sArr)"/>';
+  }
+
+  h = '<defs><marker id="sArr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="var(--text-dim)"/></marker></defs>' + h;
+
+  svg.innerHTML = h;
+}
+
+function animateMode(mode) {
+  stopSpringAnim();
+  springAnimMode = mode;
+  springAnimT = 0;
+
+  document.getElementById('modeBtn1').classList.toggle('active', mode === 1);
+  document.getElementById('modeBtn2').classList.toggle('active', mode === 2);
+
+  var k = +document.getElementById('springK').value;
+  var kc = +document.getElementById('springKc').value;
+  var m = +document.getElementById('springM').value;
+  var w = mode === 1 ? Math.sqrt(k / m) : Math.sqrt((k + 2 * kc) / m);
+
+  function step() {
+    springAnimT += 0.03;
+    var amp = Math.sin(w * springAnimT * 3);
+    if (mode === 1) {
+      drawSprings(amp * 0.6, amp * 0.6);
+    } else {
+      drawSprings(amp * 0.6, -amp * 0.6);
+    }
+    springAnimId = requestAnimationFrame(step);
+  }
+  springAnimId = requestAnimationFrame(step);
+}
+
+function stopSpringAnim() {
+  if (springAnimId) {
+    cancelAnimationFrame(springAnimId);
+    springAnimId = null;
+  }
+  springAnimMode = 0;
+  drawSprings(0, 0);
+  document.getElementById('modeBtn1').classList.remove('active');
+  document.getElementById('modeBtn2').classList.remove('active');
+}
+
+/* ==================== INIT ==================== */
+markComplete(1);
+drawEigenViz();
+computeCharPoly();
+computeDiag();
+updateSprings();
+</script>
+</body>
+</html>

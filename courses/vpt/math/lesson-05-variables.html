@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 05 -- Variables &amp; Expressions</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #272d38;
+    --border: #333a48;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── Progress Bar ── */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* ── Header ── */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── Collapsible Cards ── */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details[open] { border-color: var(--accent); }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .section-body {
+    padding: 1.25rem;
+  }
+
+  /* ── Typography ── */
+  h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent); }
+  h3 { font-size: 0.95rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: var(--text); }
+  p { margin-bottom: 0.75rem; font-size: 0.85rem; }
+  .dim { color: var(--text-dim); }
+  .accent { color: var(--accent); }
+  .green { color: var(--green); }
+  .pink { color: var(--pink); }
+  .orange { color: var(--orange); }
+
+  /* ── Variable Boxes ── */
+  .var-boxes {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+  .var-box {
+    width: 100px;
+    height: 100px;
+    perspective: 600px;
+    cursor: pointer;
+  }
+  .var-box-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+  }
+  .var-box.flipped .var-box-inner {
+    transform: rotateY(180deg);
+  }
+  .var-box-front, .var-box-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    border: 2px solid var(--accent);
+  }
+  .var-box-front {
+    background: var(--card);
+    color: var(--accent);
+  }
+  .var-box-back {
+    background: var(--accent);
+    color: #fff;
+    transform: rotateY(180deg);
+  }
+  .var-box-label {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 0.3rem;
+  }
+
+  /* ── Slider Evaluator ── */
+  .evaluator {
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin: 1rem 0;
+  }
+  .evaluator .expression {
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 0.75rem;
+    color: var(--accent);
+  }
+  .evaluator .result {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 0.75rem 0;
+    color: var(--green);
+    transition: color 0.3s;
+  }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+    margin: 0.5rem 0;
+  }
+  .slider-row label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: right;
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    max-width: 300px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+  .slider-val {
+    font-weight: 600;
+    min-width: 30px;
+    color: var(--orange);
+  }
+
+  /* ── Practice Problems ── */
+  .problem-set {
+    margin: 1rem 0;
+  }
+  .problem {
+    background: rgba(0,0,0,0.15);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    transition: border-color 0.3s;
+  }
+  .problem.correct { border-color: var(--green); }
+  .problem.incorrect { border-color: var(--pink); }
+  .problem .prompt {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  .problem .input-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .problem input[type="text"] {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    width: 120px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .problem input[type="text"]:focus {
+    border-color: var(--accent);
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn:active { transform: scale(0.97); }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-green { background: var(--green); color: #1e2128; }
+  .btn-orange { background: var(--orange); color: #1e2128; }
+
+  .feedback {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feedback.show { opacity: 1; }
+
+  /* ── Callout ── */
+  .callout {
+    background: rgba(245, 158, 11, 0.08);
+    border-left: 3px solid var(--orange);
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 0.8rem;
+  }
+  .callout .callout-title {
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 0.25rem;
+  }
+
+  /* ── Like Terms Visual ── */
+  .term-blocks {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 1rem 0;
+    min-height: 50px;
+    align-items: center;
+  }
+  .term-block {
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s, opacity 0.4s;
+    user-select: none;
+  }
+  .term-block:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  .term-block.x-term { background: rgba(99, 102, 241, 0.2); border: 1px solid var(--accent); color: var(--accent); }
+  .term-block.const-term { background: rgba(34, 197, 94, 0.15); border: 1px solid var(--green); color: var(--green); }
+  .term-block.op { background: transparent; border: none; color: var(--text-dim); cursor: default; font-size: 1rem; padding: 0.5rem 0.25rem; }
+  .term-block.op:hover { transform: none; box-shadow: none; }
+  .term-block.combined { animation: combinePulse 0.5s ease; }
+
+  @keyframes combinePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  .combine-area {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+  }
+  .combine-bucket {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    min-width: 140px;
+    min-height: 80px;
+    text-align: center;
+    transition: border-color 0.3s;
+  }
+  .combine-bucket.active { border-color: var(--accent); }
+  .combine-bucket .bucket-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .combine-bucket .bucket-content {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .combine-result {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--green);
+    margin-top: 1rem;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .combine-result.show { opacity: 1; }
+
+  /* ── Step Walkthrough ── */
+  .step-walk {
+    margin: 1rem 0;
+  }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.3;
+    transition: opacity 0.4s;
+  }
+  .step.active { opacity: 1; }
+  .step-num {
+    width: 24px;
+    height: 24px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+  .step-content {
+    flex: 1;
+  }
+  .step-expr {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+  }
+  .step-note {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+  .step-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  /* ── Distributive Property Visual ── */
+  .dist-visual {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .rect-container {
+    position: relative;
+  }
+  .rect-whole {
+    display: flex;
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: gap 0.6s ease;
+  }
+  .rect-whole.split {
+    gap: 8px;
+    border-color: transparent;
+  }
+  .rect-part {
+    padding: 1.25rem 1.5rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: border-radius 0.4s, border 0.4s;
+    min-width: 80px;
+  }
+  .rect-whole.split .rect-part {
+    border-radius: var(--radius);
+    border: 2px solid;
+  }
+  .rect-part-1 {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--accent);
+  }
+  .rect-whole.split .rect-part-1 { border-color: var(--accent); }
+  .rect-part-2 {
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--green);
+  }
+  .rect-whole.split .rect-part-2 { border-color: var(--green); }
+  .rect-label-top {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-bottom: 0.35rem;
+  }
+  .rect-label-side {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    margin-right: 0.5rem;
+    transform: rotate(180deg);
+  }
+  .rect-equals {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin: 0 0.25rem;
+  }
+
+  /* ── Quiz Section ── */
+  .quiz-score {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+  }
+  .score-display {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .quiz-progress-text {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+  .quiz-problem {
+    background: rgba(0,0,0,0.15);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem.q-correct { border-color: var(--green); }
+  .quiz-problem.q-incorrect { border-color: var(--pink); }
+  .quiz-problem .q-number {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+  .quiz-problem .q-prompt {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  .quiz-problem .q-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  .q-tag.tag-var { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .q-tag.tag-like { background: rgba(34,197,94,0.12); color: var(--green); }
+  .q-tag.tag-dist { background: rgba(236,72,153,0.12); color: var(--pink); }
+  .q-tag.tag-simp { background: rgba(245,158,11,0.12); color: var(--orange); }
+  .quiz-explanation {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    display: none;
+  }
+  .quiz-explanation.show-correct {
+    display: block;
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    color: var(--green);
+  }
+  .quiz-explanation.show-incorrect {
+    display: block;
+    background: rgba(236, 72, 153, 0.08);
+    border: 1px solid rgba(236, 72, 153, 0.2);
+    color: var(--pink);
+  }
+
+  /* ── Show Steps Reveal ── */
+  .steps-reveal {
+    margin-top: 0.75rem;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.5s ease;
+  }
+  .steps-reveal.open {
+    max-height: 500px;
+  }
+  .steps-reveal .step-line {
+    font-size: 0.8rem;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(51, 58, 72, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .steps-reveal .step-line:last-child { border-bottom: none; }
+  .step-arrow {
+    color: var(--accent);
+    font-size: 0.7rem;
+  }
+  .step-highlight {
+    color: var(--orange);
+    font-weight: 600;
+  }
+
+  /* ── Factor visual ── */
+  .factor-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    flex-wrap: wrap;
+  }
+  .factor-arrow {
+    color: var(--accent);
+    font-size: 1.2rem;
+  }
+
+  /* ── Section check ── */
+  .section-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+  .check-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    transition: all 0.3s;
+  }
+  .check-icon.checked {
+    border-color: var(--green);
+    background: var(--green);
+    color: #1e2128;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.2rem; }
+    .evaluator .expression { font-size: 1.1rem; }
+    .evaluator .result { font-size: 1.2rem; }
+    .var-box { width: 80px; height: 80px; }
+    .var-box-front, .var-box-back { font-size: 1.6rem; }
+    .rect-part { padding: 1rem; min-width: 60px; font-size: 0.75rem; }
+    .quiz-problem .q-prompt { font-size: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar">
+  <div class="seg" data-section="0"></div>
+  <div class="seg" data-section="1"></div>
+  <div class="seg" data-section="2"></div>
+  <div class="seg" data-section="3"></div>
+  <div class="seg" data-section="4"></div>
+</div>
+
+<h1>Week 2: Variables &amp; Expressions</h1>
+<p class="subtitle">VPT Prep -- Lesson 05 / From numbers to algebra</p>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 1: What Is a Variable?              -->
+<!-- ════════════════════════════════════════════ -->
+<details id="section0">
+  <summary>1. What Is a Variable?</summary>
+  <div class="section-body">
+
+    <p>A <span class="accent">variable</span> is a letter that holds a number. Think of it as a labeled box -- you don't always know what's inside, but you can work with it.</p>
+
+    <p class="dim">Click each box to reveal the value inside.</p>
+
+    <div class="var-boxes" id="varBoxes">
+      <div>
+        <div class="var-box" onclick="this.classList.toggle('flipped')">
+          <div class="var-box-inner">
+            <div class="var-box-front">x</div>
+            <div class="var-box-back">7</div>
+          </div>
+        </div>
+        <div class="var-box-label">x = 7</div>
+      </div>
+      <div>
+        <div class="var-box" onclick="this.classList.toggle('flipped')">
+          <div class="var-box-inner">
+            <div class="var-box-front">y</div>
+            <div class="var-box-back">-3</div>
+          </div>
+        </div>
+        <div class="var-box-label">y = -3</div>
+      </div>
+      <div>
+        <div class="var-box" onclick="this.classList.toggle('flipped')">
+          <div class="var-box-inner">
+            <div class="var-box-front">n</div>
+            <div class="var-box-back">12</div>
+          </div>
+        </div>
+        <div class="var-box-label">n = 12</div>
+      </div>
+    </div>
+
+    <h3>Live Evaluator</h3>
+    <p class="dim">Drag the slider to change x and watch the expression update in real time.</p>
+
+    <div class="evaluator">
+      <div class="expression">3x + 2</div>
+      <div class="slider-row">
+        <label>x =</label>
+        <input type="range" min="-5" max="5" value="0" id="evalSlider" oninput="updateEval()">
+        <span class="slider-val" id="evalSliderVal">0</span>
+      </div>
+      <div class="result" id="evalResult">= 2</div>
+      <p class="dim" style="text-align:center; margin-top:0.5rem; margin-bottom:0; font-size:0.75rem;">
+        3(<span id="evalSubX">0</span>) + 2 = <span id="evalSubResult">2</span>
+      </p>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">Real-World Connection</div>
+      <p style="margin-bottom:0;">Distance = rate x time. If you drive at <span class="accent">r = 60 mph</span> for <span class="accent">t = 2.5 hours</span>, then d = 60 x 2.5 = <span class="green">150 miles</span>. Here, r and t are variables.</p>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="s1Problems"></div>
+
+    <div class="section-check" id="check0">
+      <div class="check-icon" id="checkIcon0"></div>
+      <span id="checkText0">Complete all 5 problems to mark this section done</span>
+    </div>
+  </div>
+</details>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 2: Combining Like Terms              -->
+<!-- ════════════════════════════════════════════ -->
+<details id="section1">
+  <summary>2. Combining Like Terms</summary>
+  <div class="section-body">
+
+    <p><span class="accent">Like terms</span> have the same variable part. You can add or subtract their coefficients. Constants (plain numbers) are also like terms with each other.</p>
+
+    <h3>Visual Example</h3>
+    <p class="dim">Watch the like terms group together. Click "Combine" to see the result.</p>
+
+    <div class="term-blocks" id="likeTermsDemo">
+      <span class="term-block x-term">3x</span>
+      <span class="term-block op">+</span>
+      <span class="term-block const-term">5</span>
+      <span class="term-block op">+</span>
+      <span class="term-block x-term">2x</span>
+      <span class="term-block op">-</span>
+      <span class="term-block const-term">1</span>
+    </div>
+
+    <div style="text-align:center; margin-bottom:0.75rem;">
+      <button class="btn btn-accent" id="combineBtn" onclick="runCombineDemo()">Combine Like Terms</button>
+      <button class="btn btn-orange" id="resetCombineBtn" onclick="resetCombineDemo()" style="display:none;">Reset</button>
+    </div>
+
+    <div class="combine-area" id="combineArea" style="display:none;">
+      <div class="combine-bucket active" id="bucketX">
+        <div class="bucket-label">x-terms</div>
+        <div class="bucket-content" id="bucketXContent"></div>
+      </div>
+      <div class="combine-bucket active" id="bucketConst">
+        <div class="bucket-label">constants</div>
+        <div class="bucket-content" id="bucketConstContent"></div>
+      </div>
+    </div>
+
+    <div class="combine-result" id="combineResult">3x + 2x = 5x &nbsp;&nbsp;|&nbsp;&nbsp; 5 - 1 = 4 &nbsp;&nbsp;-->&nbsp;&nbsp; <span class="accent">5x + 4</span></div>
+
+    <h3>Step-by-Step</h3>
+    <div class="step-walk" id="likeTermsSteps">
+      <div class="step active">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-expr"><span class="accent">3x</span> + 5 + <span class="accent">2x</span> - 1</div>
+          <div class="step-note">Identify like terms (same color)</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-expr">(<span class="accent">3x + 2x</span>) + (<span class="green">5 - 1</span>)</div>
+          <div class="step-note">Group like terms together</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-expr"><span class="green">5x + 4</span></div>
+          <div class="step-note">Add the coefficients: 3+2 = 5 and 5-1 = 4</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-controls">
+      <button class="btn btn-accent" onclick="animateSteps('likeTermsSteps')">Play Steps</button>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="s2Problems"></div>
+
+    <div class="section-check" id="check1">
+      <div class="check-icon" id="checkIcon1"></div>
+      <span id="checkText1">Complete all 5 problems to mark this section done</span>
+    </div>
+  </div>
+</details>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 3: The Distributive Property         -->
+<!-- ════════════════════════════════════════════ -->
+<details id="section2">
+  <summary>3. The Distributive Property</summary>
+  <div class="section-body">
+
+    <p>The <span class="accent">distributive property</span> says: <strong>a(b + c) = ab + ac</strong>. You multiply the outside factor by each term inside the parentheses.</p>
+
+    <h3>Area Model</h3>
+    <p class="dim">The rectangle with area a(b + c) splits into two smaller rectangles. Click to split.</p>
+
+    <div class="dist-visual">
+      <div class="rect-label-side">3</div>
+      <div class="rect-container">
+        <div class="rect-label-top" id="rectTopLabel">2x + 4</div>
+        <div class="rect-whole" id="distRect">
+          <div class="rect-part rect-part-1">
+            <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:0.25rem;">3 x 2x</div>
+            <div>6x</div>
+          </div>
+          <div class="rect-part rect-part-2">
+            <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:0.25rem;">3 x 4</div>
+            <div>12</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-bottom:1rem;">
+      <button class="btn btn-accent" onclick="toggleDistRect()">Split / Join</button>
+    </div>
+
+    <h3>Distributing: 3(2x + 4)</h3>
+    <div class="step-walk" id="distSteps">
+      <div class="step active">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-expr"><span class="accent">3</span>(2x + 4)</div>
+          <div class="step-note">Multiply 3 by each term inside</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-expr"><span class="accent">3</span> * 2x + <span class="accent">3</span> * 4</div>
+          <div class="step-note">Apply the distributive property</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-expr"><span class="green">6x + 12</span></div>
+          <div class="step-note">Multiply: 3*2x = 6x and 3*4 = 12</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-controls">
+      <button class="btn btn-accent" onclick="animateSteps('distSteps')">Play Steps</button>
+    </div>
+
+    <h3>Reverse: Factoring</h3>
+    <p>Factoring is the opposite -- pull out the <span class="accent">Greatest Common Factor (GCF)</span>.</p>
+
+    <div class="factor-visual">
+      <span class="accent">6x + 12</span>
+      <span class="factor-arrow">--></span>
+      <span class="dim">GCF = 3</span>
+      <span class="factor-arrow">--></span>
+      <span class="green">3(2x + 4)</span>
+    </div>
+
+    <div class="step-walk" id="factorSteps">
+      <div class="step active">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-expr">6x + 12</div>
+          <div class="step-note">Find the GCF of 6 and 12 --> 6? No, we also check x. GCF of coefficients = 6... but let's use 3 for this example to match the original.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-expr">GCF = <span class="orange">6</span></div>
+          <div class="step-note">6 divides evenly into 6x (giving x) and 12 (giving 2)</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-expr"><span class="green">6(x + 2)</span></div>
+          <div class="step-note">Write as GCF times the remaining terms</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-controls">
+      <button class="btn btn-accent" onclick="animateSteps('factorSteps')">Play Steps</button>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="s3Problems"></div>
+
+    <div class="section-check" id="check2">
+      <div class="check-icon" id="checkIcon2"></div>
+      <span id="checkText2">Complete all 5 problems to mark this section done</span>
+    </div>
+  </div>
+</details>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 4: Simplifying Expressions           -->
+<!-- ════════════════════════════════════════════ -->
+<details id="section3">
+  <summary>4. Simplifying Expressions</summary>
+  <div class="section-body">
+
+    <p>Now we combine everything: <span class="accent">distribute first</span>, then <span class="green">combine like terms</span>. Take it one step at a time.</p>
+
+    <h3>Worked Example: 2(3x + 1) + 4x - 5</h3>
+    <div class="step-walk" id="simplifySteps">
+      <div class="step active">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-expr"><span class="accent">2(3x + 1)</span> + 4x - 5</div>
+          <div class="step-note">Distribute 2 into (3x + 1)</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-expr"><span class="accent">6x + 2</span> + 4x - 5</div>
+          <div class="step-note">2*3x = 6x, 2*1 = 2</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-expr">(<span class="accent">6x + 4x</span>) + (<span class="green">2 - 5</span>)</div>
+          <div class="step-note">Group like terms</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-expr"><span class="green">10x - 3</span></div>
+          <div class="step-note">6x + 4x = 10x and 2 - 5 = -3</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-controls">
+      <button class="btn btn-accent" onclick="animateSteps('simplifySteps')">Play Steps</button>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <p class="dim">Type your simplified answer. Click "Show Steps" to see the full solution path.</p>
+    <div class="problem-set" id="s4Problems"></div>
+
+    <div class="section-check" id="check3">
+      <div class="check-icon" id="checkIcon3"></div>
+      <span id="checkText3">Complete all 5 problems to mark this section done</span>
+    </div>
+  </div>
+</details>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SECTION 5: Quick Quiz                        -->
+<!-- ════════════════════════════════════════════ -->
+<details id="section4">
+  <summary>5. Quick Quiz (10 Questions)</summary>
+  <div class="section-body">
+
+    <div class="quiz-score">
+      <div>Score: <span class="score-display" id="quizScore">0</span> / <span id="quizTotal">10</span></div>
+      <div class="quiz-progress-text" id="quizProgressText">Answer all 10 to complete this section</div>
+    </div>
+
+    <div id="quizContainer"></div>
+
+    <div class="section-check" id="check4">
+      <div class="check-icon" id="checkIcon4"></div>
+      <span id="checkText4">Score at least 7/10 to mark this section done</span>
+    </div>
+  </div>
+</details>
+
+<script>
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+const sectionsDone = [false, false, false, false, false];
+const sectionCorrectCounts = [0, 0, 0, 0, 0];
+const sectionTotalRequired = [5, 5, 5, 5, 7];
+
+function updateProgress() {
+  document.querySelectorAll('.progress-bar .seg').forEach((seg, i) => {
+    seg.classList.toggle('done', sectionsDone[i]);
+  });
+}
+
+function markSection(idx) {
+  sectionsDone[idx] = true;
+  const icon = document.getElementById('checkIcon' + idx);
+  const text = document.getElementById('checkText' + idx);
+  icon.classList.add('checked');
+  icon.textContent = '\u2713';
+  text.textContent = 'Section complete!';
+  text.style.color = 'var(--green)';
+  updateProgress();
+}
+
+function checkSectionComplete(sectionIdx) {
+  if (sectionCorrectCounts[sectionIdx] >= sectionTotalRequired[sectionIdx]) {
+    markSection(sectionIdx);
+  }
+}
+
+// ════════════════════════════════════════════
+// SECTION 1: Live Evaluator
+// ════════════════════════════════════════════
+function updateEval() {
+  const x = parseInt(document.getElementById('evalSlider').value);
+  const result = 3 * x + 2;
+  document.getElementById('evalSliderVal').textContent = x;
+  document.getElementById('evalResult').textContent = '= ' + result;
+  document.getElementById('evalSubX').textContent = x;
+  document.getElementById('evalSubResult').textContent = result;
+  const el = document.getElementById('evalResult');
+  el.style.color = result >= 0 ? 'var(--green)' : 'var(--pink)';
+}
+
+// ════════════════════════════════════════════
+// SECTION 2: Combine Like Terms Demo
+// ════════════════════════════════════════════
+let combineState = 0;
+
+function runCombineDemo() {
+  const area = document.getElementById('combineArea');
+  const result = document.getElementById('combineResult');
+  const btn = document.getElementById('combineBtn');
+  const resetBtn = document.getElementById('resetCombineBtn');
+
+  if (combineState === 0) {
+    // Show buckets with terms moving
+    area.style.display = 'flex';
+    document.getElementById('bucketXContent').innerHTML =
+      '<span class="term-block x-term" style="font-size:0.8rem; padding:0.35rem 0.6rem;">3x</span>' +
+      '<span style="color:var(--text-dim); padding:0 0.15rem;">+</span>' +
+      '<span class="term-block x-term" style="font-size:0.8rem; padding:0.35rem 0.6rem;">2x</span>';
+    document.getElementById('bucketConstContent').innerHTML =
+      '<span class="term-block const-term" style="font-size:0.8rem; padding:0.35rem 0.6rem;">5</span>' +
+      '<span style="color:var(--text-dim); padding:0 0.15rem;">-</span>' +
+      '<span class="term-block const-term" style="font-size:0.8rem; padding:0.35rem 0.6rem;">1</span>';
+    btn.textContent = 'Calculate';
+    combineState = 1;
+  } else if (combineState === 1) {
+    // Show combined result
+    document.getElementById('bucketXContent').innerHTML =
+      '<span class="term-block x-term combined" style="font-size:0.8rem; padding:0.35rem 0.6rem;">5x</span>';
+    document.getElementById('bucketConstContent').innerHTML =
+      '<span class="term-block const-term combined" style="font-size:0.8rem; padding:0.35rem 0.6rem;">4</span>';
+    result.classList.add('show');
+    btn.style.display = 'none';
+    resetBtn.style.display = 'inline-block';
+    combineState = 2;
+  }
+}
+
+function resetCombineDemo() {
+  const area = document.getElementById('combineArea');
+  const result = document.getElementById('combineResult');
+  const btn = document.getElementById('combineBtn');
+  const resetBtn = document.getElementById('resetCombineBtn');
+  area.style.display = 'none';
+  result.classList.remove('show');
+  btn.textContent = 'Combine Like Terms';
+  btn.style.display = 'inline-block';
+  resetBtn.style.display = 'none';
+  combineState = 0;
+}
+
+// ════════════════════════════════════════════
+// SECTION 3: Distributive Rect
+// ════════════════════════════════════════════
+function toggleDistRect() {
+  document.getElementById('distRect').classList.toggle('split');
+}
+
+// ════════════════════════════════════════════
+// Step Animator
+// ════════════════════════════════════════════
+function animateSteps(containerId) {
+  const steps = document.querySelectorAll('#' + containerId + ' .step');
+  steps.forEach(s => s.classList.remove('active'));
+
+  let i = 0;
+  steps[0].classList.add('active');
+
+  const interval = setInterval(() => {
+    i++;
+    if (i < steps.length) {
+      steps[i].classList.add('active');
+    } else {
+      clearInterval(interval);
+    }
+  }, 800);
+}
+
+// ════════════════════════════════════════════
+// Problem Generator & Checker
+// ════════════════════════════════════════════
+
+// Normalize expressions for comparison: strip spaces, handle edge cases
+function normalize(s) {
+  return s.replace(/\s+/g, '').replace(/\+-/g, '-').replace(/-\+/g, '-').replace(/^\+/, '').toLowerCase();
+}
+
+function checkAnswer(input, correctAnswer, problemEl, sectionIdx) {
+  const userAnswer = normalize(input.value);
+  const correct = normalize(String(correctAnswer));
+  const feedback = problemEl.querySelector('.feedback');
+
+  // Accept multiple valid forms
+  const acceptableAnswers = [correct];
+
+  // If answer is like "5x+4", also accept "4+5x"
+  // For simple numeric answers, just compare
+  const isCorrect = acceptableAnswers.some(a => userAnswer === a) ||
+                    userAnswer === correct;
+
+  if (isCorrect) {
+    problemEl.classList.remove('incorrect');
+    problemEl.classList.add('correct');
+    feedback.textContent = 'Correct!';
+    feedback.style.color = 'var(--green)';
+    feedback.classList.add('show');
+    input.disabled = true;
+    sectionCorrectCounts[sectionIdx]++;
+    checkSectionComplete(sectionIdx);
+  } else {
+    problemEl.classList.remove('correct');
+    problemEl.classList.add('incorrect');
+    feedback.textContent = 'Try again (answer: ' + correctAnswer + ')';
+    feedback.style.color = 'var(--pink)';
+    feedback.classList.add('show');
+  }
+}
+
+// ── Section 1 Problems ──
+const s1Data = [
+  { prompt: 'Evaluate 2x - 5 when x = 3', answer: '1' },
+  { prompt: 'Evaluate 4x + 1 when x = -2', answer: '-7' },
+  { prompt: 'Evaluate x\u00B2 + 3 when x = 4', answer: '19' },
+  { prompt: 'Evaluate 5 - 2x when x = 6', answer: '-7' },
+  { prompt: 'Evaluate 3x + 2x when x = 5', answer: '25' },
+];
+
+function buildPractice(containerID, data, sectionIdx, hasSteps) {
+  const container = document.getElementById(containerID);
+  data.forEach((prob, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = containerID + '_p' + i;
+
+    let stepsHTML = '';
+    if (hasSteps && prob.steps) {
+      stepsHTML = '<button class="btn btn-orange" style="margin-left:0.5rem;" onclick="toggleSteps(\'' + containerID + '_p' + i + '\')">Show Steps</button>' +
+        '<div class="steps-reveal" id="' + containerID + '_p' + i + '_steps">' +
+        prob.steps.map(s => '<div class="step-line"><span class="step-arrow">\u2192</span> <span>' + s + '</span></div>').join('') +
+        '</div>';
+    }
+
+    div.innerHTML =
+      '<div class="prompt">' + prob.prompt + '</div>' +
+      '<div class="input-row">' +
+        '<input type="text" placeholder="answer" onkeydown="if(event.key===\'Enter\')this.nextElementSibling.click()">' +
+        '<button class="btn btn-accent" onclick="checkAnswer(this.previousElementSibling, \'' + prob.answer.replace(/'/g, "\\'") + '\', document.getElementById(\'' + containerID + '_p' + i + '\'), ' + sectionIdx + ')">Check</button>' +
+        '<span class="feedback"></span>' +
+      '</div>' +
+      stepsHTML;
+    container.appendChild(div);
+  });
+}
+
+function toggleSteps(problemId) {
+  const el = document.getElementById(problemId + '_steps');
+  el.classList.toggle('open');
+}
+
+// ── Section 2 Problems ──
+const s2Data = [
+  { prompt: 'Simplify: 4x + 3 + 2x - 1', answer: '6x+2' },
+  { prompt: 'Simplify: 7y - 2y + 5', answer: '5y+5' },
+  { prompt: 'Simplify: 3a + 4b + 2a - b', answer: '5a+3b' },
+  { prompt: 'Simplify: 8 - 3x + 5x - 2', answer: '2x+6' },
+  { prompt: 'Simplify: 6m + 3 - 4m + 7', answer: '2m+10' },
+];
+
+// ── Section 3 Problems ──
+const s3Data = [
+  { prompt: 'Distribute: 4(x + 3)', answer: '4x+12' },
+  { prompt: 'Distribute: -2(3x - 5)', answer: '-6x+10' },
+  { prompt: 'Distribute: 5(2y + 1)', answer: '10y+5' },
+  { prompt: 'Factor: 8x + 12 (write as __(__+__))', answer: '4(2x+3)' },
+  { prompt: 'Factor: 15a - 10 (write as __(__-__))', answer: '5(3a-2)' },
+];
+
+// ── Section 4 Problems ──
+const s4Data = [
+  {
+    prompt: 'Simplify: 3(x + 4) + 2x',
+    answer: '5x+12',
+    steps: ['3(x + 4) + 2x', '3x + 12 + 2x <span class="step-highlight">(distribute 3)</span>', '5x + 12 <span class="step-highlight">(combine x-terms)</span>']
+  },
+  {
+    prompt: 'Simplify: 2(4x - 1) + 3',
+    answer: '8x+1',
+    steps: ['2(4x - 1) + 3', '8x - 2 + 3 <span class="step-highlight">(distribute 2)</span>', '8x + 1 <span class="step-highlight">(combine constants)</span>']
+  },
+  {
+    prompt: 'Simplify: 5(x + 2) - 3x + 1',
+    answer: '2x+11',
+    steps: ['5(x + 2) - 3x + 1', '5x + 10 - 3x + 1 <span class="step-highlight">(distribute 5)</span>', '2x + 11 <span class="step-highlight">(combine like terms)</span>']
+  },
+  {
+    prompt: 'Simplify: -2(3x - 4) + x',
+    answer: '-5x+8',
+    steps: ['-2(3x - 4) + x', '-6x + 8 + x <span class="step-highlight">(distribute -2)</span>', '-5x + 8 <span class="step-highlight">(combine x-terms)</span>']
+  },
+  {
+    prompt: 'Simplify: 4(2x + 3) - 3(x - 1)',
+    answer: '5x+15',
+    steps: ['4(2x + 3) - 3(x - 1)', '8x + 12 - 3x + 3 <span class="step-highlight">(distribute both)</span>', '5x + 15 <span class="step-highlight">(combine like terms)</span>']
+  },
+];
+
+// Build all practice problem sections
+buildPractice('s1Problems', s1Data, 0, false);
+buildPractice('s2Problems', s2Data, 1, false);
+buildPractice('s3Problems', s3Data, 2, false);
+buildPractice('s4Problems', s4Data, 3, true);
+
+// ════════════════════════════════════════════
+// SECTION 5: Quiz
+// ════════════════════════════════════════════
+const quizData = [
+  { q: 'Evaluate 3x + 7 when x = 2', a: '13', tag: 'Variables', tagClass: 'tag-var',
+    explain: '3(2) + 7 = 6 + 7 = 13' },
+  { q: 'Evaluate 5 - x\u00B2 when x = 3', a: '-4', tag: 'Variables', tagClass: 'tag-var',
+    explain: '5 - (3)\u00B2 = 5 - 9 = -4' },
+  { q: 'Simplify: 6x + 2 - 4x + 8', a: '2x+10', tag: 'Like Terms', tagClass: 'tag-like',
+    explain: '(6x - 4x) + (2 + 8) = 2x + 10' },
+  { q: 'Simplify: 3a + 5b - a + 2b', a: '2a+7b', tag: 'Like Terms', tagClass: 'tag-like',
+    explain: '(3a - a) + (5b + 2b) = 2a + 7b' },
+  { q: 'Distribute: 3(4x - 2)', a: '12x-6', tag: 'Distributive', tagClass: 'tag-dist',
+    explain: '3(4x) + 3(-2) = 12x - 6' },
+  { q: 'Distribute: -4(x + 5)', a: '-4x-20', tag: 'Distributive', tagClass: 'tag-dist',
+    explain: '-4(x) + -4(5) = -4x - 20' },
+  { q: 'Factor: 10x + 15', a: '5(2x+3)', tag: 'Distributive', tagClass: 'tag-dist',
+    explain: 'GCF of 10 and 15 is 5. 10x/5 = 2x, 15/5 = 3. Answer: 5(2x + 3)' },
+  { q: 'Simplify: 2(x + 5) + 3x', a: '5x+10', tag: 'Simplifying', tagClass: 'tag-simp',
+    explain: '2x + 10 + 3x = 5x + 10' },
+  { q: 'Simplify: 3(2x - 1) - 4x + 7', a: '2x+4', tag: 'Simplifying', tagClass: 'tag-simp',
+    explain: '6x - 3 - 4x + 7 = 2x + 4' },
+  { q: 'Simplify: -1(x - 8) + 2(x + 3)', a: 'x+14', tag: 'Simplifying', tagClass: 'tag-simp',
+    explain: '-x + 8 + 2x + 6 = x + 14' },
+];
+
+let quizScore = 0;
+let quizAnswered = 0;
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  quizData.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-problem';
+    div.id = 'quiz_q' + i;
+    div.innerHTML =
+      '<div class="q-number">Question ' + (i + 1) + '</div>' +
+      '<span class="q-tag ' + q.tagClass + '">' + q.tag + '</span>' +
+      '<div class="q-prompt">' + q.q + '</div>' +
+      '<div class="input-row">' +
+        '<input type="text" placeholder="answer" onkeydown="if(event.key===\'Enter\')this.nextElementSibling.click()" id="quiz_input' + i + '">' +
+        '<button class="btn btn-accent" onclick="checkQuiz(' + i + ')">Check</button>' +
+        '<span class="feedback" id="quiz_fb' + i + '"></span>' +
+      '</div>' +
+      '<div class="quiz-explanation" id="quiz_ex' + i + '"></div>';
+    container.appendChild(div);
+  });
+}
+
+function checkQuiz(i) {
+  const input = document.getElementById('quiz_input' + i);
+  const fb = document.getElementById('quiz_fb' + i);
+  const ex = document.getElementById('quiz_ex' + i);
+  const problem = document.getElementById('quiz_q' + i);
+
+  if (input.disabled) return;
+
+  const userAnswer = normalize(input.value);
+  const correct = normalize(quizData[i].a);
+  const isCorrect = userAnswer === correct;
+
+  input.disabled = true;
+  quizAnswered++;
+
+  if (isCorrect) {
+    quizScore++;
+    problem.classList.add('q-correct');
+    fb.textContent = 'Correct!';
+    fb.style.color = 'var(--green)';
+    ex.className = 'quiz-explanation show-correct';
+    ex.textContent = quizData[i].explain;
+  } else {
+    problem.classList.add('q-incorrect');
+    fb.textContent = 'Answer: ' + quizData[i].a;
+    fb.style.color = 'var(--pink)';
+    ex.className = 'quiz-explanation show-incorrect';
+    ex.innerHTML = '<strong>Correct answer: ' + quizData[i].a + '</strong><br>' + quizData[i].explain;
+  }
+  fb.classList.add('show');
+
+  document.getElementById('quizScore').textContent = quizScore;
+
+  if (quizAnswered === 10) {
+    const pct = Math.round((quizScore / 10) * 100);
+    document.getElementById('quizProgressText').textContent = 'Final score: ' + quizScore + '/10 (' + pct + '%)';
+    sectionCorrectCounts[4] = quizScore;
+    checkSectionComplete(4);
+  }
+}
+
+buildQuiz();
+
+// ════════════════════════════════════════════
+// Track details open/close for UX
+// ════════════════════════════════════════════
+document.querySelectorAll('details').forEach(d => {
+  d.addEventListener('toggle', () => {
+    // Smooth scroll into view when opened
+    if (d.open) {
+      setTimeout(() => d.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 20 — Nuclear Chemistry</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1e2128;
+  --bg-card: #262a33;
+  --bg-input: #1a1d24;
+  --border: #363b47;
+  --text: #e2e4e9;
+  --indigo: #6366f1;
+  --green: #22c55e;
+  --pink: #ec4899;
+  --amber: #f59e0b;
+  --indigo-dim: rgba(99,102,241,0.12);
+  --green-dim: rgba(34,197,94,0.12);
+  --pink-dim: rgba(236,72,153,0.12);
+  --amber-dim: rgba(245,158,11,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.12);
+  --cyan: #06b6d4;
+  --cyan-dim: rgba(6,182,212,0.12);
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* TOP BAR */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.lesson-badge {
+  background: var(--indigo);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+.lesson-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+.progress-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: 99px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 99px;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+.progress-label {
+  font-size: 11px;
+  color: #8b8fa8;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* MAIN */
+.main { max-width: 860px; margin: 0 auto; padding: 28px 20px 80px; }
+
+/* SECTION CARDS */
+.section-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+.section-card.completed { border-color: var(--green); }
+.section-card.open .section-body { display: block; }
+.section-card.open .chevron { transform: rotate(180deg); }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+.section-header:hover { background: rgba(255,255,255,0.03); }
+.section-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8b8fa8;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+.section-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+.chevron {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #8b8fa8;
+  transition: transform 0.45s cubic-bezier(.34,1.56,.64,1);
+}
+.section-body { display: none; padding: 0 20px 24px; }
+
+/* TEXT ELEMENTS */
+p { margin-bottom: 12px; color: var(--text); }
+h3 { font-size: 13px; font-weight: 700; color: var(--indigo); margin: 20px 0 8px; letter-spacing: 0.06em; text-transform: uppercase; }
+h4 { font-size: 13px; font-weight: 600; color: var(--amber); margin: 16px 0 6px; }
+ul, ol { padding-left: 20px; margin-bottom: 12px; }
+li { margin-bottom: 6px; }
+
+/* FORMULA BOXES */
+.formula-box {
+  background: var(--indigo-dim);
+  border: 1px solid var(--indigo);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  font-size: 13px;
+}
+.formula-box.green {
+  background: var(--green-dim);
+  border-color: var(--green);
+}
+.formula-box.amber {
+  background: var(--amber-dim);
+  border-color: var(--amber);
+}
+.formula-box.pink {
+  background: var(--pink-dim);
+  border-color: var(--pink);
+}
+.formula-box.red {
+  background: var(--red-dim);
+  border-color: var(--red);
+}
+.formula-box.cyan {
+  background: var(--cyan-dim);
+  border-color: var(--cyan);
+}
+.formula-box .formula-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+.formula-box .big-formula {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 6px 0;
+}
+.formula-box .sub-formula {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* KEY POINT */
+.key-point {
+  background: var(--amber-dim);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin: 14px 0;
+  font-size: 13px;
+  color: var(--text);
+}
+.key-point strong { color: var(--amber); }
+
+/* NAVY CONTEXT */
+.navy-context {
+  background: rgba(99,102,241,0.08);
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  font-size: 13px;
+}
+.navy-context .navy-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-bottom: 6px;
+}
+
+/* DECAY TABLE */
+.decay-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 12px;
+}
+.decay-table th {
+  background: var(--bg-input);
+  padding: 8px 10px;
+  text-align: left;
+  color: #8b8fa8;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+.decay-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(54,59,71,0.5);
+  vertical-align: top;
+}
+.decay-table tr:last-child td { border-bottom: none; }
+.tag {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.tag-alpha { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber); }
+.tag-beta { background: var(--pink-dim); color: var(--pink); border: 1px solid var(--pink); }
+.tag-gamma { background: var(--indigo-dim); color: var(--indigo); border: 1px solid var(--indigo); }
+.tag-positron { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+.tag-ec { background: var(--cyan-dim); color: var(--cyan); border: 1px solid var(--cyan); }
+
+/* INTERACTIVE AREA */
+.interactive-area {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.interactive-area label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b8fa8;
+  margin-bottom: 6px;
+  letter-spacing: 0.06em;
+}
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+input[type=range] {
+  flex: 1;
+  accent-color: var(--indigo);
+  height: 4px;
+}
+.readout {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--green);
+  min-width: 80px;
+  text-align: right;
+}
+canvas {
+  border-radius: 8px;
+  display: block;
+  width: 100%;
+}
+
+/* PROBLEMS */
+.problem {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 12px 0;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.problem-q { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.input-row input[type=text], .input-row input[type=number] {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  padding: 7px 10px;
+  width: 130px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-row input:focus { border-color: var(--indigo); }
+.btn {
+  background: var(--indigo);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  letter-spacing: 0.04em;
+  transition: opacity 0.15s, background 0.15s;
+}
+.btn:hover { opacity: 0.88; }
+.btn.green { background: var(--green); }
+.btn.amber { background: var(--amber); }
+.btn.pink { background: var(--pink); }
+.feedback {
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+  min-height: 18px;
+  letter-spacing: 0.02em;
+}
+.feedback.correct { color: var(--green); }
+.feedback.incorrect { color: var(--red); }
+
+/* MC BUTTONS */
+.mc-options { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.mc-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 8px 12px;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+.mc-btn:hover:not(.disabled) { border-color: var(--indigo); background: var(--indigo-dim); }
+.mc-btn.disabled { cursor: default; opacity: 0.7; }
+.mc-btn.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+.mc-btn.wrong { border-color: var(--red); background: var(--red-dim); color: var(--red); }
+
+/* QUIZ */
+.quiz-q {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 12px 0;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.quiz-q-text { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+.choices { display: flex; flex-direction: column; gap: 6px; }
+.choice-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 8px 12px;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+.choice-btn:hover:not(.disabled) { border-color: var(--indigo); background: var(--indigo-dim); }
+.choice-btn.disabled { cursor: default; }
+.choice-btn.selected-correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+.choice-btn.selected-wrong { border-color: var(--red); background: var(--red-dim); color: var(--red); }
+.choice-btn.reveal-correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+.quiz-score-bar {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.score-display {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--green);
+}
+.score-label { font-size: 12px; color: #8b8fa8; }
+
+/* ANIMATIONS */
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.025); box-shadow: 0 0 20px rgba(34,197,94,0.2); }
+  100% { transform: scale(1); }
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.pop { animation: pop 0.35s ease; }
+.shake { animation: shake 0.4s ease; }
+
+/* BE CURVE */
+.be-chart-wrap { position: relative; margin: 14px 0; }
+
+/* NUCLIDE display */
+.nuclide {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+.nuclide sup, .nuclide sub {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* GRID 2-COL */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 12px 0;
+}
+@media (max-width: 640px) {
+  .two-col { grid-template-columns: 1fr; }
+  .top-bar { flex-wrap: wrap; gap: 8px; }
+  .lesson-title { font-size: 12px; }
+  .slider-row { flex-direction: column; align-items: stretch; }
+  .readout { text-align: left; }
+}
+
+/* DIVIDER */
+hr.section-hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 18px 0;
+}
+
+/* COMPACT EQUATION */
+.eq-line {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  padding: 8px 0;
+  letter-spacing: 0.05em;
+}
+
+/* HIGHLIGHT SPAN */
+.hl-green { color: var(--green); font-weight: 700; }
+.hl-amber { color: var(--amber); font-weight: 700; }
+.hl-indigo { color: var(--indigo); font-weight: 700; }
+.hl-pink { color: var(--pink); font-weight: 700; }
+.hl-red { color: var(--red); font-weight: 700; }
+.hl-cyan { color: var(--cyan); font-weight: 700; }
+
+/* NUCLIDE EQUATION BOX */
+.nuc-eq {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.04em;
+  line-height: 2;
+}
+
+/* REACTOR DIAGRAM */
+.reactor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+.reactor-cell {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+.reactor-cell .rc-icon { font-size: 22px; margin-bottom: 4px; }
+.reactor-cell .rc-label { font-size: 11px; font-weight: 700; color: #8b8fa8; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 2px; }
+.reactor-cell .rc-desc { font-size: 11px; color: var(--text); opacity: 0.8; }
+@media (max-width: 640px) { .reactor-grid { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="lesson-badge">20</div>
+  <div class="lesson-title">Nuclear Chemistry</div>
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 8 sections</div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ==================== SECTION 1 ==================== -->
+<div class="section-card" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-num">01</span>
+    <span class="section-label">Nuclear Stability &amp; Radioactive Decay</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+  </div>
+  <div class="section-body">
+    <p>Nuclear chemistry deals with changes in an atom's <strong>nucleus</strong> — protons and neutrons — rather than its electron cloud. These reactions release energies millions of times greater than chemical reactions.</p>
+
+    <h3>The Band of Stability</h3>
+    <p>Stable nuclei cluster in a narrow region on an N vs. Z plot called the <strong>band of stability</strong>. The key ratio is <span class="hl-amber">N/Z (neutron-to-proton)</span>.</p>
+    <ul>
+      <li>Light nuclei (Z &lt; 20): stable at <span class="hl-green">N/Z ≈ 1</span></li>
+      <li>Heavy nuclei (Z &gt; 20): stable at <span class="hl-green">N/Z &gt; 1</span> (up to ~1.5 for Pb)</li>
+      <li>No stable nuclei beyond Z = 83 (bismuth)</li>
+    </ul>
+
+    <div class="formula-box amber">
+      <div class="formula-label">Band of Stability Rule</div>
+      <div class="big-formula">N/Z ≈ 1 (light) → 1.5 (heavy)</div>
+      <div class="sub-formula">Nuclei outside this band undergo radioactive decay to reach stability</div>
+    </div>
+
+    <h3>Types of Radioactive Decay</h3>
+    <p>Each decay mode moves the nucleus toward the band of stability by changing N, Z, or energy state.</p>
+
+    <table class="decay-table">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Particle Emitted</th>
+          <th>Z change</th>
+          <th>A change</th>
+          <th>Trigger</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-alpha">Alpha (α)</span></td>
+          <td><sup>4</sup><sub>2</sub>He nucleus</td>
+          <td>−2</td>
+          <td>−4</td>
+          <td>Z &gt; 83, too heavy</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-beta">Beta⁻ (β⁻)</span></td>
+          <td>Electron (<sup>0</sup><sub>−1</sub>e)</td>
+          <td>+1</td>
+          <td>0</td>
+          <td>N/Z too high</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-positron">Positron (β⁺)</span></td>
+          <td>Positron (<sup>0</sup><sub>+1</sub>e)</td>
+          <td>−1</td>
+          <td>0</td>
+          <td>N/Z too low</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-ec">Electron Capture</span></td>
+          <td>No particle (neutrino)</td>
+          <td>−1</td>
+          <td>0</td>
+          <td>N/Z too low</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-gamma">Gamma (γ)</span></td>
+          <td>High-energy photon</td>
+          <td>0</td>
+          <td>0</td>
+          <td>Excited nuclear state</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Balancing Nuclear Equations</h3>
+    <p>Two conservation laws govern nuclear equations:</p>
+    <ul>
+      <li><span class="hl-indigo">Mass number (A)</span> — sum of nucleons — is conserved</li>
+      <li><span class="hl-pink">Atomic number (Z)</span> — sum of proton/particle charges — is conserved</li>
+    </ul>
+
+    <h4>Alpha Decay — Uranium-238</h4>
+    <div class="nuc-eq">
+      <sup>238</sup><sub>92</sub>U → <sup>234</sup><sub>90</sub>Th + <sup>4</sup><sub>2</sub>He
+    </div>
+    <p style="font-size:12px;color:#8b8fa8;">Check: A: 238 = 234+4 ✓ &nbsp; Z: 92 = 90+2 ✓</p>
+
+    <h4>Beta⁻ Decay — Carbon-14</h4>
+    <div class="nuc-eq">
+      <sup>14</sup><sub>6</sub>C → <sup>14</sup><sub>7</sub>N + <sup>0</sup><sub>−1</sub>e
+    </div>
+    <p style="font-size:12px;color:#8b8fa8;">A neutron converts: n → p⁺ + e⁻ + antineutrino. Z increases by 1.</p>
+
+    <h4>Beta⁺ (Positron) Decay — Fluorine-18</h4>
+    <div class="nuc-eq">
+      <sup>18</sup><sub>9</sub>F → <sup>18</sup><sub>8</sub>O + <sup>0</sup><sub>+1</sub>e
+    </div>
+    <p style="font-size:12px;color:#8b8fa8;">A proton converts: p⁺ → n + e⁺ + neutrino. Z decreases by 1. PET scans use this.</p>
+
+    <h4>Electron Capture — Potassium-40</h4>
+    <div class="nuc-eq">
+      <sup>40</sup><sub>19</sub>K + <sup>0</sup><sub>−1</sub>e → <sup>40</sup><sub>18</sub>Ar
+    </div>
+    <p style="font-size:12px;color:#8b8fa8;">Inner-shell electron absorbed by nucleus. p⁺ + e⁻ → n. Same Z effect as positron decay.</p>
+
+    <h4>Gamma Emission — Technetium-99m</h4>
+    <div class="nuc-eq">
+      <sup>99m</sup><sub>43</sub>Tc → <sup>99</sup><sub>43</sub>Tc + γ
+    </div>
+    <p style="font-size:12px;color:#8b8fa8;">Metastable excited state releases energy as a photon. Z and A unchanged. Used in medical imaging.</p>
+
+    <div class="navy-context">
+      <div class="navy-label">Navy Context</div>
+      <p style="margin:0;">Nuclear-trained sailors work in radiation environments where all five decay types matter. Alpha particles are stopped by a sheet of paper (or skin) — internal ingestion is the hazard. Beta particles penetrate ~10 mm of tissue. Gamma radiation requires lead or dense concrete shielding. On carriers and submarines, dosimetry badges track cumulative gamma/beta exposure for each crew member.</p>
+    </div>
+
+    <div class="key-point"><strong>Key Point:</strong> Every nuclear equation must balance both mass number (A) and atomic number (Z) on both sides. If you know all particles except one, you can solve for the missing nuclide algebraically.</div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 2 ==================== -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-num">02</span>
+    <span class="section-label">Half-Life &amp; Radiocarbon Dating</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+  </div>
+  <div class="section-body">
+    <p>Radioactive decay is a <strong>first-order process</strong> — the rate depends only on how many radioactive atoms are present. The decay constant λ is fixed for each isotope.</p>
+
+    <div class="formula-box">
+      <div class="formula-label">Exponential Decay Law</div>
+      <div class="big-formula">N(t) = N₀ · e<sup>−λt</sup></div>
+      <div class="sub-formula">Also written: N(t) = N₀ · (½)<sup>t/t½</sup></div>
+      <div class="sub-formula" style="margin-top:8px;">
+        <span class="hl-indigo">λ</span> = decay constant (s⁻¹) &nbsp;|&nbsp;
+        <span class="hl-green">t½</span> = half-life &nbsp;|&nbsp;
+        <span class="hl-amber">λ = ln2 / t½ ≈ 0.693 / t½</span>
+      </div>
+    </div>
+
+    <h3>Derived Relationships</h3>
+    <div class="two-col">
+      <div class="formula-box green" style="margin:0;">
+        <div class="formula-label">Fraction Remaining</div>
+        <div class="big-formula">(½)<sup>n</sup></div>
+        <div class="sub-formula">n = number of half-lives elapsed</div>
+      </div>
+      <div class="formula-box amber" style="margin:0;">
+        <div class="formula-label">Time from Activity</div>
+        <div class="big-formula">t = −ln(N/N₀) / λ</div>
+        <div class="sub-formula">Rearranged from exponential law</div>
+      </div>
+    </div>
+
+    <h3>Interactive Decay Visualizer</h3>
+    <div class="interactive-area">
+      <label>Half-Life (years) — isotope selector</label>
+      <div class="slider-row">
+        <input type="range" id="hlSlider" min="1" max="50000" value="5730" step="1" oninput="updateDecayCanvas()">
+        <div class="readout" id="hlReadout">5730 yr</div>
+      </div>
+      <label>Elapsed Time (years)</label>
+      <div class="slider-row">
+        <input type="range" id="timeSlider" min="0" max="60000" value="5730" step="100" oninput="updateDecayCanvas()">
+        <div class="readout" id="timeReadout">5730 yr</div>
+      </div>
+      <canvas id="decayCanvas" height="180" style="margin-top:10px;"></canvas>
+      <div style="display:flex;gap:24px;margin-top:10px;flex-wrap:wrap;">
+        <div><span style="color:#8b8fa8;font-size:11px;">REMAINING</span><br><span class="hl-green" id="pctRemain" style="font-size:20px;font-weight:700;">50.0%</span></div>
+        <div><span style="color:#8b8fa8;font-size:11px;">HALF-LIVES ELAPSED</span><br><span class="hl-amber" id="halvesElapsed" style="font-size:20px;font-weight:700;">1.00</span></div>
+        <div><span style="color:#8b8fa8;font-size:11px;">DECAY CONSTANT λ</span><br><span class="hl-indigo" id="lambdaDisplay" style="font-size:14px;font-weight:700;">1.21×10⁻⁴ yr⁻¹</span></div>
+      </div>
+    </div>
+
+    <h3>Radiocarbon Dating</h3>
+    <p>Carbon-14 (<sup>14</sup>C) is produced in the upper atmosphere by cosmic-ray neutron bombardment of nitrogen:</p>
+    <div class="nuc-eq"><sup>14</sup><sub>7</sub>N + <sup>1</sup><sub>0</sub>n → <sup>14</sup><sub>6</sub>C + <sup>1</sup><sub>1</sub>H</div>
+    <p>Living organisms maintain a constant <sup>14</sup>C/<sup>12</sup>C ratio (~1.2×10⁻¹²). After death, <sup>14</sup>C decays with:</p>
+
+    <div class="formula-box green">
+      <div class="formula-label">Radiocarbon Dating</div>
+      <div class="big-formula">t½ = 5,730 years</div>
+      <div class="sub-formula">λ = 0.693 / 5730 = 1.209 × 10⁻⁴ yr⁻¹</div>
+      <div class="sub-formula" style="margin-top:6px;">Age = −ln(A/A₀) / λ &nbsp; where A = current activity</div>
+    </div>
+
+    <p>Useful range: <span class="hl-amber">~300 – 50,000 years</span>. Beyond ~10 half-lives, too little <sup>14</sup>C remains to measure accurately.</p>
+
+    <h4>Common Isotopes Reference</h4>
+    <table class="decay-table">
+      <thead>
+        <tr><th>Isotope</th><th>Half-Life</th><th>Use</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Carbon-14</td><td>5,730 yr</td><td>Archaeology, dating organic material</td></tr>
+        <tr><td>Uranium-238</td><td>4.47 × 10⁹ yr</td><td>Geological dating</td></tr>
+        <tr><td>Potassium-40</td><td>1.25 × 10⁹ yr</td><td>Rock/mineral dating</td></tr>
+        <tr><td>Iodine-131</td><td>8.02 days</td><td>Thyroid cancer treatment</td></tr>
+        <tr><td>Technetium-99m</td><td>6.01 hr</td><td>Medical imaging</td></tr>
+        <tr><td>Tritium (H-3)</td><td>12.3 yr</td><td>Nuclear weapons, fusion research</td></tr>
+        <tr><td>Plutonium-239</td><td>24,110 yr</td><td>Reactor fuel, weapons</td></tr>
+      </tbody>
+    </table>
+
+    <div class="navy-context">
+      <div class="navy-label">Navy Context</div>
+      <p style="margin:0;">Naval reactors produce short-lived fission products with half-lives ranging from seconds to years. After reactor shutdown, decay heat from fission products (~7% of full power immediately after shutdown) is why submarines and carriers have emergency core cooling systems. The decay heat drops rapidly — 1 hr after shutdown it's ~1.5% of full power — but must still be managed to prevent fuel damage.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 3 ==================== -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-num">03</span>
+    <span class="section-label">Nuclear Fission &amp; Chain Reactions</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+  </div>
+  <div class="section-body">
+    <p><strong>Fission</strong> is the splitting of a heavy nucleus (A &gt; 230) into two lighter nuclei (fission fragments) plus 2–3 neutrons and enormous energy. It is triggered by neutron absorption in fissile isotopes.</p>
+
+    <h3>U-235 Fission — Key Equation</h3>
+    <div class="nuc-eq">
+      <sup>235</sup><sub>92</sub>U + <sup>1</sup><sub>0</sub>n → <sup>141</sup><sub>56</sub>Ba + <sup>92</sup><sub>36</sub>Kr + 3 <sup>1</sup><sub>0</sub>n + <span class="hl-amber">~200 MeV</span>
+    </div>
+    <p style="font-size:12px;color:#8b8fa8;">Check: A: 235+1 = 141+92+3(1) = 236 ✓ &nbsp; Z: 92+0 = 56+36+0 = 92 ✓</p>
+
+    <div class="formula-box amber">
+      <div class="formula-label">Energy per Fission Event</div>
+      <div class="big-formula">~200 MeV per U-235 fission</div>
+      <div class="sub-formula">≈ 3.2 × 10⁻¹¹ J per atom</div>
+      <div class="sub-formula">Compare: burning one C atom releases ~4 eV (50 million times less)</div>
+    </div>
+
+    <h3>The Chain Reaction</h3>
+    <p>Each fission releases 2–3 neutrons. If these neutrons cause additional fissions, a <strong>chain reaction</strong> develops. The key parameter is the <strong>multiplication factor k</strong>:</p>
+    <ul>
+      <li><span class="hl-red">k &gt; 1</span> — supercritical: exponential growth (weapon/prompt criticality)</li>
+      <li><span class="hl-green">k = 1</span> — critical: sustained steady-state (reactor operation)</li>
+      <li><span class="hl-amber">k &lt; 1</span> — subcritical: chain reaction dies out</li>
+    </ul>
+
+    <h3>Reactor Control Components</h3>
+    <div class="reactor-grid">
+      <div class="reactor-cell">
+        <div class="rc-icon" style="color:var(--amber);">⚛</div>
+        <div class="rc-label">Fuel</div>
+        <div class="rc-desc">Enriched UO₂ (~3–5% U-235 for power, ~90%+ for weapons)</div>
+      </div>
+      <div class="reactor-cell">
+        <div class="rc-icon" style="color:var(--cyan);">💧</div>
+        <div class="rc-label">Moderator</div>
+        <div class="rc-desc">Slows fast neutrons to thermal energies (water, D₂O, graphite)</div>
+      </div>
+      <div class="reactor-cell">
+        <div class="rc-icon" style="color:var(--indigo);">⬛</div>
+        <div class="rc-label">Control Rods</div>
+        <div class="rc-desc">Boron or hafnium absorbs neutrons; insertion reduces k</div>
+      </div>
+      <div class="reactor-cell">
+        <div class="rc-icon" style="color:var(--green);">🌊</div>
+        <div class="rc-label">Coolant</div>
+        <div class="rc-desc">Transfers heat from core to steam generators (primary loop)</div>
+      </div>
+      <div class="reactor-cell">
+        <div class="rc-icon" style="color:var(--pink);">🛡</div>
+        <div class="rc-label">Shielding</div>
+        <div class="rc-desc">Lead/concrete blocks radiation from reaching crew/public</div>
+      </div>
+      <div class="reactor-cell">
+        <div class="rc-icon" style="color:var(--red);">🔒</div>
+        <div class="rc-label">Containment</div>
+        <div class="rc-desc">Pressure vessel + building prevents release of fission products</div>
+      </div>
+    </div>
+
+    <h3>Critical Mass</h3>
+    <p>The <strong>critical mass</strong> is the minimum mass of fissile material needed to sustain a chain reaction at k = 1. It depends on geometry, density, and reflectors. For bare sphere of pure U-235: ~52 kg. With a beryllium reflector: ~15 kg.</p>
+
+    <div class="key-point"><strong>Key Point:</strong> Power reactor fuel is too low-enrichment to explode — it can only sustain k ≈ 1. A prompt criticality accident (Chernobyl, SL-1) can cause destructive steam explosions, but not a nuclear weapon detonation.</div>
+
+    <h3>Fissile vs. Fertile Isotopes</h3>
+    <table class="decay-table">
+      <thead><tr><th>Isotope</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>U-235</td><td>Fissile</td><td>0.72% of natural uranium; directly fissionable by thermal neutrons</td></tr>
+        <tr><td>U-238</td><td>Fertile</td><td>99.27% of natural U; absorbs neutron → Pu-239</td></tr>
+        <tr><td>Pu-239</td><td>Fissile</td><td>Bred in reactor from U-238; used in both reactors and weapons</td></tr>
+        <tr><td>Th-232</td><td>Fertile</td><td>Absorbs neutron → U-233; thorium fuel cycle</td></tr>
+      </tbody>
+    </table>
+
+    <div class="navy-context">
+      <div class="navy-label">Navy Context — Aircraft Carrier &amp; Submarine Reactors</div>
+      <p style="margin-0;">Nimitz-class carriers use two A4W pressurized water reactors (PWR), each producing ~140 MW thermal. Gerald R. Ford class uses A1B reactors (~700 MW electric total). Los Angeles-class submarines use a single S6G reactor. Key differences from commercial plants: naval reactors use highly enriched uranium (~93% U-235) allowing compact core designs and very long refueling intervals (20–25 years on Ford class). The reactor operates as a PWR: high-pressure water in the primary loop carries heat to steam generators, which drive turbines for propulsion and electricity — never touching the reactor water.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 4 ==================== -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-num">04</span>
+    <span class="section-label">Nuclear Fusion &amp; Stellar Nucleosynthesis</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+  </div>
+  <div class="section-body">
+    <p><strong>Fusion</strong> is the combining of light nuclei into heavier ones, releasing energy because the product is more tightly bound than the reactants. It powers the sun and all stars.</p>
+
+    <h3>Deuterium-Tritium (D-T) Fusion</h3>
+    <div class="nuc-eq">
+      <sup>2</sup><sub>1</sub>H + <sup>3</sup><sub>1</sub>H → <sup>4</sup><sub>2</sub>He + <sup>1</sup><sub>0</sub>n + <span class="hl-green">17.6 MeV</span>
+    </div>
+    <p>The D-T reaction has the highest cross-section (probability) at achievable temperatures. At ~150 million K, nuclei overcome the Coulomb barrier and quantum tunneling allows fusion.</p>
+
+    <div class="formula-box green">
+      <div class="formula-label">D-T Fusion Energy</div>
+      <div class="big-formula">17.6 MeV per reaction</div>
+      <div class="sub-formula">3.5 MeV to He-4 (alpha) — heats plasma</div>
+      <div class="sub-formula">14.1 MeV to neutron — captured in blanket for heat</div>
+    </div>
+
+    <h3>Proton-Proton Chain (Stars)</h3>
+    <p>In stars like our Sun, hydrogen fuses via the <strong>proton-proton chain</strong>:</p>
+    <div class="nuc-eq"><sup>1</sup>H + <sup>1</sup>H → <sup>2</sup>H + e⁺ + ν<sub>e</sub></div>
+    <div class="nuc-eq"><sup>2</sup>H + <sup>1</sup>H → <sup>3</sup>He + γ</div>
+    <div class="nuc-eq"><sup>3</sup>He + <sup>3</sup>He → <sup>4</sup>He + 2 <sup>1</sup>H</div>
+    <p>Net: 4 ¹H → ¹He + 2e⁺ + 2ν + 2γ + <span class="hl-amber">26.7 MeV</span></p>
+
+    <h3>Fusion vs. Fission Energy Density</h3>
+    <div class="two-col">
+      <div class="formula-box green" style="margin:0;">
+        <div class="formula-label">D-T Fusion</div>
+        <div class="big-formula">~337 MJ/g</div>
+        <div class="sub-formula">Per gram of D-T fuel mixture</div>
+      </div>
+      <div class="formula-box amber" style="margin:0;">
+        <div class="formula-label">U-235 Fission</div>
+        <div class="big-formula">~82 TJ/kg</div>
+        <div class="sub-formula">~82,000 MJ/kg = 82 MJ/g</div>
+      </div>
+    </div>
+    <p style="margin-top:10px;">Fusion releases <span class="hl-green">~4× more energy per unit mass</span> than fission, and fusion fuel (deuterium from seawater) is effectively unlimited.</p>
+
+    <h3>Lawson Criterion — Ignition Conditions</h3>
+    <p>For a fusion reactor to produce net energy, the plasma must satisfy:</p>
+    <div class="formula-box">
+      <div class="formula-label">Lawson Criterion (D-T)</div>
+      <div class="big-formula">n · τ ≥ ~10²⁰ s/m³</div>
+      <div class="sub-formula">n = plasma density (m⁻³), τ = energy confinement time (s)</div>
+      <div class="sub-formula" style="margin-top:4px;">Temperature must also exceed ~100 million K (≈ 10 keV)</div>
+    </div>
+
+    <h3>Magnetic Confinement — Tokamak</h3>
+    <p>The tokamak uses twisted magnetic fields to confine a superheated plasma (no material container can withstand 150 million K). Key projects:</p>
+    <ul>
+      <li><span class="hl-indigo">ITER</span> — International fusion reactor under construction in France. Target: Q = 10 (10× more power out than in). First plasma ~2025–2027.</li>
+      <li><span class="hl-indigo">NIF</span> (National Ignition Facility) — inertial confinement using 192 laser beams. Achieved ignition (Q &gt; 1) in December 2022.</li>
+      <li>Commercial ventures: Commonwealth Fusion Systems, TAE Technologies, Helion</li>
+    </ul>
+
+    <h3>Stellar Nucleosynthesis</h3>
+    <p>All elements heavier than lithium were forged in stellar interiors or supernova explosions:</p>
+    <ul>
+      <li>H, He, trace Li: Big Bang nucleosynthesis</li>
+      <li>He → C, O, Ne, Mg: helium burning in massive stars</li>
+      <li>Si-burning → Fe-56 (iron peak — most stable nuclide per nucleon)</li>
+      <li>Elements beyond iron (Cu, Au, U): <span class="hl-amber">r-process</span> in neutron star mergers and supernovae</li>
+    </ul>
+
+    <div class="key-point"><strong>Key Point:</strong> Iron-56 (Fe-56) sits at the peak of the binding energy per nucleon curve. Fusing elements lighter than iron releases energy. Splitting elements heavier than iron releases energy. Iron is the thermodynamic endpoint of stellar nuclear burning.</div>
+
+    <div class="navy-context">
+      <div class="navy-label">Navy Context</div>
+      <p style="margin:0;">Thermonuclear (hydrogen) weapons use a fission primary to compress and ignite a fusion secondary — the Teller-Ulam design. Yields are in the megaton range vs. kilotons for pure fission. The W76 and W88 warheads on Trident II D5 SLBMs carried by Ohio-class submarines are thermonuclear devices. Understanding the D-T reaction and the role of lithium-6 deuteride as solid fusion fuel is foundational to weapons physics.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 5 ==================== -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-num">05</span>
+    <span class="section-label">Mass Defect, Binding Energy &amp; E=mc²</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+  </div>
+  <div class="section-body">
+    <p>This is the heart of nuclear physics. The mass of a nucleus is always <strong>less</strong> than the sum of its constituent protons and neutrons. This missing mass — the <strong>mass defect</strong> — is converted to binding energy that holds the nucleus together.</p>
+
+    <div class="formula-box pink">
+      <div class="formula-label">Einstein's Mass-Energy Equivalence — The Core Equation</div>
+      <div class="big-formula">E = mc²</div>
+      <div class="sub-formula">c = 2.998 × 10⁸ m/s &nbsp;|&nbsp; c² = 8.988 × 10¹⁶ J/kg</div>
+      <div class="sub-formula" style="margin-top:4px;">1 amu = 1.6605 × 10⁻²⁷ kg &nbsp;|&nbsp; 1 amu × c² = 931.5 MeV</div>
+    </div>
+
+    <h3>Mass Defect Calculation</h3>
+    <div class="formula-box">
+      <div class="formula-label">Mass Defect</div>
+      <div class="big-formula">Δm = Z·m<sub>p</sub> + N·m<sub>n</sub> − m<sub>nucleus</sub></div>
+      <div class="sub-formula">m<sub>p</sub> = 1.007276 amu &nbsp;|&nbsp; m<sub>n</sub> = 1.008665 amu</div>
+    </div>
+
+    <div class="formula-box green">
+      <div class="formula-label">Binding Energy</div>
+      <div class="big-formula">E<sub>B</sub> = Δm × c² = Δm × 931.5 MeV/amu</div>
+      <div class="sub-formula">Binding energy per nucleon: E<sub>B</sub>/A — peaks at Fe-56 (8.79 MeV/nucleon)</div>
+    </div>
+
+    <h4>Worked Example: He-4 (Alpha Particle)</h4>
+    <div class="interactive-area">
+      <p style="font-size:13px;margin-bottom:8px;"><strong>He-4</strong>: Z=2, N=2 &nbsp;|&nbsp; Actual mass = 4.002602 amu</p>
+      <p style="font-size:13px;margin-bottom:4px;">Mass of 2 protons: 2 × 1.007276 = 2.014552 amu</p>
+      <p style="font-size:13px;margin-bottom:4px;">Mass of 2 neutrons: 2 × 1.008665 = 2.017330 amu</p>
+      <p style="font-size:13px;margin-bottom:4px;">Total predicted: 4.031882 amu</p>
+      <p style="font-size:13px;margin-bottom:8px;">Actual nuclear mass: 4.002602 amu</p>
+      <hr class="section-hr" style="margin:10px 0;">
+      <p style="font-size:13px;margin-bottom:4px;"><span class="hl-pink">Δm = 4.031882 − 4.002602 = 0.029280 amu</span></p>
+      <p style="font-size:13px;margin-bottom:4px;"><span class="hl-green">E<sub>B</sub> = 0.029280 × 931.5 = 27.28 MeV</span></p>
+      <p style="font-size:13px;"><span class="hl-amber">E<sub>B</sub>/A = 27.28 / 4 = 6.82 MeV/nucleon</span></p>
+    </div>
+
+    <h3>Interactive Binding Energy Calculator</h3>
+    <div class="interactive-area">
+      <label>Number of Protons (Z)</label>
+      <div class="slider-row">
+        <input type="range" id="beZ" min="1" max="92" value="26" oninput="updateBE()">
+        <div class="readout" id="beZOut">26</div>
+      </div>
+      <label>Number of Neutrons (N)</label>
+      <div class="slider-row">
+        <input type="range" id="beN" min="1" max="146" value="30" oninput="updateBE()">
+        <div class="readout" id="beNOut">30</div>
+      </div>
+      <canvas id="beCanvas" height="160" style="margin-top:10px;"></canvas>
+      <div style="display:flex;gap:20px;margin-top:10px;flex-wrap:wrap;">
+        <div><span style="color:#8b8fa8;font-size:11px;">MASS NUMBER A</span><br><span class="hl-indigo" id="beA" style="font-size:18px;font-weight:700;">56</span></div>
+        <div><span style="color:#8b8fa8;font-size:11px;">TOTAL BINDING ENERGY</span><br><span class="hl-green" id="beTotalE" style="font-size:18px;font-weight:700;">492.3 MeV</span></div>
+        <div><span style="color:#8b8fa8;font-size:11px;">PER NUCLEON (approx)</span><br><span class="hl-amber" id="bePerN" style="font-size:18px;font-weight:700;">8.79 MeV</span></div>
+      </div>
+      <p style="font-size:11px;color:#8b8fa8;margin-top:8px;">Note: Uses liquid-drop model approximation (Bethe-Weizsacker formula). Most accurate for mid-mass nuclei.</p>
+    </div>
+
+    <h3>Binding Energy per Nucleon Curve</h3>
+    <canvas id="beCurveCanvas" height="200" style="width:100%;margin:10px 0;border-radius:8px;"></canvas>
+    <p style="font-size:12px;color:#8b8fa8;">Fe-56 peak at 8.79 MeV/nucleon. Fission (right side, going left) and fusion (left side, going right) both move toward the peak, releasing energy.</p>
+
+    <h3>Energy Scale Context</h3>
+    <table class="decay-table">
+      <thead><tr><th>Reaction</th><th>Energy</th><th>Comparison</th></tr></thead>
+      <tbody>
+        <tr><td>Chemical bond (C-H)</td><td>~4 eV</td><td>Baseline</td></tr>
+        <tr><td>TNT detonation</td><td>~3.4 MJ/kg</td><td>~850,000× chemical bond</td></tr>
+        <tr><td>Gamma ray from Co-60</td><td>1.25 MeV</td><td>~312,000× C-H bond</td></tr>
+        <tr><td>D-T fusion</td><td>17.6 MeV/reaction</td><td>~4.4 million× C-H bond</td></tr>
+        <tr><td>U-235 fission</td><td>~200 MeV/reaction</td><td>~50 million× C-H bond</td></tr>
+      </tbody>
+    </table>
+
+    <div class="key-point"><strong>Key Point:</strong> E=mc² doesn't mean mass disappears — it means mass and energy are the same thing in different forms. The mass defect (Δm) is the mass-equivalent of the binding energy holding the nucleus together. When a nucleus forms, Δm worth of mass is released as energy. To break the nucleus apart, you must supply exactly that energy back.</div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 6 ==================== -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-num">06</span>
+    <span class="section-label">Nuclear Energy — Reactors, Density &amp; Waste</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+  </div>
+  <div class="section-body">
+    <h3>Pressurized Water Reactor (PWR) Operation</h3>
+    <p>PWRs are the most common reactor type worldwide and the type used in all U.S. Navy nuclear vessels. They operate on a <strong>two-loop</strong> design:</p>
+
+    <div class="interactive-area">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Primary Loop</div>
+          <ul style="font-size:12px;">
+            <li>Water at ~155 bar (2,250 psi)</li>
+            <li>Inlet: ~290°C / Outlet: ~325°C</li>
+            <li>Never boils — high pressure</li>
+            <li>Radioactive — stays inside containment</li>
+            <li>Flows through reactor core and steam generators</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Secondary Loop</div>
+          <ul style="font-size:12px;">
+            <li>Lower pressure — water boils to steam</li>
+            <li>Never contacts primary water</li>
+            <li>Steam drives turbines → propulsion/electricity</li>
+            <li>Steam condenses, pumped back to steam generator</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h3>Energy Density Comparison</h3>
+    <table class="decay-table">
+      <thead><tr><th>Fuel</th><th>Energy Density</th><th>CO₂ / kWh</th></tr></thead>
+      <tbody>
+        <tr><td>Coal</td><td>~8.1 MJ/kg</td><td>820 g</td></tr>
+        <tr><td>JP-5 (jet fuel)</td><td>~43 MJ/kg</td><td>~670 g</td></tr>
+        <tr><td>Natural gas</td><td>~55 MJ/kg</td><td>490 g</td></tr>
+        <tr><td>Uranium (natural, thermal rx)</td><td>~45,000 MJ/kg</td><td>&lt;12 g (lifecycle)</td></tr>
+        <tr><td>Uranium (enriched, PWR)</td><td>~3,900,000 MJ/kg</td><td>&lt;12 g (lifecycle)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="key-point"><strong>Key Point:</strong> One kilogram of enriched uranium fuel contains roughly 90,000× the energy of one kilogram of JP-5. This is why a Nimitz-class carrier can steam 1 million miles on two reactor cores while a conventionally powered carrier must refuel frequently at sea.</div>
+
+    <h3>Nuclear Waste Classification</h3>
+    <table class="decay-table">
+      <thead><tr><th>Class</th><th>Source</th><th>Half-lives</th><th>Disposal</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag tag-gamma" style="font-size:10px;">High-Level</span></td><td>Spent fuel rods, reprocessing waste</td><td>Thousands to millions of years</td><td>Deep geologic repository (Yucca Mountain planned)</td></tr>
+        <tr><td><span class="tag tag-beta" style="font-size:10px;">Transuranic</span></td><td>Pu, Am, Np contaminated items</td><td>Thousands of years</td><td>WIPP (Waste Isolation Pilot Plant), NM</td></tr>
+        <tr><td><span class="tag tag-alpha" style="font-size:10px;">Low-Level</span></td><td>Tools, protective gear, resins</td><td>Days to 30 years</td><td>Shallow land burial after interim storage</td></tr>
+      </tbody>
+    </table>
+
+    <h3>The Nuclear Fuel Cycle</h3>
+    <p>Mining → Milling (yellowcake U₃O₈) → Conversion (UF₆) → Enrichment (isotope separation) → Fuel fabrication (UO₂ pellets) → Reactor → Interim spent fuel storage (wet pools) → Dry cask storage → Final repository</p>
+
+    <div class="navy-context">
+      <div class="navy-label">Navy Context — Spent Naval Fuel</div>
+      <p style="margin:0;">When naval reactors are defueled (during refueling overhauls or ship decommissioning), the spent highly-enriched uranium fuel is sent to the Idaho National Laboratory. Reactor compartments from decommissioned submarines are buried intact at Hanford Site, Washington — the largest nuclear cleanup site in the Western Hemisphere. Sailors working on nuclear vessels receive quarterly whole-body radiation exposure assessments; annual allowable dose is tracked under NAVSEA radiological controls.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 7 ==================== -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-num">07</span>
+    <span class="section-label">Practice Problems</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+  </div>
+  <div class="section-body">
+
+    <!-- Problem 1 -->
+    <div class="problem">
+      <div class="problem-q">1. Half-Life Calculation — Iodine-131 (t½ = 8.02 days)<br>A thyroid therapy dose contains 12.0 mg of I-131. How many milligrams remain after 32.08 days? (Enter mg)</div>
+      <div class="input-row">
+        <input type="number" id="p1" placeholder="0.000">
+        <button class="btn" onclick="checkNum('p1', 0.75, 0.05)">Check</button>
+      </div>
+      <div class="feedback" id="p1-fb"></div>
+    </div>
+
+    <!-- Problem 2 -->
+    <div class="problem">
+      <div class="problem-q">2. Radiocarbon Dating — A wooden artifact has 25% of the C-14 activity of living wood. t½(C-14) = 5730 yr. How old is the artifact in years? (Enter years, round to nearest 10)</div>
+      <div class="input-row">
+        <input type="number" id="p2" placeholder="0">
+        <button class="btn" onclick="checkNum('p2', 11460, 200)">Check</button>
+      </div>
+      <div class="feedback" id="p2-fb"></div>
+    </div>
+
+    <!-- Problem 3 -->
+    <div class="problem">
+      <div class="problem-q">3. Half-Life from Data — A sample of Sr-90 has an activity of 8.0×10⁴ Bq. After 87.6 years it has 1.0×10⁴ Bq. What is the half-life of Sr-90 in years?</div>
+      <div class="input-row">
+        <input type="number" id="p3" placeholder="0">
+        <button class="btn" onclick="checkNum('p3', 29.2, 0.5)">Check</button>
+      </div>
+      <div class="feedback" id="p3-fb"></div>
+    </div>
+
+    <!-- Problem 4 -->
+    <div class="problem">
+      <div class="problem-q">4. Mass Defect — Calculate the binding energy of Li-7 in MeV. Li-7 has Z=3, N=4. Actual nuclear mass = 7.01601 amu. (m<sub>p</sub>=1.007276, m<sub>n</sub>=1.008665) Enter MeV rounded to 1 decimal.</div>
+      <div class="input-row">
+        <input type="number" id="p4" placeholder="0.0">
+        <button class="btn" onclick="checkNum('p4', 39.2, 0.5)">Check</button>
+      </div>
+      <div class="feedback" id="p4-fb"></div>
+    </div>
+
+    <!-- Problem 5 — MC nuclear equation -->
+    <div class="problem">
+      <div class="problem-q">5. Nuclear Equation Balancing — Complete the decay equation:<br>
+      <span style="font-size:15px;font-weight:700;">²³⁸₉₂U → ²³⁴₉₀Th + ?</span><br>
+      What particle is emitted?</div>
+      <div class="mc-options">
+        <button class="mc-btn" onclick="checkMC(this,'p5','wrong')">⁰₋₁e &nbsp;(beta particle)</button>
+        <button class="mc-btn" onclick="checkMC(this,'p5','correct')">⁴₂He &nbsp;(alpha particle)</button>
+        <button class="mc-btn" onclick="checkMC(this,'p5','wrong')">⁰₀γ &nbsp;(gamma photon)</button>
+        <button class="mc-btn" onclick="checkMC(this,'p5','wrong')">⁰₊₁e &nbsp;(positron)</button>
+      </div>
+      <div class="feedback" id="p5-fb"></div>
+    </div>
+
+    <!-- Problem 6 — MC nuclear equation -->
+    <div class="problem">
+      <div class="problem-q">6. Nuclear Equation — Identify the missing particle:<br>
+      <span style="font-size:15px;font-weight:700;">¹⁴₆C → ¹⁴₇N + ?</span></div>
+      <div class="mc-options">
+        <button class="mc-btn" onclick="checkMC(this,'p6','wrong')">⁴₂He &nbsp;(alpha)</button>
+        <button class="mc-btn" onclick="checkMC(this,'p6','correct')">⁰₋₁e &nbsp;(beta⁻ / electron)</button>
+        <button class="mc-btn" onclick="checkMC(this,'p6','wrong')">⁰₊₁e &nbsp;(positron)</button>
+        <button class="mc-btn" onclick="checkMC(this,'p6','wrong')">¹₀n &nbsp;(neutron)</button>
+      </div>
+      <div class="feedback" id="p6-fb"></div>
+    </div>
+
+    <!-- Problem 7 -->
+    <div class="problem">
+      <div class="problem-q">7. E=mc² — A nuclear reaction converts 0.00150 kg of mass to energy. How much energy is released in joules? (c = 3.00×10⁸ m/s) Enter value × 10¹⁴ J (e.g. enter "1.35" for 1.35×10¹⁴ J)</div>
+      <div class="input-row">
+        <input type="number" id="p7" placeholder="0.00" step="0.01">
+        <button class="btn" onclick="checkNum('p7', 1.35, 0.02)">Check</button>
+      </div>
+      <div class="feedback" id="p7-fb"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== SECTION 8 ==================== -->
+<div class="section-card" data-section="8">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="section-num">08</span>
+    <span class="section-label">Quiz — 10 Questions</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="quiz-score-bar">
+      <div>
+        <div class="score-display"><span id="quizScore">0</span> / 10</div>
+        <div class="score-label">Quiz Score</div>
+      </div>
+      <button class="btn amber" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-q">
+      <div class="quiz-q-text">1. Which decay mode increases atomic number (Z) by 1 while leaving mass number (A) unchanged?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(1,this,false)">Alpha decay</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,true)">Beta⁻ decay</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,false)">Positron emission</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,false)">Gamma emission</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q">
+      <div class="quiz-q-text">2. The half-life of Cs-137 is 30.17 years. What fraction of a sample remains after 90.51 years?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(2,this,false)">1/2</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,false)">1/4</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,true)">1/8</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,false)">1/16</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q">
+      <div class="quiz-q-text">3. Which isotope is used in radiocarbon dating, and what is its half-life?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(3,this,false)">U-238, 4.47 billion years</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,true)">C-14, 5,730 years</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,false)">K-40, 1.25 billion years</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,false)">I-131, 8.02 days</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q">
+      <div class="quiz-q-text">4. In E = mc², the "m" in a nuclear context specifically refers to:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(4,this,false)">The total mass of the nucleus</button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,false)">The mass of the emitted particle</button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,true)">The mass defect (Δm) — the difference between predicted and actual nuclear mass</button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,false)">The mass of electrons in the atom</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q">
+      <div class="quiz-q-text">5. The multiplication factor k = 1 in a nuclear reactor means:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(5,this,false)">The reactor is subcritical and shutting down</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,true)">The chain reaction is self-sustaining at constant power (critical)</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,false)">Each fission produces exactly 1 MeV</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,false)">The reactor is supercritical and power is rising</button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q">
+      <div class="quiz-q-text">6. The D-T fusion reaction (²H + ³H → ⁴He + n) releases approximately:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(6,this,false)">200 MeV</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,false)">4.5 MeV</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,true)">17.6 MeV</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,false)">1,000 MeV</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q">
+      <div class="quiz-q-text">7. Fe-56 is at the peak of the binding energy per nucleon curve. This means:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(7,this,false)">Fe-56 is the heaviest stable nucleus</button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,false)">Fe-56 releases the most energy in fission</button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,true)">Fe-56 is the most thermodynamically stable nuclide — neither fission nor fusion of Fe-56 releases energy</button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,false)">Fe-56 has the highest neutron-to-proton ratio</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q">
+      <div class="quiz-q-text">8. In a pressurized water reactor (PWR), what prevents the primary coolant from boiling despite being at ~325°C?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(8,this,false)">Special anti-boiling additives in the water</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,false)">Heavy water (D₂O) has a higher boiling point</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,true)">Extremely high pressure (~155 bar / 2,250 psi) raises the boiling point</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,false)">A refrigeration system in the primary loop</button>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-q">
+      <div class="quiz-q-text">9. Which type of radiation requires the MOST shielding to stop?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(9,this,false)">Alpha particles</button>
+        <button class="choice-btn" onclick="quizAnswer(9,this,false)">Beta particles</button>
+        <button class="choice-btn" onclick="quizAnswer(9,this,true)">Gamma rays</button>
+        <button class="choice-btn" onclick="quizAnswer(9,this,false)">All require equal shielding</button>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="quiz-q">
+      <div class="quiz-q-text">10. Complete the reaction: ²³⁵₉₂U + ¹₀n → ¹⁴¹₅₆Ba + _____ + 3¹₀n</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(10,this,false)">⁹⁵₃₆Kr</button>
+        <button class="choice-btn" onclick="quizAnswer(10,this,true)">⁹²₃₆Kr</button>
+        <button class="choice-btn" onclick="quizAnswer(10,this,false)">⁹⁰₃₆Kr</button>
+        <button class="choice-btn" onclick="quizAnswer(10,this,false)">⁹⁴₃₈Sr</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<script>
+// ========================= PROGRESS =========================
+var completedSections = new Set();
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) { markComplete(+card.getAttribute('data-section')); }
+  updateProgress();
+}
+
+// ========================= CHECK FUNCTIONS =========================
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(2) + ')';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct'); fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong'); fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+var quizScoreVal = 0, quizAnswered = new Set();
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct'); quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) { if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf('true') !== -1) b.classList.add('reveal-correct'); });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+// ========================= DECAY CANVAS =========================
+function updateDecayCanvas() {
+  var hl = parseFloat(document.getElementById('hlSlider').value);
+  var t = parseFloat(document.getElementById('timeSlider').value);
+  document.getElementById('hlReadout').textContent = hl >= 1000 ? (hl/1000).toFixed(1)+'k yr' : hl+' yr';
+  document.getElementById('timeReadout').textContent = t >= 1000 ? (t/1000).toFixed(1)+'k yr' : t+' yr';
+  var frac = Math.pow(0.5, t/hl);
+  var halves = t/hl;
+  var lambda = 0.693/hl;
+  document.getElementById('pctRemain').textContent = (frac*100).toFixed(2)+'%';
+  document.getElementById('halvesElapsed').textContent = halves.toFixed(2);
+  var lStr;
+  if (lambda < 0.001) { lStr = lambda.toExponential(2)+' yr⁻¹'; } else { lStr = lambda.toFixed(4)+' yr⁻¹'; }
+  document.getElementById('lambdaDisplay').textContent = lStr;
+
+  var canvas = document.getElementById('decayCanvas');
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 180 * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var W = rect.width, H = 180;
+  ctx.clearRect(0,0,W,H);
+
+  var pad = {l:40,r:20,t:14,b:30};
+  var cw = W - pad.l - pad.r;
+  var ch = H - pad.t - pad.b;
+
+  // axes
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ch); ctx.lineTo(pad.l+cw,pad.t+ch); ctx.stroke();
+
+  // labels
+  ctx.fillStyle = '#8b8fa8';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.fillText('N/N₀', 2, pad.t+4);
+  ctx.fillText('1.0', pad.l-26, pad.t+4);
+  ctx.fillText('0.5', pad.l-26, pad.t+ch/2+4);
+  ctx.fillText('0', pad.l-14, pad.t+ch+4);
+  ctx.fillText('time →', pad.l+cw/2-20, H-4);
+
+  // half-life reference lines
+  ctx.strokeStyle = 'rgba(245,158,11,0.25)';
+  ctx.setLineDash([3,3]);
+  ctx.lineWidth = 1;
+  var maxHalves = Math.max(halves+1, 5);
+  for (var i=1; i<=Math.min(maxHalves, 8); i++) {
+    var xp = pad.l + (i/maxHalves)*cw;
+    if (xp > pad.l+cw) break;
+    ctx.beginPath(); ctx.moveTo(xp, pad.t); ctx.lineTo(xp, pad.t+ch); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  // decay curve
+  ctx.beginPath();
+  ctx.strokeStyle = '#22c55e';
+  ctx.lineWidth = 2.5;
+  var steps = 200;
+  for (var i=0; i<=steps; i++) {
+    var tx = (i/steps)*maxHalves;
+    var fy = Math.pow(0.5, tx);
+    var px = pad.l + (tx/maxHalves)*cw;
+    var py = pad.t + (1-fy)*ch;
+    if (i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+
+  // current position dot
+  var dotX = pad.l + (halves/maxHalves)*cw;
+  var dotY = pad.t + (1-frac)*ch;
+  if (dotX > pad.l+cw) dotX = pad.l+cw;
+  ctx.beginPath();
+  ctx.arc(dotX, dotY, 6, 0, Math.PI*2);
+  ctx.fillStyle = '#ec4899';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // dotted lines to axes
+  ctx.setLineDash([3,3]);
+  ctx.strokeStyle = 'rgba(236,72,153,0.5)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(dotX,dotY); ctx.lineTo(dotX,pad.t+ch); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(dotX,dotY); ctx.lineTo(pad.l,dotY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // y-axis tick for current fraction
+  ctx.fillStyle = '#ec4899';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.fillText((frac).toFixed(2), pad.l-36, dotY+4);
+}
+
+// ========================= BETHE-WEIZSACKER FORMULA =========================
+// Returns binding energy per nucleon in MeV using liquid drop model
+function betheWeizsacker(Z, N) {
+  var A = Z + N;
+  if (A < 2) return 0;
+  var aV = 15.75, aS = 17.80, aC = 0.711, aA = 23.70, aP = 11.18;
+  var I = (N - Z);
+  var BE = aV*A - aS*Math.pow(A, 2/3) - aC*Z*(Z-1)/Math.pow(A,1/3) - aA*(I*I)/A;
+  // pairing
+  if (Z%2===0 && N%2===0) BE += aP/Math.pow(A,0.5);
+  else if (Z%2!==0 && N%2!==0) BE -= aP/Math.pow(A,0.5);
+  return Math.max(BE, 0);
+}
+
+function updateBE() {
+  var Z = parseInt(document.getElementById('beZ').value);
+  var N = parseInt(document.getElementById('beN').value);
+  document.getElementById('beZOut').textContent = Z;
+  document.getElementById('beNOut').textContent = N;
+  var A = Z + N;
+  var BE = betheWeizsacker(Z, N);
+  var perN = A > 0 ? BE/A : 0;
+  document.getElementById('beA').textContent = A;
+  document.getElementById('beTotalE').textContent = BE.toFixed(1)+' MeV';
+  document.getElementById('bePerN').textContent = perN.toFixed(2)+' MeV';
+  drawBECanvas(Z, N);
+}
+
+function drawBECanvas(selZ, selN) {
+  var canvas = document.getElementById('beCanvas');
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 160 * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var W = rect.width, H = 160;
+  ctx.clearRect(0,0,W,H);
+
+  var pad = {l:40,r:20,t:10,b:28};
+  var cw = W-pad.l-pad.r, ch = H-pad.t-pad.b;
+
+  ctx.strokeStyle = '#363b47'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ch); ctx.lineTo(pad.l+cw,pad.t+ch); ctx.stroke();
+
+  ctx.fillStyle = '#8b8fa8'; ctx.font = '10px JetBrains Mono, monospace';
+  ctx.fillText('BE/A', 2, pad.t+12);
+  ctx.fillText('(MeV)', 2, pad.t+22);
+  ctx.fillText('A →', pad.l+cw/2-14, H-2);
+
+  var maxA = 240, maxBE = 9.5;
+
+  // grid lines
+  ctx.strokeStyle = 'rgba(54,59,71,0.5)'; ctx.setLineDash([2,3]); ctx.lineWidth = 1;
+  for (var be=2; be<=9; be++) {
+    var py = pad.t + (1-be/maxBE)*ch;
+    ctx.beginPath(); ctx.moveTo(pad.l,py); ctx.lineTo(pad.l+cw,py); ctx.stroke();
+    ctx.fillStyle = '#8b8fa8'; ctx.font = '9px JetBrains Mono, monospace';
+    ctx.fillText(be, pad.l-18, py+3);
+  }
+  ctx.setLineDash([]);
+
+  // Draw BE/A curve
+  ctx.beginPath(); ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2;
+  var first = true;
+  for (var Ai=2; Ai<=maxA; Ai++) {
+    // approximate N = A - Z, using Z ~ A/(2 + 0.0155*A^(2/3))
+    var Zi = Math.round(Ai / (2 + 0.0155*Math.pow(Ai, 2/3)));
+    Zi = Math.max(1, Math.min(Zi, Ai-1));
+    var Ni = Ai - Zi;
+    var beVal = betheWeizsacker(Zi, Ni) / Ai;
+    var px = pad.l + (Ai/maxA)*cw;
+    var py2 = pad.t + (1-beVal/maxBE)*ch;
+    if (first) { ctx.moveTo(px,py2); first=false; } else ctx.lineTo(px,py2);
+  }
+  ctx.stroke();
+
+  // Fe-56 marker
+  var feA = 56, feZ = 26, feN = 30;
+  var feBE = betheWeizsacker(feZ,feN)/feA;
+  var feX = pad.l+(feA/maxA)*cw, feY = pad.t+(1-feBE/maxBE)*ch;
+  ctx.beginPath(); ctx.arc(feX,feY,5,0,Math.PI*2); ctx.fillStyle='#f59e0b'; ctx.fill();
+  ctx.fillStyle='#f59e0b'; ctx.font='10px JetBrains Mono,monospace';
+  ctx.fillText('Fe-56', feX+6, feY+4);
+
+  // selected nuclide
+  var selA = selZ+selN;
+  if (selA<=maxA && selA>=2) {
+    var selBE = betheWeizsacker(selZ,selN)/selA;
+    var selX = pad.l+(selA/maxA)*cw, selY = pad.t+(1-selBE/maxBE)*ch;
+    ctx.beginPath(); ctx.arc(selX,selY,6,0,Math.PI*2); ctx.fillStyle='#ec4899'; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+  }
+
+  // labels
+  ctx.fillStyle='#8b8fa8'; ctx.font='9px JetBrains Mono,monospace';
+  ctx.fillText('0', pad.l-10, pad.t+ch+3);
+  ctx.fillText('60', pad.l+(60/maxA)*cw-8, pad.t+ch+10);
+  ctx.fillText('120', pad.l+(120/maxA)*cw-10, pad.t+ch+10);
+  ctx.fillText('180', pad.l+(180/maxA)*cw-10, pad.t+ch+10);
+  ctx.fillText('240', pad.l+(240/maxA)*cw-10, pad.t+ch+10);
+}
+
+// ========================= BE CURVE (static full view) =========================
+function drawBECurve() {
+  var canvas = document.getElementById('beCurveCanvas');
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 200 * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var W = rect.width, H = 200;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0,0,W,H);
+
+  var pad = {l:44,r:20,t:14,b:36};
+  var cw = W-pad.l-pad.r, ch = H-pad.t-pad.b;
+  var maxA = 240, maxBE = 9.5;
+
+  // background grid
+  ctx.strokeStyle = 'rgba(54,59,71,0.6)'; ctx.setLineDash([2,4]); ctx.lineWidth = 1;
+  for (var be=1; be<=9; be++) {
+    var py = pad.t+(1-be/maxBE)*ch;
+    ctx.beginPath(); ctx.moveTo(pad.l,py); ctx.lineTo(pad.l+cw,py); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  // axes
+  ctx.strokeStyle = '#363b47'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ch); ctx.lineTo(pad.l+cw,pad.t+ch); ctx.stroke();
+
+  // axis labels
+  ctx.fillStyle = '#8b8fa8'; ctx.font = '10px JetBrains Mono, monospace';
+  for (var be=2; be<=9; be++) {
+    var py2 = pad.t+(1-be/maxBE)*ch;
+    ctx.fillText(be, pad.l-24, py2+4);
+  }
+  for (var ai=0; ai<=240; ai+=40) {
+    var px = pad.l+(ai/maxA)*cw;
+    ctx.fillText(ai, px-8, pad.t+ch+14);
+  }
+  ctx.fillStyle = '#e2e4e9'; ctx.font = '11px JetBrains Mono, monospace';
+  ctx.fillText('Binding Energy per Nucleon (MeV)', pad.l+cw/2-90, H-4);
+  ctx.save(); ctx.translate(10, pad.t+ch/2+30); ctx.rotate(-Math.PI/2);
+  ctx.fillText('BE/A (MeV)', -34, 0); ctx.restore();
+
+  // fission/fusion arrows and labels
+  ctx.fillStyle = 'rgba(245,158,11,0.25)';
+  ctx.fillRect(pad.l, pad.t, cw*0.28, ch);
+  ctx.fillStyle = 'rgba(99,102,241,0.12)';
+  ctx.fillRect(pad.l+cw*0.3, pad.t, cw*0.7, ch);
+
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.fillStyle = '#f59e0b';
+  ctx.fillText('FUSION →', pad.l+6, pad.t+18);
+  ctx.fillStyle = '#6366f1';
+  ctx.fillText('← FISSION', pad.l+cw-80, pad.t+18);
+
+  // main curve
+  ctx.beginPath(); ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2.5;
+  var first = true;
+  for (var Ai=2; Ai<=maxA; Ai++) {
+    var Zi = Math.round(Ai/(2+0.0155*Math.pow(Ai,2/3)));
+    Zi = Math.max(1,Math.min(Zi,Ai-1));
+    var Ni = Ai-Zi;
+    var bev = betheWeizsacker(Zi,Ni)/Ai;
+    var px3 = pad.l+(Ai/maxA)*cw;
+    var py3 = pad.t+(1-bev/maxBE)*ch;
+    if (first){ctx.moveTo(px3,py3);first=false;}else ctx.lineTo(px3,py3);
+  }
+  ctx.stroke();
+
+  // key nuclide markers
+  var marks = [
+    {A:4,Z:2,N:2,label:'He-4',color:'#f59e0b'},
+    {A:12,Z:6,N:6,label:'C-12',color:'#22c55e'},
+    {A:56,Z:26,N:30,label:'Fe-56',color:'#ec4899'},
+    {A:235,Z:92,N:143,label:'U-235',color:'#6366f1'},
+    {A:238,Z:92,N:146,label:'U-238',color:'#6366f1'}
+  ];
+  marks.forEach(function(m) {
+    if (m.A > maxA) return;
+    var bev = betheWeizsacker(m.Z,m.N)/m.A;
+    var mx = pad.l+(m.A/maxA)*cw;
+    var my = pad.t+(1-bev/maxBE)*ch;
+    ctx.beginPath(); ctx.arc(mx,my,5,0,Math.PI*2);
+    ctx.fillStyle = m.color; ctx.fill();
+    ctx.fillStyle = m.color; ctx.font = 'bold 9px JetBrains Mono, monospace';
+    var lx = mx+7, ly = my-6;
+    if (m.A > 200) { lx = mx-40; ly = my-8; }
+    ctx.fillText(m.label, lx, ly);
+  });
+}
+
+// ========================= INIT =========================
+window.addEventListener('load', function() {
+  updateProgress();
+
+  // size canvases after layout
+  setTimeout(function() {
+    updateDecayCanvas();
+    updateBE();
+    drawBECurve();
+  }, 100);
+
+  window.addEventListener('resize', function() {
+    updateDecayCanvas();
+    updateBE();
+    drawBECurve();
+  });
+
+  // watch slider changes to redraw
+  document.getElementById('hlSlider').addEventListener('input', updateDecayCanvas);
+  document.getElementById('timeSlider').addEventListener('input', updateDecayCanvas);
+  document.getElementById('beZ').addEventListener('input', updateBE);
+  document.getElementById('beN').addEventListener('input', updateBE);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 15: Temperature &amp; Heat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.data-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.75rem}
+.data-table th{background:var(--indigo-dim);color:var(--indigo);padding:8px 12px;text-align:left;font-weight:600;border:1px solid var(--border)}
+.data-table td{padding:8px 12px;border:1px solid var(--border);color:var(--text)}
+.data-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.input-group{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.input-group label{font-size:.7rem;color:var(--text-dim);min-width:90px}
+.input-group input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:110px;outline:none;transition:border-color var(--transition)}
+.input-group input:focus{border-color:var(--indigo)}
+.input-group select{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;outline:none;cursor:pointer}
+.input-group .unit{font-size:.68rem;color:var(--text-dim)}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.data-table{font-size:.65rem}.data-table th,.data-table td{padding:6px 8px}.input-group label{min-width:70px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>15</span> Temperature &amp; Heat</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 7 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: TEMPERATURE SCALES -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Temperature Scales</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Temperature measures the <strong>average kinetic energy</strong> of molecules in a substance. Three scales are used in physics: <strong>Celsius</strong> (water freezes at 0, boils at 100), <strong>Fahrenheit</strong> (freezes at 32, boils at 212), and <strong>Kelvin</strong> (the SI unit, starts at absolute zero). Kelvin is simply Celsius shifted by 273.15 -- no negative temperatures.
+    </p>
+
+    <div class="formula-box large">T_K = T_C + 273.15</div>
+    <div class="formula-box green">T_F = (9/5) T_C + 32</div>
+    <div class="formula-box pink">T_C = (5/9)(T_F - 32)</div>
+
+    <div class="key-point">Absolute zero (0 K = -273.15 C = -459.67 F) is the lowest possible temperature. At absolute zero, molecular motion reaches its quantum mechanical minimum. No system can be cooled to exactly 0 K (Third Law of Thermodynamics).</div>
+
+    <p class="concept-text">
+      Key reference points: <strong>-40</strong> is where Celsius and Fahrenheit are equal. Room temperature is about <strong>20 C = 68 F = 293 K</strong>. Human body temperature is <strong>37 C = 98.6 F = 310 K</strong>.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Temperature Scale Converter</div>
+      <div class="input-group">
+        <label>Enter temp:</label>
+        <input type="number" id="tempInput" value="100" step="0.1" oninput="convertTemp()">
+        <select id="tempScale" onchange="convertTemp()">
+          <option value="C">Celsius</option>
+          <option value="F">Fahrenheit</option>
+          <option value="K">Kelvin</option>
+        </select>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Celsius</span><br><span class="value indigo" id="tempC">100.0 C</span></div>
+        <div class="readout-item"><span class="label">Fahrenheit</span><br><span class="value amber" id="tempF">212.0 F</span></div>
+        <div class="readout-item"><span class="label">Kelvin</span><br><span class="value green" id="tempK">373.15 K</span></div>
+      </div>
+      <svg id="thermSvg" width="100%" viewBox="0 0 700 120" style="display:block;margin-top:14px"></svg>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Quick Checks</div>
+      <div class="problem">
+        <p><strong>1.</strong> Convert 72 F to Celsius.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1" step="0.1" placeholder="T_C = ?" onkeydown="if(event.key==='Enter')checkNum('s1p1',22.2,0.5)">
+          <span class="unit-label">C</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p1',22.2,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> What is 25 C in Kelvin?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2" step="0.01" placeholder="T_K = ?" onkeydown="if(event.key==='Enter')checkNum('s1p2',298.15,0.5)">
+          <span class="unit-label">K</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p2',298.15,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: THERMAL EXPANSION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Thermal Expansion</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When materials are heated, atoms vibrate more and push apart. Most solids expand in all directions. <strong>Linear expansion</strong> describes length change along one dimension. <strong>Volumetric expansion</strong> describes total volume change. For isotropic solids, the volume coefficient is approximately three times the linear coefficient: <strong>&beta; &approx; 3&alpha;</strong>.
+    </p>
+
+    <div class="formula-box large">&Delta;L = &alpha; L_0 &Delta;T</div>
+    <div class="formula-box green">&Delta;V = &beta; V_0 &Delta;T</div>
+
+    <div class="key-point">Water is anomalous: it contracts when heated from 0 C to 4 C, then expands normally above 4 C. This is why ice floats and lakes freeze from the top down -- critical for aquatic life.</div>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Material</th><th>&alpha; (linear, 10<sup>-6</sup>/C)</th><th>&beta; (volume, 10<sup>-6</sup>/C)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Steel</td><td>12</td><td>36</td></tr>
+        <tr><td>Aluminum</td><td>23</td><td>69</td></tr>
+        <tr><td>Copper</td><td>17</td><td>51</td></tr>
+        <tr><td>Brass</td><td>19</td><td>57</td></tr>
+        <tr><td>Concrete</td><td>12</td><td>36</td></tr>
+        <tr><td>Glass (Pyrex)</td><td>3.3</td><td>9.9</td></tr>
+        <tr><td>Invar (Ni-Fe)</td><td>0.9</td><td>2.7</td></tr>
+      </tbody>
+    </table>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Linear Expansion Calculator</div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setExpMat('steel',this)">Steel</button>
+        <button class="scenario-tab" onclick="setExpMat('aluminum',this)">Aluminum</button>
+        <button class="scenario-tab" onclick="setExpMat('copper',this)">Copper</button>
+        <button class="scenario-tab" onclick="setExpMat('brass',this)">Brass</button>
+        <button class="scenario-tab" onclick="setExpMat('glass',this)">Pyrex Glass</button>
+      </div>
+      <div class="slider-row">
+        <label>Original L (m)</label>
+        <input type="range" id="expL0" min="0.1" max="100" value="10" step="0.1" oninput="updateExpansion()">
+        <span class="slider-val" id="expL0Val">10.0 m</span>
+      </div>
+      <div class="slider-row">
+        <label>&Delta;T (C)</label>
+        <input type="range" id="expDT" min="-100" max="500" value="50" step="1" oninput="updateExpansion()">
+        <span class="slider-val" id="expDTVal">50 C</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">&alpha;</span><br><span class="value indigo" id="expAlpha">12 x10^-6/C</span></div>
+        <div class="readout-item"><span class="label">&Delta;L</span><br><span class="value green" id="expDL">0.006 m</span></div>
+        <div class="readout-item"><span class="label">New Length</span><br><span class="value amber" id="expLf">10.006 m</span></div>
+        <div class="readout-item"><span class="label">&Delta;L in mm</span><br><span class="value pink" id="expDLmm">6.0 mm</span></div>
+      </div>
+      <svg id="expSvg" width="100%" viewBox="0 0 700 80" style="display:block;margin-top:12px"></svg>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Ship decks are made of steel and can be 300+ meters long. A 50 C temperature swing creates &Delta;L = 12e-6 * 300 * 50 = 0.18 m (over 7 inches). This is why Navy ships have <strong>expansion joints</strong> -- gaps with sliding covers that allow the deck to expand and contract without buckling. On aircraft carriers, catapult tracks must account for thermal expansion to maintain precise alignment for launches.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A steel bridge is 200 m long at 15 C. How much longer is it at 40 C? (&alpha; = 12 x 10^-6 /C)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1" step="0.001" placeholder="&Delta;L = ?" onkeydown="if(event.key==='Enter')checkNum('s2p1',0.06,0.005)">
+          <span class="unit-label">m</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p1',0.06,0.005)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> An aluminum rod is 2.0 m at 20 C. What temperature would make it 2.001 m? (&alpha; = 23 x 10^-6 /C)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" step="0.1" placeholder="T = ?" onkeydown="if(event.key==='Enter')checkNum('s2p2',41.7,1.5)">
+          <span class="unit-label">C</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p2',41.7,1.5)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: SPECIFIC HEAT & CALORIMETRY -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Specific Heat &amp; Calorimetry</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Specific heat capacity</strong> (c) is the amount of energy needed to raise 1 kg of a substance by 1 C (or 1 K). Water has an unusually high specific heat -- it takes a lot of energy to heat or cool it. This is why oceans moderate coastal climates and why water is used as a coolant in engines and nuclear reactors.
+    </p>
+
+    <div class="formula-box large">Q = mc&Delta;T</div>
+    <p class="concept-text" style="margin-top:8px">
+      Where <strong>Q</strong> = heat energy (Joules), <strong>m</strong> = mass (kg), <strong>c</strong> = specific heat (J/kg*C), <strong>&Delta;T</strong> = temperature change (C or K).
+    </p>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Material</th><th>c (J/kg*C)</th><th>Relative to Water</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Water</td><td>4186</td><td>1.000</td></tr>
+        <tr><td>Ice</td><td>2090</td><td>0.499</td></tr>
+        <tr><td>Steam</td><td>2010</td><td>0.480</td></tr>
+        <tr><td>Aluminum</td><td>900</td><td>0.215</td></tr>
+        <tr><td>Iron / Steel</td><td>449</td><td>0.107</td></tr>
+        <tr><td>Copper</td><td>385</td><td>0.092</td></tr>
+        <tr><td>Lead</td><td>128</td><td>0.031</td></tr>
+      </tbody>
+    </table>
+
+    <div class="key-point">Calorimetry principle: in an insulated system, heat lost by hot objects equals heat gained by cold objects. Q_lost + Q_gained = 0 (conservation of energy). Signs: Q is positive when a substance absorbs heat, negative when it releases heat.</div>
+
+    <div class="formula-box amber">Calorimetry: m_hot * c_hot * (T_f - T_hot) + m_cold * c_cold * (T_f - T_cold) = 0</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Calorimetry Calculator -- Mix Two Substances</div>
+      <div class="sub-label">Substance 1 (hot)</div>
+      <div class="input-group">
+        <label>Mass (kg):</label>
+        <input type="number" id="calM1" value="0.5" step="0.01" min="0.01" oninput="updateCalorimetry()">
+        <label>Temp (C):</label>
+        <input type="number" id="calT1" value="80" step="1" oninput="updateCalorimetry()">
+      </div>
+      <div class="input-group">
+        <label>Material:</label>
+        <select id="calC1" onchange="updateCalorimetry()">
+          <option value="4186">Water (4186)</option>
+          <option value="900">Aluminum (900)</option>
+          <option value="449">Iron (449)</option>
+          <option value="385">Copper (385)</option>
+          <option value="128">Lead (128)</option>
+        </select>
+      </div>
+      <div class="sub-label">Substance 2 (cold)</div>
+      <div class="input-group">
+        <label>Mass (kg):</label>
+        <input type="number" id="calM2" value="1.0" step="0.01" min="0.01" oninput="updateCalorimetry()">
+        <label>Temp (C):</label>
+        <input type="number" id="calT2" value="20" step="1" oninput="updateCalorimetry()">
+      </div>
+      <div class="input-group">
+        <label>Material:</label>
+        <select id="calC2" onchange="updateCalorimetry()">
+          <option value="4186">Water (4186)</option>
+          <option value="900">Aluminum (900)</option>
+          <option value="449">Iron (449)</option>
+          <option value="385">Copper (385)</option>
+          <option value="128">Lead (128)</option>
+        </select>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" onclick="updateCalorimetry()">Calculate</button>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Final Temp T_f</span><br><span class="value green" id="calTf">40.0 C</span></div>
+        <div class="readout-item"><span class="label">Q lost by hot</span><br><span class="value pink" id="calQlost">-- J</span></div>
+        <div class="readout-item"><span class="label">Q gained by cold</span><br><span class="value indigo" id="calQgain">-- J</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> How much energy is needed to heat 2.0 kg of water from 20 C to 80 C? (c = 4186 J/kg*C)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="100" placeholder="Q = ?" onkeydown="if(event.key==='Enter')checkNum('s3p1',502320,5000)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p1',502320,5000)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> A 0.3 kg copper block at 200 C is dropped into 0.8 kg of water at 20 C. What is the equilibrium temperature? (c_Cu = 385, c_w = 4186)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2" step="0.1" placeholder="T_f = ?" onkeydown="if(event.key==='Enter')checkNum('s3p2',26.1,0.5)">
+          <span class="unit-label">C</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p2',26.1,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: LATENT HEAT -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Latent Heat &amp; Phase Changes</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      During a <strong>phase change</strong> (melting, boiling, freezing, condensing), temperature stays constant even though heat is being added or removed. This energy breaks or forms intermolecular bonds rather than increasing kinetic energy. The heat required is <strong>Q = mL</strong>, where L is the <strong>latent heat</strong>.
+    </p>
+
+    <div class="formula-box large">Q = mL</div>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Substance</th><th>Melting Point (C)</th><th>L_f (J/kg)</th><th>Boiling Point (C)</th><th>L_v (J/kg)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Water</td><td>0</td><td>3.34 x 10^5</td><td>100</td><td>2.26 x 10^6</td></tr>
+        <tr><td>Ethanol</td><td>-114</td><td>1.04 x 10^5</td><td>78</td><td>8.46 x 10^5</td></tr>
+        <tr><td>Lead</td><td>327</td><td>2.45 x 10^4</td><td>1749</td><td>8.71 x 10^5</td></tr>
+      </tbody>
+    </table>
+
+    <div class="key-point">The latent heat of vaporization for water (2.26 x 10^6 J/kg) is about 6.8 times larger than the latent heat of fusion (3.34 x 10^5 J/kg). This is why steam burns are far more dangerous than boiling water burns -- the steam releases enormous energy as it condenses on your skin.</div>
+
+    <p class="concept-text">
+      The <strong>heating curve</strong> below shows what happens when you add heat to ice starting at -20 C. Notice the <strong>flat plateaus</strong> at 0 C (melting) and 100 C (boiling) where temperature stays constant during phase changes.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Heating Curve for 1 kg of Water (Ice to Steam)</div>
+      <svg id="heatCurveSvg" width="100%" viewBox="0 0 700 380" style="display:block"></svg>
+      <div class="sub-label">Hover or tap on the curve to see details at each stage.</div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Stage</span><br><span class="value indigo" id="hcStage">Ice warming</span></div>
+        <div class="readout-item"><span class="label">Temperature</span><br><span class="value green" id="hcTemp">-20 C</span></div>
+        <div class="readout-item"><span class="label">Heat Added</span><br><span class="value amber" id="hcQ">0 kJ</span></div>
+        <div class="readout-item"><span class="label">Phase</span><br><span class="value pink" id="hcPhase">Solid (ice)</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> How much energy is needed to melt 0.5 kg of ice at 0 C? (L_f = 3.34 x 10^5 J/kg)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="100" placeholder="Q = ?" onkeydown="if(event.key==='Enter')checkNum('s4p1',167000,2000)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p1',167000,2000)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> How much total energy is needed to convert 1 kg of ice at -10 C to steam at 100 C? (c_ice=2090, L_f=334000, c_water=4186, L_v=2260000)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2" step="1000" placeholder="Q_total = ?" onkeydown="if(event.key==='Enter')checkNum('s4p2',3034500,30000)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s4p2',3034500,30000)">Check</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: HEAT TRANSFER -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Heat Transfer Methods</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Heat flows from hot to cold by three mechanisms: <strong>conduction</strong> (direct contact, molecular collisions), <strong>convection</strong> (bulk fluid motion), and <strong>radiation</strong> (electromagnetic waves, no medium needed). All three operate simultaneously in most real situations.
+    </p>
+
+    <div class="formula-box large">Conduction: Q/t = kA&Delta;T / L</div>
+    <p class="concept-text" style="margin-top:4px">
+      <strong>k</strong> = thermal conductivity (W/m*K), <strong>A</strong> = cross-sectional area (m^2), <strong>&Delta;T</strong> = temperature difference (K), <strong>L</strong> = thickness (m). Metals have high k (good conductors); insulating materials have low k.
+    </p>
+
+    <div class="formula-box green">Convection: Q/t = hA&Delta;T &nbsp;&nbsp; (h = convection coefficient)</div>
+    <p class="concept-text" style="margin-top:4px">
+      Convection can be <strong>natural</strong> (driven by buoyancy -- hot fluid rises, cold sinks) or <strong>forced</strong> (driven by a fan, pump, or wind). Wind chill is an example of forced convection increasing heat loss from your body.
+    </p>
+
+    <div class="formula-box pink">Radiation: P = &epsilon;&sigma;AT^4 &nbsp;&nbsp; (Stefan-Boltzmann law)</div>
+    <p class="concept-text" style="margin-top:4px">
+      <strong>&epsilon;</strong> = emissivity (0 to 1, black body = 1), <strong>&sigma;</strong> = 5.67 x 10^-8 W/m^2*K^4 (Stefan-Boltzmann constant), <strong>A</strong> = surface area, <strong>T</strong> = absolute temperature in Kelvin. Note: T must be in Kelvin because radiation depends on the fourth power.
+    </p>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Material</th><th>k (W/m*K)</th><th>Category</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Copper</td><td>401</td><td>Excellent conductor</td></tr>
+        <tr><td>Aluminum</td><td>237</td><td>Good conductor</td></tr>
+        <tr><td>Steel</td><td>50</td><td>Moderate conductor</td></tr>
+        <tr><td>Glass</td><td>0.8</td><td>Poor conductor</td></tr>
+        <tr><td>Wood</td><td>0.15</td><td>Insulator</td></tr>
+        <tr><td>Styrofoam</td><td>0.033</td><td>Excellent insulator</td></tr>
+        <tr><td>Air (still)</td><td>0.025</td><td>Excellent insulator</td></tr>
+      </tbody>
+    </table>
+
+    <div class="key-point">Net radiation: An object both emits and absorbs radiation. The net power radiated is P_net = &epsilon;&sigma;A(T_obj^4 - T_env^4). An object in thermal equilibrium with its surroundings has zero net radiation.</div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Nuclear reactor compartments use all three modes: conduction through the reactor vessel walls, forced convection of primary coolant water (pumped at high flow rates), and radiation shielding to contain thermal and nuclear radiation. The steam plant converts thermal energy to mechanical work via convection-driven steam turbines. Hull insulation in cold waters prevents excessive heat loss by conduction.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A glass window is 0.5 m^2 and 0.005 m thick. Inside temp is 22 C, outside is 0 C. What is the rate of heat loss through the window? (k = 0.8 W/m*K)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1" step="1" placeholder="Q/t = ?" onkeydown="if(event.key==='Enter')checkNum('s5p1',1760,50)">
+          <span class="unit-label">W</span>
+          <button class="btn btn-sm" onclick="checkNum('s5p1',1760,50)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> Which heat transfer method requires no medium?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">Conduction</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">Convection</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','correct')">Radiation</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: PRACTICE PROBLEMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Practice Problems</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="practice-block" style="border-top:none;padding-top:0">
+      <div class="practice-title">Comprehensive Practice</div>
+
+      <div class="problem">
+        <p><strong>1.</strong> A steel rail is 25 m long at 10 C. How much does it expand when temperature rises to 50 C? (&alpha; = 12 x 10^-6 /C)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p1" step="0.0001" placeholder="&Delta;L = ?" onkeydown="if(event.key==='Enter')checkNum('s6p1',0.012,0.001)">
+          <span class="unit-label">m</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p1',0.012,0.001)">Check</button>
+        </div>
+        <div class="feedback" id="s6p1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>2.</strong> A 0.2 kg aluminum block (c = 900 J/kg*C) at 150 C is placed in 0.5 kg of water (c = 4186 J/kg*C) at 25 C. Find the final equilibrium temperature.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p2" step="0.1" placeholder="T_f = ?" onkeydown="if(event.key==='Enter')checkNum('s6p2',35.4,0.8)">
+          <span class="unit-label">C</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p2',35.4,0.8)">Check</button>
+        </div>
+        <div class="feedback" id="s6p2-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>3.</strong> How much heat is needed to convert 0.1 kg of ice at -15 C to water at 40 C? (c_ice = 2090, L_f = 334000, c_water = 4186)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p3" step="100" placeholder="Q = ?" onkeydown="if(event.key==='Enter')checkNum('s6p3',53879,1000)">
+          <span class="unit-label">J</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p3',53879,1000)">Check</button>
+        </div>
+        <div class="feedback" id="s6p3-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>4.</strong> A copper rod (k = 401 W/m*K) is 0.5 m long and has cross-section 0.001 m^2. One end is at 200 C, the other at 50 C. What is the rate of heat conduction?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p4" step="0.1" placeholder="Q/t = ?" onkeydown="if(event.key==='Enter')checkNum('s6p4',120.3,2)">
+          <span class="unit-label">W</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p4',120.3,2)">Check</button>
+        </div>
+        <div class="feedback" id="s6p4-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>5.</strong> A black sphere (&epsilon; = 1) at 500 K has surface area 0.1 m^2. What power does it radiate? (&sigma; = 5.67 x 10^-8 W/m^2*K^4)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p5" step="1" placeholder="P = ?" onkeydown="if(event.key==='Enter')checkNum('s6p5',354.4,5)">
+          <span class="unit-label">W</span>
+          <button class="btn btn-sm" onclick="checkNum('s6p5',354.4,5)">Check</button>
+        </div>
+        <div class="feedback" id="s6p5-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">7</span> Quick Quiz &mdash; Temperature &amp; Heat</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Temperature Scales</div>
+      <p class="q-text">What temperature is the same in both Celsius and Fahrenheit?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">0 degrees</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">-40 degrees</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">100 degrees</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">-273 degrees</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Absolute Zero</div>
+      <p class="q-text">Absolute zero in Celsius is approximately:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">0 C</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">-100 C</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">-273.15 C</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">-459.67 C</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Thermal Expansion</div>
+      <p class="q-text">A steel beam (alpha = 12 x 10^-6/C) is 50 m long and undergoes a 40 C increase. The change in length is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">0.24 m</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">0.024 m (24 mm)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">0.0024 m</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">2.4 m</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Specific Heat</div>
+      <p class="q-text">Which substance requires the most energy to raise 1 kg by 1 C?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Copper (385 J/kg*C)</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Aluminum (900 J/kg*C)</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">Water (4186 J/kg*C)</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Iron (449 J/kg*C)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Calorimetry</div>
+      <p class="q-text">When a hot metal is dropped into cold water in a calorimeter, at equilibrium:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">The metal and water are at the metal's original temperature</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">Heat lost by metal equals heat gained by water</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">The water always reaches 100 C</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">Energy is created during the mixing</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Phase Change</div>
+      <p class="q-text">During a phase change (melting or boiling), the temperature of the substance:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Increases rapidly</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Decreases</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">Remains constant</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Oscillates</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Latent Heat</div>
+      <p class="q-text">The latent heat of vaporization for water (2.26 x 10^6 J/kg) is much larger than the latent heat of fusion (3.34 x 10^5 J/kg) because:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Water weighs more as a gas</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">Breaking all intermolecular bonds (liquid to gas) requires much more energy than loosening them (solid to liquid)</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Steam is hotter than liquid water</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Boiling only happens at higher pressures</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Conduction</div>
+      <p class="q-text">Doubling the thickness of a wall while keeping everything else constant will:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">Cut the rate of heat conduction in half</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Double the rate of heat conduction</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Have no effect</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Quadruple the rate of heat conduction</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Radiation</div>
+      <p class="q-text">If you double the absolute temperature of a radiating body, the power radiated increases by a factor of:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">2</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">4</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">8</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">16 (because P is proportional to T^4)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Heating Curve</div>
+      <p class="q-text">On a heating curve for water, the longest flat plateau corresponds to:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Melting (ice to water at 0 C)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">Boiling (water to steam at 100 C) because L_v >> L_f</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Warming ice from -20 C to 0 C</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">Warming water from 0 C to 100 C</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(1) + ')';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: TEMPERATURE CONVERTER ==================== */
+function convertTemp() {
+  var v = parseFloat(document.getElementById('tempInput').value);
+  var s = document.getElementById('tempScale').value;
+  if (isNaN(v)) return;
+  var c, f, k;
+  if (s === 'C') { c = v; f = v * 9/5 + 32; k = v + 273.15; }
+  else if (s === 'F') { c = (v - 32) * 5/9; f = v; k = c + 273.15; }
+  else { k = v; c = v - 273.15; f = c * 9/5 + 32; }
+  document.getElementById('tempC').textContent = c.toFixed(1) + ' C';
+  document.getElementById('tempF').textContent = f.toFixed(1) + ' F';
+  document.getElementById('tempK').textContent = k.toFixed(2) + ' K';
+  drawThermometer(c);
+}
+
+function drawThermometer(c) {
+  var svg = document.getElementById('thermSvg');
+  var ox = 60, oy = 20, w = 580, h = 60;
+  var minT = -273, maxT = 500;
+  var range = maxT - minT;
+  function tx(t) { return ox + ((t - minT) / range) * w; }
+  var html = '';
+  html += '<rect x="'+ox+'" y="'+(oy+15)+'" width="'+w+'" height="30" rx="4" fill="#1a1d24" stroke="#363b47"/>';
+  var fillW = Math.max(0, Math.min(w, tx(c) - ox));
+  var grad = c < 0 ? '#6366f1' : c < 100 ? '#22c55e' : '#ec4899';
+  html += '<rect x="'+ox+'" y="'+(oy+15)+'" width="'+fillW+'" height="30" rx="4" fill="'+grad+'" opacity="0.5"/>';
+  var marks = [-273, -40, 0, 37, 100, 212, 373];
+  var labels = ['-273C\n0K', '-40\nC=F', '0C\nFreeze', '37C\nBody', '100C\nBoil', '212F\nBoil', '373K\nBoil'];
+  for (var i = 0; i < marks.length; i++) {
+    var x = tx(marks[i]);
+    if (x >= ox && x <= ox + w) {
+      html += '<line x1="'+x+'" y1="'+(oy+10)+'" x2="'+x+'" y2="'+(oy+50)+'" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2"/>';
+      html += '<text x="'+x+'" y="'+(oy+8)+'" text-anchor="middle" fill="#9ca3af" font-size="8">'+labels[i].split('\n')[0]+'</text>';
+      html += '<text x="'+x+'" y="'+(oy+68)+'" text-anchor="middle" fill="#9ca3af" font-size="7">'+labels[i].split('\n')[1]+'</text>';
+    }
+  }
+  var cx = tx(c);
+  if (cx >= ox && cx <= ox + w) {
+    html += '<line x1="'+cx+'" y1="'+(oy+5)+'" x2="'+cx+'" y2="'+(oy+55)+'" stroke="'+grad+'" stroke-width="2"/>';
+    html += '<circle cx="'+cx+'" cy="'+(oy+30)+'" r="5" fill="'+grad+'"/>';
+  }
+  svg.innerHTML = html;
+}
+
+/* ==================== SECTION 2: THERMAL EXPANSION ==================== */
+var expMaterials = {steel:12, aluminum:23, copper:17, brass:19, glass:3.3};
+var expMat = 'steel';
+
+function setExpMat(mat, btn) {
+  expMat = mat;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  updateExpansion();
+}
+
+function updateExpansion() {
+  var alpha = expMaterials[expMat];
+  var L0 = parseFloat(document.getElementById('expL0').value);
+  var dT = parseFloat(document.getElementById('expDT').value);
+  document.getElementById('expL0Val').textContent = L0.toFixed(1) + ' m';
+  document.getElementById('expDTVal').textContent = dT + ' C';
+  var dL = alpha * 1e-6 * L0 * dT;
+  var Lf = L0 + dL;
+  document.getElementById('expAlpha').textContent = alpha + ' x10^-6/C';
+  document.getElementById('expDL').textContent = dL.toFixed(6) + ' m';
+  document.getElementById('expLf').textContent = Lf.toFixed(6) + ' m';
+  document.getElementById('expDLmm').textContent = (dL * 1000).toFixed(2) + ' mm';
+  drawExpBar(L0, dL);
+}
+
+function drawExpBar(L0, dL) {
+  var svg = document.getElementById('expSvg');
+  var ox = 40, oy = 10, w = 620, h = 60;
+  var html = '';
+  var origW = w * 0.8;
+  html += '<rect x="'+ox+'" y="'+(oy+10)+'" width="'+origW+'" height="30" rx="3" fill="var(--indigo-dim)" stroke="var(--indigo)" stroke-opacity="0.4"/>';
+  html += '<text x="'+(ox+origW/2)+'" y="'+(oy+30)+'" text-anchor="middle" fill="var(--indigo)" font-size="10">L_0 = '+L0.toFixed(1)+' m</text>';
+  var scale = origW / L0;
+  var expW = Math.abs(dL) * scale;
+  if (expW > 0.5 && expW < w * 0.18) {
+    var color = dL > 0 ? 'var(--green)' : 'var(--pink)';
+    var colorDim = dL > 0 ? 'var(--green-dim)' : 'var(--pink-dim)';
+    var ex = dL > 0 ? ox + origW : ox + origW - expW;
+    html += '<rect x="'+ex+'" y="'+(oy+10)+'" width="'+expW+'" height="30" rx="2" fill="'+colorDim+'" stroke="'+color+'" stroke-opacity="0.5"/>';
+    html += '<text x="'+(ex+expW/2)+'" y="'+(oy+55)+'" text-anchor="middle" fill="'+color+'" font-size="9">&Delta;L='+(dL*1000).toFixed(2)+' mm</text>';
+  } else if (expW >= w * 0.18) {
+    html += '<text x="'+(ox+origW+10)+'" y="'+(oy+30)+'" fill="var(--amber)" font-size="9">&Delta;L='+(dL*1000).toFixed(1)+' mm (scale clipped)</text>';
+  }
+  svg.innerHTML = html;
+}
+
+/* ==================== SECTION 3: CALORIMETRY ==================== */
+function updateCalorimetry() {
+  var m1 = parseFloat(document.getElementById('calM1').value);
+  var t1 = parseFloat(document.getElementById('calT1').value);
+  var c1 = parseFloat(document.getElementById('calC1').value);
+  var m2 = parseFloat(document.getElementById('calM2').value);
+  var t2 = parseFloat(document.getElementById('calT2').value);
+  var c2 = parseFloat(document.getElementById('calC2').value);
+  if (isNaN(m1)||isNaN(t1)||isNaN(c1)||isNaN(m2)||isNaN(t2)||isNaN(c2)) return;
+  if (m1<=0||m2<=0) return;
+  var tf = (m1*c1*t1 + m2*c2*t2) / (m1*c1 + m2*c2);
+  var qlost = m1 * c1 * (tf - t1);
+  var qgain = m2 * c2 * (tf - t2);
+  document.getElementById('calTf').textContent = tf.toFixed(1) + ' C';
+  document.getElementById('calQlost').textContent = qlost.toFixed(0) + ' J';
+  document.getElementById('calQgain').textContent = qgain.toFixed(0) + ' J';
+}
+
+/* ==================== SECTION 4: HEATING CURVE ==================== */
+function drawHeatingCurve() {
+  var svg = document.getElementById('heatCurveSvg');
+  var ox = 70, oy = 30, gw = 580, gh = 280;
+  // For 1 kg of water: ice(-20)->ice(0)->water(0)->water(100)->steam(100)->steam(120)
+  // Energies: ice warming=2090*20=41800, melting=334000, water warming=4186*100=418600, boiling=2260000, steam warming=2010*20=40200
+  // Total = 3094600 J
+  var stages = [
+    {name:'Ice warming',  q:41800,    tStart:-20, tEnd:0,   phase:'Solid (ice)'},
+    {name:'Melting',       q:334000,   tStart:0,   tEnd:0,   phase:'Solid + Liquid'},
+    {name:'Water warming', q:418600,   tStart:0,   tEnd:100, phase:'Liquid (water)'},
+    {name:'Boiling',       q:2260000,  tStart:100, tEnd:100, phase:'Liquid + Gas'},
+    {name:'Steam warming', q:40200,    tStart:100, tEnd:120, phase:'Gas (steam)'}
+  ];
+  var totalQ = 0;
+  stages.forEach(function(s){ totalQ += s.q; });
+  // Build points
+  var points = [];
+  var cumQ = 0;
+  for (var i = 0; i < stages.length; i++) {
+    points.push({q: cumQ, t: stages[i].tStart, stage: stages[i].name, phase: stages[i].phase});
+    cumQ += stages[i].q;
+    points.push({q: cumQ, t: stages[i].tEnd, stage: stages[i].name, phase: stages[i].phase});
+  }
+  var maxQ = totalQ;
+  var minT = -30, maxT = 130;
+  function px(q) { return ox + (q / maxQ) * gw; }
+  function py(t) { return oy + gh - ((t - minT) / (maxT - minT)) * gh; }
+
+  var html = '';
+  // Background
+  html += '<rect x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="#1a1d24" stroke="#363b47" rx="4"/>';
+  // Grid lines
+  for (var ti = -20; ti <= 120; ti += 20) {
+    var yy = py(ti);
+    html += '<line x1="'+ox+'" y1="'+yy+'" x2="'+(ox+gw)+'" y2="'+yy+'" stroke="#363b47" stroke-width="0.5" stroke-dasharray="3,3"/>';
+    html += '<text x="'+(ox-8)+'" y="'+(yy+4)+'" text-anchor="end" fill="#9ca3af" font-size="9">'+ti+'</text>';
+  }
+  // Axis labels
+  html += '<text x="'+(ox+gw/2)+'" y="'+(oy+gh+40)+'" text-anchor="middle" fill="#9ca3af" font-size="11">Heat Added (kJ)</text>';
+  html += '<text x="'+(ox-45)+'" y="'+(oy+gh/2)+'" fill="#9ca3af" font-size="11" text-anchor="middle" transform="rotate(-90,'+(ox-45)+','+(oy+gh/2)+')">Temp (C)</text>';
+  // Q axis labels
+  var qMarks = [0, 500, 1000, 1500, 2000, 2500, 3000];
+  for (var qi = 0; qi < qMarks.length; qi++) {
+    var xm = px(qMarks[qi] * 1000);
+    if (xm <= ox + gw) {
+      html += '<line x1="'+xm+'" y1="'+(oy+gh)+'" x2="'+xm+'" y2="'+(oy+gh+5)+'" stroke="#9ca3af" stroke-width="1"/>';
+      html += '<text x="'+xm+'" y="'+(oy+gh+16)+'" text-anchor="middle" fill="#9ca3af" font-size="8">'+qMarks[qi]+'</text>';
+    }
+  }
+  // Draw curve segments with colors
+  var colors = ['#6366f1','#22c55e','#f59e0b','#ec4899','#6366f1'];
+  var labels = ['Ice','Melt','Water','Boil','Steam'];
+  for (var i = 0; i < points.length - 1; i += 2) {
+    var x1 = px(points[i].q), y1 = py(points[i].t);
+    var x2 = px(points[i+1].q), y2 = py(points[i+1].t);
+    var ci = i / 2;
+    html += '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+colors[ci]+'" stroke-width="3" stroke-linecap="round"/>';
+    // Label
+    var lx = (x1 + x2) / 2, ly = Math.min(y1, y2) - 10;
+    html += '<text x="'+lx+'" y="'+ly+'" text-anchor="middle" fill="'+colors[ci]+'" font-size="9" font-weight="600">'+labels[ci]+'</text>';
+  }
+  // Phase change labels with dashed vertical indicators
+  // Melting plateau
+  var meltX1 = px(41800), meltX2 = px(41800+334000), meltY = py(0);
+  html += '<line x1="'+meltX1+'" y1="'+meltY+'" x2="'+meltX1+'" y2="'+(oy+gh)+'" stroke="#22c55e" stroke-width="0.5" stroke-dasharray="3,3"/>';
+  // Boiling plateau
+  var boilX1 = px(41800+334000+418600), boilX2 = px(41800+334000+418600+2260000), boilY = py(100);
+  html += '<line x1="'+boilX1+'" y1="'+boilY+'" x2="'+boilX1+'" y2="'+(oy+gh)+'" stroke="#ec4899" stroke-width="0.5" stroke-dasharray="3,3"/>';
+  // Hover target (invisible rect)
+  html += '<rect id="hcHitArea" x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="transparent" style="cursor:crosshair"/>';
+  // Hover indicator
+  html += '<line id="hcCursor" x1="'+ox+'" y1="'+oy+'" x2="'+ox+'" y2="'+(oy+gh)+'" stroke="var(--text-dim)" stroke-width="1" stroke-dasharray="4,4" opacity="0"/>';
+  html += '<circle id="hcDot" cx="'+ox+'" cy="'+oy+'" r="5" fill="var(--text-bright)" opacity="0"/>';
+  svg.innerHTML = html;
+
+  // Store data for hover
+  svg._points = points;
+  svg._stages = stages;
+  svg._ox = ox; svg._oy = oy; svg._gw = gw; svg._gh = gh;
+  svg._maxQ = maxQ; svg._minT = minT; svg._maxT = maxT;
+
+  var hitArea = document.getElementById('hcHitArea');
+  hitArea.addEventListener('mousemove', hcHover);
+  hitArea.addEventListener('touchmove', function(e) { e.preventDefault(); hcHover(e.touches[0]); });
+  hitArea.addEventListener('mouseleave', function() {
+    document.getElementById('hcCursor').setAttribute('opacity','0');
+    document.getElementById('hcDot').setAttribute('opacity','0');
+  });
+}
+
+function hcHover(e) {
+  var svg = document.getElementById('heatCurveSvg');
+  var rect = svg.getBoundingClientRect();
+  var relX = (e.clientX - rect.left) / rect.width;
+  var ox = svg._ox, gw = svg._gw, maxQ = svg._maxQ, minT = svg._minT, maxT = svg._maxT, oy = svg._oy, gh = svg._gh;
+  var qFrac = (relX * 700 - ox) / gw;
+  if (qFrac < 0) qFrac = 0; if (qFrac > 1) qFrac = 1;
+  var q = qFrac * maxQ;
+  // Find stage
+  var stages = svg._stages;
+  var cumQ = 0, stageIdx = 0, stageQ = 0;
+  for (var i = 0; i < stages.length; i++) {
+    if (q <= cumQ + stages[i].q) { stageIdx = i; stageQ = q - cumQ; break; }
+    cumQ += stages[i].q;
+    if (i === stages.length - 1) { stageIdx = i; stageQ = stages[i].q; }
+  }
+  var s = stages[stageIdx];
+  var frac = s.q > 0 ? stageQ / s.q : 0;
+  var temp = s.tStart + frac * (s.tEnd - s.tStart);
+  var px = ox + qFrac * gw;
+  var py = oy + gh - ((temp - minT) / (maxT - minT)) * gh;
+  document.getElementById('hcCursor').setAttribute('x1', px);
+  document.getElementById('hcCursor').setAttribute('x2', px);
+  document.getElementById('hcCursor').setAttribute('opacity', '0.6');
+  document.getElementById('hcDot').setAttribute('cx', px);
+  document.getElementById('hcDot').setAttribute('cy', py);
+  document.getElementById('hcDot').setAttribute('opacity', '1');
+  document.getElementById('hcStage').textContent = s.name;
+  document.getElementById('hcTemp').textContent = temp.toFixed(1) + ' C';
+  document.getElementById('hcQ').textContent = (q / 1000).toFixed(1) + ' kJ';
+  document.getElementById('hcPhase').textContent = s.phase;
+}
+
+/* ==================== INIT ==================== */
+function init() {
+  markComplete(1);
+  convertTemp();
+  updateExpansion();
+  updateCalorimetry();
+  drawHeatingCurve();
+}
+
+init();
+</script>
+</body>
+</html>

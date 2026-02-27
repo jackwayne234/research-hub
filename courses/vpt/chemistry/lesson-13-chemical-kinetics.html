@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 13 — Chemical Kinetics</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1e2128;
+    --bg-card: #262a33;
+    --bg-input: #1a1d24;
+    --border: #363b47;
+    --text: #e2e4e9;
+    --indigo: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --amber: #f59e0b;
+    --indigo-dim: rgba(99,102,241,0.12);
+    --green-dim: rgba(34,197,94,0.12);
+    --pink-dim: rgba(236,72,153,0.12);
+    --amber-dim: rgba(245,158,11,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* TOP BAR */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .lesson-badge {
+    background: var(--indigo);
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .lesson-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .progress-bar {
+    width: 140px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: #8b92a5;
+    white-space: nowrap;
+  }
+
+  /* MAIN LAYOUT */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .section-card.completed {
+    border-color: var(--green);
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-header:hover { background: rgba(255,255,255,0.03); }
+  .section-num {
+    background: var(--indigo-dim);
+    color: var(--indigo);
+    font-weight: 700;
+    font-size: 12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    flex: 1;
+  }
+  .chevron {
+    color: #8b92a5;
+    font-size: 12px;
+    transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+  }
+  .section-card.open .chevron { transform: rotate(180deg); }
+  .section-body {
+    display: none;
+    padding: 0 18px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .section-card.open .section-body { display: block; }
+
+  /* TYPOGRAPHY */
+  h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--indigo);
+    margin: 18px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  p { margin-bottom: 10px; color: var(--text); }
+  ul, ol { padding-left: 18px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  /* FORMULA BOX */
+  .formula-box {
+    background: var(--indigo-dim);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .formula-box .line { margin-bottom: 4px; }
+  .formula-box .line:last-child { margin-bottom: 0; }
+
+  /* COLOR SPANS */
+  .green { color: var(--green); font-weight: 600; }
+  .pink { color: var(--pink); font-weight: 600; }
+  .amber { color: var(--amber); font-weight: 600; }
+  .indigo { color: var(--indigo); font-weight: 600; }
+
+  /* KEY POINT */
+  .key-point {
+    border-left: 3px solid var(--amber);
+    background: var(--amber-dim);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+
+  /* NAVY CONTEXT */
+  .navy-context {
+    border-left: 3px solid var(--indigo);
+    background: var(--indigo-dim);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+  .navy-context::before {
+    content: "NAVY CONTEXT — ";
+    color: var(--indigo);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+
+  /* INTERACTIVE AREA */
+  .interactive-area {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 14px 0;
+  }
+  .interactive-area h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .slider-label {
+    font-size: 12px;
+    color: #8b92a5;
+    min-width: 120px;
+  }
+  input[type="range"] {
+    flex: 1;
+    min-width: 80px;
+    accent-color: var(--indigo);
+    cursor: pointer;
+  }
+  .readout {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--indigo);
+    min-width: 72px;
+    text-align: center;
+  }
+  canvas {
+    display: block;
+    margin: 12px auto 0;
+    border-radius: 6px;
+    background: var(--bg-card);
+    max-width: 100%;
+  }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+  th {
+    background: var(--indigo-dim);
+    color: var(--indigo);
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    border: 1px solid var(--border);
+  }
+  td {
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+  }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* PRACTICE PROBLEMS */
+  .problem {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .problem-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .problem p { margin-bottom: 10px; }
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .num-input {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 7px 12px;
+    width: 130px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .num-input:focus { border-color: var(--indigo); }
+  .check-btn {
+    background: var(--indigo);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 16px;
+    transition: opacity 0.2s;
+  }
+  .check-btn:hover { opacity: 0.85; }
+  .feedback {
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 8px;
+    min-height: 18px;
+  }
+  .feedback.correct { color: var(--green); }
+  .feedback.incorrect { color: var(--pink); }
+
+  /* MC BUTTONS */
+  .mc-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .mc-btn:hover:not(.disabled) { border-color: var(--indigo); background: var(--indigo-dim); }
+  .mc-btn.disabled { cursor: default; }
+  .mc-btn.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .mc-btn.wrong { border-color: var(--pink); background: var(--pink-dim); color: var(--pink); }
+
+  /* QUIZ */
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .score-display {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .quiz-q {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .quiz-q-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--indigo);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .quiz-q p { margin-bottom: 10px; font-size: 13px; }
+  .choice-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .choice-btn:hover:not(.disabled) { border-color: var(--indigo); background: var(--indigo-dim); }
+  .choice-btn.disabled { cursor: default; }
+  .choice-btn.selected-correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .choice-btn.selected-wrong { border-color: var(--pink); background: var(--pink-dim); color: var(--pink); }
+  .choice-btn.reveal-correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 16px;
+    transition: border-color 0.2s;
+  }
+  .reset-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* ANIMATIONS */
+  @keyframes popAnim {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shakeAnim {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  .pop { animation: popAnim 0.35s ease; }
+  .shake { animation: shakeAnim 0.4s ease; }
+
+  /* ENERGY DIAGRAM */
+  .energy-diagram {
+    position: relative;
+    margin: 14px 0;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .top-bar { flex-wrap: wrap; gap: 10px; }
+    .progress-bar { width: 100px; }
+    .lesson-title { font-size: 13px; }
+    .slider-row { flex-direction: column; align-items: flex-start; }
+    input[type="range"] { width: 100%; }
+    .input-row { flex-direction: column; align-items: flex-start; }
+    canvas { width: 100% !important; height: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="lesson-badge">13</div>
+  <div class="lesson-title">Chemical Kinetics</div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 8 sections</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- SECTION 1: REACTION RATES -->
+  <div class="section-card" data-section="1">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">1</div>
+      <div class="section-title">Reaction Rates</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <p>Chemical kinetics is the study of <span class="indigo">how fast</span> reactions proceed and what factors control that speed. Unlike thermodynamics (which tells you <em>if</em> a reaction is favorable), kinetics tells you <em>how quickly</em> it actually happens.</p>
+
+      <h3>Average vs. Instantaneous Rate</h3>
+      <p>For a reaction <span class="green">A → B</span>, the reaction rate measures how quickly reactant concentration drops (or product rises) over time.</p>
+      <div class="formula-box">
+        <div class="line">Average rate = &minus;&Delta;[A] / &Delta;t &nbsp;&nbsp; (M/s or mol&middot;L&sup1;&middot;s&sup1;)</div>
+        <div class="line">Instantaneous rate = &minus;d[A]/dt &nbsp;&nbsp; (derivative at a single point)</div>
+      </div>
+      <p>The negative sign ensures the rate is positive when reactant is consumed. For products: rate = +d[B]/dt.</p>
+
+      <h3>Stoichiometric Scaling</h3>
+      <p>For <span class="green">aA + bB → cC + dD</span>, all species are tied to a common rate:</p>
+      <div class="formula-box">
+        <div class="line">rate = &minus;(1/a)&middot;d[A]/dt = &minus;(1/b)&middot;d[B]/dt = +(1/c)&middot;d[C]/dt = +(1/d)&middot;d[D]/dt</div>
+      </div>
+      <p>If <span class="pink">N&sub;2; + 3H&sub;2; → 2NH&sub;3;</span>, then consuming H&sub;2; 3x faster than N&sub;2; is accounted for by the stoichiometric coefficients.</p>
+
+      <div class="navy-context">
+        Corrosion of steel ship hulls is a chemical reaction (Fe oxidation). The <span class="indigo">rate</span> depends on temperature, salinity, and oxygen concentration — all kinetics variables. The Navy invests billions in coatings, cathodic protection, and alloy selection precisely to slow this rate.
+      </div>
+
+      <div class="key-point">
+        Rate has units of <span class="amber">concentration / time</span> (M/s). It is always positive — negative signs in formulas just correct for consumption of reactants.
+      </div>
+
+      <h3>Rate vs. Time</h3>
+      <p>The instantaneous rate is the <span class="indigo">slope of the tangent</span> to the [A]-vs-t curve. As reaction proceeds, [A] drops, so the rate usually decreases (unless zero-order). This is the fundamental connection to calculus you use daily in physics — rate laws are ODEs.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 2: RATE LAWS -->
+  <div class="section-card" data-section="2">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">2</div>
+      <div class="section-title">Rate Laws &amp; Reaction Order</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <p>The <span class="indigo">rate law</span> expresses how the rate depends on concentration. It must be <em>determined experimentally</em> — you cannot read it from the balanced equation (unless the step is elementary).</p>
+
+      <div class="formula-box">
+        <div class="line"><span class="green">Rate = k[A]<sup>m</sup>[B]<sup>n</sup></span></div>
+        <div class="line">k = rate constant (units depend on overall order)</div>
+        <div class="line">m = order with respect to A</div>
+        <div class="line">n = order with respect to B</div>
+        <div class="line">Overall order = m + n</div>
+      </div>
+
+      <h3>The Rate Constant k</h3>
+      <p>k is a property of the reaction at a given temperature. Its units ensure Rate (M/s) is dimensionally consistent:</p>
+      <table>
+        <tr><th>Overall Order</th><th>Units of k</th></tr>
+        <tr><td>0th order</td><td>M&middot;s&sup1; (or M/s)</td></tr>
+        <tr><td>1st order</td><td>s&sup1;</td></tr>
+        <tr><td>2nd order</td><td>M&sup1;&middot;s&sup1; (or L&middot;mol&sup1;&middot;s&sup1;)</td></tr>
+      </table>
+
+      <h3>Determining Order from Experiments</h3>
+      <p>Use the <span class="amber">method of initial rates</span>: hold all concentrations constant except one, double it, observe how the rate changes.</p>
+      <table>
+        <tr><th>Exp</th><th>[A] (M)</th><th>[B] (M)</th><th>Rate (M/s)</th></tr>
+        <tr><td>1</td><td>0.10</td><td>0.10</td><td>2.0 &times; 10&sup3;</td></tr>
+        <tr><td>2</td><td>0.20</td><td>0.10</td><td>4.0 &times; 10&sup3;</td></tr>
+        <tr><td>3</td><td>0.10</td><td>0.20</td><td>8.0 &times; 10&sup3;</td></tr>
+      </table>
+      <p>Exps 1→2: [A] doubles, rate doubles → <span class="green">1st order in A</span> (m=1). Exps 1→3: [B] doubles, rate quadruples → <span class="pink">2nd order in B</span> (n=2). Overall order = 3.</p>
+
+      <div class="key-point">
+        Rate = k[A]&sup1;[B]&sup2; is 3rd order overall. A common mistake: assuming order = stoichiometric coefficient. This is only valid for <em>elementary</em> reaction steps, not overall reactions.
+      </div>
+
+      <div class="navy-context">
+        In nuclear reactor coolant chemistry aboard submarines and surface ships, reaction order determines how quickly corrosion inhibitors deplete. A second-order depletion goes much faster at high concentrations, requiring more frequent replenishment early in the cycle.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: INTEGRATED RATE LAWS -->
+  <div class="section-card" data-section="3">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">3</div>
+      <div class="section-title">Integrated Rate Laws</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <p>Integrating the differential rate law gives [A] as a function of time — directly useful for predicting how much reactant remains after time t.</p>
+
+      <h3>Zero-Order</h3>
+      <div class="formula-box">
+        <div class="line">Rate = k &nbsp;&nbsp; (independent of [A])</div>
+        <div class="line"><span class="green">[A] = [A]&sub;0; &minus; kt</span></div>
+        <div class="line">Linear graph: [A] vs t, slope = &minus;k</div>
+      </div>
+      <p>Zero-order reactions often occur when a catalyst surface is saturated. The reaction proceeds at a fixed rate regardless of reactant concentration.</p>
+
+      <h3>First-Order</h3>
+      <div class="formula-box">
+        <div class="line">Rate = k[A]</div>
+        <div class="line"><span class="green">ln[A] = ln[A]&sub;0; &minus; kt</span></div>
+        <div class="line">Linear graph: ln[A] vs t, slope = &minus;k</div>
+        <div class="line">Equivalent: [A] = [A]&sub;0;&middot;e<sup>&minus;kt</sup></div>
+      </div>
+      <p>This is the <span class="amber">same mathematics as radioactive decay</span>. The exponential decay function e<sup>&minus;kt</sup> is universal in physics — it appears in RC circuits, population dynamics, cooling (Newton's law), and nuclear decay. All first-order processes.</p>
+
+      <h3>Second-Order</h3>
+      <div class="formula-box">
+        <div class="line">Rate = k[A]&sup2;</div>
+        <div class="line"><span class="green">1/[A] = 1/[A]&sub;0; + kt</span></div>
+        <div class="line">Linear graph: 1/[A] vs t, slope = +k</div>
+      </div>
+
+      <div class="key-point">
+        Diagnostic shortcut: plot [A] vs t, ln[A] vs t, and 1/[A] vs t. Whichever gives a <span class="amber">straight line</span> reveals the reaction order.
+      </div>
+
+      <h3>Interactive: Concentration vs. Time</h3>
+      <div class="interactive-area">
+        <h4>Concentration vs. Time — Compare Orders</h4>
+        <div class="slider-row">
+          <span class="slider-label">[A]&sub;0; (M):</span>
+          <input type="range" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateIRLGraph()" id="irl-a0">
+          <span class="readout" id="irl-a0-val">1.0 M</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">k (s&sup1; or M&sup1;s&sup1;):</span>
+          <input type="range" min="0.05" max="1.0" step="0.05" value="0.3" oninput="updateIRLGraph()" id="irl-k">
+          <span class="readout" id="irl-k-val">0.30</span>
+        </div>
+        <canvas id="irlCanvas" width="700" height="300"></canvas>
+        <div style="display:flex;gap:20px;margin-top:10px;font-size:11px;flex-wrap:wrap;">
+          <span style="color:#6366f1;">&#9644; Zero-order</span>
+          <span style="color:#22c55e;">&#9644; First-order</span>
+          <span style="color:#ec4899;">&#9644; Second-order</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: HALF-LIFE -->
+  <div class="section-card" data-section="4">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">4</div>
+      <div class="section-title">Half-Life</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <p>The <span class="indigo">half-life</span> (t&frac12;) is the time for [A] to drop to exactly half its current value. It quantifies "how fast" in a concentration-independent way for first-order processes.</p>
+
+      <h3>Half-Life by Order</h3>
+      <div class="formula-box">
+        <div class="line"><span class="amber">Zero-order: </span> t&frac12; = [A]&sub;0; / (2k) &nbsp;&nbsp; <em>(depends on initial concentration)</em></div>
+        <div class="line"><span class="green">First-order: </span> t&frac12; = ln(2) / k = 0.693 / k &nbsp;&nbsp; <em>(constant! independent of [A]&sub;0;)</em></div>
+        <div class="line"><span class="pink">Second-order: </span> t&frac12; = 1 / (k[A]&sub;0;) &nbsp;&nbsp; <em>(depends on initial concentration)</em></div>
+      </div>
+
+      <div class="key-point">
+        First-order half-life is <span class="amber">constant</span> — it does not depend on how much material is present. This is the defining feature of exponential decay. Each successive half-life removes 50% of whatever remains.
+      </div>
+
+      <div class="navy-context">
+        Nuclear decay is always first-order. The half-life of U-235 is 703 million years; Co-60 (used in ship's medical equipment) is 5.27 years; I-131 (produced in reactor accidents) is 8.02 days. All governed by t&frac12; = 0.693/&lambda;, where &lambda; is the decay constant (identical to k). The Bateman equations governing reactor burnup are coupled first-order ODEs.
+      </div>
+
+      <h3>Successive Half-Lives</h3>
+      <p>After n half-lives: <span class="green">[A] = [A]&sub;0; &times; (1/2)<sup>n</sup> = [A]&sub;0; &times; 2<sup>&minus;n</sup></span></p>
+      <p>After 10 half-lives, only ~0.1% remains. After 20, ~10&sup6; (one part per million). Relevant for radioactive waste storage timelines.</p>
+
+      <h3>Interactive: First-Order Decay</h3>
+      <div class="interactive-area">
+        <h4>First-Order Decay Visualization</h4>
+        <div class="slider-row">
+          <span class="slider-label">k (s&sup1;):</span>
+          <input type="range" min="0.05" max="1.5" step="0.05" value="0.4" oninput="updateHalfLifeGraph()" id="hl-k">
+          <span class="readout" id="hl-k-val">0.40</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">[A]&sub;0; (M):</span>
+          <input type="range" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateHalfLifeGraph()" id="hl-a0">
+          <span class="readout" id="hl-a0-val">1.0 M</span>
+        </div>
+        <div style="margin-bottom:8px;font-size:12px;">
+          t&frac12; = 0.693 / k = <span class="green" id="hl-display">1.73 s</span>
+        </div>
+        <canvas id="hlCanvas" width="700" height="280"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: ACTIVATION ENERGY & ARRHENIUS -->
+  <div class="section-card" data-section="5">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">5</div>
+      <div class="section-title">Activation Energy &amp; Arrhenius Equation</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <p>Why does increasing temperature speed up reactions so dramatically? The answer lies in the <span class="indigo">energy barrier</span> that reactant molecules must overcome.</p>
+
+      <h3>Energy Diagram</h3>
+      <div class="interactive-area">
+        <h4>Potential Energy Diagram</h4>
+        <div class="slider-row">
+          <span class="slider-label">E<sub>a</sub> (kJ/mol):</span>
+          <input type="range" min="20" max="120" step="5" value="60" oninput="updateEnergyDiagram()" id="ea-slider">
+          <span class="readout" id="ea-val">60 kJ</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">&Delta;H<sub>rxn</sub> (kJ):</span>
+          <input type="range" min="-80" max="80" step="5" value="-40" oninput="updateEnergyDiagram()" id="dh-slider">
+          <span class="readout" id="dh-val">&minus;40 kJ</span>
+        </div>
+        <canvas id="energyCanvas" width="700" height="300"></canvas>
+        <div style="display:flex;gap:20px;margin-top:8px;font-size:11px;flex-wrap:wrap;">
+          <span style="color:#6366f1;">E<sub>a</sub> = activation energy</span>
+          <span style="color:#22c55e;">&Delta;H = enthalpy change</span>
+          <span style="color:#ec4899;">Transition state (activated complex)</span>
+        </div>
+      </div>
+
+      <h3>The Arrhenius Equation</h3>
+      <p>Svante Arrhenius (1889) quantified how k depends on temperature:</p>
+      <div class="formula-box">
+        <div class="line"><span class="green">k = A &middot; e<sup>&minus;E<sub>a</sub>/RT</sup></span></div>
+        <div class="line">A = pre-exponential factor (frequency of collisions with correct geometry)</div>
+        <div class="line">E<sub>a</sub> = activation energy (J/mol)</div>
+        <div class="line">R = 8.314 J/(mol&middot;K)</div>
+        <div class="line">T = absolute temperature (K)</div>
+      </div>
+
+      <p>Taking the natural log: <span class="green">ln(k) = ln(A) &minus; E<sub>a</sub>/(RT)</span>. Plotting ln(k) vs 1/T gives a line with slope = <span class="pink">&minus;E<sub>a</sub>/R</span>.</p>
+
+      <div class="key-point">
+        The Arrhenius equation is a <span class="amber">Boltzmann distribution</span> result. The fraction of molecules with energy &ge; E<sub>a</sub> is proportional to e<sup>&minus;E<sub>a</sub>/kT</sup>. This is fundamental statistical mechanics — the same mathematics describes Maxwell-Boltzmann speeds, thermionic emission, and semiconductors.
+      </div>
+
+      <h3>Two-Temperature Form</h3>
+      <p>When you have k at two temperatures, eliminate ln(A):</p>
+      <div class="formula-box">
+        <div class="line"><span class="green">ln(k&sub;2;/k&sub;1;) = (E<sub>a</sub>/R)(1/T&sub;1; &minus; 1/T&sub;2;)</span></div>
+        <div class="line">Or rearranging: E<sub>a</sub> = R &middot; ln(k&sub;2;/k&sub;1;) / (1/T&sub;1; &minus; 1/T&sub;2;)</div>
+      </div>
+      <p>Example: k doubles when T goes from 300 K to 310 K. Then ln(2) = (E<sub>a</sub>/8.314)(1/300 &minus; 1/310), giving E<sub>a</sub> &approx; 53 kJ/mol.</p>
+
+      <h3>Interactive: Arrhenius Plot</h3>
+      <div class="interactive-area">
+        <h4>k vs. Temperature (Arrhenius)</h4>
+        <div class="slider-row">
+          <span class="slider-label">E<sub>a</sub> (kJ/mol):</span>
+          <input type="range" min="20" max="150" step="5" value="60" oninput="updateArrheniusGraph()" id="arr-ea">
+          <span class="readout" id="arr-ea-val">60</span>
+        </div>
+        <canvas id="arrheniusCanvas" width="700" height="280"></canvas>
+        <div style="font-size:11px;margin-top:8px;color:#8b92a5;">Higher E<sub>a</sub> = steeper temperature dependence (shallower Arrhenius slope)</div>
+      </div>
+
+      <div class="navy-context">
+        Diesel fuel degradation aboard ships accelerates exponentially with temperature. The Arrhenius equation governs fuel stability — fuel stored in hot engineering spaces (50°C+) degrades far faster than in cool storage tanks. A 10°C rise roughly doubles many chemical reaction rates (rule of thumb for E<sub>a</sub> &approx; 50-60 kJ/mol).
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: CATALYSTS -->
+  <div class="section-card" data-section="6">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">6</div>
+      <div class="section-title">Catalysts</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <p>A <span class="indigo">catalyst</span> increases the reaction rate by providing an alternative reaction pathway with a <span class="green">lower activation energy</span>. It is not consumed in the overall reaction.</p>
+
+      <div class="formula-box">
+        <div class="line">Without catalyst: k = A&middot;e<sup>&minus;E<sub>a</sub>/RT</sup></div>
+        <div class="line">With catalyst:&nbsp;&nbsp;&nbsp; k&apos; = A&middot;e<sup>&minus;E<sub>a</sub>&apos;/RT</sup> &nbsp; where E<sub>a</sub>&apos; &lt; E<sub>a</sub></div>
+        <div class="line">Rate enhancement = k&apos;/k = e<sup>(E<sub>a</sub> &minus; E<sub>a</sub>&apos;)/RT</sup></div>
+      </div>
+
+      <p>A catalyst does <span class="pink">not</span> change &Delta;H<sub>rxn</sub> or the equilibrium constant K. It only changes how quickly equilibrium is reached — both forward and reverse rates increase equally.</p>
+
+      <h3>Homogeneous vs. Heterogeneous</h3>
+      <table>
+        <tr><th>Type</th><th>Same phase as reactants?</th><th>Example</th></tr>
+        <tr><td><span class="green">Homogeneous</span></td><td>Yes</td><td>H&sup2;(aq) catalyzing ester hydrolysis; enzyme in solution</td></tr>
+        <tr><td><span class="pink">Heterogeneous</span></td><td>No</td><td>Pt/Pd catalyst in catalytic converter; Fe in Haber process</td></tr>
+      </table>
+
+      <h3>Rate-Determining Step</h3>
+      <p>For multi-step reactions, the <span class="amber">slowest step</span> controls the overall rate — analogous to the narrowest pipe in a flow system. The rate law for the overall reaction is determined by this bottleneck step.</p>
+      <p>Example: If Step 1 (slow): A + B → C, then Rate = k[A][B]. Even if Steps 2 and 3 are fast, they cannot speed up the overall reaction.</p>
+
+      <h3>Enzyme Kinetics (Michaelis-Menten)</h3>
+      <p>Biological catalysts (enzymes) follow: <span class="green">Rate = V<sub>max</sub>[S] / (K<sub>m</sub> + [S])</span>. At low [S], rate is first-order in substrate. At high [S] (enzyme saturation), rate approaches V<sub>max</sub> — zero-order in S. This is an example of order changing with conditions.</p>
+
+      <div class="navy-context">
+        Catalytic converters on Navy vehicle fleets and shipboard diesel scrubbers use heterogeneous catalysts (precious metals on ceramic supports) to convert CO, NOx, and hydrocarbons. The key engineering constraint is maintaining surface temperature in the active range — too cold (E<sub>a</sub> not cleared) and conversion fails; too hot, and sintering destroys the surface area.
+      </div>
+
+      <div class="key-point">
+        Inhibitors work by raising effective E<sub>a</sub> or blocking active sites. Corrosion inhibitors are chemical "negative catalysts" — they slow the electrochemical reactions causing rust on ship hulls.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: PRACTICE PROBLEMS -->
+  <div class="section-card" data-section="7">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">7</div>
+      <div class="section-title">Practice Problems</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+
+      <!-- P1 -->
+      <div class="problem" id="prob1">
+        <div class="problem-label">Problem 1 — Average Rate</div>
+        <p>For A → B, [A] drops from 0.80 M to 0.50 M in 15.0 s. What is the average rate (M/s)? Round to 3 significant figures.</p>
+        <div class="input-row">
+          <input class="num-input" type="number" id="p1" placeholder="0.0xxx M/s" step="0.001">
+          <button class="check-btn" onclick="checkNum('p1', 0.020, 0.001)">Check</button>
+        </div>
+        <div class="feedback" id="p1-fb"></div>
+      </div>
+
+      <!-- P2 -->
+      <div class="problem" id="prob2">
+        <div class="problem-label">Problem 2 — Rate Law & k</div>
+        <p>Rate = k[A]&sup2;. When [A] = 0.25 M, the rate is 0.0125 M/s. What is k (M&sup1;&middot;s&sup1;)?</p>
+        <div class="input-row">
+          <input class="num-input" type="number" id="p2" placeholder="0.xx" step="0.01">
+          <button class="check-btn" onclick="checkNum('p2', 0.20, 0.01)">Check</button>
+        </div>
+        <div class="feedback" id="p2-fb"></div>
+      </div>
+
+      <!-- P3 -->
+      <div class="problem" id="prob3">
+        <div class="problem-label">Problem 3 — First-Order Integrated Rate Law</div>
+        <p>A first-order reaction has k = 0.0550 s&sup1; and [A]&sub;0; = 1.20 M. What is [A] after 12.0 s? (M, 3 sig figs)</p>
+        <p style="font-size:11px;color:#8b92a5;">[A] = [A]&sub;0; &times; e<sup>&minus;kt</sup></p>
+        <div class="input-row">
+          <input class="num-input" type="number" id="p3" placeholder="0.xxx M" step="0.001">
+          <button class="check-btn" onclick="checkNum('p3', 0.614, 0.005)">Check</button>
+        </div>
+        <div class="feedback" id="p3-fb"></div>
+      </div>
+
+      <!-- P4 -->
+      <div class="problem" id="prob4">
+        <div class="problem-label">Problem 4 — Half-Life</div>
+        <p>A first-order reaction has t&frac12; = 8.50 s. What fraction of reactant remains after 25.5 s? Express as a decimal (e.g., 0.125).</p>
+        <p style="font-size:11px;color:#8b92a5;">25.5 s = ? half-lives. Fraction = (1/2)<sup>n</sup></p>
+        <div class="input-row">
+          <input class="num-input" type="number" id="p4" placeholder="0.xxx" step="0.001">
+          <button class="check-btn" onclick="checkNum('p4', 0.125, 0.005)">Check</button>
+        </div>
+        <div class="feedback" id="p4-fb"></div>
+      </div>
+
+      <!-- P5 -->
+      <div class="problem" id="prob5">
+        <div class="problem-label">Problem 5 — Arrhenius / Two-Temperature</div>
+        <p>A reaction has k = 0.0200 s&sup1; at 300 K and k = 0.0800 s&sup1; at 340 K. Calculate E<sub>a</sub> in kJ/mol. (R = 8.314 J/mol&middot;K)</p>
+        <p style="font-size:11px;color:#8b92a5;">ln(k&sub;2;/k&sub;1;) = (E<sub>a</sub>/R)(1/T&sub;1; &minus; 1/T&sub;2;)</p>
+        <div class="input-row">
+          <input class="num-input" type="number" id="p5" placeholder="xx.x kJ/mol" step="0.1">
+          <button class="check-btn" onclick="checkNum('p5', 43.3, 1.0)">Check</button>
+        </div>
+        <div class="feedback" id="p5-fb"></div>
+      </div>
+
+      <!-- P6 -->
+      <div class="problem" id="prob6">
+        <div class="problem-label">Problem 6 — Reaction Order Identification (MC)</div>
+        <p>A chemist finds that plotting 1/[A] vs. time gives a straight line with positive slope. What is the reaction order?</p>
+        <button class="mc-btn" onclick="checkMC(this,'p6','wrong')">A) Zero-order</button>
+        <button class="mc-btn" onclick="checkMC(this,'p6','wrong')">B) First-order</button>
+        <button class="mc-btn" onclick="checkMC(this,'p6','correct')">C) Second-order</button>
+        <button class="mc-btn" onclick="checkMC(this,'p6','wrong')">D) Third-order</button>
+        <div class="feedback" id="p6-fb"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 8: QUIZ -->
+  <div class="section-card" data-section="8">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">8</div>
+      <div class="section-title">Quiz — 10 Questions</div>
+      <div class="chevron">&#9660;</div>
+    </div>
+    <div class="section-body">
+      <div class="quiz-header">
+        <div class="score-display">Score: <span id="quizScore">0</span> / 10</div>
+        <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+      </div>
+
+      <!-- Q1 -->
+      <div class="quiz-q">
+        <div class="quiz-q-label">Question 1</div>
+        <p>For the reaction 2A → B, if [A] decreases at 0.060 M/s, what is the rate of formation of B?</p>
+        <button class="choice-btn" onclick="quizAnswer(1,this,false)">A) 0.060 M/s</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,true)">B) 0.030 M/s</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,false)">C) 0.120 M/s</button>
+        <button class="choice-btn" onclick="quizAnswer(1,this,false)">D) 0.015 M/s</button>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-q">
+        <div class="quiz-q-label">Question 2</div>
+        <p>Tripling [A] in Rate = k[A]&sup2; increases the rate by a factor of:</p>
+        <button class="choice-btn" onclick="quizAnswer(2,this,false)">A) 3</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,false)">B) 6</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,true)">C) 9</button>
+        <button class="choice-btn" onclick="quizAnswer(2,this,false)">D) 27</button>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-q">
+        <div class="quiz-q-label">Question 3</div>
+        <p>For a zero-order reaction, which graph produces a straight line?</p>
+        <button class="choice-btn" onclick="quizAnswer(3,this,true)">A) [A] vs. t</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,false)">B) ln[A] vs. t</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,false)">C) 1/[A] vs. t</button>
+        <button class="choice-btn" onclick="quizAnswer(3,this,false)">D) [A]&sup2; vs. t</button>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-q">
+        <div class="quiz-q-label">Question 4</div>
+        <p>A first-order reaction has t&frac12; = 20 s. After 60 s, what fraction of [A]&sub;0; remains?</p>
+        <button class="choice-btn" onclick="quizAnswer(4,this,false)">A) 1/4</button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,true)">B) 1/8</button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,false)">C) 1/6</button>
+        <button class="choice-btn" onclick="quizAnswer(4,this,false)">D) 1/16</button>
+      </div>
+
+      <!-- Q5 -->
+      <div class="quiz-q">
+        <div class="quiz-q-label">Question 5</div>
+        <p>The half-life of a second-order reaction with [A]&sub;0; = 0.5 M and k = 0.1 M&sup1;s&sup1; is:</p>
+        <button class="choice-btn" onclick="quizAnswer(5,this,false)">A) 6.93 s</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,false)">B) 5.0 s</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,true)">C) 20.0 s</button>
+        <button class="choice-btn" onclick="quizAnswer(5,this,false)">D) 13.86 s</button>
+      </div>
+
+      <!-- Q6 -->
+      <div class="quiz-q">
+        <div class="quiz-q-label">Question 6</div>
+        <p>In the Arrhenius equation k = Ae<sup>&minus;Ea/RT</sup>, what does A represent?</p>
+        <button class="choice-btn" onclick="quizAnswer(6,this,false)">A) Activation energy</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,false)">B) Avogadro's number</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,true)">C) Pre-exponential (frequency) factor</button>
+        <button class="choice-btn" onclick="quizAnswer(6,this,false)">D) Equilibrium constant</button>
+      </div>
+
+      <!-- Q7 -->
+      <div class="quiz-q">
+        <div class="quiz-q-label">Question 7</div>
+        <p>A catalyst increases reaction rate primarily by:</p>
+        <button class="choice-btn" onclick="quizAnswer(7,this,false)">A) Increasing the temperature of the system</button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,true)">B) Providing an alternate pathway with lower E<sub>a</sub></button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,false)">C) Shifting the equilibrium toward products</button>
+        <button class="choice-btn" onclick="quizAnswer(7,this,false)">D) Increasing reactant concentrations</button>
+      </div>
+
+      <!-- Q8 -->
+      <div class="quiz-q">
+        <div class="quiz-q-label">Question 8</div>
+        <p>An Arrhenius plot (ln k vs. 1/T) has a slope of &minus;8000 K. What is E<sub>a</sub> in kJ/mol? (R = 8.314 J/mol&middot;K)</p>
+        <button class="choice-btn" onclick="quizAnswer(8,this,false)">A) 8.0 kJ/mol</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,false)">B) 96.2 kJ/mol</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,true)">C) 66.5 kJ/mol</button>
+        <button class="choice-btn" onclick="quizAnswer(8,this,false)">D) 961.9 kJ/mol</button>
+      </div>
+
+      <!-- Q9 -->
+      <div class="quiz-q">
+        <div class="quiz-q-label">Question 9</div>
+        <p>The rate-determining step of a reaction is the:</p>
+        <button class="choice-btn" onclick="quizAnswer(9,this,false)">A) First step in the mechanism</button>
+        <button class="choice-btn" onclick="quizAnswer(9,this,false)">B) Last step in the mechanism</button>
+        <button class="choice-btn" onclick="quizAnswer(9,this,true)">C) Slowest step in the mechanism</button>
+        <button class="choice-btn" onclick="quizAnswer(9,this,false)">D) Step with the lowest activation energy</button>
+      </div>
+
+      <!-- Q10 -->
+      <div class="quiz-q">
+        <div class="quiz-q-label">Question 10</div>
+        <p>For a first-order reaction, which statement is TRUE?</p>
+        <button class="choice-btn" onclick="quizAnswer(10,this,false)">A) Half-life decreases as the reaction proceeds</button>
+        <button class="choice-btn" onclick="quizAnswer(10,this,false)">B) Half-life increases as concentration decreases</button>
+        <button class="choice-btn" onclick="quizAnswer(10,this,true)">C) Half-life is independent of initial concentration</button>
+        <button class="choice-btn" onclick="quizAnswer(10,this,false)">D) The rate is independent of concentration</button>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ---- CORE PROGRESS & TOGGLE ----
+var completedSections = new Set();
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) { markComplete(+card.getAttribute('data-section')); }
+  updateProgress();
+}
+
+// ---- PROBLEM CHECKERS ----
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.';
+    inp.parentElement.parentElement.classList.add('shake');
+    setTimeout(function(){ inp.parentElement.parentElement.classList.remove('shake'); }, 400);
+    return;
+  }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop');
+    setTimeout(function(){ inp.parentElement.parentElement.classList.remove('pop'); }, 350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(3) + ')';
+    inp.parentElement.parentElement.classList.add('shake');
+    setTimeout(function(){ inp.parentElement.parentElement.classList.remove('shake'); }, 400);
+  }
+}
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct'); fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop');
+    setTimeout(function(){ btn.closest('.problem').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('wrong'); fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake');
+    setTimeout(function(){ btn.closest('.problem').classList.remove('shake'); }, 400);
+  }
+}
+
+// ---- QUIZ ----
+var quizScoreVal = 0, quizAnswered = new Set();
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct'); quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop');
+    setTimeout(function(){ btn.closest('.quiz-q').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf('true') !== -1)
+        b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake');
+    setTimeout(function(){ btn.closest('.quiz-q').classList.remove('shake'); }, 400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+// ---- CANVAS HELPERS ----
+function canvasScale(canvas) {
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx: ctx, w: rect.width, h: rect.height };
+}
+
+// ---- INTEGRATED RATE LAW GRAPH ----
+function updateIRLGraph() {
+  var a0 = parseFloat(document.getElementById('irl-a0').value);
+  var k  = parseFloat(document.getElementById('irl-k').value);
+  document.getElementById('irl-a0-val').textContent = a0.toFixed(1) + ' M';
+  document.getElementById('irl-k-val').textContent = k.toFixed(2);
+
+  var canvas = document.getElementById('irlCanvas');
+  var cw = canvas.parentElement.clientWidth - 32;
+  canvas.style.width = cw + 'px';
+  canvas.style.height = '300px';
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = cw * dpr;
+  canvas.height = 300 * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var W = cw, H = 300;
+
+  var pad = { left: 56, right: 20, top: 20, bottom: 46 };
+  var gw = W - pad.left - pad.right;
+  var gh = H - pad.top - pad.bottom;
+
+  ctx.fillStyle = '#262a33';
+  ctx.fillRect(0, 0, W, H);
+
+  var tMax = 10;
+  var steps = 300;
+
+  // Calculate max for y-axis
+  var yMax = a0 * 1.05;
+
+  function gx(t) { return pad.left + (t / tMax) * gw; }
+  function gy(y) { return pad.top + gh - (y / yMax) * gh; }
+
+  // Grid
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 0.5;
+  for (var i = 0; i <= 5; i++) {
+    var t = (i / 5) * tMax;
+    ctx.beginPath(); ctx.moveTo(gx(t), pad.top); ctx.lineTo(gx(t), pad.top + gh); ctx.stroke();
+  }
+  for (var j = 0; j <= 4; j++) {
+    var y = (j / 4) * yMax;
+    ctx.beginPath(); ctx.moveTo(pad.left, gy(y)); ctx.lineTo(pad.left + gw, gy(y)); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = '#8b92a5';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, pad.top + gh); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.left, pad.top + gh); ctx.lineTo(pad.left + gw, pad.top + gh); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = '#8b92a5';
+  ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('Time (s)', pad.left + gw / 2, H - 6);
+  ctx.save(); ctx.translate(13, pad.top + gh / 2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('[A] (M)', 0, 0); ctx.restore();
+
+  // Axis tick labels
+  ctx.textAlign = 'center';
+  for (var i = 0; i <= 5; i++) {
+    var t = (i / 5) * tMax;
+    ctx.fillText(t.toFixed(0), gx(t), pad.top + gh + 18);
+  }
+  ctx.textAlign = 'right';
+  for (var j = 0; j <= 4; j++) {
+    var y = (j / 4) * yMax;
+    ctx.fillText(y.toFixed(2), pad.left - 6, gy(y) + 4);
+  }
+
+  // Zero-order
+  ctx.beginPath(); ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2;
+  for (var i = 0; i <= steps; i++) {
+    var t = (i / steps) * tMax;
+    var A = a0 - k * t;
+    if (A < 0) A = 0;
+    var px = gx(t), py = gy(A);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // First-order
+  ctx.beginPath(); ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2;
+  for (var i = 0; i <= steps; i++) {
+    var t = (i / steps) * tMax;
+    var A = a0 * Math.exp(-k * t);
+    var px = gx(t), py = gy(Math.min(A, yMax));
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Second-order
+  ctx.beginPath(); ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 2;
+  for (var i = 0; i <= steps; i++) {
+    var t = (i / steps) * tMax;
+    var A = 1 / (1/a0 + k * t);
+    var px = gx(t), py = gy(Math.min(A, yMax));
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+}
+
+// ---- HALF-LIFE GRAPH ----
+function updateHalfLifeGraph() {
+  var k   = parseFloat(document.getElementById('hl-k').value);
+  var a0  = parseFloat(document.getElementById('hl-a0').value);
+  document.getElementById('hl-k-val').textContent = k.toFixed(2);
+  document.getElementById('hl-a0-val').textContent = a0.toFixed(1) + ' M';
+  var t12 = 0.693 / k;
+  document.getElementById('hl-display').textContent = t12.toFixed(2) + ' s';
+
+  var canvas = document.getElementById('hlCanvas');
+  var cw = canvas.parentElement.clientWidth - 32;
+  canvas.style.width = cw + 'px';
+  canvas.style.height = '280px';
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = cw * dpr;
+  canvas.height = 280 * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var W = cw, H = 280;
+  var pad = { left: 56, right: 20, top: 20, bottom: 46 };
+  var gw = W - pad.left - pad.right;
+  var gh = H - pad.top - pad.bottom;
+
+  ctx.fillStyle = '#262a33';
+  ctx.fillRect(0, 0, W, H);
+
+  var tMax = Math.max(4 * t12, 8);
+  var yMax = a0;
+  var steps = 300;
+
+  function gx(t) { return pad.left + (t / tMax) * gw; }
+  function gy(y) { return pad.top + gh - (y / yMax) * gh; }
+
+  // Grid
+  ctx.strokeStyle = '#363b47'; ctx.lineWidth = 0.5;
+  for (var i = 0; i <= 5; i++) {
+    var t = (i / 5) * tMax;
+    ctx.beginPath(); ctx.moveTo(gx(t), pad.top); ctx.lineTo(gx(t), pad.top + gh); ctx.stroke();
+  }
+  for (var j = 0; j <= 4; j++) {
+    var y = (j / 4) * yMax;
+    ctx.beginPath(); ctx.moveTo(pad.left, gy(y)); ctx.lineTo(pad.left + gw, gy(y)); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = '#8b92a5'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, pad.top + gh); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.left, pad.top + gh); ctx.lineTo(pad.left + gw, pad.top + gh); ctx.stroke();
+
+  // Half-life markers (dashed)
+  ctx.setLineDash([4, 4]); ctx.strokeStyle = 'rgba(245,158,11,0.5)'; ctx.lineWidth = 1;
+  for (var n = 1; n <= 4; n++) {
+    var tHL = n * t12;
+    if (tHL > tMax) break;
+    var yHL = a0 * Math.pow(0.5, n);
+    ctx.beginPath(); ctx.moveTo(gx(tHL), gy(0)); ctx.lineTo(gx(tHL), gy(yHL)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.left, gy(yHL)); ctx.lineTo(gx(tHL), gy(yHL)); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  // Labels for half-life markers
+  ctx.fillStyle = '#f59e0b'; ctx.font = '10px JetBrains Mono'; ctx.textAlign = 'center';
+  for (var n = 1; n <= 4; n++) {
+    var tHL = n * t12;
+    if (tHL > tMax) break;
+    ctx.fillText('t'+n, gx(tHL), pad.top + gh + 18);
+  }
+
+  // Decay curve
+  ctx.beginPath(); ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2.5;
+  for (var i = 0; i <= steps; i++) {
+    var t = (i / steps) * tMax;
+    var A = a0 * Math.exp(-k * t);
+    var px = gx(t), py = gy(A);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Dots at half-life points
+  ctx.fillStyle = '#f59e0b';
+  for (var n = 1; n <= 4; n++) {
+    var tHL = n * t12;
+    if (tHL > tMax) break;
+    var yHL = a0 * Math.pow(0.5, n);
+    ctx.beginPath(); ctx.arc(gx(tHL), gy(yHL), 5, 0, 2*Math.PI); ctx.fill();
+  }
+
+  // Axis labels
+  ctx.fillStyle = '#8b92a5'; ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('Time (s)', pad.left + gw / 2, H - 6);
+  ctx.save(); ctx.translate(13, pad.top + gh / 2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('[A] (M)', 0, 0); ctx.restore();
+  ctx.textAlign = 'right';
+  for (var j = 0; j <= 4; j++) {
+    var y = (j / 4) * yMax;
+    ctx.fillText(y.toFixed(2), pad.left - 6, gy(y) + 4);
+  }
+}
+
+// ---- ENERGY DIAGRAM ----
+function updateEnergyDiagram() {
+  var ea = parseFloat(document.getElementById('ea-slider').value);
+  var dh = parseFloat(document.getElementById('dh-slider').value);
+  document.getElementById('ea-val').textContent = ea + ' kJ';
+  document.getElementById('dh-val').textContent = (dh >= 0 ? '+' : '') + dh + ' kJ';
+
+  var canvas = document.getElementById('energyCanvas');
+  var cw = canvas.parentElement.clientWidth - 32;
+  canvas.style.width = cw + 'px';
+  canvas.style.height = '300px';
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = cw * dpr;
+  canvas.height = 300 * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var W = cw, H = 300;
+  var pad = { left: 60, right: 20, top: 30, bottom: 46 };
+  var gw = W - pad.left - pad.right;
+  var gh = H - pad.top - pad.bottom;
+
+  ctx.fillStyle = '#262a33';
+  ctx.fillRect(0, 0, W, H);
+
+  // Coordinate system: energy 0 = reactants
+  var reactE = 0;
+  var tsE = ea;  // transition state
+  var prodE = dh;
+  var yMin = Math.min(reactE, prodE, 0) - 10;
+  var yMax2 = tsE + 15;
+  var yRange = yMax2 - yMin;
+
+  function gx(frac) { return pad.left + frac * gw; }
+  function gy(e) { return pad.top + gh - ((e - yMin) / yRange) * gh; }
+
+  // Bezier energy path: reactant -> TS -> product
+  // Control points for smooth hump
+  var x0 = gx(0.10), y0 = gy(reactE);
+  var x2 = gx(0.50), y2 = gy(tsE);
+  var x4 = gx(0.90), y4 = gy(prodE);
+
+  ctx.beginPath(); ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2.5;
+  // reactant flat
+  ctx.moveTo(gx(0.0), y0); ctx.lineTo(x0, y0);
+  // rise to TS
+  ctx.bezierCurveTo(gx(0.25), y0, gx(0.35), y2, x2, y2);
+  // fall to product
+  ctx.bezierCurveTo(gx(0.65), y2, gx(0.75), y4, x4, y4);
+  // product flat
+  ctx.lineTo(gx(1.0), y4);
+  ctx.stroke();
+
+  // Reactant label
+  ctx.fillStyle = '#22c55e'; ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'center';
+  ctx.fillText('Reactants', gx(0.10), y0 + 16);
+  // Product label
+  ctx.fillStyle = '#22c55e';
+  ctx.fillText('Products', gx(0.90), y4 + 16);
+  // TS label
+  ctx.fillStyle = '#ec4899';
+  ctx.fillText('Transition State', x2, y2 - 12);
+
+  // Ea arrow (vertical dashed)
+  ctx.setLineDash([4,4]); ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(gx(0.35), y0); ctx.lineTo(gx(0.35), y2); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#6366f1'; ctx.textAlign = 'right';
+  ctx.fillText('Ea = '+ea+' kJ', gx(0.34), (y0 + y2)/2 + 4);
+
+  // dH arrow (dashed)
+  if (Math.abs(dh) > 2) {
+    ctx.setLineDash([4,4]); ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(gx(0.70), y0); ctx.lineTo(gx(0.70), y4); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#22c55e'; ctx.textAlign = 'left';
+    ctx.fillText('\u0394H = '+(dh >= 0 ? '+' : '')+dh+' kJ', gx(0.71), (y0 + y4)/2 + 4);
+  }
+
+  // Axis label
+  ctx.fillStyle = '#8b92a5'; ctx.font = '11px JetBrains Mono';
+  ctx.save(); ctx.translate(14, pad.top + gh/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign = 'center'; ctx.fillText('Potential Energy (kJ/mol)', 0, 0); ctx.restore();
+  ctx.textAlign = 'center';
+  ctx.fillText('Reaction Coordinate', pad.left + gw/2, H - 6);
+}
+
+// ---- ARRHENIUS GRAPH ----
+function updateArrheniusGraph() {
+  var ea_kJ = parseFloat(document.getElementById('arr-ea').value);
+  document.getElementById('arr-ea-val').textContent = ea_kJ;
+  var ea = ea_kJ * 1000; // J/mol
+  var R = 8.314;
+  var A = 1e12; // pre-exponential (arbitrary, log scale)
+
+  var canvas = document.getElementById('arrheniusCanvas');
+  var cw = canvas.parentElement.clientWidth - 32;
+  canvas.style.width = cw + 'px';
+  canvas.style.height = '280px';
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = cw * dpr;
+  canvas.height = 280 * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var W = cw, H = 280;
+  var pad = { left: 66, right: 20, top: 20, bottom: 46 };
+  var gw = W - pad.left - pad.right;
+  var gh = H - pad.top - pad.bottom;
+
+  ctx.fillStyle = '#262a33';
+  ctx.fillRect(0, 0, W, H);
+
+  // T from 300 to 1000 K
+  var Tmin = 300, Tmax = 1000, steps = 300;
+  // compute k values
+  var ks = [];
+  for (var i = 0; i <= steps; i++) {
+    var T = Tmin + (i/steps)*(Tmax-Tmin);
+    var k = A * Math.exp(-ea/(R*T));
+    ks.push(k);
+  }
+  var kMin = Math.min.apply(null, ks);
+  var kMax = Math.max.apply(null, ks);
+
+  function gx(T) { return pad.left + ((T-Tmin)/(Tmax-Tmin))*gw; }
+  function gy(k) { return pad.top + gh - ((k-kMin)/(kMax-kMin))*gh; }
+
+  // Grid
+  ctx.strokeStyle = '#363b47'; ctx.lineWidth = 0.5;
+  for (var i = 0; i <= 7; i++) {
+    var T = Tmin + (i/7)*(Tmax-Tmin);
+    ctx.beginPath(); ctx.moveTo(gx(T), pad.top); ctx.lineTo(gx(T), pad.top+gh); ctx.stroke();
+  }
+  for (var j = 0; j <= 4; j++) {
+    var frac = j/4;
+    var k = kMin + frac*(kMax-kMin);
+    ctx.beginPath(); ctx.moveTo(pad.left, gy(k)); ctx.lineTo(pad.left+gw, gy(k)); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = '#8b92a5'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, pad.top+gh); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.left, pad.top+gh); ctx.lineTo(pad.left+gw, pad.top+gh); ctx.stroke();
+
+  // k curve
+  ctx.beginPath(); ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2.5;
+  for (var i = 0; i <= steps; i++) {
+    var T = Tmin + (i/steps)*(Tmax-Tmin);
+    var k = ks[i];
+    var px = gx(T), py = gy(k);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = '#8b92a5'; ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('Temperature (K)', pad.left + gw/2, H - 6);
+  ctx.save(); ctx.translate(14, pad.top + gh/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Rate constant k (arb. units)', 0, 0); ctx.restore();
+
+  // T tick labels
+  ctx.fillStyle = '#8b92a5';
+  ctx.textAlign = 'center';
+  for (var i = 0; i <= 7; i++) {
+    var T = Math.round(Tmin + (i/7)*(Tmax-Tmin));
+    ctx.fillText(T+'K', gx(T), pad.top+gh+18);
+  }
+}
+
+// ---- INIT ----
+window.addEventListener('load', function() {
+  updateIRLGraph();
+  updateHalfLifeGraph();
+  updateEnergyDiagram();
+  updateArrheniusGraph();
+  updateProgress();
+});
+window.addEventListener('resize', function() {
+  updateIRLGraph();
+  updateHalfLifeGraph();
+  updateEnergyDiagram();
+  updateArrheniusGraph();
+});
+</script>
+</body>
+</html>

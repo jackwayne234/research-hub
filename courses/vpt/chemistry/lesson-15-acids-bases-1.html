@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 15 — Acids & Bases I</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1e2128;
+  --bg-card: #262a33;
+  --bg-input: #1a1d24;
+  --border: #363b47;
+  --text: #e2e4e9;
+  --indigo: #6366f1;
+  --green: #22c55e;
+  --pink: #ec4899;
+  --amber: #f59e0b;
+  --indigo-dim: rgba(99,102,241,0.12);
+  --green-dim: rgba(34,197,94,0.12);
+  --pink-dim: rgba(236,72,153,0.12);
+  --amber-dim: rgba(245,158,11,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.12);
+  --blue: #3b82f6;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* TOP BAR */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.lesson-badge {
+  background: var(--indigo);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.lesson-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.progress-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: 99px;
+  overflow: hidden;
+  min-width: 60px;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--indigo), var(--green));
+  border-radius: 99px;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+.progress-label {
+  font-size: 11px;
+  color: #6b7280;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* MAIN LAYOUT */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+/* SECTION CARDS */
+.section-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+.section-card.completed {
+  border-color: var(--green);
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.section-header:hover { background: rgba(255,255,255,0.025); }
+.section-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 7px;
+  flex-shrink: 0;
+}
+.section-title {
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+.chevron {
+  width: 18px;
+  height: 18px;
+  color: #6b7280;
+  flex-shrink: 0;
+  transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+}
+.section-card.open .chevron { transform: rotate(180deg); }
+.section-body {
+  display: none;
+  padding: 0 20px 22px;
+  border-top: 1px solid var(--border);
+}
+.section-card.open .section-body { display: block; }
+
+/* CONTENT ELEMENTS */
+p { margin-bottom: 12px; }
+h3 { font-size: 13px; font-weight: 700; color: var(--indigo); margin: 18px 0 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+h4 { font-size: 13px; font-weight: 600; margin: 14px 0 6px; }
+
+.formula-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--indigo);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.formula-box.green { border-left-color: var(--green); background: var(--green-dim); }
+.formula-box.amber { border-left-color: var(--amber); background: var(--amber-dim); }
+.formula-box.pink  { border-left-color: var(--pink);  background: var(--pink-dim);  }
+.formula-box.red   { border-left-color: var(--red);   background: var(--red-dim);   }
+
+.formula-box .label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+.formula-box .eq {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin: 4px 0;
+}
+.formula-box .sub {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.key-point {
+  background: var(--indigo-dim);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.key-point::before {
+  content: 'KEY POINT  ';
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--indigo);
+}
+
+.navy-context {
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.navy-context::before {
+  content: 'NAVY CONTEXT  ';
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--blue);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* DEFINITION GRID */
+.def-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin: 14px 0;
+}
+.def-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+}
+.def-card .name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+.def-card .desc { font-size: 12px; color: #9ca3af; margin-bottom: 6px; }
+.def-card .example { font-size: 12px; color: var(--green); }
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 12px;
+}
+th {
+  background: var(--bg-input);
+  color: #9ca3af;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(54,59,71,0.5);
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* INTERACTIVE AREA */
+.interactive-area {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.interactive-area .ia-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-bottom: 14px;
+}
+
+/* PH SLIDER */
+.ph-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.ph-slider-row label { font-size: 12px; color: #9ca3af; flex-shrink: 0; }
+input[type="range"] {
+  -webkit-appearance: none;
+  flex: 1;
+  height: 8px;
+  border-radius: 99px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+  cursor: pointer;
+}
+.ph-val-display {
+  font-size: 22px;
+  font-weight: 700;
+  min-width: 40px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.ph-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+.ph-stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 10px;
+  text-align: center;
+}
+.ph-stat .st-label { font-size: 10px; color: #6b7280; margin-bottom: 4px; }
+.ph-stat .st-val { font-size: 14px; font-weight: 700; color: #fff; }
+.ph-bar {
+  height: 28px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background: linear-gradient(90deg, #ef4444 0%, #f59e0b 14%, #eab308 28%, #22c55e 50%, #3b82f6 71%, #6366f1 100%);
+  position: relative;
+}
+.ph-indicator {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 36px;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255,255,255,0.6);
+  transition: left 0.1s;
+}
+.ph-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+/* ICE TABLE */
+.ice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin: 10px 0;
+}
+.ice-table th {
+  background: rgba(99,102,241,0.15);
+  color: var(--indigo);
+  padding: 7px 10px;
+  text-align: center;
+}
+.ice-table td {
+  padding: 7px 10px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.ice-table .row-label {
+  font-weight: 600;
+  color: var(--amber);
+  text-align: left;
+  background: var(--bg-input);
+}
+
+/* WEAK ACID INTERACTIVE */
+.ia-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.ia-label { font-size: 12px; color: #9ca3af; flex-shrink: 0; min-width: 80px; }
+.ia-readout {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  min-width: 80px;
+  text-align: center;
+}
+
+/* PROBLEMS */
+.problem {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 16px;
+  margin: 10px 0;
+  transition: transform 0.15s;
+}
+.problem-stem { font-size: 13px; margin-bottom: 10px; }
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.input-row input[type="text"],
+.input-row input[type="number"] {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  padding: 6px 10px;
+  width: 110px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-row input:focus { border-color: var(--indigo); }
+.btn {
+  background: var(--indigo);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+}
+.btn:hover { opacity: 0.88; }
+.btn.green { background: var(--green); color: #000; }
+.btn.amber { background: var(--amber); color: #000; }
+
+.feedback {
+  font-size: 12px;
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: none;
+}
+.feedback.correct  { display: block; background: var(--green-dim);  color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.feedback.incorrect{ display: block; background: var(--red-dim);    color: #f87171;      border: 1px solid rgba(239,68,68,0.3); }
+
+/* MC BUTTONS */
+.mc-options { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.mc-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+.mc-btn:hover:not(.disabled) { border-color: var(--indigo); background: var(--indigo-dim); }
+.mc-btn.disabled { cursor: default; opacity: 0.7; }
+.mc-btn.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+.mc-btn.wrong   { border-color: var(--red);   background: var(--red-dim);   color: #f87171; }
+
+/* QUIZ */
+.quiz-score-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.quiz-score-bar .qs-label { font-size: 12px; color: #9ca3af; flex: 1; }
+.quiz-score-bar .qs-val   { font-size: 20px; font-weight: 700; color: var(--green); }
+.quiz-q {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.quiz-q .qn { font-size: 10px; color: var(--indigo); font-weight: 700; letter-spacing: 0.06em; margin-bottom: 6px; }
+.quiz-q .stem { font-size: 13px; margin-bottom: 10px; }
+.choices { display: flex; flex-direction: column; gap: 5px; }
+.choice-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 7px 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+.choice-btn:hover:not(.disabled) { border-color: var(--indigo); background: var(--indigo-dim); }
+.choice-btn.disabled { cursor: default; }
+.choice-btn.selected-correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+.choice-btn.selected-wrong   { border-color: var(--red);   background: var(--red-dim);   color: #f87171; }
+.choice-btn.reveal-correct   { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+
+/* ANIMATIONS */
+@keyframes pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.025); }
+  100% { transform: scale(1); }
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-5px); }
+  40%      { transform: translateX(5px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+.pop   { animation: pop   0.35s ease; }
+.shake { animation: shake 0.40s ease; }
+
+/* CONJUGATE PAIR */
+.conj-pair {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+.conj-box {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.conj-box.acid { background: var(--red-dim); border: 1px solid rgba(239,68,68,0.4); color: #fca5a5; }
+.conj-box.base { background: var(--blue-dim,rgba(59,130,246,0.12)); border: 1px solid rgba(59,130,246,0.4); color: #93c5fd; }
+.conj-arrow {
+  padding: 0 10px;
+  color: #6b7280;
+  font-size: 16px;
+}
+.conj-label {
+  font-size: 10px;
+  color: #6b7280;
+  display: block;
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* STRONG ACID LIST */
+.acid-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 10px 0;
+}
+.acid-item {
+  background: var(--bg-input);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 6px;
+  padding: 7px 11px;
+  font-size: 12px;
+  color: #fca5a5;
+}
+.base-item {
+  background: var(--bg-input);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 6px;
+  padding: 7px 11px;
+  font-size: 12px;
+  color: #93c5fd;
+}
+
+/* POLYPROTIC */
+.step-box {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 8px 0;
+  background: var(--bg-input);
+}
+.step-box .step-n {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.step-box.s1 .step-n { color: var(--red); }
+.step-box.s2 .step-n { color: var(--amber); }
+.step-box.s3 .step-n { color: var(--green); }
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .def-grid { grid-template-columns: 1fr; }
+  .ph-stats-grid { grid-template-columns: 1fr 1fr; }
+  .acid-list { grid-template-columns: 1fr; }
+  .top-bar { gap: 8px; }
+  .lesson-title { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="lesson-badge">15</div>
+  <div class="lesson-title">Acids &amp; Bases I</div>
+  <div class="progress-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 / 8 sections</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ===== SECTION 1: DEFINITIONS ===== -->
+  <div class="section-card" data-section="1">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">01</span>
+      <span class="section-title">Acid-Base Definitions</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+
+      <p>Three major frameworks define acids and bases. Each is progressively more general — Arrhenius is the most restrictive, Lewis is the most inclusive. As a physics researcher, think of these as <strong>increasing scope of applicability</strong>.</p>
+
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="name">Arrhenius</div>
+          <div class="desc">Acid produces H⁺ in water. Base produces OH⁻ in water. Water-only framework.</div>
+          <div class="example">HCl → H⁺ + Cl⁻<br>NaOH → Na⁺ + OH⁻</div>
+        </div>
+        <div class="def-card">
+          <div class="name">Brønsted-Lowry</div>
+          <div class="desc">Acid = proton (H⁺) donor. Base = proton acceptor. Works in any solvent.</div>
+          <div class="example">HCl + H₂O →<br>H₃O⁺ + Cl⁻</div>
+        </div>
+        <div class="def-card">
+          <div class="name">Lewis</div>
+          <div class="desc">Acid = electron pair acceptor. Base = electron pair donor. No proton required.</div>
+          <div class="example">BF₃ + NH₃ →<br>F₃B←NH₃</div>
+        </div>
+      </div>
+
+      <h3>Conjugate Acid-Base Pairs</h3>
+      <p>In Brønsted-Lowry, every acid-base reaction produces a <strong>conjugate pair</strong>. When an acid donates H⁺, what remains is its conjugate base. This is critical for buffer chemistry and electrochemical cell reactions.</p>
+
+      <div class="formula-box">
+        <div class="label">General Equilibrium</div>
+        <div class="eq">HA  +  H₂O  ⇌  H₃O⁺  +  A⁻</div>
+        <div class="sub">HA = acid &nbsp;|&nbsp; A⁻ = conjugate base &nbsp;|&nbsp; H₂O = base &nbsp;|&nbsp; H₃O⁺ = conjugate acid</div>
+      </div>
+
+      <div class="conj-pair">
+        <div>
+          <div class="conj-box acid">CH₃COOH</div>
+          <span class="conj-label">Acid</span>
+        </div>
+        <div class="conj-arrow">—H⁺ →</div>
+        <div>
+          <div class="conj-box base">CH₃COO⁻</div>
+          <span class="conj-label">Conjugate Base</span>
+        </div>
+        <div class="conj-arrow">&nbsp;&nbsp;|&nbsp;&nbsp;</div>
+        <div>
+          <div class="conj-box base">NH₃</div>
+          <span class="conj-label">Base</span>
+        </div>
+        <div class="conj-arrow">+H⁺ →</div>
+        <div>
+          <div class="conj-box acid">NH₄⁺</div>
+          <span class="conj-label">Conjugate Acid</span>
+        </div>
+      </div>
+
+      <h3>Lewis Acids in Electrochemistry</h3>
+      <p>Lewis acid-base theory is especially relevant to your electrochemistry work. Metal cations (Zn²⁺, Cu²⁺, Fe³⁺) act as Lewis acids — they accept electron pairs from ligands. This governs complex ion formation in electrolyte solutions and electrode surface chemistry.</p>
+
+      <div class="formula-box amber">
+        <div class="label">Lewis in Electrochemistry</div>
+        <div class="eq">Cu²⁺  +  4NH₃  →  [Cu(NH₃)₄]²⁺</div>
+        <div class="sub">Cu²⁺ = Lewis acid (accepts lone pairs) &nbsp;|&nbsp; NH₃ = Lewis base (donates lone pairs)</div>
+      </div>
+
+      <div class="navy-context">
+        Naval battery maintenance involves Lewis acid-base chemistry constantly. Lead-acid batteries use H₂SO₄ as a Brønsted-Lowry acid. Alkaline batteries use KOH. Nickel-cadmium systems rely on Lewis interactions at electrode surfaces. All three frameworks apply simultaneously.</div>
+
+      <h3>Amphoteric Species</h3>
+      <p>Water is amphoteric — it can act as acid or base. H₂PO₄⁻, HCO₃⁻, and HS⁻ also exhibit this behavior. In nuclear submarine systems, maintaining seawater pH requires understanding these equilibria.</p>
+
+      <div class="formula-box green">
+        <div class="label">Water as Amphiprotic</div>
+        <div class="eq">H₂O + H₂O  ⇌  H₃O⁺  +  OH⁻</div>
+        <div class="sub">Left H₂O = base (accepts H⁺) &nbsp;|&nbsp; Right H₂O = acid (donates H⁺)</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2: pH SCALE ===== -->
+  <div class="section-card" data-section="2">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">02</span>
+      <span class="section-title">The pH Scale &amp; Water Equilibrium</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+
+      <p>The pH scale is a logarithmic compression of H⁺ concentration — a direct thermodynamic consequence of the Gibbs free energy of proton transfer. pH is related to the electrochemical potential of a hydrogen electrode, which you may recognize from the Nernst equation.</p>
+
+      <div class="formula-box">
+        <div class="label">Core Definitions</div>
+        <div class="eq">pH = −log[H⁺] &nbsp;&nbsp; pOH = −log[OH⁻]</div>
+        <div class="sub">At 25°C: &nbsp; pH + pOH = 14 &nbsp;&nbsp;|&nbsp;&nbsp; Kw = [H⁺][OH⁻] = 1.0 × 10⁻¹⁴</div>
+      </div>
+
+      <div class="formula-box green">
+        <div class="label">Reconstruction: [H⁺] and [OH⁻] from pH</div>
+        <div class="eq">[H⁺] = 10⁻ᵖᴴ &nbsp;&nbsp; [OH⁻] = 10⁻ᵖᴼᴴ</div>
+        <div class="sub">Kw is temperature-dependent — at 37°C (body temp), Kw ≈ 2.4 × 10⁻¹⁴, so neutral pH ≈ 6.8</div>
+      </div>
+
+      <div class="key-point">A change of 1 pH unit = 10× change in [H⁺]. This logarithmic scale mirrors how decibels work for sound — each unit represents an order of magnitude, making it a natural fit for thermodynamic free energy calculations: ΔG = RT ln Q.</div>
+
+      <h3>Interactive pH Explorer</h3>
+
+      <div class="interactive-area">
+        <div class="ia-title">pH Visualizer — Drag to Explore</div>
+        <div class="ph-label-row">
+          <span>0 — Acidic</span>
+          <span>7 — Neutral</span>
+          <span>14 — Basic</span>
+        </div>
+        <div class="ph-bar">
+          <div class="ph-indicator" id="phIndicator" style="left:50%"></div>
+        </div>
+        <div class="ph-slider-row">
+          <label>pH</label>
+          <input type="range" id="phSlider" min="0" max="14" step="0.1" value="7"
+            oninput="updatePhDisplay()"
+            style="background: linear-gradient(90deg, #ef4444 0%, #f59e0b 14%, #eab308 28%, #22c55e 50%, #3b82f6 71%, #6366f1 100%);">
+          <div class="ph-val-display" id="phValDisplay" style="color:#22c55e">7.0</div>
+        </div>
+        <div class="ph-stats-grid">
+          <div class="ph-stat">
+            <div class="st-label">pH</div>
+            <div class="st-val" id="stat-ph">7.00</div>
+          </div>
+          <div class="ph-stat">
+            <div class="st-label">pOH</div>
+            <div class="st-val" id="stat-poh">7.00</div>
+          </div>
+          <div class="ph-stat">
+            <div class="st-label">[H⁺] (M)</div>
+            <div class="st-val" id="stat-hplus">1.00×10⁻⁷</div>
+          </div>
+          <div class="ph-stat">
+            <div class="st-label">[OH⁻] (M)</div>
+            <div class="st-val" id="stat-ohminus">1.00×10⁻⁷</div>
+          </div>
+        </div>
+        <div style="margin-top:12px; font-size:12px; color:#9ca3af; text-align:center;" id="ph-description">Pure water at 25°C — perfectly neutral</div>
+      </div>
+
+      <h3>Kw and Thermodynamics</h3>
+      <p>The water autoionization constant Kw = 1.0 × 10⁻¹⁴ is the equilibrium constant for:</p>
+
+      <div class="formula-box pink">
+        <div class="label">Water Autoionization</div>
+        <div class="eq">H₂O  ⇌  H⁺  +  OH⁻ &nbsp;&nbsp; Kw = 1.0 × 10⁻¹⁴ at 25°C</div>
+        <div class="sub">ΔG° = −RT ln Kw = −(8.314)(298) ln(10⁻¹⁴) ≈ +79.9 kJ/mol</div>
+      </div>
+
+      <div class="navy-context">
+        Ocean pH is ~8.1 — slightly basic due to dissolved carbonates (HCO₃⁻). Ocean acidification (CO₂ + H₂O ⇌ H₂CO₃) is driving pH toward 7.9, a 26% increase in [H⁺]. Submarine hull corrosion rates, sonar transducer performance, and cooling system chemistry all depend on seawater pH. The Navy monitors this continuously.</div>
+
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3: STRONG ACIDS & BASES ===== -->
+  <div class="section-card" data-section="3">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">03</span>
+      <span class="section-title">Strong Acids &amp; Bases</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+
+      <p>Strong acids and bases undergo <strong>complete dissociation</strong> — the equilibrium lies so far to the right that the reverse reaction is negligible. The equilibrium constant is effectively K → ∞. This makes pH calculation direct: no ICE tables needed.</p>
+
+      <h3>The 7 Strong Acids (Memorize These)</h3>
+      <div class="acid-list">
+        <div class="acid-item">HCl — Hydrochloric acid</div>
+        <div class="acid-item">HBr — Hydrobromic acid</div>
+        <div class="acid-item">HI — Hydroiodic acid</div>
+        <div class="acid-item">HNO₃ — Nitric acid</div>
+        <div class="acid-item">H₂SO₄ — Sulfuric acid (1st H)</div>
+        <div class="acid-item">HClO₃ — Chloric acid</div>
+        <div class="acid-item">HClO₄ — Perchloric acid</div>
+      </div>
+
+      <h3>Common Strong Bases</h3>
+      <div class="acid-list">
+        <div class="base-item">NaOH — Sodium hydroxide</div>
+        <div class="base-item">KOH — Potassium hydroxide</div>
+        <div class="base-item">Ca(OH)₂ — Calcium hydroxide</div>
+        <div class="base-item">Ba(OH)₂ — Barium hydroxide</div>
+        <div class="base-item">LiOH — Lithium hydroxide</div>
+        <div class="base-item">RbOH, CsOH — Group 1 hydroxides</div>
+      </div>
+
+      <h3>pH Calculation — Strong Acid</h3>
+      <div class="formula-box">
+        <div class="label">Direct Calculation</div>
+        <div class="eq">HA → H⁺ + A⁻ &nbsp;&nbsp; (complete)</div>
+        <div class="sub">[H⁺] = Cinitial (for monoprotic) &nbsp;&nbsp; then pH = −log[H⁺]</div>
+      </div>
+
+      <div class="formula-box green">
+        <div class="label">Example: 0.050 M HCl</div>
+        <div class="eq">[H⁺] = 0.050 M &nbsp;&nbsp; pH = −log(0.050) = 1.30</div>
+        <div class="sub">No equilibrium calculation needed — complete dissociation assumed</div>
+      </div>
+
+      <h3>pH Calculation — Strong Base</h3>
+      <div class="formula-box">
+        <div class="label">Strong Base Path</div>
+        <div class="eq">MOH → M⁺ + OH⁻ &nbsp;&nbsp; [OH⁻] = C</div>
+        <div class="sub">pOH = −log[OH⁻] &nbsp;&nbsp; then pH = 14 − pOH</div>
+      </div>
+
+      <div class="formula-box amber">
+        <div class="label">Example: 0.020 M NaOH</div>
+        <div class="eq">[OH⁻] = 0.020 M &nbsp;&nbsp; pOH = −log(0.020) = 1.70</div>
+        <div class="sub">pH = 14.00 − 1.70 = 12.30</div>
+      </div>
+
+      <div class="key-point">For Ba(OH)₂ — a diprotic base — [OH⁻] = 2 × C. A 0.010 M Ba(OH)₂ solution gives [OH⁻] = 0.020 M. Always account for the number of OH⁻ per formula unit.</div>
+
+      <div class="navy-context">
+        Shipboard bilge cleaners, degreasing agents, and drain openers use NaOH or KOH (strong bases, pH 13-14). Battery acid in lead-acid submarine batteries is ~5 M H₂SO₄, giving pH near −0.7. This negative pH is real — concentrated strong acids exceed [H⁺] = 1 M.</div>
+
+      <!-- INTERACTIVE: Strong acid/base calculator -->
+      <div class="interactive-area">
+        <div class="ia-title">Strong Acid/Base pH Calculator</div>
+        <div class="ia-row">
+          <span class="ia-label">Type:</span>
+          <select id="strongType" onchange="calcStrongPH()"
+            style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;padding:5px 8px;outline:none;">
+            <option value="acid1">Monoprotic acid (HCl, HNO₃, etc.)</option>
+            <option value="base1">Monobasic base (NaOH, KOH)</option>
+            <option value="base2">Dibasic base (Ba(OH)₂)</option>
+          </select>
+        </div>
+        <div class="ia-row">
+          <span class="ia-label">Conc. (M):</span>
+          <input type="range" id="strongConc" min="0.001" max="1" step="0.001" value="0.1" oninput="calcStrongPH()" style="flex:1; background: linear-gradient(90deg, var(--indigo), var(--pink));">
+          <div class="ia-readout" id="strongConcVal">0.100 M</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;">
+          <div class="ph-stat"><div class="st-label">pH</div><div class="st-val" id="strong-ph">1.00</div></div>
+          <div class="ph-stat"><div class="st-label">pOH</div><div class="st-val" id="strong-poh">13.00</div></div>
+          <div class="ph-stat"><div class="st-label">[H⁺]</div><div class="st-val" id="strong-hconc">0.100 M</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== SECTION 4: WEAK ACIDS & Ka ===== -->
+  <div class="section-card" data-section="4">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">04</span>
+      <span class="section-title">Weak Acids &amp; Ka</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+
+      <p>Weak acids only partially dissociate. The equilibrium constant Ka governs the extent of dissociation. From a thermodynamic standpoint, Ka is directly related to ΔG° of proton transfer: ΔG° = −RT ln Ka.</p>
+
+      <div class="formula-box">
+        <div class="label">Equilibrium Expression</div>
+        <div class="eq">HA  ⇌  H⁺  +  A⁻</div>
+        <div class="sub">Ka = [H⁺][A⁻] / [HA] &nbsp;&nbsp; pKa = −log Ka &nbsp;&nbsp; Smaller pKa = stronger acid</div>
+      </div>
+
+      <h3>ICE Table Method</h3>
+      <p>For a weak acid with initial concentration C and Ka:</p>
+
+      <table class="ice-table">
+        <tr>
+          <th></th><th>HA</th><th>H⁺</th><th>A⁻</th>
+        </tr>
+        <tr>
+          <td class="row-label">Initial</td>
+          <td>C</td><td>≈ 0</td><td>0</td>
+        </tr>
+        <tr>
+          <td class="row-label">Change</td>
+          <td>−x</td><td>+x</td><td>+x</td>
+        </tr>
+        <tr>
+          <td class="row-label">Equilibrium</td>
+          <td>C − x</td><td>x</td><td>x</td>
+        </tr>
+      </table>
+
+      <div class="formula-box">
+        <div class="label">Ka Expression from ICE</div>
+        <div class="eq">Ka = x² / (C − x)</div>
+        <div class="sub">If Ka/C &lt; 0.05 (5% rule), approximate: Ka ≈ x²/C → x = √(Ka × C)</div>
+      </div>
+
+      <div class="formula-box green">
+        <div class="label">Example: 0.100 M Acetic Acid, Ka = 1.8 × 10⁻⁵</div>
+        <div class="eq">x = √(1.8×10⁻⁵ × 0.100) = √(1.8×10⁻⁶) = 1.34×10⁻³ M</div>
+        <div class="sub">pH = −log(1.34×10⁻³) = 2.87 &nbsp;&nbsp;|&nbsp;&nbsp; % dissociation = 1.34% &lt; 5% → approx valid</div>
+      </div>
+
+      <div class="key-point">The 5% rule: if x/C × 100% &lt; 5%, the approximation is valid. If it fails, use the quadratic formula: x² + Ka·x − Ka·C = 0, solve x = [−Ka + √(Ka² + 4·Ka·C)] / 2.</div>
+
+      <h3>Common Weak Acid Ka Values</h3>
+      <table>
+        <tr><th>Acid</th><th>Formula</th><th>Ka</th><th>pKa</th></tr>
+        <tr><td>Acetic acid</td><td>CH₃COOH</td><td>1.8 × 10⁻⁵</td><td>4.74</td></tr>
+        <tr><td>Hydrofluoric</td><td>HF</td><td>6.8 × 10⁻⁴</td><td>3.17</td></tr>
+        <tr><td>Formic acid</td><td>HCOOH</td><td>1.8 × 10⁻⁴</td><td>3.74</td></tr>
+        <tr><td>Carbonic acid</td><td>H₂CO₃</td><td>4.3 × 10⁻⁷</td><td>6.37</td></tr>
+        <tr><td>Hypochlorous</td><td>HClO</td><td>3.0 × 10⁻⁸</td><td>7.52</td></tr>
+        <tr><td>Ammonium ion</td><td>NH₄⁺</td><td>5.6 × 10⁻¹⁰</td><td>9.25</td></tr>
+      </table>
+
+      <h3>Interactive Weak Acid pH Explorer</h3>
+      <div class="interactive-area">
+        <div class="ia-title">Weak Acid pH Calculator (Approximation Method)</div>
+        <div class="ia-row">
+          <span class="ia-label">Conc. C:</span>
+          <input type="range" id="waConc" min="-3" max="0" step="0.05" value="-1" oninput="calcWeakAcid()"
+            style="flex:1; background: linear-gradient(90deg, var(--indigo), var(--green));">
+          <div class="ia-readout" id="waConcVal">0.100 M</div>
+        </div>
+        <div class="ia-row">
+          <span class="ia-label">pKa:</span>
+          <input type="range" id="waPka" min="2" max="12" step="0.1" value="4.74" oninput="calcWeakAcid()"
+            style="flex:1; background: linear-gradient(90deg, var(--red), var(--amber), var(--green));">
+          <div class="ia-readout" id="waPkaVal">4.74</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-top:10px;">
+          <div class="ph-stat"><div class="st-label">Ka</div><div class="st-val" id="wa-ka">1.8×10⁻⁵</div></div>
+          <div class="ph-stat"><div class="st-label">[H⁺] (M)</div><div class="st-val" id="wa-hplus">1.34×10⁻³</div></div>
+          <div class="ph-stat"><div class="st-label">pH</div><div class="st-val" id="wa-ph">2.87</div></div>
+          <div class="ph-stat"><div class="st-label">% dissoc.</div><div class="st-val" id="wa-pct">1.34%</div></div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:#9ca3af;text-align:center;" id="wa-note">5% approximation valid</div>
+      </div>
+
+      <div class="navy-context">
+        Carbonic acid (H₂CO₃, Ka₁ = 4.3×10⁻⁷) is why CO₂ dissolves into seawater and lowers pH. The same equilibrium governs blood pH regulation. In submarine environments, CO₂ scrubbers maintain atmospheric CO₂ below 0.5% — directly controlling the weak acid equilibrium that would otherwise acidify crew blood and degrade performance.</div>
+
+    </div>
+  </div>
+
+  <!-- ===== SECTION 5: WEAK BASES & Kb ===== -->
+  <div class="section-card" data-section="5">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">05</span>
+      <span class="section-title">Weak Bases &amp; Kb</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+
+      <p>Weak bases accept protons from water, producing OH⁻. The base dissociation constant Kb works in exact parallel to Ka — same ICE table method, same 5% approximation, same quadratic fallback.</p>
+
+      <div class="formula-box">
+        <div class="label">Weak Base Equilibrium</div>
+        <div class="eq">B  +  H₂O  ⇌  BH⁺  +  OH⁻</div>
+        <div class="sub">Kb = [BH⁺][OH⁻] / [B] &nbsp;&nbsp; pKb = −log Kb</div>
+      </div>
+
+      <div class="formula-box pink">
+        <div class="label">Conjugate Pair Relationship — Critical Identity</div>
+        <div class="eq">Ka × Kb = Kw = 1.0 × 10⁻¹⁴</div>
+        <div class="sub">pKa + pKb = pKw = 14 &nbsp;&nbsp; (for conjugate acid-base pair at 25°C)</div>
+      </div>
+
+      <div class="key-point">This Ka × Kb = Kw relationship is thermodynamically exact. It means: the stronger the acid, the weaker its conjugate base, and vice versa. HCl (strong acid) → Cl⁻ is an extremely weak base. Acetic acid (Ka = 1.8×10⁻⁵) → acetate (Kb = 5.6×10⁻¹⁰).</div>
+
+      <h3>Weak Base ICE Table</h3>
+      <table class="ice-table">
+        <tr><th></th><th>B</th><th>BH⁺</th><th>OH⁻</th></tr>
+        <tr><td class="row-label">Initial</td><td>C</td><td>0</td><td>≈ 0</td></tr>
+        <tr><td class="row-label">Change</td><td>−x</td><td>+x</td><td>+x</td></tr>
+        <tr><td class="row-label">Equil.</td><td>C − x</td><td>x</td><td>x</td></tr>
+      </table>
+
+      <div class="formula-box">
+        <div class="label">Solution Path for Weak Base</div>
+        <div class="eq">x = [OH⁻] = √(Kb × C)</div>
+        <div class="sub">pOH = −log[OH⁻] &nbsp;&nbsp; then pH = 14 − pOH</div>
+      </div>
+
+      <div class="formula-box green">
+        <div class="label">Example: 0.150 M NH₃, Kb = 1.8 × 10⁻⁵</div>
+        <div class="eq">x = √(1.8×10⁻⁵ × 0.150) = √(2.7×10⁻⁶) = 1.643×10⁻³ M = [OH⁻]</div>
+        <div class="sub">pOH = −log(1.643×10⁻³) = 2.784 &nbsp;&nbsp; pH = 14.00 − 2.784 = 11.22</div>
+      </div>
+
+      <h3>Common Weak Bases</h3>
+      <table>
+        <tr><th>Base</th><th>Formula</th><th>Kb</th><th>Conjugate Acid</th><th>Ka</th></tr>
+        <tr><td>Ammonia</td><td>NH₃</td><td>1.8 × 10⁻⁵</td><td>NH₄⁺</td><td>5.6 × 10⁻¹⁰</td></tr>
+        <tr><td>Methylamine</td><td>CH₃NH₂</td><td>4.4 × 10⁻⁴</td><td>CH₃NH₃⁺</td><td>2.3 × 10⁻¹¹</td></tr>
+        <tr><td>Pyridine</td><td>C₅H₅N</td><td>1.7 × 10⁻⁹</td><td>C₅H₅NH⁺</td><td>5.9 × 10⁻⁶</td></tr>
+        <tr><td>Acetate ion</td><td>CH₃COO⁻</td><td>5.6 × 10⁻¹⁰</td><td>CH₃COOH</td><td>1.8 × 10⁻⁵</td></tr>
+        <tr><td>Fluoride ion</td><td>F⁻</td><td>1.5 × 10⁻¹¹</td><td>HF</td><td>6.8 × 10⁻⁴</td></tr>
+      </table>
+
+      <div class="navy-context">
+        Ammonia (NH₃) is used in shipboard refrigeration systems and is a component in exhaust cleaning scrubbers. A leak of NH₃ into seawater creates a basic solution. At 100 ppm NH₃, pH rises above 10, accelerating corrosion of aluminum fittings and disrupting marine ecosystem. Kb = 1.8×10⁻⁵ quantifies exactly how much OH⁻ is produced per mole dissolved.</div>
+
+    </div>
+  </div>
+
+  <!-- ===== SECTION 6: POLYPROTIC ACIDS ===== -->
+  <div class="section-card" data-section="6">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">06</span>
+      <span class="section-title">Polyprotic Acids</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+
+      <p>Polyprotic acids donate more than one proton per molecule. Each successive dissociation has a smaller Ka because removing a proton from an already-negative ion requires more energy — increasing electrostatic barrier. This is directly analogous to successive ionization energies in atomic physics.</p>
+
+      <div class="formula-box">
+        <div class="label">Stepwise Dissociation — General Rule</div>
+        <div class="eq">Ka₁ >> Ka₂ >> Ka₃</div>
+        <div class="sub">For pH of polyprotic acid solutions, only Ka₁ matters (for approximation). Ka₂/Ka₁ typically &lt; 10⁻⁴.</div>
+      </div>
+
+      <h3>Sulfuric Acid — H₂SO₄ (Special Case)</h3>
+      <div class="step-box s1">
+        <div class="step-n">Step 1 — Strong (Complete)</div>
+        <div class="formula-box" style="margin:0;">
+          <div class="eq">H₂SO₄ → H⁺ + HSO₄⁻ &nbsp;&nbsp; Ka₁ = very large (complete)</div>
+        </div>
+      </div>
+      <div class="step-box s2">
+        <div class="step-n">Step 2 — Weak</div>
+        <div class="formula-box amber" style="margin:0;">
+          <div class="eq">HSO₄⁻  ⇌  H⁺  +  SO₄²⁻ &nbsp;&nbsp; Ka₂ = 1.2 × 10⁻²</div>
+          <div class="sub">Ka₂ is large for a second dissociation — must include in pH calc for dilute H₂SO₄</div>
+        </div>
+      </div>
+
+      <h3>Phosphoric Acid — H₃PO₄</h3>
+      <div class="step-box s1">
+        <div class="step-n">Step 1</div>
+        <div class="formula-box" style="margin:0;">
+          <div class="eq">H₃PO₄  ⇌  H⁺  +  H₂PO₄⁻ &nbsp;&nbsp; Ka₁ = 7.5 × 10⁻³</div>
+        </div>
+      </div>
+      <div class="step-box s2">
+        <div class="step-n">Step 2</div>
+        <div class="formula-box amber" style="margin:0;">
+          <div class="eq">H₂PO₄⁻  ⇌  H⁺  +  HPO₄²⁻ &nbsp;&nbsp; Ka₂ = 6.2 × 10⁻⁸</div>
+        </div>
+      </div>
+      <div class="step-box s3">
+        <div class="step-n">Step 3</div>
+        <div class="formula-box green" style="margin:0;">
+          <div class="eq">HPO₄²⁻  ⇌  H⁺  +  PO₄³⁻ &nbsp;&nbsp; Ka₃ = 4.8 × 10⁻¹³</div>
+        </div>
+      </div>
+
+      <p style="margin-top:12px;">For 1.0 M H₃PO₄, pH is determined almost entirely by Ka₁. Ka₂ is 1.2 × 10⁵ times smaller — the [H⁺] contribution from step 2 is negligible.</p>
+
+      <div class="formula-box green">
+        <div class="label">pH of 1.0 M H₃PO₄</div>
+        <div class="eq">x = √(7.5×10⁻³ × 1.0) = 0.0866 M = [H⁺]</div>
+        <div class="sub">pH = −log(0.0866) = 1.06 &nbsp;&nbsp;|&nbsp;&nbsp; Check: 8.66% dissoc → 5% rule fails → need quadratic</div>
+      </div>
+
+      <div class="formula-box amber">
+        <div class="label">Quadratic Solution for H₃PO₄</div>
+        <div class="eq">x² + 7.5×10⁻³x − 7.5×10⁻³ = 0</div>
+        <div class="sub">x = [−7.5×10⁻³ + √((7.5×10⁻³)² + 4×7.5×10⁻³)] / 2 = 0.0831 M → pH = 1.08</div>
+      </div>
+
+      <h3>Intermediate Species &amp; Biology</h3>
+      <p>The intermediate species (H₂PO₄⁻, HPO₄²⁻, HCO₃⁻) are amphoteric — they can act as acid or base. The ratio between them is governed by the Henderson-Hasselbalch equation (buffer systems, Lesson 16). At blood pH 7.4, the CO₂/HCO₃⁻ ratio is tightly regulated.</p>
+
+      <div class="navy-context">
+        Phosphoric acid (H₃PO₄) is used in naval metal treatment and rust conversion (iron phosphate coatings on steel hull sections). The three-step dissociation means that at different pH zones of the hull (oxide layers, anodic regions), different phosphate species dominate — directly affecting the protective film chemistry.</div>
+
+    </div>
+  </div>
+
+  <!-- ===== SECTION 7: PRACTICE PROBLEMS ===== -->
+  <div class="section-card" data-section="7">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">07</span>
+      <span class="section-title">Practice Problems</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+
+      <p style="color:#9ca3af;font-size:12px;margin-bottom:16px;">Enter your answer to 2 decimal places. Tolerance: ±0.05 pH units.</p>
+
+      <!-- Problem 1 -->
+      <div class="problem">
+        <div class="problem-stem"><strong>1.</strong> What is the pH of a 0.0250 M HCl solution? (Strong acid — complete dissociation)</div>
+        <div class="input-row">
+          <input type="number" id="p1" placeholder="pH = ?" step="0.01">
+          <button class="btn" onclick="checkNum('p1', 1.60, 0.05)">Check</button>
+        </div>
+        <div class="feedback" id="p1-fb"></div>
+      </div>
+
+      <!-- Problem 2 -->
+      <div class="problem">
+        <div class="problem-stem"><strong>2.</strong> What is the pH of a 0.0400 M NaOH solution?</div>
+        <div class="input-row">
+          <input type="number" id="p2" placeholder="pH = ?" step="0.01">
+          <button class="btn" onclick="checkNum('p2', 12.60, 0.05)">Check</button>
+        </div>
+        <div class="feedback" id="p2-fb"></div>
+      </div>
+
+      <!-- Problem 3 -->
+      <div class="problem">
+        <div class="problem-stem"><strong>3.</strong> Calculate the pH of 0.200 M acetic acid (Ka = 1.8 × 10⁻⁵). Use the approximation method.</div>
+        <div class="input-row">
+          <input type="number" id="p3" placeholder="pH = ?" step="0.01">
+          <button class="btn" onclick="checkNum('p3', 2.72, 0.05)">Check</button>
+        </div>
+        <div class="feedback" id="p3-fb"></div>
+      </div>
+
+      <!-- Problem 4 -->
+      <div class="problem">
+        <div class="problem-stem"><strong>4.</strong> What is the pH of 0.500 M NH₃ solution? (Kb = 1.8 × 10⁻⁵)</div>
+        <div class="input-row">
+          <input type="number" id="p4" placeholder="pH = ?" step="0.01">
+          <button class="btn" onclick="checkNum('p4', 11.48, 0.05)">Check</button>
+        </div>
+        <div class="feedback" id="p4-fb"></div>
+      </div>
+
+      <!-- Problem 5 -->
+      <div class="problem">
+        <div class="problem-stem"><strong>5.</strong> A solution has [OH⁻] = 3.50 × 10⁻⁴ M. What is the pH?</div>
+        <div class="input-row">
+          <input type="number" id="p5" placeholder="pH = ?" step="0.01">
+          <button class="btn" onclick="checkNum('p5', 10.54, 0.05)">Check</button>
+        </div>
+        <div class="feedback" id="p5-fb"></div>
+      </div>
+
+      <!-- Problem 6 (MC) -->
+      <div class="problem">
+        <div class="problem-stem"><strong>6.</strong> Seawater has pH = 8.1. What is [H⁺] in seawater (in mol/L)? Select the closest value.</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'p6','wrong')">1.0 × 10⁻⁷ M</button>
+          <button class="mc-btn" onclick="checkMC(this,'p6','wrong')">8.1 × 10⁻⁸ M</button>
+          <button class="mc-btn" onclick="checkMC(this,'p6','correct')">7.94 × 10⁻⁹ M</button>
+          <button class="mc-btn" onclick="checkMC(this,'p6','wrong')">1.26 × 10⁻⁶ M</button>
+        </div>
+        <div class="feedback" id="p6-fb"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== SECTION 8: QUIZ ===== -->
+  <div class="section-card" data-section="8">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-num">08</span>
+      <span class="section-title">Quiz — 10 Questions</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="section-body">
+
+      <div class="quiz-score-bar">
+        <div class="qs-label">Score: <span id="quizScore">0</span> / 10</div>
+        <button class="btn" onclick="resetQuiz()">Reset Quiz</button>
+      </div>
+
+      <!-- Q1 -->
+      <div class="quiz-q">
+        <div class="qn">QUESTION 1</div>
+        <div class="stem">According to the Lewis definition, a Lewis acid is a species that:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(1,this,false)">Donates a proton to water</button>
+          <button class="choice-btn" onclick="quizAnswer(1,this,true)">Accepts an electron pair from a base</button>
+          <button class="choice-btn" onclick="quizAnswer(1,this,false)">Produces OH⁻ ions in aqueous solution</button>
+          <button class="choice-btn" onclick="quizAnswer(1,this,false)">Donates an electron pair to an acid</button>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-q">
+        <div class="qn">QUESTION 2</div>
+        <div class="stem">What is the pH of a 0.001 M HNO₃ solution (strong acid)?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(2,this,false)">1.00</button>
+          <button class="choice-btn" onclick="quizAnswer(2,this,false)">2.00</button>
+          <button class="choice-btn" onclick="quizAnswer(2,this,true)">3.00</button>
+          <button class="choice-btn" onclick="quizAnswer(2,this,false)">11.00</button>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-q">
+        <div class="qn">QUESTION 3</div>
+        <div class="stem">Which of these is NOT classified as a strong acid?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(3,this,false)">HBr</button>
+          <button class="choice-btn" onclick="quizAnswer(3,this,false)">HClO₄</button>
+          <button class="choice-btn" onclick="quizAnswer(3,this,true)">HF</button>
+          <button class="choice-btn" onclick="quizAnswer(3,this,false)">HI</button>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-q">
+        <div class="qn">QUESTION 4</div>
+        <div class="stem">For a conjugate acid-base pair at 25°C, if Ka = 6.8 × 10⁻⁴, what is Kb for the conjugate base?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(4,this,false)">6.8 × 10⁻⁴</button>
+          <button class="choice-btn" onclick="quizAnswer(4,this,true)">1.47 × 10⁻¹¹</button>
+          <button class="choice-btn" onclick="quizAnswer(4,this,false)">6.8 × 10⁻¹⁸</button>
+          <button class="choice-btn" onclick="quizAnswer(4,this,false)">1.47 × 10⁻⁷</button>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="quiz-q">
+        <div class="qn">QUESTION 5</div>
+        <div class="stem">A weak acid HA has Ka = 4.0 × 10⁻⁶. If [H⁺] = 2.0 × 10⁻³ M at equilibrium and [HA] = 0.250 M, what is [A⁻]?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(5,this,false)">4.0 × 10⁻⁶ M</button>
+          <button class="choice-btn" onclick="quizAnswer(5,this,true)">2.0 × 10⁻³ M</button>
+          <button class="choice-btn" onclick="quizAnswer(5,this,false)">5.0 × 10⁻⁴ M</button>
+          <button class="choice-btn" onclick="quizAnswer(5,this,false)">1.0 × 10⁻⁸ M</button>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="quiz-q">
+        <div class="qn">QUESTION 6</div>
+        <div class="stem">Kw = 1.0 × 10⁻¹⁴ at 25°C. What does this mean for a neutral solution?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(6,this,false)">[H⁺] = 10⁻¹⁴ M and [OH⁻] = 1 M</button>
+          <button class="choice-btn" onclick="quizAnswer(6,this,false)">[H⁺] = 1 M and [OH⁻] = 10⁻¹⁴ M</button>
+          <button class="choice-btn" onclick="quizAnswer(6,this,true)">[H⁺] = [OH⁻] = 10⁻⁷ M, so pH = 7</button>
+          <button class="choice-btn" onclick="quizAnswer(6,this,false)">pH = 14 in a neutral solution</button>
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="quiz-q">
+        <div class="qn">QUESTION 7</div>
+        <div class="stem">Ocean acidification occurs because dissolved CO₂ forms H₂CO₃. If ocean [H⁺] increases from 10⁻⁸·¹ to 10⁻⁷·⁹, by approximately what factor did [H⁺] increase?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(7,this,false)">0.2×</button>
+          <button class="choice-btn" onclick="quizAnswer(7,this,true)">1.58×</button>
+          <button class="choice-btn" onclick="quizAnswer(7,this,false)">10×</button>
+          <button class="choice-btn" onclick="quizAnswer(7,this,false)">100×</button>
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="quiz-q">
+        <div class="qn">QUESTION 8</div>
+        <div class="stem">Which statement about polyprotic acids is CORRECT?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(8,this,false)">Ka₂ &gt; Ka₁ for H₃PO₄ because the molecule is more negative after first dissociation</button>
+          <button class="choice-btn" onclick="quizAnswer(8,this,true)">Ka₁ &gt;&gt; Ka₂ &gt;&gt; Ka₃ because each successive proton removal faces greater electrostatic resistance</button>
+          <button class="choice-btn" onclick="quizAnswer(8,this,false)">For dilute H₂SO₄, only Ka₂ matters because Ka₁ is too large to define</button>
+          <button class="choice-btn" onclick="quizAnswer(8,this,false)">H₃PO₄ is a strong acid because it has three protons to donate</button>
+        </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="quiz-q">
+        <div class="qn">QUESTION 9</div>
+        <div class="stem">BF₃ reacts with NH₃ to form F₃B-NH₃. In this reaction, BF₃ acts as:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(9,this,false)">Brønsted-Lowry acid — it donates H⁺</button>
+          <button class="choice-btn" onclick="quizAnswer(9,this,false)">Arrhenius base — it produces OH⁻</button>
+          <button class="choice-btn" onclick="quizAnswer(9,this,true)">Lewis acid — it accepts the lone pair from NH₃</button>
+          <button class="choice-btn" onclick="quizAnswer(9,this,false)">Lewis base — it donates electrons to NH₃</button>
+        </div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="quiz-q">
+        <div class="qn">QUESTION 10</div>
+        <div class="stem">A 0.10 M solution of a weak acid has pH = 3.00. What is the Ka of this acid?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(10,this,false)">1.0 × 10⁻³</button>
+          <button class="choice-btn" onclick="quizAnswer(10,this,true)">1.0 × 10⁻⁵</button>
+          <button class="choice-btn" onclick="quizAnswer(10,this,false)">1.0 × 10⁻⁷</button>
+          <button class="choice-btn" onclick="quizAnswer(10,this,false)">3.0 × 10⁻³</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ===== PROGRESS TRACKING =====
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="' + n + '"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) { markComplete(+card.getAttribute('data-section')); }
+  updateProgress();
+}
+
+// ===== CHECK FUNCTIONS =====
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Enter a number.';
+    inp.parentElement.parentElement.classList.add('shake');
+    setTimeout(function(){ inp.parentElement.parentElement.classList.remove('shake'); }, 400);
+    return;
+  }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop');
+    setTimeout(function(){ inp.parentElement.parentElement.classList.remove('pop'); }, 350);
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(2) + ')';
+    inp.parentElement.parentElement.classList.add('shake');
+    setTimeout(function(){ inp.parentElement.parentElement.classList.remove('shake'); }, 400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop');
+    setTimeout(function(){ btn.closest('.problem').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake');
+    setTimeout(function(){ btn.closest('.problem').classList.remove('shake'); }, 400);
+  }
+}
+
+// ===== QUIZ =====
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop');
+    setTimeout(function(){ btn.closest('.quiz-q').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf('true') !== -1) {
+        b.classList.add('reveal-correct');
+      }
+    });
+    btn.closest('.quiz-q').classList.add('shake');
+    setTimeout(function(){ btn.closest('.quiz-q').classList.remove('shake'); }, 400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0;
+  quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) {
+    b.className = 'choice-btn';
+  });
+}
+
+// ===== PH SLIDER =====
+function formatSci(val) {
+  if (val === 0) return '0';
+  var exp = Math.floor(Math.log10(val));
+  var mant = val / Math.pow(10, exp);
+  return mant.toFixed(2) + '×10' + superscript(exp);
+}
+
+function superscript(n) {
+  var map = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵',
+              '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '1': '¹' };
+  return String(n).split('').map(function(c){ return map[c] || c; }).join('');
+}
+
+function phColor(ph) {
+  // interpolate across pH 0–14
+  if (ph <= 3)        return 'hsl(' + (0 + ph * 10)   + ', 90%, 65%)'; // red → orange
+  if (ph <= 6)        return 'hsl(' + (30 + (ph-3)*30) + ', 85%, 60%)'; // orange → yellow-green
+  if (ph <= 7.5)      return '#22c55e'; // green neutral
+  if (ph <= 10)       return 'hsl(' + (150 + (ph-7.5)*14) + ', 80%, 60%)'; // green → blue
+  return 'hsl(220, 80%, 65%)'; // blue-indigo
+}
+
+function phDescription(ph) {
+  if (ph < 1)   return 'Extremely strong acid — battery acid territory';
+  if (ph < 3)   return 'Strong acid — e.g. stomach acid (~1.5–3.5)';
+  if (ph < 5)   return 'Weak acid — vinegar, carbonated drinks';
+  if (ph < 6.5) return 'Mildly acidic — rain water (~5.6), coffee (~5)';
+  if (ph < 7.5) return 'Neutral — pure water at 25°C (pH 7.00)';
+  if (ph < 8.5) return 'Mildly basic — seawater (~8.1), blood (~7.4)';
+  if (ph < 10)  return 'Weak base — baking soda (~8.3), antacids (~9)';
+  if (ph < 12)  return 'Moderate base — ammonia cleaner (~11–12)';
+  return 'Strong base — NaOH drain cleaner, bleach (~13–14)';
+}
+
+function updatePhDisplay() {
+  var ph = parseFloat(document.getElementById('phSlider').value);
+  var poh = 14 - ph;
+  var hplus = Math.pow(10, -ph);
+  var ohminus = Math.pow(10, -poh);
+
+  document.getElementById('phValDisplay').textContent = ph.toFixed(1);
+  document.getElementById('phValDisplay').style.color = phColor(ph);
+  document.getElementById('stat-ph').textContent = ph.toFixed(2);
+  document.getElementById('stat-poh').textContent = poh.toFixed(2);
+  document.getElementById('stat-hplus').textContent = formatSci(hplus);
+  document.getElementById('stat-ohminus').textContent = formatSci(ohminus);
+  document.getElementById('ph-description').textContent = phDescription(ph);
+
+  var pct = (ph / 14) * 100;
+  document.getElementById('phIndicator').style.left = pct + '%';
+}
+
+// ===== STRONG ACID/BASE CALCULATOR =====
+function calcStrongPH() {
+  var type = document.getElementById('strongType').value;
+  var conc = parseFloat(document.getElementById('strongConc').value);
+  document.getElementById('strongConcVal').textContent = conc.toFixed(3) + ' M';
+
+  var ph, poh, hconc;
+  if (type === 'acid1') {
+    hconc = conc;
+    ph = -Math.log10(hconc);
+    poh = 14 - ph;
+  } else if (type === 'base1') {
+    var ohconc = conc;
+    poh = -Math.log10(ohconc);
+    ph = 14 - poh;
+    hconc = Math.pow(10, -ph);
+  } else if (type === 'base2') {
+    var ohconc2 = 2 * conc;
+    poh = -Math.log10(ohconc2);
+    ph = 14 - poh;
+    hconc = Math.pow(10, -ph);
+  }
+
+  document.getElementById('strong-ph').textContent = ph.toFixed(2);
+  document.getElementById('strong-poh').textContent = (14 - ph).toFixed(2);
+  document.getElementById('strong-hconc').textContent = formatSci(hconc);
+}
+
+// ===== WEAK ACID EXPLORER =====
+function calcWeakAcid() {
+  var logC = parseFloat(document.getElementById('waConc').value);
+  var pka  = parseFloat(document.getElementById('waPka').value);
+  var C = Math.pow(10, logC);
+  var Ka = Math.pow(10, -pka);
+
+  document.getElementById('waConcVal').textContent = C.toFixed(4).replace(/\.?0+$/, '') + ' M';
+  document.getElementById('waPkaVal').textContent = pka.toFixed(2);
+
+  // Approximation: x = sqrt(Ka * C)
+  var x_approx = Math.sqrt(Ka * C);
+  var pct = (x_approx / C) * 100;
+
+  var x;
+  var note;
+  if (pct < 5) {
+    x = x_approx;
+    note = '5% approximation valid (' + pct.toFixed(2) + '% dissociation)';
+  } else {
+    // Quadratic: x^2 + Ka*x - Ka*C = 0
+    x = (-Ka + Math.sqrt(Ka * Ka + 4 * Ka * C)) / 2;
+    pct = (x / C) * 100;
+    note = '5% rule failed — quadratic used (' + pct.toFixed(1) + '% dissociation)';
+  }
+
+  var ph = -Math.log10(x);
+  document.getElementById('wa-ka').textContent = formatSci(Ka);
+  document.getElementById('wa-hplus').textContent = formatSci(x);
+  document.getElementById('wa-ph').textContent = ph.toFixed(2);
+  document.getElementById('wa-pct').textContent = pct.toFixed(2) + '%';
+  document.getElementById('wa-note').textContent = note;
+}
+
+// ===== INITIALIZE =====
+updatePhDisplay();
+calcStrongPH();
+calcWeakAcid();
+updateProgress();
+</script>
+</body>
+</html>

@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 5: Molecular Geometry (VSEPR)</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  background: #1e2128;
+  color: #c9cdd5;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.65;
+  min-height: 100vh;
+  padding: 0 0 4rem;
+}
+
+/* ── Palette ──────────────────────────────────────── */
+:root {
+  --bg: #1e2128;
+  --surface: #262a33;
+  --surface2: #2e323d;
+  --border: #383d49;
+  --text: #c9cdd5;
+  --text-dim: #8b90a0;
+  --primary: #6366f1;
+  --primary-dim: rgba(99,102,241,.15);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,.15);
+  --pink: #ec4899;
+  --pink-dim: rgba(236,72,153,.15);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,.15);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,.15);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,.15);
+  --cyan: #06b6d4;
+  --cyan-dim: rgba(6,182,212,.15);
+}
+
+/* ── Header ───────────────────────────────────────── */
+.page-header {
+  text-align: center;
+  padding: 2.5rem 1rem 1rem;
+}
+.page-header h1 {
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.page-header .subtitle {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-top: .3rem;
+}
+
+/* ── Progress Bar ─────────────────────────────────── */
+.progress-wrap {
+  max-width: 740px;
+  margin: 1.2rem auto .5rem;
+  padding: 0 1rem;
+}
+.progress-bar-outer {
+  background: var(--surface);
+  border-radius: 8px;
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-bar-inner {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), #818cf8);
+  border-radius: 8px;
+  transition: width .5s ease;
+}
+.progress-label {
+  font-size: .7rem;
+  color: var(--text-dim);
+  text-align: right;
+  margin-top: .3rem;
+}
+
+/* ── Container ────────────────────────────────────── */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ── Collapsible Card ─────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: border-color .3s;
+}
+.card.completed { border-color: var(--green); }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background .2s;
+}
+.card-header:hover { background: var(--surface2); }
+.card-header .num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--primary-dim);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: .8rem;
+  flex-shrink: 0;
+}
+.card.completed .card-header .num {
+  background: var(--green-dim);
+  color: var(--green);
+}
+.card-header .title {
+  flex: 1;
+  font-weight: 600;
+  font-size: .9rem;
+  color: #eee;
+}
+.card-header .chevron {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  transition: transform .3s;
+}
+.card.open .card-header .chevron { transform: rotate(180deg); }
+.card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .5s ease, padding .3s ease;
+}
+.card.open .card-body {
+  max-height: 80000px;
+  padding: 0 1.2rem 1.5rem;
+}
+
+/* ── Section Internals ────────────────────────────── */
+.section-desc {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+h3.sub-heading {
+  font-size: .85rem;
+  color: var(--primary);
+  margin: 1.5rem 0 .8rem;
+  font-weight: 600;
+}
+h3.sub-heading:first-of-type { margin-top: .5rem; }
+
+/* ── Interactive Box ──────────────────────────────── */
+.interactive-box {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid var(--border);
+}
+.interactive-box h4 {
+  font-size: .82rem;
+  color: var(--primary);
+  margin-bottom: .8rem;
+}
+
+/* ── Buttons ──────────────────────────────────────── */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: .8rem;
+}
+.btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  padding: .45rem .9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn:hover { border-color: var(--primary); color: #fff; }
+.btn.active {
+  background: var(--primary-dim);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.btn.correct {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+.btn.incorrect {
+  background: var(--pink-dim);
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+/* ── Feedback ─────────────────────────────────────── */
+.feedback {
+  font-size: .75rem;
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  margin-top: .6rem;
+  display: none;
+}
+.feedback.show { display: block; }
+.feedback.correct-fb { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+.feedback.incorrect-fb { background: var(--pink-dim); color: var(--pink); border: 1px solid var(--pink); }
+
+/* ── Explanation Block ────────────────────────────── */
+.explanation {
+  font-size: .78rem;
+  color: var(--text);
+  background: var(--surface2);
+  border-left: 3px solid var(--primary);
+  padding: .8rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 1.2rem;
+  line-height: 1.7;
+}
+
+/* ── Formula Display ─────────────────────────────── */
+.formula-display {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  font-size: .9rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+/* ── SVG Canvas ──────────────────────────────────── */
+.svg-container {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.svg-container svg {
+  width: 100%;
+  height: auto;
+}
+
+/* ── Result Display ──────────────────────────────── */
+.result-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .8rem 1rem;
+  font-size: .78rem;
+  color: var(--text);
+  margin-bottom: .8rem;
+  min-height: 2.5rem;
+}
+.result-box .label { color: var(--text-dim); font-size: .65rem; }
+
+/* ── Data Table ──────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .72rem;
+  margin-bottom: 1.2rem;
+}
+.data-table th {
+  background: var(--surface2);
+  color: var(--primary);
+  font-weight: 600;
+  text-align: left;
+  padding: .6rem .7rem;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: .5rem .7rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.data-table tr:hover td { background: rgba(99,102,241,.05); }
+.data-table .highlight-row td { background: var(--primary-dim); }
+
+/* ── Controls Row ────────────────────────────────── */
+.controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+.control-group label {
+  display: block;
+  font-size: .65rem;
+  color: var(--text-dim);
+  margin-bottom: .3rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.control-group select {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem;
+  padding: .4rem .7rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238b90a0'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .6rem center;
+  padding-right: 2rem;
+}
+.control-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* ── Tag / Badge ─────────────────────────────────── */
+.tag {
+  display: inline-block;
+  font-size: .65rem;
+  padding: .2rem .5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.tag-polar { background: var(--pink-dim); color: var(--pink); }
+.tag-nonpolar { background: var(--green-dim); color: var(--green); }
+.tag-primary { background: var(--primary-dim); color: var(--primary); }
+.tag-amber { background: var(--amber-dim); color: var(--amber); }
+.tag-cyan { background: var(--cyan-dim); color: var(--cyan); }
+
+/* ── Bond Comparison Bars ────────────────────────── */
+.bond-bar-wrap {
+  margin-bottom: .6rem;
+}
+.bond-bar-label {
+  font-size: .7rem;
+  color: var(--text);
+  margin-bottom: .2rem;
+  display: flex;
+  justify-content: space-between;
+}
+.bond-bar-outer {
+  height: 18px;
+  background: var(--surface);
+  border-radius: 9px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.bond-bar-inner {
+  height: 100%;
+  border-radius: 9px;
+  transition: width .6s ease;
+}
+
+/* ── Quiz Score ──────────────────────────────────── */
+.score-display {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 1rem 0;
+}
+.score-display .score-num { color: var(--green); }
+.quiz-question {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: .8rem;
+}
+.quiz-question .q-text {
+  font-size: .8rem;
+  color: #eee;
+  margin-bottom: .8rem;
+  font-weight: 500;
+}
+.quiz-question .q-num {
+  font-size: .65rem;
+  color: var(--text-dim);
+  margin-bottom: .4rem;
+}
+
+/* ── Orbital Diagram ─────────────────────────────── */
+.orbital-row {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: .5rem;
+}
+.orbital-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .75rem;
+  font-weight: 700;
+  position: relative;
+}
+.orbital-box.filled { border-color: var(--primary); background: var(--primary-dim); color: var(--primary); }
+.orbital-box.sigma { border-color: var(--cyan); background: var(--cyan-dim); color: var(--cyan); }
+.orbital-box.pi { border-color: var(--amber); background: var(--amber-dim); color: var(--amber); }
+.orbital-label {
+  font-size: .6rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+.arrow-label {
+  font-size: .7rem;
+  color: var(--text-dim);
+  padding: 0 .3rem;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 600px) {
+  .controls-row { flex-direction: column; }
+  .data-table { font-size: .62rem; }
+  .data-table th, .data-table td { padding: .4rem .35rem; }
+  .card-header { padding: .8rem 1rem; }
+  .card.open .card-body { padding: 0 1rem 1.2rem; }
+  .interactive-box { padding: .8rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────── -->
+<header class="page-header">
+  <h1>Week 5: Molecular Geometry (VSEPR)</h1>
+  <div class="subtitle">Shapes, Polarity, Hybridization, and Bond Properties</div>
+</header>
+
+<!-- ── Progress Bar ────────────────────────────────── -->
+<div class="progress-wrap">
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 5 sections complete</div>
+</div>
+
+<!-- ── Main Content ────────────────────────────────── -->
+<div class="container">
+
+<!-- ================================================================ -->
+<!-- SECTION 1 : VSEPR Theory                                        -->
+<!-- ================================================================ -->
+<div class="card open" data-section="1">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">1</div>
+    <div class="title">VSEPR Theory</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      <strong>Valence Shell Electron Pair Repulsion</strong> (VSEPR) theory predicts molecular
+      geometry based on one principle: electron groups around a central atom repel each other
+      and arrange to maximize distance. The result is a predictable 3D shape.
+    </p>
+
+    <div class="explanation">
+      <strong>Key idea:</strong> Count the total electron groups (bonding pairs + lone pairs) around the
+      central atom. The <em>electron geometry</em> depends on total groups. The <em>molecular geometry</em>
+      depends on how many of those groups are bonding vs. lone pairs.
+    </div>
+
+    <h3 class="sub-heading">Interactive Geometry Explorer</h3>
+    <div class="interactive-box">
+      <h4>Select Electron Groups &amp; Lone Pairs</h4>
+      <div class="controls-row">
+        <div class="control-group">
+          <label>Electron Groups</label>
+          <select id="vseprGroups" onchange="updateVSEPR()">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Lone Pairs</label>
+          <select id="vseprLone" onchange="updateVSEPR()">
+            <option value="0" selected>0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+      </div>
+      <div class="svg-container" style="min-height:280px;">
+        <svg id="vseprSVG" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="result-box" id="vseprResult">
+        <div class="label">Geometry Info</div>
+        <div id="vseprInfo" style="margin-top:.3rem;color:#fff;font-weight:500;">Select groups and lone pairs above</div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Complete VSEPR Geometry Table</h3>
+    <div style="overflow-x:auto;">
+    <table class="data-table" id="vseprTable">
+      <thead>
+        <tr>
+          <th>Groups</th>
+          <th>Lone Pairs</th>
+          <th>Electron Geom.</th>
+          <th>Molecular Geom.</th>
+          <th>Angle(s)</th>
+          <th>Example</th>
+        </tr>
+      </thead>
+      <tbody id="vseprTableBody"></tbody>
+    </table>
+    </div>
+
+    <h3 class="sub-heading">Practice Problems</h3>
+    <div id="vseprPractice"></div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 2 : Molecular Polarity                                  -->
+<!-- ================================================================ -->
+<div class="card" data-section="2">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">2</div>
+    <div class="title">Molecular Polarity</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      A molecule is <strong>polar</strong> if it has an asymmetric distribution of electron
+      density (a net dipole moment). Even if individual bonds are polar, the molecule can
+      be nonpolar if the bond dipoles <em>cancel</em> due to symmetric geometry.
+    </p>
+
+    <div class="explanation">
+      <strong>Rule:</strong> Draw all bond dipole arrows (pointing toward the more electronegative atom).
+      If the vectors sum to zero, the molecule is nonpolar. If not, it is polar with a
+      net dipole moment.
+    </div>
+
+    <h3 class="sub-heading">Interactive Polarity Explorer</h3>
+    <div class="interactive-box">
+      <h4>Select a Molecule</h4>
+      <div class="btn-row" id="polarityBtns"></div>
+      <div class="svg-container" style="min-height:300px;">
+        <svg id="polaritySVG" viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="result-box" id="polarityResult">
+        <div class="label">Polarity Info</div>
+        <div id="polarityInfo" style="margin-top:.3rem;">Select a molecule above</div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Practice Problems</h3>
+    <div id="polarityPractice"></div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 3 : Hybrid Orbitals                                     -->
+<!-- ================================================================ -->
+<div class="card" data-section="3">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">3</div>
+    <div class="title">Hybrid Orbitals</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Hybridization describes how atomic orbitals (s, p, d) mix to form new <strong>hybrid
+      orbitals</strong> that match the molecular geometry. The number of electron groups equals
+      the number of hybrid orbitals needed.
+    </p>
+
+    <h3 class="sub-heading">Hybridization Reference</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Electron Groups</th>
+          <th>Hybridization</th>
+          <th>Geometry</th>
+          <th>Bond Angle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>2</td><td><span class="tag tag-primary">sp</span></td><td>Linear</td><td>180&deg;</td></tr>
+        <tr><td>3</td><td><span class="tag tag-cyan">sp&sup2;</span></td><td>Trigonal Planar</td><td>120&deg;</td></tr>
+        <tr><td>4</td><td><span class="tag tag-amber">sp&sup3;</span></td><td>Tetrahedral</td><td>109.5&deg;</td></tr>
+        <tr><td>5</td><td><span class="tag tag-primary">sp&sup3;d</span></td><td>Trigonal Bipyramidal</td><td>90&deg;, 120&deg;</td></tr>
+        <tr><td>6</td><td><span class="tag tag-cyan">sp&sup3;d&sup2;</span></td><td>Octahedral</td><td>90&deg;</td></tr>
+      </tbody>
+    </table>
+
+    <div class="explanation">
+      <strong>How to determine hybridization:</strong> Count electron groups on the central atom
+      (same as VSEPR). 2 groups = sp, 3 = sp&sup2;, 4 = sp&sup3;, 5 = sp&sup3;d, 6 = sp&sup3;d&sup2;.
+      <br><br>
+      <strong>Sigma (&sigma;) bonds</strong> form from head-on orbital overlap (every single bond
+      is one &sigma; bond). <strong>Pi (&pi;) bonds</strong> form from side-on overlap of unhybridized
+      p orbitals (double bond = 1&sigma; + 1&pi;; triple bond = 1&sigma; + 2&pi;).
+    </div>
+
+    <h3 class="sub-heading">Interactive Hybridization Explorer</h3>
+    <div class="interactive-box">
+      <h4>Select a Molecule</h4>
+      <div class="btn-row" id="hybridBtns"></div>
+      <div id="hybridDisplay" style="margin-top:1rem;"></div>
+      <div class="result-box" id="hybridResult" style="margin-top:.8rem;">
+        <div class="label">Hybridization Info</div>
+        <div id="hybridInfo" style="margin-top:.3rem;">Select a molecule above</div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Practice Problems</h3>
+    <div id="hybridPractice"></div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 4 : Bond Properties                                     -->
+<!-- ================================================================ -->
+<div class="card" data-section="4">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">4</div>
+    <div class="title">Bond Properties</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Bond <strong>order</strong> (single, double, triple) directly affects bond <strong>strength</strong>
+      (energy) and <strong>length</strong>. Higher bond order means stronger (higher energy) and
+      shorter bonds.
+    </p>
+
+    <h3 class="sub-heading">Bond Order Comparison</h3>
+    <div class="interactive-box">
+      <h4>Single vs Double vs Triple Bonds</h4>
+      <div class="svg-container" style="min-height:220px;">
+        <svg id="bondOrderSVG" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.5rem;">
+        <div>
+          <div style="font-size:.7rem;color:var(--text-dim);margin-bottom:.4rem;">BOND STRENGTH (kJ/mol)</div>
+          <div class="bond-bar-wrap">
+            <div class="bond-bar-label"><span>C-C (single)</span><span>347</span></div>
+            <div class="bond-bar-outer"><div class="bond-bar-inner" style="width:37%;background:var(--cyan);"></div></div>
+          </div>
+          <div class="bond-bar-wrap">
+            <div class="bond-bar-label"><span>C=C (double)</span><span>614</span></div>
+            <div class="bond-bar-outer"><div class="bond-bar-inner" style="width:65%;background:var(--amber);"></div></div>
+          </div>
+          <div class="bond-bar-wrap">
+            <div class="bond-bar-label"><span>C&#8801;C (triple)</span><span>839</span></div>
+            <div class="bond-bar-outer"><div class="bond-bar-inner" style="width:89%;background:var(--pink);"></div></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;color:var(--text-dim);margin-bottom:.4rem;">BOND LENGTH (pm)</div>
+          <div class="bond-bar-wrap">
+            <div class="bond-bar-label"><span>C-C</span><span>154 pm</span></div>
+            <div class="bond-bar-outer"><div class="bond-bar-inner" style="width:90%;background:var(--cyan);"></div></div>
+          </div>
+          <div class="bond-bar-wrap">
+            <div class="bond-bar-label"><span>C=C</span><span>134 pm</span></div>
+            <div class="bond-bar-outer"><div class="bond-bar-inner" style="width:78%;background:var(--amber);"></div></div>
+          </div>
+          <div class="bond-bar-wrap">
+            <div class="bond-bar-label"><span>C&#8801;C</span><span>120 pm</span></div>
+            <div class="bond-bar-outer"><div class="bond-bar-inner" style="width:70%;background:var(--pink);"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <strong>Trend:</strong> Single &lt; Double &lt; Triple bond strength. Single &gt; Double &gt; Triple
+      bond length. Each bond type contains: Single = 1&sigma;, Double = 1&sigma; + 1&pi;, Triple = 1&sigma; + 2&pi;.
+    </div>
+
+    <h3 class="sub-heading">Sigma vs Pi Bond Overlap</h3>
+    <div class="interactive-box">
+      <h4>Orbital Overlap Diagrams</h4>
+      <div class="svg-container" style="min-height:260px;">
+        <svg id="overlapSVG" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Interactive Bond Comparison</h3>
+    <div class="interactive-box">
+      <h4>Compare Bond Pairs</h4>
+      <div class="btn-row" id="bondPairBtns"></div>
+      <div class="result-box" id="bondPairResult">
+        <div class="label">Bond Comparison</div>
+        <div id="bondPairInfo" style="margin-top:.3rem;">Select a pair above to compare</div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Practice Problems</h3>
+    <div id="bondPractice"></div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 5 : Quick Quiz                                          -->
+<!-- ================================================================ -->
+<div class="card" data-section="5">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="num">5</div>
+    <div class="title">Quick Quiz</div>
+    <div class="chevron">&#9662;</div>
+  </div>
+  <div class="card-body">
+    <p class="section-desc">
+      Test your knowledge across all topics: VSEPR geometry, molecular polarity,
+      hybridization, and bond properties. 10 questions, scored in real time.
+    </p>
+    <div class="score-display">
+      Score: <span class="score-num" id="quizScore">0</span> / <span id="quizTotal">10</span>
+    </div>
+    <div id="quizContainer"></div>
+    <div style="text-align:center;margin-top:1.2rem;">
+      <button class="btn" style="padding:.6rem 1.5rem;font-size:.8rem;" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+/* ================================================================ */
+/*  UTILITY FUNCTIONS                                               */
+/* ================================================================ */
+function toggleCard(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+function updateProgress() {
+  const cards = document.querySelectorAll('.card[data-section]');
+  let done = 0;
+  cards.forEach(c => { if (c.classList.contains('completed')) done++; });
+  const pct = Math.round((done / cards.length) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = done + ' / ' + cards.length + ' sections complete';
+}
+
+function markComplete(sectionNum) {
+  const card = document.querySelector('.card[data-section="' + sectionNum + '"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function createPractice(containerId, problems, sectionNum) {
+  const container = document.getElementById(containerId);
+  let answered = 0;
+  problems.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-question';
+    div.innerHTML = '<div class="q-num">Problem ' + (i + 1) + ' of ' + problems.length + '</div>' +
+      '<div class="q-text">' + p.question + '</div>' +
+      '<div class="btn-row" id="' + containerId + '_btns_' + i + '"></div>' +
+      '<div class="feedback" id="' + containerId + '_fb_' + i + '"></div>';
+    container.appendChild(div);
+
+    const btnRow = document.getElementById(containerId + '_btns_' + i);
+    p.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'btn';
+      btn.textContent = opt;
+      btn.onclick = function() {
+        if (this.classList.contains('correct') || this.classList.contains('incorrect')) return;
+        const allBtns = btnRow.querySelectorAll('.btn');
+        const fb = document.getElementById(containerId + '_fb_' + i);
+        if (opt === p.answer) {
+          this.classList.add('correct');
+          fb.textContent = 'Correct! ' + (p.explanation || '');
+          fb.className = 'feedback show correct-fb';
+          answered++;
+          if (answered === problems.length) markComplete(sectionNum);
+        } else {
+          this.classList.add('incorrect');
+          fb.textContent = 'Not quite. The answer is ' + p.answer + '. ' + (p.explanation || '');
+          fb.className = 'feedback show incorrect-fb';
+          allBtns.forEach(b => {
+            if (b.textContent === p.answer) b.classList.add('correct');
+          });
+          answered++;
+          if (answered === problems.length) markComplete(sectionNum);
+        }
+      };
+      btnRow.appendChild(btn);
+    });
+  });
+}
+
+/* ================================================================ */
+/*  SECTION 1: VSEPR THEORY                                         */
+/* ================================================================ */
+const VSEPR_DATA = [
+  { groups: 2, lone: 0, eGeom: 'Linear', mGeom: 'Linear', angle: '180\u00B0', example: 'CO\u2082, BeCl\u2082' },
+  { groups: 3, lone: 0, eGeom: 'Trigonal Planar', mGeom: 'Trigonal Planar', angle: '120\u00B0', example: 'BF\u2083, SO\u2083' },
+  { groups: 3, lone: 1, eGeom: 'Trigonal Planar', mGeom: 'Bent', angle: '~117\u00B0', example: 'SO\u2082, O\u2083' },
+  { groups: 4, lone: 0, eGeom: 'Tetrahedral', mGeom: 'Tetrahedral', angle: '109.5\u00B0', example: 'CH\u2084, CCl\u2084' },
+  { groups: 4, lone: 1, eGeom: 'Tetrahedral', mGeom: 'Trigonal Pyramidal', angle: '~107\u00B0', example: 'NH\u2083, PCl\u2083' },
+  { groups: 4, lone: 2, eGeom: 'Tetrahedral', mGeom: 'Bent', angle: '~104.5\u00B0', example: 'H\u2082O, H\u2082S' },
+  { groups: 5, lone: 0, eGeom: 'Trigonal Bipyramidal', mGeom: 'Trigonal Bipyramidal', angle: '90\u00B0, 120\u00B0', example: 'PCl\u2085' },
+  { groups: 5, lone: 1, eGeom: 'Trigonal Bipyramidal', mGeom: 'See-saw', angle: '~90\u00B0, ~120\u00B0', example: 'SF\u2084' },
+  { groups: 5, lone: 2, eGeom: 'Trigonal Bipyramidal', mGeom: 'T-shaped', angle: '~90\u00B0', example: 'ClF\u2083' },
+  { groups: 5, lone: 3, eGeom: 'Trigonal Bipyramidal', mGeom: 'Linear', angle: '180\u00B0', example: 'XeF\u2082' },
+  { groups: 6, lone: 0, eGeom: 'Octahedral', mGeom: 'Octahedral', angle: '90\u00B0', example: 'SF\u2086' },
+  { groups: 6, lone: 1, eGeom: 'Octahedral', mGeom: 'Square Pyramidal', angle: '~90\u00B0', example: 'BrF\u2085' },
+  { groups: 6, lone: 2, eGeom: 'Octahedral', mGeom: 'Square Planar', angle: '90\u00B0', example: 'XeF\u2084' },
+  { groups: 6, lone: 3, eGeom: 'Octahedral', mGeom: 'T-shaped', angle: '90\u00B0', example: 'ICl\u2083' },
+  { groups: 6, lone: 4, eGeom: 'Octahedral', mGeom: 'Linear', angle: '180\u00B0', example: 'XeF\u2082 (6-coord)' }
+];
+
+// Build VSEPR table
+(function() {
+  const tbody = document.getElementById('vseprTableBody');
+  VSEPR_DATA.forEach(d => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + d.groups + '</td><td>' + d.lone + '</td><td>' + d.eGeom + '</td>' +
+      '<td style="color:#fff;font-weight:500;">' + d.mGeom + '</td><td>' + d.angle + '</td>' +
+      '<td style="color:var(--text-dim);">' + d.example + '</td>';
+    tbody.appendChild(tr);
+  });
+})();
+
+function getVSEPRGeom(groups, lone) {
+  return VSEPR_DATA.find(d => d.groups === groups && d.lone === lone);
+}
+
+function updateVSEPR() {
+  const groups = parseInt(document.getElementById('vseprGroups').value);
+  const loneSel = document.getElementById('vseprLone');
+
+  // Update lone pair options
+  const maxLone = groups - 1;
+  const currentLone = parseInt(loneSel.value);
+  loneSel.innerHTML = '';
+  for (let i = 0; i <= maxLone; i++) {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = i;
+    if (i === Math.min(currentLone, maxLone)) opt.selected = true;
+    loneSel.appendChild(opt);
+  }
+  const lone = parseInt(loneSel.value);
+  const geom = getVSEPRGeom(groups, lone);
+  const bonding = groups - lone;
+
+  // Draw
+  drawVSEPR(groups, lone, bonding, geom);
+
+  // Info
+  const info = document.getElementById('vseprInfo');
+  if (geom) {
+    info.innerHTML = '<span style="color:var(--primary);">' + geom.mGeom + '</span> &mdash; ' +
+      bonding + ' bonding group' + (bonding !== 1 ? 's' : '') + ', ' + lone + ' lone pair' + (lone !== 1 ? 's' : '') +
+      '<br><span style="font-size:.7rem;color:var(--text-dim);">Electron geometry: ' + geom.eGeom + ' | Angle: ' + geom.angle + ' | Example: ' + geom.example + '</span>';
+  } else {
+    info.innerHTML = '<span style="color:var(--pink);">Invalid combination</span>';
+  }
+
+  // Highlight table row
+  const rows = document.querySelectorAll('#vseprTableBody tr');
+  rows.forEach(r => r.classList.remove('highlight-row'));
+  const idx = VSEPR_DATA.findIndex(d => d.groups === groups && d.lone === lone);
+  if (idx >= 0) rows[idx].classList.add('highlight-row');
+}
+
+function drawVSEPR(groups, lone, bonding, geom) {
+  const svg = document.getElementById('vseprSVG');
+  const cx = 200, cy = 150, r = 90;
+  let html = '';
+
+  // Background label
+  if (geom) {
+    html += '<text x="200" y="28" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#6366f1" font-weight="600">' + geom.mGeom + '</text>';
+  }
+
+  // Compute positions based on geometry
+  const positions = computePositions(groups, lone, cx, cy, r);
+
+  // Draw lone pair clouds first (behind bonds)
+  positions.forEach(pos => {
+    if (pos.type === 'lone') {
+      const dx = pos.x - cx, dy = pos.y - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const nx = dx / dist, ny = dy / dist;
+      const lx = cx + nx * 40, ly = cy + ny * 40;
+      html += '<ellipse cx="' + lx + '" cy="' + ly + '" rx="18" ry="10" transform="rotate(' +
+        (Math.atan2(dy, dx) * 180 / Math.PI) + ',' + lx + ',' + ly + ')" ' +
+        'fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3"/>';
+      html += '<ellipse cx="' + (cx + nx * 55) + '" cy="' + (cy + ny * 55) + '" rx="14" ry="8" transform="rotate(' +
+        (Math.atan2(dy, dx) * 180 / Math.PI) + ',' + (cx + nx * 55) + ',' + (cy + ny * 55) + ')" ' +
+        'fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3"/>';
+    }
+  });
+
+  // Draw bonds
+  positions.forEach(pos => {
+    if (pos.type === 'bond') {
+      html += '<line x1="' + cx + '" y1="' + cy + '" x2="' + pos.x + '" y2="' + pos.y + '" stroke="#6366f1" stroke-width="3" stroke-linecap="round"/>';
+      html += '<circle cx="' + pos.x + '" cy="' + pos.y + '" r="14" fill="#262a33" stroke="#6366f1" stroke-width="2"/>';
+      html += '<text x="' + pos.x + '" y="' + (pos.y + 4) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#6366f1" font-weight="700">X</text>';
+    }
+  });
+
+  // Central atom
+  html += '<circle cx="' + cx + '" cy="' + cy + '" r="18" fill="#262a33" stroke="#22c55e" stroke-width="2.5"/>';
+  html += '<text x="' + cx + '" y="' + (cy + 5) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#22c55e" font-weight="700">A</text>';
+
+  // Angle arc for the first two bonding positions
+  const bondPositions = positions.filter(p => p.type === 'bond');
+  if (bondPositions.length >= 2 && geom) {
+    const p1 = bondPositions[0], p2 = bondPositions[1];
+    const a1 = Math.atan2(p1.y - cy, p1.x - cx);
+    const a2 = Math.atan2(p2.y - cy, p2.x - cx);
+    const arcR = 35;
+    let startA = a1, endA = a2;
+    let diff = endA - startA;
+    if (diff < 0) diff += 2 * Math.PI;
+    if (diff > Math.PI) { const t = startA; startA = endA; endA = t; diff = 2 * Math.PI - diff; }
+    const sx = cx + arcR * Math.cos(startA), sy = cy + arcR * Math.sin(startA);
+    const ex = cx + arcR * Math.cos(endA), ey = cy + arcR * Math.sin(endA);
+    const large = diff > Math.PI ? 1 : 0;
+    html += '<path d="M' + sx + ',' + sy + ' A' + arcR + ',' + arcR + ' 0 ' + large + ',1 ' + ex + ',' + ey + '" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>';
+    const midA = startA + diff / 2;
+    const tx = cx + (arcR + 14) * Math.cos(midA), ty = cy + (arcR + 14) * Math.sin(midA);
+    const angleStr = geom.angle.split(',')[0];
+    html += '<text x="' + tx + '" y="' + (ty + 4) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="rgba(255,255,255,0.6)">' + angleStr + '</text>';
+  }
+
+  // Legend
+  html += '<circle cx="320" cy="270" r="6" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5"/>';
+  html += '<text x="332" y="274" font-family="JetBrains Mono" font-size="9" fill="#8b90a0">Bonding</text>';
+  html += '<ellipse cx="320" cy="290" rx="8" ry="5" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,2"/>';
+  html += '<text x="332" y="294" font-family="JetBrains Mono" font-size="9" fill="#8b90a0">Lone pair</text>';
+
+  svg.innerHTML = html;
+}
+
+function computePositions(groups, lone, cx, cy, r) {
+  const bonding = groups - lone;
+  const positions = [];
+
+  // 2D projection angles for various geometries
+  const layouts = {
+    '2_0': [[-1,0],[1,0]],
+    '3_0': [[0,-1],[-0.866,0.5],[0.866,0.5]],
+    '3_1': [[-0.866,0.5],[0.866,0.5],[0,-1]],  // lone at top
+    '4_0': [[0,-1],[-0.95,0.35],[0.95,0.35],[0,1]],
+    '4_1': [[-0.866,0.5],[0.866,0.5],[0,-1],[0,1]],  // lone at back
+    '4_2': [[-0.95,0],[0.95,0],[0,-1],[0,1]],
+    '5_0': [[-1,0],[1,0],[-0.5,-0.866],[0.5,-0.866],[0,1]],
+    '5_1': [[-1,0],[1,0],[0,-1],[0,1],[0.5,0.866]],
+    '5_2': [[-1,0],[1,0],[0,-1],[0.5,0.866],[-0.5,0.866]],
+    '5_3': [[-1,0],[1,0],[0,-1],[0,1],[0.5,0.866]],
+    '6_0': [[-1,0],[1,0],[0,-1],[0,1],[-0.7,-0.7],[0.7,0.7]],
+    '6_1': [[-1,0],[1,0],[0,-1],[0,1],[0.7,0.7],[-0.7,0.7]],
+    '6_2': [[-1,0],[1,0],[0,-1],[0,1],[0.7,0.7],[-0.7,0.7]],
+    '6_3': [[-1,0],[1,0],[0,-1],[0.7,0.7],[-0.7,0.7],[0,1]],
+    '6_4': [[-1,0],[1,0],[0,-1],[0,1],[0.7,0.7],[-0.7,0.7]]
+  };
+
+  const key = groups + '_' + lone;
+  let dirs = layouts[key];
+  if (!dirs) {
+    // Fallback: even spacing
+    dirs = [];
+    for (let i = 0; i < groups; i++) {
+      const a = (2 * Math.PI * i / groups) - Math.PI / 2;
+      dirs.push([Math.cos(a), Math.sin(a)]);
+    }
+  }
+
+  // First `bonding` positions are bonds, rest are lone pairs
+  for (let i = 0; i < groups; i++) {
+    const d = dirs[i];
+    positions.push({
+      x: cx + d[0] * r,
+      y: cy + d[1] * r,
+      type: i < bonding ? 'bond' : 'lone'
+    });
+  }
+
+  return positions;
+}
+
+// Initialize VSEPR
+updateVSEPR();
+
+// VSEPR Practice
+createPractice('vseprPractice', [
+  {
+    question: 'What is the molecular geometry of H\u2082O? (2 bonding groups, 2 lone pairs on O)',
+    options: ['Linear', 'Bent', 'Trigonal Planar', 'Tetrahedral'],
+    answer: 'Bent',
+    explanation: 'Oxygen has 4 electron groups (2 bonding + 2 lone pairs), giving tetrahedral electron geometry but bent molecular geometry (~104.5\u00B0).'
+  },
+  {
+    question: 'What is the molecular geometry of BF\u2083? (3 bonding groups, 0 lone pairs on B)',
+    options: ['Trigonal Pyramidal', 'Bent', 'Trigonal Planar', 'T-shaped'],
+    answer: 'Trigonal Planar',
+    explanation: 'Boron has 3 bonding groups and 0 lone pairs, giving trigonal planar geometry with 120\u00B0 bond angles.'
+  },
+  {
+    question: 'What is the electron geometry of NH\u2083? (3 bonding, 1 lone pair on N)',
+    options: ['Trigonal Planar', 'Tetrahedral', 'Trigonal Pyramidal', 'Bent'],
+    answer: 'Tetrahedral',
+    explanation: 'NH\u2083 has 4 total electron groups (3 bonding + 1 lone), so the electron geometry is tetrahedral. The molecular geometry is trigonal pyramidal.'
+  },
+  {
+    question: 'What is the molecular geometry of SF\u2084? (4 bonding, 1 lone pair on S)',
+    options: ['Tetrahedral', 'See-saw', 'Square Planar', 'Trigonal Bipyramidal'],
+    answer: 'See-saw',
+    explanation: 'Sulfur has 5 electron groups (4 bonding + 1 lone pair), giving trigonal bipyramidal electron geometry and see-saw molecular geometry.'
+  }
+], 1);
+
+
+/* ================================================================ */
+/*  SECTION 2: MOLECULAR POLARITY                                    */
+/* ================================================================ */
+const POLARITY_DATA = {
+  'CO\u2082': {
+    formula: 'CO\u2082',
+    name: 'Carbon Dioxide',
+    geometry: 'Linear',
+    polar: false,
+    atoms: [
+      { symbol: 'C', x: 200, y: 160 },
+      { symbol: 'O', x: 110, y: 160, enDiff: 1.0, bondType: 'double' },
+      { symbol: 'O', x: 290, y: 160, enDiff: 1.0, bondType: 'double' }
+    ],
+    explanation: 'Linear geometry with identical C=O dipoles pointing in opposite directions. They cancel perfectly.'
+  },
+  'H\u2082O': {
+    formula: 'H\u2082O',
+    name: 'Water',
+    geometry: 'Bent',
+    polar: true,
+    netDipoleDir: [0, -1],
+    atoms: [
+      { symbol: 'O', x: 200, y: 140 },
+      { symbol: 'H', x: 130, y: 210, enDiff: 1.4, bondType: 'single' },
+      { symbol: 'H', x: 270, y: 210, enDiff: 1.4, bondType: 'single' }
+    ],
+    lonePairs: [[200, 80], [200, 60]],
+    explanation: 'Bent geometry means the O-H dipoles do NOT cancel. Net dipole points from H atoms toward the lone pairs on O.'
+  },
+  'BF\u2083': {
+    formula: 'BF\u2083',
+    name: 'Boron Trifluoride',
+    geometry: 'Trigonal Planar',
+    polar: false,
+    atoms: [
+      { symbol: 'B', x: 200, y: 160 },
+      { symbol: 'F', x: 200, y: 80, enDiff: 2.0, bondType: 'single' },
+      { symbol: 'F', x: 130, y: 210, enDiff: 2.0, bondType: 'single' },
+      { symbol: 'F', x: 270, y: 210, enDiff: 2.0, bondType: 'single' }
+    ],
+    explanation: 'Symmetric trigonal planar geometry. All three B-F dipoles are equal and at 120\u00B0, so they cancel.'
+  },
+  'NH\u2083': {
+    formula: 'NH\u2083',
+    name: 'Ammonia',
+    geometry: 'Trigonal Pyramidal',
+    polar: true,
+    netDipoleDir: [0, -1],
+    atoms: [
+      { symbol: 'N', x: 200, y: 130 },
+      { symbol: 'H', x: 130, y: 210, enDiff: 0.9, bondType: 'single' },
+      { symbol: 'H', x: 200, y: 230, enDiff: 0.9, bondType: 'single' },
+      { symbol: 'H', x: 270, y: 210, enDiff: 0.9, bondType: 'single' }
+    ],
+    lonePairs: [[200, 65]],
+    explanation: 'Trigonal pyramidal geometry. The N-H dipoles and the lone pair all contribute to a net upward dipole.'
+  },
+  'CH\u2084': {
+    formula: 'CH\u2084',
+    name: 'Methane',
+    geometry: 'Tetrahedral',
+    polar: false,
+    atoms: [
+      { symbol: 'C', x: 200, y: 160 },
+      { symbol: 'H', x: 200, y: 80, enDiff: 0.4, bondType: 'single' },
+      { symbol: 'H', x: 130, y: 215, enDiff: 0.4, bondType: 'single' },
+      { symbol: 'H', x: 270, y: 215, enDiff: 0.4, bondType: 'single' },
+      { symbol: 'H', x: 200, y: 245, enDiff: 0.4, bondType: 'single' }
+    ],
+    explanation: 'Perfectly symmetric tetrahedral geometry. All four C-H dipoles cancel out.'
+  },
+  'CHCl\u2083': {
+    formula: 'CHCl\u2083',
+    name: 'Chloroform',
+    geometry: 'Tetrahedral',
+    polar: true,
+    netDipoleDir: [0, 1],
+    atoms: [
+      { symbol: 'C', x: 200, y: 160 },
+      { symbol: 'H', x: 200, y: 80, enDiff: 0.4, bondType: 'single' },
+      { symbol: 'Cl', x: 120, y: 220, enDiff: 0.5, bondType: 'single' },
+      { symbol: 'Cl', x: 280, y: 220, enDiff: 0.5, bondType: 'single' },
+      { symbol: 'Cl', x: 200, y: 250, enDiff: 0.5, bondType: 'single' }
+    ],
+    explanation: 'Tetrahedral but NOT symmetric (H is different from Cl). The three C-Cl dipoles overpower the single C-H, giving a net dipole.'
+  },
+  'CCl\u2084': {
+    formula: 'CCl\u2084',
+    name: 'Carbon Tetrachloride',
+    geometry: 'Tetrahedral',
+    polar: false,
+    atoms: [
+      { symbol: 'C', x: 200, y: 160 },
+      { symbol: 'Cl', x: 200, y: 80, enDiff: 0.5, bondType: 'single' },
+      { symbol: 'Cl', x: 130, y: 215, enDiff: 0.5, bondType: 'single' },
+      { symbol: 'Cl', x: 270, y: 215, enDiff: 0.5, bondType: 'single' },
+      { symbol: 'Cl', x: 200, y: 245, enDiff: 0.5, bondType: 'single' }
+    ],
+    explanation: 'Symmetric tetrahedral with identical substituents. All C-Cl dipoles cancel perfectly.'
+  },
+  'SO\u2082': {
+    formula: 'SO\u2082',
+    name: 'Sulfur Dioxide',
+    geometry: 'Bent',
+    polar: true,
+    netDipoleDir: [0, -1],
+    atoms: [
+      { symbol: 'S', x: 200, y: 160 },
+      { symbol: 'O', x: 120, y: 220, enDiff: 1.0, bondType: 'double' },
+      { symbol: 'O', x: 280, y: 220, enDiff: 1.0, bondType: 'double' }
+    ],
+    lonePairs: [[200, 90]],
+    explanation: 'Bent geometry (3 electron groups, 1 lone pair). The S=O dipoles do not cancel due to asymmetric shape.'
+  }
+};
+
+// Build polarity buttons
+(function() {
+  const row = document.getElementById('polarityBtns');
+  Object.keys(POLARITY_DATA).forEach(key => {
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = key;
+    btn.onclick = function() {
+      row.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      drawPolarity(key);
+    };
+    row.appendChild(btn);
+  });
+})();
+
+function drawPolarity(key) {
+  const mol = POLARITY_DATA[key];
+  const svg = document.getElementById('polaritySVG');
+  let html = '';
+
+  // Title
+  html += '<text x="200" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#fff" font-weight="600">' + mol.name + ' (' + mol.formula + ')</text>';
+  html += '<text x="200" y="40" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#8b90a0">' + mol.geometry + '</text>';
+
+  const central = mol.atoms[0];
+
+  // Lone pair clouds
+  if (mol.lonePairs) {
+    mol.lonePairs.forEach(lp => {
+      html += '<ellipse cx="' + lp[0] + '" cy="' + lp[1] + '" rx="16" ry="8" fill="rgba(245,158,11,0.12)" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,2"/>';
+    });
+  }
+
+  // Bonds and dipole arrows
+  mol.atoms.forEach((atom, i) => {
+    if (i === 0) return;
+    // Bond line
+    const dx = atom.x - central.x, dy = atom.y - central.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const nx = dx / dist, ny = dy / dist;
+
+    if (atom.bondType === 'double') {
+      const px = -ny * 3, py = nx * 3;
+      html += '<line x1="' + (central.x + px) + '" y1="' + (central.y + py) + '" x2="' + (atom.x + px) + '" y2="' + (atom.y + py) + '" stroke="#555e70" stroke-width="2.5"/>';
+      html += '<line x1="' + (central.x - px) + '" y1="' + (central.y - py) + '" x2="' + (atom.x - px) + '" y2="' + (atom.y - py) + '" stroke="#555e70" stroke-width="2.5"/>';
+    } else {
+      html += '<line x1="' + central.x + '" y1="' + central.y + '" x2="' + atom.x + '" y2="' + atom.y + '" stroke="#555e70" stroke-width="3"/>';
+    }
+
+    // Dipole arrow (from less EN to more EN along bond)
+    // For simplicity, arrow from central toward outer atom (pointing toward more EN atom)
+    const arrowLen = dist * 0.5;
+    const ax1 = central.x + nx * 15, ay1 = central.y + ny * 15;
+    const ax2 = central.x + nx * (15 + arrowLen), ay2 = central.y + ny * (15 + arrowLen);
+    // Arrow color based on EN diff
+    const arrowColor = atom.enDiff > 0.8 ? '#ec4899' : (atom.enDiff > 0.3 ? '#f59e0b' : '#6366f1');
+    html += '<line x1="' + ax1 + '" y1="' + ay1 + '" x2="' + ax2 + '" y2="' + ay2 + '" stroke="' + arrowColor + '" stroke-width="2" stroke-opacity="0.7"/>';
+    // Arrowhead
+    const headLen = 7;
+    const angle = Math.atan2(ay2 - ay1, ax2 - ax1);
+    const h1x = ax2 - headLen * Math.cos(angle - 0.4), h1y = ay2 - headLen * Math.sin(angle - 0.4);
+    const h2x = ax2 - headLen * Math.cos(angle + 0.4), h2y = ay2 - headLen * Math.sin(angle + 0.4);
+    html += '<polygon points="' + ax2 + ',' + ay2 + ' ' + h1x + ',' + h1y + ' ' + h2x + ',' + h2y + '" fill="' + arrowColor + '" opacity="0.7"/>';
+    // Plus sign at tail (delta+)
+    html += '<text x="' + (ax1 - nx * 6) + '" y="' + (ay1 - ny * 6 + 3) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="' + arrowColor + '" opacity="0.6">\u03B4+</text>';
+  });
+
+  // Atom circles
+  mol.atoms.forEach((atom, i) => {
+    const isCenter = (i === 0);
+    const fillColor = isCenter ? '#22c55e' : '#6366f1';
+    const bgColor = '#262a33';
+    const radius = isCenter ? 18 : 15;
+    html += '<circle cx="' + atom.x + '" cy="' + atom.y + '" r="' + radius + '" fill="' + bgColor + '" stroke="' + fillColor + '" stroke-width="2"/>';
+    html += '<text x="' + atom.x + '" y="' + (atom.y + 4) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="' + (isCenter ? 12 : 11) + '" fill="' + fillColor + '" font-weight="700">' + atom.symbol + '</text>';
+  });
+
+  // Net dipole or balanced indicator
+  if (mol.polar) {
+    const nd = mol.netDipoleDir;
+    const arrowCx = 200, arrowCy = 155;
+    const ndx = arrowCx + nd[0] * 45, ndy = arrowCy + nd[1] * 45;
+    html += '<line x1="' + arrowCx + '" y1="' + arrowCy + '" x2="' + ndx + '" y2="' + ndy + '" stroke="#ec4899" stroke-width="3" stroke-dasharray="6,3"/>';
+    const angle = Math.atan2(ndy - arrowCy, ndx - arrowCx);
+    const hLen = 10;
+    const h1x = ndx - hLen * Math.cos(angle - 0.35), h1y = ndy - hLen * Math.sin(angle - 0.35);
+    const h2x = ndx - hLen * Math.cos(angle + 0.35), h2y = ndy - hLen * Math.sin(angle + 0.35);
+    html += '<polygon points="' + ndx + ',' + ndy + ' ' + h1x + ',' + h1y + ' ' + h2x + ',' + h2y + '" fill="#ec4899"/>';
+    html += '<text x="' + (ndx + nd[0] * 12) + '" y="' + (ndy + nd[1] * 12 + 4) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#ec4899" font-weight="600">net \u03BC</text>';
+  } else {
+    html += '<text x="200" y="295" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#22c55e" font-weight="600">\u2714 BALANCED \u2014 Dipoles Cancel</text>';
+  }
+
+  svg.innerHTML = html;
+
+  // Info box
+  const info = document.getElementById('polarityInfo');
+  const tag = mol.polar ? '<span class="tag tag-polar">POLAR</span>' : '<span class="tag tag-nonpolar">NONPOLAR</span>';
+  info.innerHTML = '<span style="color:#fff;font-weight:600;">' + mol.formula + '</span> &mdash; ' +
+    mol.geometry + ' ' + tag +
+    '<br><span style="font-size:.7rem;color:var(--text-dim);">' + mol.explanation + '</span>';
+}
+
+// Polarity Practice
+createPractice('polarityPractice', [
+  {
+    question: 'Is CCl\u2084 polar or nonpolar?',
+    options: ['Polar', 'Nonpolar'],
+    answer: 'Nonpolar',
+    explanation: 'Tetrahedral with 4 identical C-Cl bonds. The symmetric geometry causes all dipoles to cancel.'
+  },
+  {
+    question: 'Is H\u2082O polar or nonpolar?',
+    options: ['Polar', 'Nonpolar'],
+    answer: 'Polar',
+    explanation: 'Bent geometry with 2 lone pairs on O. The O-H dipoles do not cancel, giving water a strong net dipole.'
+  },
+  {
+    question: 'Why is CO\u2082 nonpolar despite having polar C=O bonds?',
+    options: ['The bonds are not really polar', 'Linear geometry causes dipoles to cancel', 'Carbon is more electronegative than oxygen', 'It has lone pairs that cancel the dipoles'],
+    answer: 'Linear geometry causes dipoles to cancel',
+    explanation: 'The two C=O dipoles point in exactly opposite directions (180\u00B0) and cancel out perfectly.'
+  },
+  {
+    question: 'Which molecule is polar: BF\u2083 or NH\u2083?',
+    options: ['BF\u2083', 'NH\u2083', 'Both', 'Neither'],
+    answer: 'NH\u2083',
+    explanation: 'BF\u2083 is trigonal planar (symmetric, nonpolar). NH\u2083 is trigonal pyramidal (asymmetric, polar) because of the lone pair on N.'
+  }
+], 2);
+
+
+/* ================================================================ */
+/*  SECTION 3: HYBRID ORBITALS                                       */
+/* ================================================================ */
+const HYBRID_DATA = {
+  'BeCl\u2082': { groups: 2, hybrid: 'sp', geometry: 'Linear', sigma: 2, pi: 0, bonds: '2 single', formula: 'BeCl\u2082' },
+  'BF\u2083': { groups: 3, hybrid: 'sp\u00B2', geometry: 'Trigonal Planar', sigma: 3, pi: 0, bonds: '3 single', formula: 'BF\u2083' },
+  'CH\u2084': { groups: 4, hybrid: 'sp\u00B3', geometry: 'Tetrahedral', sigma: 4, pi: 0, bonds: '4 single', formula: 'CH\u2084' },
+  'C\u2082H\u2084': { groups: 3, hybrid: 'sp\u00B2', geometry: 'Trigonal Planar', sigma: 5, pi: 1, bonds: '1 C=C double + 4 C-H single', formula: 'C\u2082H\u2084 (ethylene)' },
+  'C\u2082H\u2082': { groups: 2, hybrid: 'sp', geometry: 'Linear', sigma: 3, pi: 2, bonds: '1 C\u2261C triple + 2 C-H single', formula: 'C\u2082H\u2082 (acetylene)' },
+  'H\u2082O': { groups: 4, hybrid: 'sp\u00B3', geometry: 'Bent', sigma: 2, pi: 0, bonds: '2 O-H single + 2 lone pairs', formula: 'H\u2082O' },
+  'NH\u2083': { groups: 4, hybrid: 'sp\u00B3', geometry: 'Trigonal Pyramidal', sigma: 3, pi: 0, bonds: '3 N-H single + 1 lone pair', formula: 'NH\u2083' },
+  'CO\u2082': { groups: 2, hybrid: 'sp', geometry: 'Linear', sigma: 2, pi: 2, bonds: '2 C=O double', formula: 'CO\u2082' }
+};
+
+(function() {
+  const row = document.getElementById('hybridBtns');
+  Object.keys(HYBRID_DATA).forEach(key => {
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = key;
+    btn.onclick = function() {
+      row.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      showHybrid(key);
+    };
+    row.appendChild(btn);
+  });
+})();
+
+function showHybrid(key) {
+  const mol = HYBRID_DATA[key];
+  const display = document.getElementById('hybridDisplay');
+
+  const hybridColors = { 'sp': '--primary', 'sp\u00B2': '--cyan', 'sp\u00B3': '--amber', 'sp\u00B3d': '--pink', 'sp\u00B3d\u00B2': '--green' };
+  const colorVar = hybridColors[mol.hybrid] || '--primary';
+
+  let html = '';
+
+  // Step-by-step determination
+  html += '<div style="background:var(--surface2);border-radius:8px;padding:.8rem 1rem;margin-bottom:.8rem;">';
+  html += '<div style="font-size:.7rem;color:var(--text-dim);margin-bottom:.5rem;">HYBRIDIZATION DETERMINATION</div>';
+  html += '<div style="font-size:.78rem;color:var(--text);line-height:1.8;">';
+  html += '<span style="color:var(--primary);">Step 1:</span> Count electron groups on central atom: <strong style="color:#fff;">' + mol.groups + '</strong><br>';
+  html += '<span style="color:var(--primary);">Step 2:</span> ' + mol.groups + ' groups \u2192 hybridization = <strong style="color:var(' + colorVar + ');">' + mol.hybrid + '</strong><br>';
+  html += '<span style="color:var(--primary);">Step 3:</span> Geometry: <strong style="color:#fff;">' + mol.geometry + '</strong>';
+  html += '</div></div>';
+
+  // Orbital diagram
+  html += '<div style="background:var(--surface2);border-radius:8px;padding:.8rem 1rem;margin-bottom:.8rem;">';
+  html += '<div style="font-size:.7rem;color:var(--text-dim);margin-bottom:.5rem;">ORBITAL OVERLAP DIAGRAM</div>';
+
+  // Sigma bonds
+  if (mol.sigma > 0) {
+    html += '<div style="margin-bottom:.5rem;"><span style="font-size:.7rem;color:var(--cyan);font-weight:600;">\u03C3 bonds (' + mol.sigma + ')</span> <span style="font-size:.65rem;color:var(--text-dim);">Head-on overlap of hybrid orbitals</span></div>';
+    html += '<div class="orbital-row">';
+    for (let i = 0; i < Math.min(mol.sigma, 6); i++) {
+      html += '<div class="orbital-box sigma">\u03C3</div>';
+      if (i < Math.min(mol.sigma, 6) - 1) html += '<span class="arrow-label">+</span>';
+    }
+    if (mol.sigma > 6) html += '<span class="arrow-label">... (' + mol.sigma + ' total)</span>';
+    html += '</div>';
+  }
+
+  // Pi bonds
+  if (mol.pi > 0) {
+    html += '<div style="margin-top:.7rem;margin-bottom:.5rem;"><span style="font-size:.7rem;color:var(--amber);font-weight:600;">\u03C0 bonds (' + mol.pi + ')</span> <span style="font-size:.65rem;color:var(--text-dim);">Side-on overlap of unhybridized p orbitals</span></div>';
+    html += '<div class="orbital-row">';
+    for (let i = 0; i < mol.pi; i++) {
+      html += '<div class="orbital-box pi">\u03C0</div>';
+      if (i < mol.pi - 1) html += '<span class="arrow-label">+</span>';
+    }
+    html += '</div>';
+  }
+
+  html += '</div>';
+
+  // SVG overlap visualization
+  html += '<div class="svg-container" style="min-height:140px;">';
+  html += '<svg viewBox="0 0 400 140" xmlns="http://www.w3.org/2000/svg">';
+
+  // Sigma overlap (head-on)
+  html += '<text x="100" y="20" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#06b6d4" font-weight="600">\u03C3 (head-on)</text>';
+  html += '<ellipse cx="70" cy="65" rx="35" ry="22" fill="rgba(6,182,212,0.1)" stroke="#06b6d4" stroke-width="1.5"/>';
+  html += '<ellipse cx="130" cy="65" rx="35" ry="22" fill="rgba(6,182,212,0.1)" stroke="#06b6d4" stroke-width="1.5"/>';
+  html += '<ellipse cx="100" cy="65" rx="12" ry="18" fill="rgba(6,182,212,0.25)" stroke="none"/>';
+  html += '<text x="100" y="105" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#8b90a0">overlap region</text>';
+
+  if (mol.pi > 0) {
+    // Pi overlap (side-on)
+    html += '<text x="300" y="20" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#f59e0b" font-weight="600">\u03C0 (side-on)</text>';
+    // Top lobes
+    html += '<ellipse cx="270" cy="42" rx="20" ry="14" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>';
+    html += '<ellipse cx="330" cy="42" rx="20" ry="14" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>';
+    html += '<ellipse cx="300" cy="42" rx="8" ry="12" fill="rgba(245,158,11,0.2)" stroke="none"/>';
+    // Bottom lobes
+    html += '<ellipse cx="270" cy="88" rx="20" ry="14" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>';
+    html += '<ellipse cx="330" cy="88" rx="20" ry="14" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>';
+    html += '<ellipse cx="300" cy="88" rx="8" ry="12" fill="rgba(245,158,11,0.2)" stroke="none"/>';
+    // Nodal plane
+    html += '<line x1="245" y1="65" x2="355" y2="65" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>';
+    html += '<text x="300" y="125" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#8b90a0">nodal plane (dashed)</text>';
+  } else {
+    html += '<text x="300" y="70" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#8b90a0">No \u03C0 bonds</text>';
+    html += '<text x="300" y="85" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#8b90a0">(all single bonds)</text>';
+  }
+
+  html += '</svg></div>';
+
+  display.innerHTML = html;
+
+  // Info box
+  const info = document.getElementById('hybridInfo');
+  info.innerHTML = '<span style="color:#fff;font-weight:600;">' + mol.formula + '</span> &mdash; ' +
+    '<span style="color:var(' + colorVar + ');">' + mol.hybrid + '</span> hybridized | ' +
+    mol.sigma + '\u03C3 + ' + mol.pi + '\u03C0 bonds' +
+    '<br><span style="font-size:.7rem;color:var(--text-dim);">' + mol.bonds + '</span>';
+}
+
+// Hybrid Practice
+createPractice('hybridPractice', [
+  {
+    question: 'What is the hybridization of carbon in CH\u2084?',
+    options: ['sp', 'sp\u00B2', 'sp\u00B3', 'sp\u00B3d'],
+    answer: 'sp\u00B3',
+    explanation: 'Carbon has 4 electron groups (4 C-H bonds), so 4 hybrid orbitals are needed \u2192 sp\u00B3.'
+  },
+  {
+    question: 'What is the hybridization of each carbon in C\u2082H\u2082 (acetylene)?',
+    options: ['sp', 'sp\u00B2', 'sp\u00B3', 'sp\u00B3d'],
+    answer: 'sp',
+    explanation: 'Each carbon in acetylene has 2 electron groups (1 C-H bond + 1 C\u2261C triple bond), so sp hybridization.'
+  },
+  {
+    question: 'How many sigma and pi bonds are in a C=C double bond?',
+    options: ['2\u03C3, 0\u03C0', '1\u03C3, 1\u03C0', '0\u03C3, 2\u03C0', '1\u03C3, 2\u03C0'],
+    answer: '1\u03C3, 1\u03C0',
+    explanation: 'A double bond consists of 1 sigma bond (head-on overlap) + 1 pi bond (side-on overlap of unhybridized p orbitals).'
+  },
+  {
+    question: 'What hybridization does the oxygen in H\u2082O have?',
+    options: ['sp', 'sp\u00B2', 'sp\u00B3', 'sp\u00B3d'],
+    answer: 'sp\u00B3',
+    explanation: 'Oxygen in water has 4 electron groups (2 bonding + 2 lone pairs) \u2192 sp\u00B3 hybridization.'
+  }
+], 3);
+
+
+/* ================================================================ */
+/*  SECTION 4: BOND PROPERTIES                                       */
+/* ================================================================ */
+
+// Draw bond order SVG
+(function() {
+  const svg = document.getElementById('bondOrderSVG');
+  let html = '';
+  const bonds = [
+    { label: 'Single Bond (C\u2014C)', y: 50, lines: 1, color: '#06b6d4', desc: '1\u03C3' },
+    { label: 'Double Bond (C=C)', y: 115, lines: 2, color: '#f59e0b', desc: '1\u03C3 + 1\u03C0' },
+    { label: 'Triple Bond (C\u2261C)', y: 180, lines: 3, color: '#ec4899', desc: '1\u03C3 + 2\u03C0' }
+  ];
+  bonds.forEach(b => {
+    html += '<text x="22" y="' + (b.y + 4) + '" font-family="JetBrains Mono" font-size="10" fill="' + b.color + '" font-weight="600">' + b.label + '</text>';
+    const x1 = 230, x2 = 330;
+    for (let i = 0; i < b.lines; i++) {
+      const offset = (i - (b.lines - 1) / 2) * 6;
+      html += '<line x1="' + x1 + '" y1="' + (b.y + offset) + '" x2="' + x2 + '" y2="' + (b.y + offset) + '" stroke="' + b.color + '" stroke-width="3" stroke-linecap="round"/>';
+    }
+    // Atom circles
+    html += '<circle cx="' + x1 + '" cy="' + b.y + '" r="12" fill="#262a33" stroke="' + b.color + '" stroke-width="2"/>';
+    html += '<text x="' + x1 + '" y="' + (b.y + 4) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="' + b.color + '" font-weight="700">C</text>';
+    html += '<circle cx="' + x2 + '" cy="' + b.y + '" r="12" fill="#262a33" stroke="' + b.color + '" stroke-width="2"/>';
+    html += '<text x="' + x2 + '" y="' + (b.y + 4) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="' + b.color + '" font-weight="700">C</text>';
+    // Descriptor
+    html += '<text x="365" y="' + (b.y + 4) + '" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#8b90a0">' + b.desc + '</text>';
+  });
+  svg.innerHTML = html;
+})();
+
+// Draw sigma/pi overlap SVG
+(function() {
+  const svg = document.getElementById('overlapSVG');
+  let html = '';
+
+  // SIGMA
+  html += '<text x="200" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#fff" font-weight="600">Sigma (\u03C3) vs Pi (\u03C0) Bond Overlap</text>';
+
+  html += '<text x="100" y="52" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#06b6d4" font-weight="600">\u03C3 Bond</text>';
+  html += '<text x="100" y="66" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#8b90a0">Head-on overlap</text>';
+  // Two orbitals approaching head-on
+  html += '<ellipse cx="60" cy="110" rx="40" ry="22" fill="rgba(6,182,212,0.08)" stroke="#06b6d4" stroke-width="1.5"/>';
+  html += '<ellipse cx="140" cy="110" rx="40" ry="22" fill="rgba(6,182,212,0.08)" stroke="#06b6d4" stroke-width="1.5"/>';
+  // Overlap region
+  html += '<ellipse cx="100" cy="110" rx="16" ry="20" fill="rgba(6,182,212,0.25)" stroke="none"/>';
+  html += '<text x="100" y="114" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#06b6d4" font-weight="600">\u03C3</text>';
+  // Axis
+  html += '<line x1="15" y1="110" x2="185" y2="110" stroke="#06b6d4" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>';
+  html += '<text x="100" y="150" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#8b90a0">Electron density along bond axis</text>';
+
+  // PI
+  html += '<text x="300" y="52" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#f59e0b" font-weight="600">\u03C0 Bond</text>';
+  html += '<text x="300" y="66" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#8b90a0">Side-on overlap</text>';
+  // Top lobes
+  html += '<ellipse cx="265" cy="88" rx="22" ry="15" fill="rgba(245,158,11,0.08)" stroke="#f59e0b" stroke-width="1.5"/>';
+  html += '<ellipse cx="335" cy="88" rx="22" ry="15" fill="rgba(245,158,11,0.08)" stroke="#f59e0b" stroke-width="1.5"/>';
+  html += '<ellipse cx="300" cy="88" rx="10" ry="13" fill="rgba(245,158,11,0.2)" stroke="none"/>';
+  // Bottom lobes
+  html += '<ellipse cx="265" cy="132" rx="22" ry="15" fill="rgba(245,158,11,0.08)" stroke="#f59e0b" stroke-width="1.5"/>';
+  html += '<ellipse cx="335" cy="132" rx="22" ry="15" fill="rgba(245,158,11,0.08)" stroke="#f59e0b" stroke-width="1.5"/>';
+  html += '<ellipse cx="300" cy="132" rx="10" ry="13" fill="rgba(245,158,11,0.2)" stroke="none"/>';
+  // Nodal plane
+  html += '<line x1="235" y1="110" x2="365" y2="110" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.5"/>';
+  html += '<text x="300" y="114" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#f59e0b" opacity="0.7">nodal plane</text>';
+  html += '<text x="300" y="165" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#8b90a0">Electron density above/below axis</text>';
+
+  // Summary
+  html += '<rect x="30" y="185" width="340" height="60" rx="8" fill="#2e323d" stroke="#383d49" stroke-width="1"/>';
+  html += '<text x="200" y="205" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#fff" font-weight="500">Every bond has exactly one \u03C3 bond.</text>';
+  html += '<text x="200" y="220" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#8b90a0">Double = 1\u03C3 + 1\u03C0 | Triple = 1\u03C3 + 2\u03C0</text>';
+  html += '<text x="200" y="235" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#8b90a0">\u03C0 bonds use unhybridized p orbitals for side-on overlap</text>';
+
+  svg.innerHTML = html;
+})();
+
+// Bond pair comparison
+const BOND_PAIRS = [
+  {
+    label: 'C-H vs C-F',
+    bond1: { name: 'C\u2014H', length: 109, energy: 413, color: 'var(--cyan)' },
+    bond2: { name: 'C\u2014F', length: 135, energy: 485, color: 'var(--pink)' },
+    explanation: 'C-F is stronger (higher EN difference, more ionic character) but longer (F is larger than H).'
+  },
+  {
+    label: 'O-H vs O=O',
+    bond1: { name: 'O\u2014H', length: 96, energy: 463, color: 'var(--cyan)' },
+    bond2: { name: 'O=O', length: 121, energy: 498, color: 'var(--amber)' },
+    explanation: 'O=O is a double bond (stronger), while O-H is a single bond. The double bond is also longer because oxygen atoms are larger than hydrogen.'
+  },
+  {
+    label: 'N-N vs N=N vs N\u2261N',
+    bond1: { name: 'N\u2014N', length: 145, energy: 163, color: 'var(--cyan)' },
+    bond2: { name: 'N\u2261N', length: 110, energy: 945, color: 'var(--pink)' },
+    explanation: 'The N\u2261N triple bond in N\u2082 is one of the strongest bonds known (945 kJ/mol). Much stronger and shorter than the N-N single bond.'
+  },
+  {
+    label: 'C-C vs C=C vs C\u2261C',
+    bond1: { name: 'C\u2014C', length: 154, energy: 347, color: 'var(--cyan)' },
+    bond2: { name: 'C\u2261C', length: 120, energy: 839, color: 'var(--pink)' },
+    explanation: 'Classic demonstration of the bond order trend: triple bond is much shorter and stronger than single bond.'
+  }
+];
+
+(function() {
+  const row = document.getElementById('bondPairBtns');
+  BOND_PAIRS.forEach((pair, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = pair.label;
+    btn.onclick = function() {
+      row.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      showBondPair(i);
+    };
+    row.appendChild(btn);
+  });
+})();
+
+function showBondPair(idx) {
+  const pair = BOND_PAIRS[idx];
+  const info = document.getElementById('bondPairInfo');
+  const b1 = pair.bond1, b2 = pair.bond2;
+  const maxE = Math.max(b1.energy, b2.energy);
+  const maxL = Math.max(b1.length, b2.length);
+
+  let html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.6rem;">';
+  // Energy bars
+  html += '<div>';
+  html += '<div style="font-size:.65rem;color:var(--text-dim);margin-bottom:.4rem;">BOND ENERGY (kJ/mol)</div>';
+  html += '<div class="bond-bar-wrap"><div class="bond-bar-label"><span>' + b1.name + '</span><span>' + b1.energy + '</span></div>';
+  html += '<div class="bond-bar-outer"><div class="bond-bar-inner" style="width:' + (b1.energy / maxE * 90) + '%;background:' + b1.color + ';"></div></div></div>';
+  html += '<div class="bond-bar-wrap"><div class="bond-bar-label"><span>' + b2.name + '</span><span>' + b2.energy + '</span></div>';
+  html += '<div class="bond-bar-outer"><div class="bond-bar-inner" style="width:' + (b2.energy / maxE * 90) + '%;background:' + b2.color + ';"></div></div></div>';
+  html += '</div>';
+  // Length bars
+  html += '<div>';
+  html += '<div style="font-size:.65rem;color:var(--text-dim);margin-bottom:.4rem;">BOND LENGTH (pm)</div>';
+  html += '<div class="bond-bar-wrap"><div class="bond-bar-label"><span>' + b1.name + '</span><span>' + b1.length + ' pm</span></div>';
+  html += '<div class="bond-bar-outer"><div class="bond-bar-inner" style="width:' + (b1.length / maxL * 90) + '%;background:' + b1.color + ';"></div></div></div>';
+  html += '<div class="bond-bar-wrap"><div class="bond-bar-label"><span>' + b2.name + '</span><span>' + b2.length + ' pm</span></div>';
+  html += '<div class="bond-bar-outer"><div class="bond-bar-inner" style="width:' + (b2.length / maxL * 90) + '%;background:' + b2.color + ';"></div></div></div>';
+  html += '</div></div>';
+  html += '<div style="font-size:.72rem;color:var(--text-dim);margin-top:.4rem;">' + pair.explanation + '</div>';
+
+  info.innerHTML = html;
+}
+
+// Bond Practice
+createPractice('bondPractice', [
+  {
+    question: 'Which has the shortest bond length?',
+    options: ['C\u2014C', 'C=C', 'C\u2261C'],
+    answer: 'C\u2261C',
+    explanation: 'Triple bonds are shortest because 3 bonds pull the atoms closest together (120 pm vs 134 pm vs 154 pm).'
+  },
+  {
+    question: 'How many sigma and pi bonds are in a C\u2261C triple bond?',
+    options: ['3\u03C3, 0\u03C0', '2\u03C3, 1\u03C0', '1\u03C3, 2\u03C0', '0\u03C3, 3\u03C0'],
+    answer: '1\u03C3, 2\u03C0',
+    explanation: 'A triple bond consists of 1 sigma bond (head-on overlap) and 2 pi bonds (two sets of side-on p orbital overlap).'
+  },
+  {
+    question: 'As bond order increases, what happens to bond energy?',
+    options: ['Decreases', 'Stays the same', 'Increases', 'No pattern'],
+    answer: 'Increases',
+    explanation: 'Higher bond order means more electron pairs holding atoms together, requiring more energy to break the bond.'
+  }
+], 4);
+
+
+/* ================================================================ */
+/*  SECTION 5: QUICK QUIZ                                            */
+/* ================================================================ */
+const QUIZ_QUESTIONS = [
+  {
+    question: 'What is the molecular geometry of PCl\u2085 (5 bonding groups, 0 lone pairs)?',
+    options: ['Trigonal Bipyramidal', 'Octahedral', 'Square Pyramidal', 'See-saw'],
+    answer: 'Trigonal Bipyramidal'
+  },
+  {
+    question: 'What is the molecular geometry of XeF\u2084 (4 bonding, 2 lone pairs)?',
+    options: ['Tetrahedral', 'Square Planar', 'See-saw', 'Octahedral'],
+    answer: 'Square Planar'
+  },
+  {
+    question: 'Is CHCl\u2083 (chloroform) polar or nonpolar?',
+    options: ['Polar', 'Nonpolar'],
+    answer: 'Polar'
+  },
+  {
+    question: 'What is the hybridization of carbon in CO\u2082?',
+    options: ['sp', 'sp\u00B2', 'sp\u00B3', 'sp\u00B3d'],
+    answer: 'sp'
+  },
+  {
+    question: 'How many pi bonds are in a C=O double bond?',
+    options: ['0', '1', '2', '3'],
+    answer: '1'
+  },
+  {
+    question: 'Which molecule has a trigonal pyramidal geometry?',
+    options: ['BF\u2083', 'CH\u2084', 'NH\u2083', 'CO\u2082'],
+    answer: 'NH\u2083'
+  },
+  {
+    question: 'Which bond is stronger: N\u2014N or N\u2261N?',
+    options: ['N\u2014N', 'N\u2261N', 'They are equal'],
+    answer: 'N\u2261N'
+  },
+  {
+    question: 'Why is BF\u2083 nonpolar despite having polar B-F bonds?',
+    options: ['B and F have the same electronegativity', 'Trigonal planar symmetry cancels the dipoles', 'It has lone pairs that cancel the dipoles', 'It is ionic, not covalent'],
+    answer: 'Trigonal planar symmetry cancels the dipoles'
+  },
+  {
+    question: 'What is the electron geometry of H\u2082O (4 total electron groups)?',
+    options: ['Bent', 'Linear', 'Tetrahedral', 'Trigonal Planar'],
+    answer: 'Tetrahedral'
+  },
+  {
+    question: 'A molecule with sp\u00B2 hybridization has how many electron groups?',
+    options: ['2', '3', '4', '5'],
+    answer: '3'
+  }
+];
+
+let quizScore = 0;
+let quizAnswered = new Set();
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  quizScore = 0;
+  quizAnswered = new Set();
+  document.getElementById('quizScore').textContent = '0';
+
+  QUIZ_QUESTIONS.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-question';
+    div.innerHTML = '<div class="q-num">Question ' + (i + 1) + ' of ' + QUIZ_QUESTIONS.length + '</div>' +
+      '<div class="q-text">' + q.question + '</div>' +
+      '<div class="btn-row" id="quiz_btns_' + i + '"></div>' +
+      '<div class="feedback" id="quiz_fb_' + i + '"></div>';
+    container.appendChild(div);
+
+    const btnRow = document.getElementById('quiz_btns_' + i);
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'btn';
+      btn.textContent = opt;
+      btn.onclick = function() {
+        if (quizAnswered.has(i)) return;
+        quizAnswered.add(i);
+        const fb = document.getElementById('quiz_fb_' + i);
+        const allBtns = btnRow.querySelectorAll('.btn');
+        if (opt === q.answer) {
+          this.classList.add('correct');
+          fb.textContent = 'Correct!';
+          fb.className = 'feedback show correct-fb';
+          quizScore++;
+        } else {
+          this.classList.add('incorrect');
+          fb.textContent = 'Incorrect. The answer is: ' + q.answer;
+          fb.className = 'feedback show incorrect-fb';
+          allBtns.forEach(b => {
+            if (b.textContent === q.answer) b.classList.add('correct');
+          });
+        }
+        document.getElementById('quizScore').textContent = quizScore;
+        if (quizAnswered.size === QUIZ_QUESTIONS.length) {
+          markComplete(5);
+        }
+      };
+      btnRow.appendChild(btn);
+    });
+  });
+}
+
+function resetQuiz() {
+  buildQuiz();
+}
+
+buildQuiz();
+
+// Open first card by default (already has class 'open')
+</script>
+</body>
+</html>

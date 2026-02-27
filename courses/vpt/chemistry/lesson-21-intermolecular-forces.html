@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 21 — Intermolecular Forces</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1e2128;
+  --bg-card: #262a33;
+  --bg-input: #1a1d24;
+  --border: #363b47;
+  --text: #e2e4e9;
+  --indigo: #6366f1;
+  --green: #22c55e;
+  --pink: #ec4899;
+  --amber: #f59e0b;
+  --indigo-dim: rgba(99,102,241,0.12);
+  --green-dim: rgba(34,197,94,0.12);
+  --pink-dim: rgba(236,72,153,0.12);
+  --amber-dim: rgba(245,158,11,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.12);
+  --text-muted: #8b9099;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+#topbar .lesson-num {
+  background: var(--indigo);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  border-radius: 6px;
+  padding: 3px 10px;
+  flex-shrink: 0;
+}
+#topbar .lesson-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  flex-shrink: 0;
+}
+#topbar .progress-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+#progressBar {
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: 999px;
+  overflow: hidden;
+}
+#progressFill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 999px;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+#progressLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+/* ── LAYOUT ── */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 16px 60px;
+}
+
+/* ── SECTION CARDS ── */
+.section-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.section-card.completed {
+  border-color: var(--green);
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 18px;
+  cursor: pointer;
+  user-select: none;
+  gap: 10px;
+}
+.section-header:hover {
+  background: rgba(255,255,255,0.03);
+}
+.section-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-num {
+  background: var(--indigo-dim);
+  color: var(--indigo);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 2px 9px;
+  flex-shrink: 0;
+}
+.section-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+.chevron {
+  color: var(--text-muted);
+  font-size: 16px;
+  transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+  flex-shrink: 0;
+}
+.section-card.open .chevron {
+  transform: rotate(180deg);
+}
+.section-body {
+  display: none;
+  padding: 0 18px 20px;
+  border-top: 1px solid var(--border);
+}
+.section-card.open .section-body {
+  display: block;
+}
+
+/* ── FORMULA BOXES ── */
+.formula-box {
+  background: var(--indigo-dim);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.formula-box.green {
+  background: var(--green-dim);
+  border-color: rgba(34,197,94,0.3);
+}
+.formula-box.pink {
+  background: var(--pink-dim);
+  border-color: rgba(236,72,153,0.3);
+}
+.formula-box.amber {
+  background: var(--amber-dim);
+  border-color: rgba(245,158,11,0.3);
+}
+.formula-box.red {
+  background: var(--red-dim);
+  border-color: rgba(239,68,68,0.3);
+}
+.formula-box-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.formula-box .formula {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--indigo);
+  text-align: center;
+  padding: 4px 0;
+}
+.formula-box.green .formula { color: var(--green); }
+.formula-box.pink .formula { color: var(--pink); }
+.formula-box.amber .formula { color: var(--amber); }
+
+/* ── KEY POINT ── */
+.key-point {
+  background: var(--amber-dim);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: var(--text);
+}
+.key-point strong {
+  color: var(--amber);
+}
+
+/* ── NAVY CONTEXT ── */
+.navy-context {
+  background: rgba(99,102,241,0.08);
+  border: 1px solid rgba(99,102,241,0.25);
+  border-left: 3px solid var(--indigo);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.navy-context-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-bottom: 4px;
+}
+
+/* ── TABLES ── */
+.imf-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 12.5px;
+}
+.imf-table th {
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.imf-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(54,59,71,0.5);
+  vertical-align: top;
+}
+.imf-table tr:last-child td { border-bottom: none; }
+.imf-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-strong { background: var(--red-dim); color: var(--red); }
+.badge-medium { background: var(--amber-dim); color: var(--amber); }
+.badge-weak { background: var(--green-dim); color: var(--green); }
+.badge-vweak { background: rgba(139,144,153,0.15); color: var(--text-muted); }
+
+/* ── INTERACTIVE AREA ── */
+.interactive-area {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 14px 0;
+}
+.interactive-area h4 {
+  color: var(--indigo);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 14px;
+}
+.slider-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.slider-group label {
+  font-size: 12px;
+  color: var(--text-muted);
+  min-width: 130px;
+  flex-shrink: 0;
+}
+.slider-group input[type=range] {
+  flex: 1;
+  accent-color: var(--indigo);
+  cursor: pointer;
+}
+.slider-readout {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--indigo);
+  min-width: 60px;
+  text-align: right;
+}
+
+/* ── PROPERTY SIMULATOR ── */
+.prop-sim {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+.prop-bar-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.prop-bar-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.prop-bar-track {
+  height: 8px;
+  background: var(--bg-input);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.prop-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease, background 0.3s;
+}
+.prop-val {
+  font-size: 11px;
+  color: var(--text);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.select-wrap label { font-size: 12px; color: var(--text-muted); }
+select {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  flex: 1;
+}
+select:focus { outline: 2px solid var(--indigo); outline-offset: 2px; }
+
+/* ── PROBLEMS ── */
+.problem {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 12px 0;
+  transition: transform 0.2s;
+}
+.problem-num {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.problem p { font-size: 13px; margin-bottom: 10px; }
+.mc-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.mc-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s, border-color 0.2s;
+}
+.mc-btn:not(.disabled):hover {
+  background: var(--indigo-dim);
+  border-color: var(--indigo);
+}
+.mc-btn.disabled { cursor: default; pointer-events: none; }
+.mc-btn.correct { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.mc-btn.wrong { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+
+.num-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.num-input-row input[type=number] {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  width: 100px;
+}
+.num-input-row input[type=number]:focus { outline: 2px solid var(--indigo); outline-offset: 2px; }
+.num-input-row .unit { font-size: 12px; color: var(--text-muted); }
+.check-btn {
+  background: var(--indigo);
+  border: none;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.check-btn:hover { opacity: 0.85; }
+.feedback {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  min-height: 28px;
+  margin-top: 6px;
+}
+.feedback.correct { background: var(--green-dim); color: var(--green); }
+.feedback.incorrect { background: var(--red-dim); color: var(--red); }
+
+/* ── QUIZ ── */
+.quiz-q {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  transition: transform 0.2s;
+}
+.quiz-q-num {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 7px;
+}
+.quiz-q p { font-size: 13px; margin-bottom: 10px; }
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.choice-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s, border-color 0.2s;
+}
+.choice-btn:not(.disabled):hover {
+  background: var(--indigo-dim);
+  border-color: var(--indigo);
+}
+.choice-btn.disabled { cursor: default; pointer-events: none; }
+.choice-btn.selected-correct { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.choice-btn.selected-wrong { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+.choice-btn.reveal-correct { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.quiz-score-wrap {
+  text-align: center;
+  padding: 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+.quiz-score-wrap .score-val {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--green);
+}
+.quiz-score-wrap .score-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.reset-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 7px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.reset-btn:hover { border-color: var(--indigo); color: var(--indigo); }
+
+/* ── ANIMATIONS ── */
+@keyframes pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.025); }
+  100% { transform: scale(1); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.pop { animation: pop 0.35s ease forwards; }
+.shake { animation: shake 0.4s ease forwards; }
+
+/* ── TYPOGRAPHY HELPERS ── */
+h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--indigo);
+  margin: 16px 0 8px;
+}
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0 8px 18px; }
+li { margin-bottom: 4px; font-size: 13px; }
+strong { color: var(--text); font-weight: 600; }
+em { color: var(--text-muted); font-style: normal; }
+sub, sup { font-size: 10px; }
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.stat-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: center;
+}
+.stat-box .stat-val {
+  font-size: 20px;
+  font-weight: 700;
+}
+.stat-box .stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ── QUANTUM NOTE ── */
+.quantum-note {
+  background: rgba(236,72,153,0.07);
+  border: 1px solid rgba(236,72,153,0.25);
+  border-left: 3px solid var(--pink);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.quantum-note-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pink);
+  margin-bottom: 4px;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  #topbar { flex-wrap: wrap; gap: 8px; }
+  .lesson-title { font-size: 11px; }
+  .two-col { grid-template-columns: 1fr; }
+  .prop-sim { grid-template-columns: 1fr; }
+  .imf-table { font-size: 11px; }
+  .imf-table th, .imf-table td { padding: 6px 8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="lesson-num">21</div>
+  <div class="lesson-title">Intermolecular Forces</div>
+  <div class="progress-wrap">
+    <div id="progressBar"><div id="progressFill"></div></div>
+    <div id="progressLabel">0 / 8 sections</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 1 — TYPES OF IMF
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" data-section="1">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left">
+        <div class="section-num">01</div>
+        <div class="section-title">Types of Intermolecular Forces</div>
+      </div>
+      <span class="chevron">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <p>Intermolecular forces (IMFs) are electrostatic attractions <em>between</em> molecules — distinct from the intramolecular covalent or ionic bonds <em>within</em> molecules. They govern bulk physical properties: boiling point, viscosity, surface tension, vapor pressure.</p>
+
+      <div class="formula-box">
+        <div class="formula-box-label">Hierarchy of Strength</div>
+        <div class="formula">Ion–Ion &gt; Ion–Dipole &gt; H-bond &gt; Dipole–Dipole &gt; London Dispersion</div>
+      </div>
+
+      <table class="imf-table">
+        <thead>
+          <tr>
+            <th>Force</th>
+            <th>Strength (kJ/mol)</th>
+            <th>Who Has It</th>
+            <th>Origin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Ion–Ion</strong></td>
+            <td><span class="badge badge-strong">400–4000</span></td>
+            <td>Ionic crystals (NaCl, MgO)</td>
+            <td>Coulombic: q<sub>+</sub>q<sub>−</sub>/r</td>
+          </tr>
+          <tr>
+            <td><strong>Ion–Dipole</strong></td>
+            <td><span class="badge badge-strong">40–600</span></td>
+            <td>Ions dissolved in polar solvents</td>
+            <td>Ion charge + permanent dipole</td>
+          </tr>
+          <tr>
+            <td><strong>Hydrogen Bond</strong></td>
+            <td><span class="badge badge-medium">10–40</span></td>
+            <td>N–H, O–H, F–H donors with N/O/F acceptors</td>
+            <td>Partial covalence + electrostatics</td>
+          </tr>
+          <tr>
+            <td><strong>Dipole–Dipole</strong></td>
+            <td><span class="badge badge-medium">3–20</span></td>
+            <td>All polar molecules</td>
+            <td>Permanent electric dipoles</td>
+          </tr>
+          <tr>
+            <td><strong>London Dispersion</strong></td>
+            <td><span class="badge badge-vweak">0.05–40</span></td>
+            <td>ALL molecules and atoms</td>
+            <td>Instantaneous quantum fluctuations</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="key-point">
+        <strong>Key Rule:</strong> London dispersion is <em>universal</em> — every molecule has it. For nonpolar molecules, it is the <em>only</em> IMF. For large nonpolar molecules (e.g., I<sub>2</sub>, long alkane chains), London forces can exceed dipole-dipole forces of smaller polar molecules.
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-context-label">Navy Context</div>
+        When seawater contacts metal, ion–dipole forces drive hydration of Na<sup>+</sup> and Cl<sup>−</sup>, accelerating corrosion. Understanding which ions hydrate most strongly guides materials selection for salt-water environments. Mg<sup>2+</sup> (higher charge density) hydrates more strongly than Na<sup>+</sup> — relevant to seawater chemistry in nuclear and conventional propulsion.
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 2 — LONDON DISPERSION
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" data-section="2">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left">
+        <div class="section-num">02</div>
+        <div class="section-title">London Dispersion Forces</div>
+      </div>
+      <span class="chevron">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <p>London dispersion forces (LDF) arise from <strong>temporary dipoles</strong> created by momentary asymmetry in an electron cloud. This asymmetry induces a complementary dipole in a neighboring molecule, creating a net attractive force.</p>
+
+      <div class="quantum-note">
+        <div class="quantum-note-label">Quantum Mechanics Connection</div>
+        LDFs are a direct consequence of <strong>quantum zero-point motion</strong>. Electrons are not stationary — the Heisenberg uncertainty principle requires non-zero kinetic energy even at absolute zero. This continuous quantum fluctuation of electron density creates transient dipole moments. London (1930) derived the interaction energy using second-order perturbation theory:<br><br>
+        <strong>U<sub>LDF</sub> ≈ −(3/2) × (α₁α₂/r⁶) × (I₁I₂)/(I₁+I₂)</strong><br><br>
+        where α is polarizability and I is ionization energy. The r<sup>−6</sup> dependence is identical to the attractive term in the Lennard-Jones potential.
+      </div>
+
+      <h3>Factors Increasing LDF Strength</h3>
+      <div class="two-col">
+        <div class="stat-box">
+          <div class="stat-val" style="color:var(--indigo)">&#8593; M</div>
+          <div class="stat-label">Higher molar mass = more electrons = more polarizable</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" style="color:var(--green)">&#8593; SA</div>
+          <div class="stat-label">Greater surface area = more contact points = stronger total force</div>
+        </div>
+      </div>
+
+      <div class="formula-box amber">
+        <div class="formula-box-label">Branching Effect</div>
+        <p>Linear chain > branched chain for LDF. n-pentane (bp 36°C) > neopentane (bp 9.5°C) — same formula C<sub>5</sub>H<sub>12</sub>, but neopentane is nearly spherical, minimizing surface contact.</p>
+      </div>
+
+      <h3>Noble Gas Boiling Points — LDF Only</h3>
+      <table class="imf-table">
+        <thead>
+          <tr><th>Element</th><th>Electrons</th><th>Molar Mass (g/mol)</th><th>bp (°C)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>He</td><td>2</td><td>4.0</td><td>−269</td></tr>
+          <tr><td>Ne</td><td>10</td><td>20.2</td><td>−246</td></tr>
+          <tr><td>Ar</td><td>18</td><td>39.9</td><td>−186</td></tr>
+          <tr><td>Kr</td><td>36</td><td>83.8</td><td>−153</td></tr>
+          <tr><td>Xe</td><td>54</td><td>131.3</td><td>−108</td></tr>
+          <tr><td>Rn</td><td>86</td><td>222.0</td><td>−62</td></tr>
+        </tbody>
+      </table>
+      <p>Perfect demonstration: more electrons → larger polarizability → stronger LDF → higher boiling point. The trend is perfectly monotonic.</p>
+
+      <div class="interactive-area">
+        <h4>LDF Polarizability Simulator</h4>
+        <div class="slider-group">
+          <label>Number of electrons</label>
+          <input type="range" id="ldSlider" min="2" max="86" value="2" oninput="updateLDF()">
+          <div class="slider-readout" id="ldReadout">2 e⁻</div>
+        </div>
+        <div class="slider-group">
+          <label>Surface area factor</label>
+          <input type="range" id="saSlider" min="1" max="10" value="5" oninput="updateLDF()">
+          <div class="slider-readout" id="saReadout">5</div>
+        </div>
+        <div class="prop-bar-wrap" style="margin-top:10px;">
+          <div class="prop-bar-label">Relative LDF Strength</div>
+          <div class="prop-bar-track"><div class="prop-bar-fill" id="ldfBar" style="width:5%;background:var(--indigo)"></div></div>
+          <div class="prop-val" id="ldfVal">Very weak</div>
+        </div>
+        <div class="prop-bar-wrap" style="margin-top:8px;">
+          <div class="prop-bar-label">Estimated Boiling Point Trend</div>
+          <div class="prop-bar-track"><div class="prop-bar-fill" id="bpBar" style="width:5%;background:var(--amber)"></div></div>
+          <div class="prop-val" id="bpVal">Very low</div>
+        </div>
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-context-label">Navy Context — JP-5 Fuel</div>
+        JP-5 jet fuel is a mixture of C<sub>8</sub>–C<sub>16</sub> hydrocarbons (nonpolar). Its vapor pressure and volatility are entirely controlled by London dispersion forces. Higher molar mass cuts in the blend have stronger LDFs → lower vapor pressure → less flammability at ambient temps. The Navy mandates JP-5 over JP-4 aboard carriers precisely because its higher flash point (60°C vs −23°C) reduces fire risk in enclosed spaces.
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 3 — DIPOLE-DIPOLE
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" data-section="3">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left">
+        <div class="section-num">03</div>
+        <div class="section-title">Dipole–Dipole Interactions</div>
+      </div>
+      <span class="chevron">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <p>Polar molecules have a <strong>permanent electric dipole moment (μ)</strong> due to unequal electronegativity between bonded atoms. These permanent dipoles align head-to-tail, with partial positive (δ+) ends attracted to partial negative (δ−) ends of neighboring molecules.</p>
+
+      <div class="formula-box">
+        <div class="formula-box-label">Dipole-Dipole Energy (orientationally averaged)</div>
+        <div class="formula">U<sub>D-D</sub> ≈ −(2μ₁²μ₂²) / (3kT r⁶)</div>
+        <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">Temperature dependent (T in denominator): at higher T, thermal motion disrupts alignment, weakening the effective interaction. London forces have no such T dependence in the same form.</p>
+      </div>
+
+      <h3>Electrostatics Connection</h3>
+      <p>A dipole is simply two charges separated by a distance d. The potential energy between two aligned dipoles falls off as r<sup>−3</sup> (for fixed alignment) or r<sup>−6</sup> (thermally averaged). This is classical electrostatics — Coulomb's law applied to charge distributions.</p>
+
+      <h3>Examples</h3>
+      <table class="imf-table">
+        <thead>
+          <tr><th>Molecule</th><th>Dipole (D)</th><th>bp (°C)</th><th>IMFs Present</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>HCl</td><td>1.08</td><td>−85</td><td>Dipole-dipole + LDF</td></tr>
+          <tr><td>HBr</td><td>0.82</td><td>−67</td><td>Dipole-dipole + LDF (larger LDF dominates)</td></tr>
+          <tr><td>Acetone (CH<sub>3</sub>COCH<sub>3</sub>)</td><td>2.88</td><td>56</td><td>Dipole-dipole + LDF</td></tr>
+          <tr><td>SO<sub>2</sub></td><td>1.63</td><td>−10</td><td>Dipole-dipole + LDF</td></tr>
+          <tr><td>CCl<sub>4</sub></td><td>0</td><td>77</td><td>LDF only (symmetric, no net dipole)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="key-point">
+        <strong>Molar Mass vs. Polarity:</strong> HBr (bp −67°C) boils higher than HCl (bp −85°C) despite having a smaller dipole, because HBr has greater molar mass (80.9 vs 36.5 g/mol), giving it stronger London forces that <em>outweigh</em> the dipole-dipole advantage of HCl.
+      </div>
+
+      <div class="formula-box pink">
+        <div class="formula-box-label">Must-Know: When to Compare IMF Types</div>
+        <p>For molecules of similar molar mass, the more polar one boils higher. For molecules of very different molar masses, London forces can dominate even if one is nonpolar. Always consider both LDF and dipole-dipole together.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 4 — HYDROGEN BONDING
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" data-section="4">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left">
+        <div class="section-num">04</div>
+        <div class="section-title">Hydrogen Bonding</div>
+      </div>
+      <span class="chevron">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <p>Hydrogen bonding is a special case of dipole-dipole interaction — but <strong>much stronger</strong> because hydrogen bonded to a highly electronegative atom (N, O, F) becomes nearly a bare proton. The resulting positive electrostatic potential interacts strongly with the lone pairs of N, O, or F on adjacent molecules.</p>
+
+      <div class="quantum-note">
+        <div class="quantum-note-label">Partial Covalence — QM Connection</div>
+        Modern quantum chemical analysis (symmetry-adapted perturbation theory, SAPT) shows the hydrogen bond is not purely electrostatic. At close range (~1.8–2.0 Å), there is measurable <strong>orbital overlap</strong> between the lone pair of the acceptor and the σ* antibonding orbital of the X–H donor. This charge transfer (partial covalence) accounts for ~10–20% of the total H-bond energy in water and explains why H-bonds are directional (linear geometry preferred) unlike purely electrostatic interactions.
+      </div>
+
+      <div class="formula-box green">
+        <div class="formula-box-label">H-bond Requirements</div>
+        <div class="formula">Donor: N–H, O–H, or F–H &nbsp;&nbsp;|&nbsp;&nbsp; Acceptor: lone pair on N, O, or F</div>
+      </div>
+
+      <h3>Anomalous Boiling Points — Group 16 Hydrides</h3>
+      <table class="imf-table">
+        <thead>
+          <tr><th>Molecule</th><th>Molar Mass (g/mol)</th><th>bp (°C)</th><th>H-bond?</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>H<sub>2</sub>O</td><td>18.0</td><td><strong style="color:var(--pink)">+100</strong></td><td style="color:var(--green)">Yes (strong)</td></tr>
+          <tr><td>H<sub>2</sub>S</td><td>34.1</td><td>−60</td><td>No</td></tr>
+          <tr><td>H<sub>2</sub>Se</td><td>81.0</td><td>−41</td><td>No</td></tr>
+          <tr><td>H<sub>2</sub>Te</td><td>129.6</td><td>−2</td><td>No</td></tr>
+        </tbody>
+      </table>
+
+      <p>Without H-bonding, water's predicted bp would be ~−80°C (extrapolating from H<sub>2</sub>S, H<sub>2</sub>Se, H<sub>2</sub>Te). The actual +100°C represents a <strong>180°C anomaly</strong> driven entirely by H-bonds.</p>
+
+      <div class="key-point">
+        <strong>Each water molecule</strong> can form up to <strong>4 hydrogen bonds</strong> (2 donor O–H bonds, 2 acceptor lone pairs). This tetrahedral H-bond network gives water its extraordinary properties.
+      </div>
+
+      <h3>Water Anomalies Explained by H-bonds</h3>
+      <div class="two-col">
+        <div class="formula-box amber" style="margin:0">
+          <div class="formula-box-label">Density Maximum at 4°C</div>
+          <p style="font-size:12px">Ice has a rigid, open H-bond lattice — less dense than liquid water. As ice melts (0–4°C), H-bonds partially break, allowing molecules to pack more closely (density increases). Above 4°C, thermal expansion wins (density decreases). Ice floats → ice–water interface → aquatic life survives under ice cover.</p>
+        </div>
+        <div class="formula-box pink" style="margin:0">
+          <div class="formula-box-label">High Heat Capacity</div>
+          <p style="font-size:12px">cp(H₂O) = 4.184 J/(g·K) — highest of common liquids. Energy goes into breaking/bending H-bonds before raising temperature. This thermal buffering capacity is a direct result of the extensive H-bond network and is irreplaceable in engineering applications.</p>
+        </div>
+      </div>
+
+      <h3>DNA Base Pairing</h3>
+      <p>H-bonds are the selective force behind DNA's double helix. Adenine–Thymine (A–T): <strong>2 H-bonds</strong>. Guanine–Cytosine (G–C): <strong>3 H-bonds</strong>. The difference in H-bond count gives G–C pairs greater thermodynamic stability, explaining why GC-rich DNA sequences have higher melting temperatures.</p>
+
+      <div class="navy-context">
+        <div class="navy-context-label">Navy Context — Water as Coolant</div>
+        Naval reactors use water as both moderator and coolant. Water's exceptional specific heat (4.184 J/g·K), vaporization enthalpy (2257 J/g at 100°C), and liquid range under pressure (at 15 MPa, bp ≈ 342°C) all trace back to hydrogen bonding. No substitute liquid approaches this thermal performance at similar cost and availability. H-bonds also make water an excellent neutron moderator due to its high hydrogen density.
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 5 — EFFECTS ON PHYSICAL PROPERTIES
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" data-section="5">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left">
+        <div class="section-num">05</div>
+        <div class="section-title">Effects on Physical Properties</div>
+      </div>
+      <span class="chevron">&#9660;</span>
+    </div>
+    <div class="section-body">
+
+      <h3>Boiling Point</h3>
+      <p>bp is set by the energy required to separate molecules from the liquid phase (overcome IMFs). Stronger IMFs → higher bp. Add all active IMFs; the total determines the trend.</p>
+
+      <div class="formula-box">
+        <div class="formula-box-label">Clausius-Clapeyron (connecting bp to IMFs)</div>
+        <div class="formula">ln(P₂/P₁) = −ΔH<sub>vap</sub>/R × (1/T₂ − 1/T₁)</div>
+        <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">ΔH<sub>vap</sub> is the molar enthalpy of vaporization — directly reflects total IMF strength. Stronger IMFs → larger ΔH<sub>vap</sub> → higher bp (where P = 1 atm).</p>
+      </div>
+
+      <h3>Vapor Pressure</h3>
+      <p>Vapor pressure is <strong>inversely related</strong> to IMF strength. Strong IMFs keep molecules in the liquid phase → fewer molecules escape → low vapor pressure. At fixed temperature, more volatile = weaker IMFs.</p>
+
+      <div class="formula-box amber">
+        <div class="formula-box-label">Vapor Pressure Ranking Examples (at 25°C)</div>
+        <div class="formula">Diethyl ether (540 mmHg) &gt; Ethanol (59 mmHg) &gt; Water (24 mmHg) &gt; Glycerol (0.003 mmHg)</div>
+        <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">IMF trend (weakest to strongest): ether (LDF+weak D-D) &lt; ethanol (H-bond, 1 OH) &lt; water (H-bond, 2 OH donors) &lt; glycerol (3 OH groups, extensive H-bond network)</p>
+      </div>
+
+      <h3>Viscosity</h3>
+      <p>Viscosity is resistance to flow — a measure of intermolecular friction. Strong IMFs + molecular entanglement (long chains) → high viscosity. Temperature reduces viscosity in liquids (thermal energy overcomes IMFs).</p>
+
+      <h3>Surface Tension</h3>
+      <p>Molecules at a liquid's surface have fewer neighbors, making them energetically unfavorable. Strong IMFs → high surface tension as the liquid minimizes surface area. Water's surface tension (72 mN/m at 20°C) is very high due to H-bonding.</p>
+
+      <h3>Capillary Action</h3>
+      <p>Results from competition between <strong>adhesion</strong> (liquid–surface IMFs) and <strong>cohesion</strong> (liquid–liquid IMFs). Water rises in glass because adhesion to SiO<sub>2</sub> (via H-bonding with silanol groups) exceeds cohesion. Mercury falls in glass — cohesion (metallic bonds) exceeds adhesion.</p>
+
+      <div class="interactive-area">
+        <h4>Property Simulator — Select Molecule Type</h4>
+        <div class="select-wrap">
+          <label>Molecule:</label>
+          <select id="molSelect" onchange="updatePropSim()">
+            <option value="noble">Noble gas (Ar) — LDF only</option>
+            <option value="alkane_small">Small alkane (propane) — LDF only</option>
+            <option value="alkane_large">Large alkane (hexadecane) — LDF only, large</option>
+            <option value="polar_small">Small polar (HCl) — Dipole-dipole + LDF</option>
+            <option value="polar_large">Large polar (acetone) — Dipole-dipole + LDF</option>
+            <option value="alcohol">Alcohol (ethanol) — H-bond + LDF</option>
+            <option value="water">Water (H₂O) — H-bond (4) + LDF</option>
+            <option value="glycerol">Glycerol — H-bond (3 OH) + LDF</option>
+          </select>
+        </div>
+        <div id="propDesc" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;"></div>
+        <div class="prop-sim" id="propSim">
+          <div class="prop-bar-wrap">
+            <div class="prop-bar-label">Boiling Point</div>
+            <div class="prop-bar-track"><div class="prop-bar-fill" id="bpFill" style="background:var(--indigo)"></div></div>
+            <div class="prop-val" id="bpText"></div>
+          </div>
+          <div class="prop-bar-wrap">
+            <div class="prop-bar-label">Vapor Pressure (↑ = more volatile)</div>
+            <div class="prop-bar-track"><div class="prop-bar-fill" id="vpFill" style="background:var(--pink)"></div></div>
+            <div class="prop-val" id="vpText"></div>
+          </div>
+          <div class="prop-bar-wrap">
+            <div class="prop-bar-label">Viscosity</div>
+            <div class="prop-bar-track"><div class="prop-bar-fill" id="viscFill" style="background:var(--amber)"></div></div>
+            <div class="prop-val" id="viscText"></div>
+          </div>
+          <div class="prop-bar-wrap">
+            <div class="prop-bar-label">Surface Tension</div>
+            <div class="prop-bar-track"><div class="prop-bar-fill" id="stFill" style="background:var(--green)"></div></div>
+            <div class="prop-val" id="stText"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-context-label">Navy Context — Lubricants and Fuel</div>
+        Ship lubricating oils (high-viscosity hydrocarbons with polar additives) rely on both LDF (chain length) and dipole-dipole interactions to maintain film strength under pressure. JP-5 fuel's vapor pressure (~2 mmHg at 20°C) is low enough to be safe in enclosed carrier environments. Hydraulic fluids on aircraft carriers are rated by viscosity index — how much viscosity drops with temperature, governed by the temperature sensitivity of their IMFs.
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 6 — TYPES OF SOLIDS
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" data-section="6">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left">
+        <div class="section-num">06</div>
+        <div class="section-title">Types of Solids &amp; Metallic Bonding</div>
+      </div>
+      <span class="chevron">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <p>The type of solid is determined by the particles at lattice points and the interactions between them. This dictates all physical properties.</p>
+
+      <table class="imf-table">
+        <thead>
+          <tr><th>Solid Type</th><th>Particles</th><th>Forces</th><th>mp (°C)</th><th>Conductivity</th><th>Examples</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Molecular</strong></td>
+            <td>Neutral molecules</td>
+            <td>IMFs (LDF, D-D, H-bond)</td>
+            <td>−270 to ~300</td>
+            <td>None (insulator)</td>
+            <td>Ice, sugar, dry ice, iodine</td>
+          </tr>
+          <tr>
+            <td><strong>Ionic</strong></td>
+            <td>Cations + anions</td>
+            <td>Ion–ion (Coulombic)</td>
+            <td>600–3000</td>
+            <td>None (solid); yes (molten/dissolved)</td>
+            <td>NaCl, CaF<sub>2</sub>, MgO</td>
+          </tr>
+          <tr>
+            <td><strong>Metallic</strong></td>
+            <td>Cations in e⁻ sea</td>
+            <td>Metallic bonding (band theory)</td>
+            <td>−39 (Hg) to 3422 (W)</td>
+            <td>Excellent (free e⁻)</td>
+            <td>Fe, Cu, Al, W</td>
+          </tr>
+          <tr>
+            <td><strong>Network Covalent</strong></td>
+            <td>Atoms</td>
+            <td>Covalent bonds throughout</td>
+            <td>1000–4000</td>
+            <td>None (diamond); yes (graphite, Si)</td>
+            <td>Diamond, SiO<sub>2</sub>, SiC, graphite</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Network Covalent Solids</h3>
+      <p>In diamond, every carbon is sp<sup>3</sup> hybridized with 4 covalent bonds extending in 3D. There are no discrete molecules — the entire crystal is one giant covalent molecule. This requires breaking covalent bonds to melt (~3550°C), explaining the extreme hardness and melting point.</p>
+
+      <div class="formula-box">
+        <div class="formula-box-label">SiO₂ (Quartz) — 3D Covalent Network</div>
+        <p style="font-size:13px">Each Si bonds to 4 O atoms; each O bridges two Si atoms. Formula is SiO<sub>2</sub> but structure is a continuous 3D lattice. mp = 1650°C. Used in fiber optics, semiconductors, and naval radar domes.</p>
+      </div>
+
+      <h3>Metallic Bonding — Band Theory</h3>
+      <p>In a metal, atomic orbitals from N atoms combine into N molecular orbitals, forming a near-continuous <strong>energy band</strong>. In conductors, the valence band is partially filled (or overlaps the conduction band), allowing electrons to move freely under an applied field.</p>
+
+      <div class="quantum-note">
+        <div class="quantum-note-label">Band Theory Connection to QM</div>
+        Free electrons in a metal are described by the <strong>Fermi-Dirac distribution</strong>. At T = 0 K, all states below the Fermi level (E<sub>F</sub>) are occupied; all above are empty. At finite T, electrons near E<sub>F</sub> are thermally promoted. The <strong>density of states at E<sub>F</sub></strong> determines electrical and thermal conductivity. This explains why metals conduct heat and electricity by the same mechanism — electron transport.
+      </div>
+
+      <div class="formula-box green">
+        <div class="formula-box-label">Wiedemann-Franz Law (band theory result)</div>
+        <div class="formula">κ / σ = L × T</div>
+        <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">Thermal conductivity κ divided by electrical conductivity σ equals the Lorenz number L times temperature. Good electrical conductors are also good thermal conductors — because the same free electrons carry both. Used in heat sink design for electronic systems aboard ships.</p>
+      </div>
+
+      <div class="navy-context">
+        <div class="navy-context-label">Navy Context — Materials Selection</div>
+        Hull steel (BCC metallic solid) vs. aluminum superstructure (FCC metallic) vs. fiberglass (amorphous network) vs. Lexan (molecular solid polymer). Each material's mechanical and thermal properties trace to its solid type. Network SiC ceramics are used in ship armor inserts; their hardness comes from the 3D covalent network. Metallic copper alloys in propeller shafts leverage free-electron conductivity and corrosion resistance.
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 7 — PRACTICE PROBLEMS
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" data-section="7">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left">
+        <div class="section-num">07</div>
+        <div class="section-title">Practice Problems</div>
+      </div>
+      <span class="chevron">&#9660;</span>
+    </div>
+    <div class="section-body">
+
+      <!-- P1 -->
+      <div class="problem">
+        <div class="problem-num">Problem 1 — Identify IMFs</div>
+        <p>Which IMFs are present in a sample of liquid <strong>CH<sub>3</sub>OH (methanol)</strong>? Select all that apply.</p>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'p1','correct')">A. London dispersion + Dipole-dipole + Hydrogen bonding</button>
+          <button class="mc-btn" onclick="checkMC(this,'p1','wrong')">B. London dispersion only</button>
+          <button class="mc-btn" onclick="checkMC(this,'p1','wrong')">C. Dipole-dipole + Hydrogen bonding (no LDF)</button>
+          <button class="mc-btn" onclick="checkMC(this,'p1','wrong')">D. Ion-dipole + London dispersion</button>
+        </div>
+        <div class="feedback" id="p1-fb"></div>
+      </div>
+
+      <!-- P2 -->
+      <div class="problem">
+        <div class="problem-num">Problem 2 — Rank Boiling Points</div>
+        <p>Rank these molecules from <strong>lowest to highest</strong> boiling point: CH<sub>4</sub>, NH<sub>3</sub>, Cl<sub>2</sub>, HF</p>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'p2','wrong')">A. HF &lt; NH<sub>3</sub> &lt; Cl<sub>2</sub> &lt; CH<sub>4</sub></button>
+          <button class="mc-btn" onclick="checkMC(this,'p2','correct')">B. CH<sub>4</sub> &lt; Cl<sub>2</sub> &lt; NH<sub>3</sub> &lt; HF</button>
+          <button class="mc-btn" onclick="checkMC(this,'p2','wrong')">C. CH<sub>4</sub> &lt; NH<sub>3</sub> &lt; Cl<sub>2</sub> &lt; HF</button>
+          <button class="mc-btn" onclick="checkMC(this,'p2','wrong')">D. Cl<sub>2</sub> &lt; CH<sub>4</sub> &lt; NH<sub>3</sub> &lt; HF</button>
+        </div>
+        <div class="feedback" id="p2-fb"></div>
+        <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">bp: CH<sub>4</sub> = −161°C (LDF only, tiny); Cl<sub>2</sub> = −34°C (LDF only, heavier/more polarizable); NH<sub>3</sub> = −33°C (H-bond, 1 donor); HF = +19.5°C (H-bond, strongest per bond, also very electronegative)</p>
+      </div>
+
+      <!-- P3 -->
+      <div class="problem">
+        <div class="problem-num">Problem 3 — Vapor Pressure</div>
+        <p>At 25°C, which compound has the <strong>highest vapor pressure</strong>?</p>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'p3','wrong')">A. Water (H<sub>2</sub>O)</button>
+          <button class="mc-btn" onclick="checkMC(this,'p3','wrong')">B. Ethanol (C<sub>2</sub>H<sub>5</sub>OH)</button>
+          <button class="mc-btn" onclick="checkMC(this,'p3','correct')">C. Diethyl ether (C<sub>2</sub>H<sub>5</sub>OC<sub>2</sub>H<sub>5</sub>)</button>
+          <button class="mc-btn" onclick="checkMC(this,'p3','wrong')">D. Glycerol (C<sub>3</sub>H<sub>8</sub>O<sub>3</sub>)</button>
+        </div>
+        <div class="feedback" id="p3-fb"></div>
+        <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">Ether has no O–H, so no H-bond donation (O is acceptor only, and no H-bond donor partner here). Weakest IMF → highest vapor pressure (~540 mmHg). Glycerol (3 OH groups) has the lowest (~0.003 mmHg).</p>
+      </div>
+
+      <!-- P4 -->
+      <div class="problem">
+        <div class="problem-num">Problem 4 — Solid Type</div>
+        <p>A crystalline solid melts at 2072°C, does not conduct electricity in any state, and is extremely hard. What type of solid is it?</p>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'p4','wrong')">A. Ionic solid</button>
+          <button class="mc-btn" onclick="checkMC(this,'p4','wrong')">B. Metallic solid</button>
+          <button class="mc-btn" onclick="checkMC(this,'p4','correct')">C. Network covalent solid</button>
+          <button class="mc-btn" onclick="checkMC(this,'p4','wrong')">D. Molecular solid</button>
+        </div>
+        <div class="feedback" id="p4-fb"></div>
+        <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">Ionic conducts when melted. Metallic always conducts. Molecular solids have low mp. Network covalent: no free ions or electrons, 3D covalent bonds → non-conducting, extreme mp, extremely hard. (MgO at 2072°C is actually ionic — a tricky case; diamond at 3550°C and SiC at ~2730°C are network covalent non-conductors.)</p>
+      </div>
+
+      <!-- P5 — numerical -->
+      <div class="problem">
+        <div class="problem-num">Problem 5 — Clausius-Clapeyron Calculation</div>
+        <p>Water has ΔH<sub>vap</sub> = 40.7 kJ/mol. Using Clausius-Clapeyron, if the vapor pressure at 100°C (373 K) is 760 mmHg, calculate the vapor pressure (in mmHg) at 25°C (298 K). Use R = 8.314 J/(mol·K).</p>
+        <p style="font-size:12px;color:var(--text-muted)">ln(P₂/760) = −(40700/8.314) × (1/298 − 1/373)</p>
+        <div class="num-input-row">
+          <input type="number" id="p5-inp" placeholder="mmHg" step="0.1">
+          <span class="unit">mmHg</span>
+          <button class="check-btn" onclick="checkNum('p5-inp', 23.8, 3)">Check</button>
+        </div>
+        <div class="feedback" id="p5-inp-fb"></div>
+      </div>
+
+      <!-- P6 -->
+      <div class="problem">
+        <div class="problem-num">Problem 6 — Network vs. Molecular</div>
+        <p>Which property most clearly distinguishes a <strong>network covalent solid</strong> from an <strong>ionic solid</strong>?</p>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'p6','wrong')">A. High melting point</button>
+          <button class="mc-btn" onclick="checkMC(this,'p6','wrong')">B. Brittleness when struck</button>
+          <button class="mc-btn" onclick="checkMC(this,'p6','correct')">C. Does NOT conduct electricity when molten</button>
+          <button class="mc-btn" onclick="checkMC(this,'p6','wrong')">D. Solubility in water</button>
+        </div>
+        <div class="feedback" id="p6-fb"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 8 — QUIZ
+  ══════════════════════════════════════════════ -->
+  <div class="section-card" data-section="8">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left">
+        <div class="section-num">08</div>
+        <div class="section-title">Quiz — 10 Questions</div>
+      </div>
+      <span class="chevron">&#9660;</span>
+    </div>
+    <div class="section-body">
+
+      <div class="quiz-score-wrap">
+        <div class="score-val"><span id="quizScore">0</span> / 10</div>
+        <div class="score-label">Score — attempt each question once</div>
+        <br>
+        <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+      </div>
+
+      <!-- Q1 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 1</div>
+        <p>What is the <strong>weakest</strong> type of intermolecular force?</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(1, this, false)">A. Hydrogen bonding</button>
+          <button class="choice-btn" onclick="quizAnswer(1, this, false)">B. Dipole-dipole</button>
+          <button class="choice-btn" onclick="quizAnswer(1, this, true)">C. London dispersion (for small, symmetric molecules)</button>
+          <button class="choice-btn" onclick="quizAnswer(1, this, false)">D. Ion-dipole</button>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 2</div>
+        <p>London dispersion forces arise from:</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(2, this, false)">A. Permanent dipoles in polar molecules</button>
+          <button class="choice-btn" onclick="quizAnswer(2, this, true)">B. Instantaneous quantum fluctuations in electron density</button>
+          <button class="choice-btn" onclick="quizAnswer(2, this, false)">C. Ionic charges attracting electrons</button>
+          <button class="choice-btn" onclick="quizAnswer(2, this, false)">D. Covalent bond vibrations</button>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 3</div>
+        <p>Which molecule does <strong>NOT</strong> form hydrogen bonds as a donor?</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(3, this, false)">A. H<sub>2</sub>O</button>
+          <button class="choice-btn" onclick="quizAnswer(3, this, false)">B. NH<sub>3</sub></button>
+          <button class="choice-btn" onclick="quizAnswer(3, this, true)">C. H<sub>2</sub>S</button>
+          <button class="choice-btn" onclick="quizAnswer(3, this, false)">D. HF</button>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 4</div>
+        <p>Why does ice float on liquid water?</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(4, this, false)">A. Ice has weaker IMFs than liquid water</button>
+          <button class="choice-btn" onclick="quizAnswer(4, this, true)">B. Ice has an open H-bond lattice making it less dense than liquid water</button>
+          <button class="choice-btn" onclick="quizAnswer(4, this, false)">C. Ice molecules have higher kinetic energy</button>
+          <button class="choice-btn" onclick="quizAnswer(4, this, false)">D. Ice is held together by ion-ion forces</button>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 5</div>
+        <p>n-pentane (C<sub>5</sub>H<sub>12</sub>, linear) vs neopentane (C<sub>5</sub>H<sub>12</sub>, branched). Which has the higher boiling point and why?</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(5, this, true)">A. n-pentane — larger surface area allows stronger London dispersion forces</button>
+          <button class="choice-btn" onclick="quizAnswer(5, this, false)">B. neopentane — more compact structure means stronger packing</button>
+          <button class="choice-btn" onclick="quizAnswer(5, this, false)">C. They are identical — same molecular formula gives same boiling point</button>
+          <button class="choice-btn" onclick="quizAnswer(5, this, false)">D. neopentane — higher polarizability due to symmetry</button>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 6</div>
+        <p>Vapor pressure is <strong>inversely related</strong> to which property?</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(6, this, false)">A. Molar mass</button>
+          <button class="choice-btn" onclick="quizAnswer(6, this, true)">B. Total IMF strength</button>
+          <button class="choice-btn" onclick="quizAnswer(6, this, false)">C. Number of atoms per molecule</button>
+          <button class="choice-btn" onclick="quizAnswer(6, this, false)">D. Temperature</button>
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 7</div>
+        <p>Which type of solid conducts electricity only when dissolved in water or melted?</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(7, this, false)">A. Network covalent solid</button>
+          <button class="choice-btn" onclick="quizAnswer(7, this, false)">B. Molecular solid</button>
+          <button class="choice-btn" onclick="quizAnswer(7, this, true)">C. Ionic solid</button>
+          <button class="choice-btn" onclick="quizAnswer(7, this, false)">D. Metallic solid</button>
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 8</div>
+        <p>The hydrogen bond between water molecules has a partial covalent character. This is because:</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(8, this, false)">A. Water molecules share electrons equally</button>
+          <button class="choice-btn" onclick="quizAnswer(8, this, false)">B. The O–H bond is purely ionic</button>
+          <button class="choice-btn" onclick="quizAnswer(8, this, true)">C. The acceptor lone pair overlaps with the donor σ* antibonding orbital</button>
+          <button class="choice-btn" onclick="quizAnswer(8, this, false)">D. Protons are transferred completely between molecules</button>
+        </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 9</div>
+        <p>The Navy uses JP-5 instead of JP-4 on aircraft carriers primarily because JP-5 has:</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(9, this, false)">A. Higher energy density per liter</button>
+          <button class="choice-btn" onclick="quizAnswer(9, this, true)">B. A higher flash point due to stronger London dispersion forces from higher molar mass hydrocarbons</button>
+          <button class="choice-btn" onclick="quizAnswer(9, this, false)">C. More polar molecules giving better combustion</button>
+          <button class="choice-btn" onclick="quizAnswer(9, this, false)">D. Lower viscosity for easier pumping</button>
+        </div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="quiz-q">
+        <div class="quiz-q-num">Question 10</div>
+        <p>The London dispersion force energy scales with polarizability (α) and falls off as r<sup>−6</sup>. This r<sup>−6</sup> dependence is also seen in:</p>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(10, this, false)">A. The Coulomb potential between point charges</button>
+          <button class="choice-btn" onclick="quizAnswer(10, this, true)">B. The attractive term of the Lennard-Jones potential</button>
+          <button class="choice-btn" onclick="quizAnswer(10, this, false)">C. The gravitational potential between masses</button>
+          <button class="choice-btn" onclick="quizAnswer(10, this, false)">D. Bragg's law for crystal diffraction</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ── PROGRESS ──────────────────────────────────────────────
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="' + n + '"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) { markComplete(+card.getAttribute('data-section')); }
+  updateProgress();
+}
+
+// ── CHECK FUNCTIONS ──────────────────────────────────────
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Enter a number.';
+    inp.parentElement.parentElement.classList.add('shake');
+    setTimeout(function() { inp.parentElement.parentElement.classList.remove('shake'); }, 400);
+    return;
+  }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop');
+    setTimeout(function() { inp.parentElement.parentElement.classList.remove('pop'); }, 350);
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(1) + ')';
+    inp.parentElement.parentElement.classList.add('shake');
+    setTimeout(function() { inp.parentElement.parentElement.classList.remove('shake'); }, 400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop');
+    setTimeout(function() { btn.closest('.problem').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake');
+    setTimeout(function() { btn.closest('.problem').classList.remove('shake'); }, 400);
+  }
+}
+
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop');
+    setTimeout(function() { btn.closest('.quiz-q').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf('true') !== -1) {
+        b.classList.add('reveal-correct');
+      }
+    });
+    btn.closest('.quiz-q').classList.add('shake');
+    setTimeout(function() { btn.closest('.quiz-q').classList.remove('shake'); }, 400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0;
+  quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+// ── LDF SIMULATOR ──────────────────────────────────────
+function updateLDF() {
+  var electrons = parseInt(document.getElementById('ldSlider').value);
+  var sa = parseInt(document.getElementById('saSlider').value);
+  document.getElementById('ldReadout').textContent = electrons + ' e\u207B';
+  document.getElementById('saReadout').textContent = sa;
+
+  var raw = (electrons / 86) * 0.7 + (sa / 10) * 0.3;
+  var pct = Math.min(100, raw * 100);
+
+  document.getElementById('ldfBar').style.width = pct + '%';
+  var strength;
+  if (pct < 20) strength = 'Very weak (noble gas scale)';
+  else if (pct < 40) strength = 'Weak (small molecule)';
+  else if (pct < 65) strength = 'Moderate (mid-size)';
+  else if (pct < 85) strength = 'Strong (large molecule)';
+  else strength = 'Very strong (polymer/large)';
+  document.getElementById('ldfVal').textContent = strength;
+
+  document.getElementById('bpBar').style.width = pct + '%';
+  var bpRange;
+  if (pct < 20) bpRange = 'Cryogenic (\u2264 \u2212150\u00B0C)';
+  else if (pct < 40) bpRange = 'Very low (\u2212150 to \u221250\u00B0C)';
+  else if (pct < 65) bpRange = 'Low to moderate (\u221250 to +100\u00B0C)';
+  else if (pct < 85) bpRange = 'Moderate to high (+100 to +300\u00B0C)';
+  else bpRange = 'High (> +300\u00B0C)';
+  document.getElementById('bpVal').textContent = bpRange;
+}
+updateLDF();
+
+// ── PROPERTY SIMULATOR ────────────────────────────────
+var molData = {
+  noble:        { bp: 5,  vp: 98, visc: 2,  st: 2,  desc: 'Ar: LDF only, tiny polarizability. bp = \u2212186\u00B0C. Nearly no vapor pressure measurable at room temp (solid at RT). Extremely low viscosity (gas).', bpText: '\u2212186\u00B0C', vpText: 'Very high (gas at RT)', viscText: 'Gas — N/A', stText: 'Negligible' },
+  alkane_small: { bp: 10, vp: 90, visc: 8,  st: 10, desc: 'Propane (C\u2083H\u2088): LDF only, 44 g/mol. bp = \u221242\u00B0C, gas at room temp. Very volatile.', bpText: '\u221242\u00B0C', vpText: 'Very high (gas)', viscText: 'Gas — N/A', stText: 'Very low' },
+  alkane_large: { bp: 40, vp: 20, visc: 55, st: 28, desc: 'Hexadecane (C\u2081\u2086H\u2083\u2084): LDF only but 226 g/mol, long chain = large surface area. bp = +287\u00B0C. Oily liquid at RT — high viscosity from chain entanglement.', bpText: '+287\u00B0C', vpText: '\u22480.1 mmHg at 20\u00B0C', viscText: '3.4 mPa\u00B7s (oily)', stText: '27 mN/m' },
+  polar_small:  { bp: 15, vp: 80, visc: 10, st: 15, desc: 'HCl: dipole-dipole + LDF. 36.5 g/mol, bp = \u221285\u00B0C. Still a gas at RT. Polar but small.', bpText: '\u221285\u00B0C', vpText: 'Very high (gas)', viscText: 'Gas — N/A', stText: 'Low' },
+  polar_large:  { bp: 38, vp: 40, visc: 30, st: 25, desc: 'Acetone (C\u2083H\u2086O): dipole-dipole (D = 2.88) + LDF. 58 g/mol, bp = +56\u00B0C. Moderately volatile — 245 mmHg at 25\u00B0C.', bpText: '+56\u00B0C', vpText: '~245 mmHg at 25\u00B0C', viscText: '0.31 mPa\u00B7s (very fluid)', stText: '23 mN/m' },
+  alcohol:      { bp: 55, vp: 25, visc: 40, st: 45, desc: 'Ethanol (C\u2082H\u2085OH): H-bond (1 OH donor) + LDF. 46 g/mol, bp = +78\u00B0C. Lower vapor pressure than acetone despite similar mass due to H-bonding.', bpText: '+78\u00B0C', vpText: '~59 mmHg at 25\u00B0C', viscText: '1.07 mPa\u00B7s', stText: '22 mN/m' },
+  water:        { bp: 72, vp: 18, visc: 58, st: 90, desc: 'Water (H\u2082O): up to 4 H-bonds per molecule (2 donor + 2 acceptor) + LDF. Only 18 g/mol but bp = +100\u00B0C. Anomalously high all properties due to H-bond network.', bpText: '+100\u00B0C', vpText: '~24 mmHg at 25\u00B0C', viscText: '0.89 mPa\u00B7s', stText: '72 mN/m (very high)' },
+  glycerol:     { bp: 92, vp: 2,  visc: 95, st: 82, desc: 'Glycerol (C\u2083H\u2085(OH)\u2083): 3 OH groups = extensive H-bond network + LDF. 92 g/mol, bp = +290\u00B0C. Extremely viscous, very low vapor pressure (0.003 mmHg at 25\u00B0C).', bpText: '+290\u00B0C', vpText: '~0.003 mmHg at 25\u00B0C', viscText: '950 mPa\u00B7s (syrupy)', stText: '63 mN/m' }
+};
+
+function barColor(val) {
+  if (val < 25) return 'var(--indigo)';
+  if (val < 60) return 'var(--amber)';
+  return 'var(--green)';
+}
+
+function updatePropSim() {
+  var key = document.getElementById('molSelect').value;
+  var d = molData[key];
+  document.getElementById('propDesc').textContent = d.desc;
+
+  var bpFill = document.getElementById('bpFill');
+  var vpFill = document.getElementById('vpFill');
+  var viscFill = document.getElementById('viscFill');
+  var stFill = document.getElementById('stFill');
+
+  bpFill.style.width = d.bp + '%';
+  bpFill.style.background = barColor(d.bp);
+  document.getElementById('bpText').textContent = 'bp: ' + d.bpText;
+
+  vpFill.style.width = d.vp + '%';
+  vpFill.style.background = 'var(--pink)';
+  document.getElementById('vpText').textContent = d.vpText;
+
+  viscFill.style.width = d.visc + '%';
+  viscFill.style.background = 'var(--amber)';
+  document.getElementById('viscText').textContent = d.viscText;
+
+  stFill.style.width = d.st + '%';
+  stFill.style.background = 'var(--green)';
+  document.getElementById('stText').textContent = d.stText;
+}
+
+updatePropSim();
+
+// Initialize progress
+updateProgress();
+</script>
+</body>
+</html>

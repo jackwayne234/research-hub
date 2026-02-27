@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 14: Partial Derivatives</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.step-box{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:12px 0}
+.step-box .step-label{font-size:.68rem;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.step-box .step-content{font-size:.78rem;line-height:1.8}
+.step-box .step-content strong{color:var(--text-bright)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}}
+canvas{display:block;border-radius:6px;cursor:crosshair}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>14</span> Partial Derivatives</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: FUNCTIONS OF SEVERAL VARIABLES -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Functions of Several Variables</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Until now, every function took one input: f(x). In physics, almost nothing depends on just one variable. Temperature depends on position and time. Pressure in a fluid depends on depth, density, velocity. A voltage field depends on all three spatial coordinates. We need <strong>functions of several variables</strong>.
+    </p>
+
+    <div class="formula-box large">f(x, y) : R<sup>2</sup> &rarr; R &nbsp;&nbsp; z = f(x, y)</div>
+
+    <p class="concept-text">
+      For a function f(x,y), the <strong>domain</strong> is a region in the xy-plane. The <strong>graph</strong> is a surface in 3D space -- for every point (x, y) in the domain, the surface height is z = f(x, y). Think of a topographic map: the terrain height at each (x, y) position.
+    </p>
+
+    <p class="concept-text">
+      <strong>Level curves</strong> are the 2D cross-sections where f(x, y) = c for some constant c. On a topographic map, these are the elevation contour lines. In thermodynamics, level curves of a temperature field are called <strong>isotherms</strong>. In fluid dynamics, level curves of pressure are <strong>isobars</strong>.
+    </p>
+
+    <div class="formula-box green">Level curve: { (x, y) | f(x, y) = c }</div>
+
+    <p class="concept-text">
+      <strong>Limits in 2D are treacherous.</strong> In 1D, x can approach a from only two directions (left or right). In 2D, (x, y) can approach (a, b) along infinitely many paths: straight lines at any angle, curves, spirals. For a limit to exist, the function must converge to the <strong>same value along every possible path</strong>. To prove a limit does NOT exist, you only need to find two paths giving different values.
+    </p>
+
+    <div class="key-point"><strong>Path-dependence test:</strong> If lim along y = 0 gives L1, and lim along y = x gives L2, and L1 &ne; L2, then the limit does not exist. Example: lim(x,y)&rarr;(0,0) of xy/(x^2 + y^2) -- along y=0 gives 0, along y=x gives 1/2. Limit does not exist.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Heat Map of f(x,y) = sin(x) * cos(y)</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Click or drag anywhere on the map to see the function value at that point. Hot colors (red) = positive values, cool colors (blue) = negative values. The white lines are level curves.</p>
+      <canvas id="heatCanvas" width="560" height="300" style="width:100%;max-width:560px"></canvas>
+      <div class="readout">
+        <div class="readout-item"><span class="label">x</span><br><span class="value amber" id="hm_x">0.00</span></div>
+        <div class="readout-item"><span class="label">y</span><br><span class="value pink" id="hm_y">0.00</span></div>
+        <div class="readout-item"><span class="label">f(x,y) = sin(x)cos(y)</span><br><span class="value green" id="hm_fxy">1.00</span></div>
+        <div class="readout-item"><span class="label">Level curve c</span><br><span class="value indigo" id="hm_level">1.00</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> The pressure field around a submarine hull is p(x, y, z) -- a function of three spatial variables. Engineers analyze level surfaces (where p = constant) to find regions of uniform stress. Temperature in a nuclear reactor is T(r, z, t), depending on radial position, axial position, and time. Every sensor reading is sampling a multivariable function.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> For f(x, y) = x^2 + y^2, the level curves are:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">Parabolas opening upward</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','correct')">Circles centered at the origin (x^2 + y^2 = c)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">Horizontal lines y = constant</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> To show lim(x,y)&rarr;(0,0) of f(x,y) = (x^2 - y^2)/(x^2 + y^2) does not exist, you find that along y = 0 the limit is 1, and along x = 0 the limit is -1. This means:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">The limit exists and equals 0 (average of 1 and -1)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','correct')">The limit does not exist -- different paths give different values</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">You need to check more paths before concluding anything</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+      <div class="problem" id="s1p3">
+        <p><strong>3.</strong> The graph of f(x, y) = sqrt(4 - x^2 - y^2) has domain:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">All of R^2 (any x, y)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','correct')">The closed disk x^2 + y^2 &le; 4 (circle of radius 2)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">Only the boundary x^2 + y^2 = 4</button>
+        </div>
+        <div class="feedback" id="s1p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: PARTIAL DERIVATIVES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Partial Derivatives</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>partial derivative</strong> measures the rate of change of f(x, y) in one direction while holding all other variables constant. It's ordinary differentiation applied to a single variable while treating all others as constants.
+    </p>
+
+    <div class="two-col">
+      <div class="formula-box green" style="margin:0">
+        &part;f/&part;x = lim<sub>h&rarr;0</sub> [f(x+h, y) - f(x, y)] / h<br><small style="font-size:.75rem;opacity:.8">y held constant</small>
+      </div>
+      <div class="formula-box pink" style="margin:0">
+        &part;f/&part;y = lim<sub>h&rarr;0</sub> [f(x, y+h) - f(x, y)] / h<br><small style="font-size:.75rem;opacity:.8">x held constant</small>
+      </div>
+    </div>
+
+    <p class="concept-text">
+      <strong>Geometric meaning:</strong> Imagine slicing the surface z = f(x, y) with a plane perpendicular to the y-axis (at a fixed y = y<sub>0</sub>). The cross-section is a curve, and &part;f/&part;x is the slope of the tangent line to that curve. Similarly, &part;f/&part;y is the slope of the tangent line on the slice perpendicular to the x-axis.
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Example: f(x, y) = x^3*y^2 + sin(xy)</div>
+      <div class="step-content">
+        <strong>&part;f/&part;x:</strong> treat y as a constant<br>
+        = 3x^2 * y^2 + y * cos(xy)<br><br>
+        <strong>&part;f/&part;y:</strong> treat x as a constant<br>
+        = x^3 * 2y + x * cos(xy) = 2x^3*y + x*cos(xy)
+      </div>
+    </div>
+
+    <p class="concept-text">
+      <strong>Higher-order partials:</strong> Take partial derivatives of partial derivatives. Four second-order partials exist for f(x, y):
+    </p>
+
+    <div class="formula-box">
+      f<sub>xx</sub> = &part;^2f/&part;x^2 &nbsp;&nbsp; f<sub>yy</sub> = &part;^2f/&part;y^2 &nbsp;&nbsp; f<sub>xy</sub> = &part;^2f/&part;x&part;y &nbsp;&nbsp; f<sub>yx</sub> = &part;^2f/&part;y&part;x
+    </div>
+
+    <div class="formula-box amber large">Clairaut's Theorem: f<sub>xy</sub> = f<sub>yx</sub> &nbsp; (if both are continuous)</div>
+
+    <p class="concept-text">
+      This remarkable result says mixed partial derivatives are equal regardless of order of differentiation, as long as they are continuous. This is used constantly in physics -- it underpins Maxwell's relations in thermodynamics and the equality of cross-derivatives in conservative force fields.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Surface Cross-Sections and Partial Derivative Slopes</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Use the sliders to position a point (x0, y0) on f(x,y) = x^2 - y^2. The cross-section curves show the tangent line slopes -- which are &part;f/&part;x and &part;f/&part;y at that point.</p>
+      <div class="slider-row">
+        <label>x<sub>0</sub> position</label>
+        <input type="range" id="pd_x" min="-2" max="2" step="0.1" value="1" oninput="drawPartials()">
+        <span class="slider-val" id="pd_x_val">1.0</span>
+      </div>
+      <div class="slider-row">
+        <label>y<sub>0</sub> position</label>
+        <input type="range" id="pd_y" min="-2" max="2" step="0.1" value="0.5" oninput="drawPartials()">
+        <span class="slider-val" id="pd_y_val">0.5</span>
+      </div>
+      <canvas id="partialCanvas" width="560" height="300" style="width:100%;max-width:560px;cursor:default"></canvas>
+      <div class="readout">
+        <div class="readout-item"><span class="label">f(x0, y0)</span><br><span class="value indigo" id="pd_f">0.75</span></div>
+        <div class="readout-item"><span class="label">&part;f/&part;x at point</span><br><span class="value green" id="pd_fx">2.00</span></div>
+        <div class="readout-item"><span class="label">&part;f/&part;y at point</span><br><span class="value pink" id="pd_fy">-1.00</span></div>
+        <div class="readout-item"><span class="label">f<sub>xy</sub> = f<sub>yx</sub></span><br><span class="value amber" id="pd_fxy">0</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Submarine hull stress: stress tensor components are partial derivatives of displacement. &part;u/&part;x is the normal strain in x, &part;u/&part;y + &part;v/&part;x is the shear strain. Reactor thermal analysis: &part;T/&part;r is the radial temperature gradient -- drives heat flux outward. All structural FEA (finite element analysis) is built on evaluating partial derivatives at thousands of points simultaneously.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s2p1">
+        <p><strong>1.</strong> For f(x, y) = e^(2x) * sin(3y), find &part;f/&part;x.</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','wrong')">e^(2x) * 3cos(3y)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','correct')">2e^(2x) * sin(3y)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','wrong')">2e^(2x) * 3cos(3y)</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem" id="s2p2">
+        <p><strong>2.</strong> For f(x, y) = x^2 * y^3, verify Clairaut's theorem by computing f_xy and f_yx. They should be equal -- what is that common value?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2_in" placeholder="f_xy = f_yx = ?">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s2p2_in', 6, 0.01, 's2p2-fb')">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+        <p style="font-size:.72rem;color:var(--text-dim);margin-top:8px">Hint: f_x = 2xy^3, so f_xy = &part;(2xy^3)/&part;y = ?</p>
+      </div>
+      <div class="problem" id="s2p3">
+        <p><strong>3.</strong> Geometrically, &part;f/&part;x at a point (x0, y0) represents:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">The slope of the surface in all directions simultaneously</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','correct')">The slope of the tangent line to the surface cross-section at y = y0 (x-direction slice)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">The total rate of change as both x and y vary</button>
+        </div>
+        <div class="feedback" id="s2p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: THE CHAIN RULE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> The Chain Rule</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      If z = f(x, y) where x = x(t) and y = y(t) (both depending on a single parameter t), then z depends on t through both x and y. The <strong>multivariable chain rule</strong> accounts for both pathways of influence.
+    </p>
+
+    <div class="formula-box large green">dz/dt = (&part;z/&part;x)(dx/dt) + (&part;z/&part;y)(dy/dt)</div>
+
+    <p class="concept-text">
+      <strong>Tree diagram method:</strong> Draw a dependency tree. z branches to x and y. x branches to t. y branches to t. Each branch carries a derivative. Multiply down each branch, then add the paths. This visual method scales to any number of variables and any chain depth.
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Tree Diagram for z = f(x,y), x = x(t), y = y(t)</div>
+      <div class="step-content" style="text-align:center;line-height:2.5">
+        <span style="color:var(--indigo);font-weight:600">z</span><br>
+        <span style="color:var(--text-dim)">/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \</span><br>
+        <span style="color:var(--green)">(&part;z/&part;x)</span> &nbsp;&nbsp;&nbsp; <span style="color:var(--pink)">(&part;z/&part;y)</span><br>
+        <span style="color:var(--text-dim)">| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |</span><br>
+        <span style="color:var(--green)">x</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:var(--pink)">y</span><br>
+        <span style="color:var(--text-dim)">| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |</span><br>
+        <span style="color:var(--green)">(dx/dt)</span> &nbsp;&nbsp; <span style="color:var(--pink)">(dy/dt)</span><br>
+        <span style="color:var(--text-dim)">\ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /</span><br>
+        <span style="color:var(--amber);font-weight:600">t</span>
+      </div>
+    </div>
+
+    <p class="concept-text">
+      <strong>More variables:</strong> If z = f(x, y) where x = x(s, t) and y = y(s, t), then z is a function of two parameters and has two partial derivatives:
+    </p>
+
+    <div class="formula-box">
+      &part;z/&part;s = (&part;z/&part;x)(&part;x/&part;s) + (&part;z/&part;y)(&part;y/&part;s)<br>
+      &part;z/&part;t = (&part;z/&part;x)(&part;x/&part;t) + (&part;z/&part;y)(&part;y/&part;t)
+    </div>
+
+    <p class="concept-text">
+      <strong>Implicit differentiation in 2D:</strong> If F(x, y) = 0 defines y as an implicit function of x, then differentiating both sides with respect to x (using the chain rule) gives dy/dx. No need to solve for y explicitly.
+    </p>
+
+    <div class="formula-box pink large">If F(x, y) = 0, then &nbsp; dy/dx = -F<sub>x</sub> / F<sub>y</sub></div>
+
+    <div class="step-box">
+      <div class="step-label">Example: x^2 + y^3 = 5, find dy/dx</div>
+      <div class="step-content">
+        F(x, y) = x^2 + y^3 - 5 = 0<br>
+        F_x = 2x &nbsp;&nbsp; F_y = 3y^2<br>
+        <strong>dy/dx = -F_x / F_y = -2x / (3y^2)</strong>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> A sonar ping travels through a medium where temperature T changes with position (x, y, z) and time t. Sound speed c = c(T) depends on temperature, which depends on position and time: dc/dt = (dc/dT)(dT/dt). Each link in that chain is a partial derivative. Tracking how a ship's acoustic signature propagates requires chaining depth, temperature, salinity, and time dependencies exactly like this.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s3p1">
+        <p><strong>1.</strong> Let z = x^2 + y^2, where x = cos(t) and y = sin(t). By the chain rule, dz/dt = ?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','correct')">0 (since dz/dt = 2x(-sin t) + 2y(cos t) = -2cos(t)sin(t) + 2sin(t)cos(t) = 0)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','wrong')">2 (the magnitudes add)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','wrong')">-2sin(t)cos(t) (only the x branch)</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem" id="s3p2">
+        <p><strong>2.</strong> For F(x, y) = x^3 + 2xy - y^2 = 0, use implicit differentiation to find dy/dx. Evaluate at (1, 2).</p>
+        <div class="problem-input-row">
+          <span style="font-size:.78rem;color:var(--text-dim)">dy/dx at (1,2) = </span>
+          <input type="number" id="s3p2_in" placeholder="fraction (try -1.4)" step="0.01">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s3p2_in', -1.4, 0.05, 's3p2-fb')">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+        <p style="font-size:.72rem;color:var(--text-dim);margin-top:8px">Hint: F_x = 3x^2 + 2y, F_y = 2x - 2y. At (1,2): F_x = 7, F_y = -2. So dy/dx = -7/(-2) = ?</p>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: THE GRADIENT -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> The Gradient</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>gradient</strong> packages all partial derivatives into a single vector. It is the fundamental object of multivariable calculus. For f(x, y, z), the gradient &nabla;f (read "del f" or "grad f") is:
+    </p>
+
+    <div class="formula-box large">&nabla;f = (&part;f/&part;x, &part;f/&part;y, &part;f/&part;z) = f<sub>x</sub> <strong>i</strong> + f<sub>y</sub> <strong>j</strong> + f<sub>z</sub> <strong>k</strong></div>
+
+    <p class="concept-text">
+      Two critical geometric facts about the gradient:
+    </p>
+
+    <div class="two-col">
+      <div class="step-box" style="margin:0">
+        <div class="step-label">Direction</div>
+        <div class="step-content"><strong>&nabla;f points in the direction of steepest ascent</strong> of f. If you're standing on a hillside, &nabla;f points uphill along the steepest path. -&nabla;f points downhill.</div>
+      </div>
+      <div class="step-box" style="margin:0">
+        <div class="step-label">Magnitude</div>
+        <div class="step-content"><strong>|&nabla;f| is the rate of steepest ascent.</strong> The steeper the hill, the larger the gradient magnitude. |&nabla;f| = 0 at a local max, min, or saddle point.</div>
+      </div>
+    </div>
+
+    <p class="concept-text" style="margin-top:16px">
+      <strong>Directional derivative:</strong> The rate of change of f in any direction u (a unit vector). This generalizes &part;f/&part;x (which is only in the x-direction). In any unit direction &ucirc;:
+    </p>
+
+    <div class="formula-box green large">D<sub>&ucirc;</sub>f = &nabla;f &middot; &ucirc;</div>
+
+    <p class="concept-text">
+      Since D<sub>&ucirc;</sub>f = |&nabla;f| |&ucirc;| cos(&theta;) = |&nabla;f| cos(&theta;), the directional derivative is maximized when &theta; = 0 (u points along &nabla;f), giving maximum value |&nabla;f|. It is zero when u is perpendicular to &nabla;f -- this means <strong>the gradient is perpendicular to level curves</strong>.
+    </p>
+
+    <div class="key-point"><strong>Key geometric result:</strong> &nabla;f is always perpendicular (normal) to the level curves of f. If you walk along a level curve, f doesn't change -- which means the directional derivative along the level curve is zero, confirming &nabla;f is perpendicular to it.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Gradient Field and Directional Derivative</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">f(x,y) = x^2 + 0.5*y^2. Arrows show &nabla;f at each grid point. Drag the slider to rotate direction &ucirc; and see D<sub>&ucirc;</sub>f at the marked point.</p>
+      <canvas id="gradCanvas" width="560" height="280" style="width:100%;max-width:560px;cursor:default"></canvas>
+      <div class="slider-row">
+        <label>Direction &theta; (deg)</label>
+        <input type="range" id="grad_theta" min="0" max="360" step="1" value="45" oninput="drawGradient()">
+        <span class="slider-val" id="grad_theta_val">45&deg;</span>
+      </div>
+      <div class="slider-row">
+        <label>Point x<sub>0</sub></label>
+        <input type="range" id="grad_px" min="-2" max="2" step="0.1" value="1" oninput="drawGradient()">
+        <span class="slider-val" id="grad_px_val">1.0</span>
+      </div>
+      <div class="slider-row">
+        <label>Point y<sub>0</sub></label>
+        <input type="range" id="grad_py" min="-2" max="2" step="0.1" value="1" oninput="drawGradient()">
+        <span class="slider-val" id="grad_py_val">1.0</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">&nabla;f at point</span><br><span class="value indigo" id="grad_vec">(2.00, 1.00)</span></div>
+        <div class="readout-item"><span class="label">|&nabla;f| (steepness)</span><br><span class="value amber" id="grad_mag">2.24</span></div>
+        <div class="readout-item"><span class="label">D<sub>&ucirc;</sub>f (in &theta; dir)</span><br><span class="value green" id="grad_dir">2.12</span></div>
+        <div class="readout-item"><span class="label">Angle to &nabla;f</span><br><span class="value pink" id="grad_angle">18.4&deg;</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> In radar systems, the wavefront of a transmitted signal has a phase field &phi;(x, y, z). The gradient &nabla;&phi; points in the direction the wave is propagating. In submarine pressure hulls, the gradient of the Von Mises stress field points toward stress concentration regions -- the first place to fail. In weapons guidance, gradient following (ascending to target) is literally the mathematical operation D<sub>&ucirc;</sub>f in the direction of &nabla;f.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s4p1">
+        <p><strong>1.</strong> For f(x, y) = x^2 * y, find &nabla;f at the point (2, 3).</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p1','wrong')">&nabla;f = (4, 4) -- both equal to the function value / something</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p1','correct')">&nabla;f = (12, 4) -- since f_x = 2xy = 12, f_y = x^2 = 4</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p1','wrong')">&nabla;f = (2, 3) -- just the coordinates of the point</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> For f(x, y) = x^2 + y^2, find D<sub>&ucirc;</sub>f at (1, 1) in direction &ucirc; = (1/&radic;2, 1/&radic;2). [Answer to 2 decimal places]</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2_in" placeholder="D_u f = ?" step="0.01">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s4p2_in', 2.83, 0.05, 's4p2-fb')">Check</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+        <p style="font-size:.72rem;color:var(--text-dim);margin-top:8px">Hint: &nabla;f = (2x, 2y) = (2, 2) at (1,1). D<sub>&ucirc;</sub>f = (2, 2) &middot; (1/&radic;2, 1/&radic;2) = 2/&radic;2 + 2/&radic;2</p>
+      </div>
+      <div class="problem" id="s4p3">
+        <p><strong>3.</strong> The gradient &nabla;f is always _______ to the level curves of f.</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">Tangent (parallel)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','correct')">Perpendicular (normal)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">Equal in magnitude</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: TANGENT PLANES & LINEAR APPROXIMATION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Tangent Planes &amp; Linear Approximation</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      In single-variable calculus, the tangent line at a point approximates f(x) near that point. In multivariable calculus, the analogous object is the <strong>tangent plane</strong> to a surface z = f(x, y) at a point (x<sub>0</sub>, y<sub>0</sub>, z<sub>0</sub>). The tangent plane simultaneously touches the surface and matches both partial derivative slopes.
+    </p>
+
+    <div class="formula-box large">z - z<sub>0</sub> = f<sub>x</sub>(x<sub>0</sub>, y<sub>0</sub>)(x - x<sub>0</sub>) + f<sub>y</sub>(x<sub>0</sub>, y<sub>0</sub>)(y - y<sub>0</sub>)</div>
+
+    <p class="concept-text">
+      The <strong>linearization</strong> L(x, y) uses the tangent plane equation to approximate f(x, y) near (x<sub>0</sub>, y<sub>0</sub>):
+    </p>
+
+    <div class="formula-box green">L(x, y) = f(x<sub>0</sub>, y<sub>0</sub>) + f<sub>x</sub>(x<sub>0</sub>, y<sub>0</sub>)(x - x<sub>0</sub>) + f<sub>y</sub>(x<sub>0</sub>, y<sub>0</sub>)(y - y<sub>0</sub>)</div>
+
+    <p class="concept-text">
+      The <strong>total differential</strong> dz captures how much z changes for small changes dx and dy in both variables simultaneously:
+    </p>
+
+    <div class="formula-box pink large">dz = (&part;f/&part;x) dx + (&part;f/&part;y) dy = f<sub>x</sub> dx + f<sub>y</sub> dy</div>
+
+    <p class="concept-text">
+      The total differential is a powerful tool for <strong>error estimation</strong>. If you measure x with error &Delta;x and y with error &Delta;y, the resulting error in f(x, y) is approximately |f<sub>x</sub>| |&Delta;x| + |f<sub>y</sub>| |&Delta;y|. This propagates measurement uncertainty through any formula.
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Example: Error propagation in V = &pi;r^2*h</div>
+      <div class="step-content">
+        dV = (&part;V/&part;r)dr + (&part;V/&part;h)dh = 2&pi;rh dr + &pi;r^2 dh<br><br>
+        If r = 5cm (error &plusmn;0.1cm) and h = 10cm (error &plusmn;0.2cm):<br>
+        |dV| &le; 2&pi;(5)(10)(0.1) + &pi;(25)(0.2) = 10&pi; + 5&pi; = 15&pi; cm^3<br>
+        <strong>Maximum volume error &asymp; 47.1 cm^3</strong>
+      </div>
+    </div>
+
+    <div class="key-point"><strong>When is linear approximation valid?</strong> When (x, y) is close to (x<sub>0</sub>, y<sub>0</sub>) and f is "smooth" (partial derivatives are continuous) near that point. The error in the approximation is proportional to the square of the distance from (x<sub>0</sub>, y<sub>0</sub>).</div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Acoustic signal processing: signal strength S = S(f, r, T) depends on frequency, range, and temperature. When environmental conditions shift slightly, the total differential dS = S_f df + S_r dr + S_T dT predicts signal change without recomputing the full model. Structural engineers use dz to estimate how much a hull deformation changes stress at a critical weld joint -- a real-time safety calculation during operations.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s5p1">
+        <p><strong>1.</strong> Find the equation of the tangent plane to f(x, y) = x^2 + y^2 at (1, 2, 5).</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">z = 2x + 4y (missing the constant term)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','correct')">z - 5 = 2(x - 1) + 4(y - 2), or z = 2x + 4y - 5</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">z = x + 2 (using the wrong partial derivatives)</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> Use the total differential to approximate how much f(x, y) = sqrt(x + y) changes when (x, y) moves from (4, 5) to (4.1, 4.9). [Answer to 3 decimal places]</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p2_in" placeholder="df = ?" step="0.001">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('s5p2_in', 0, 0.01, 's5p2-fb')">Check</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+        <p style="font-size:.72rem;color:var(--text-dim);margin-top:8px">Hint: f_x = f_y = 1/(2*sqrt(x+y)) = 1/6 at (4,5). dx = 0.1, dy = -0.1. df = (1/6)(0.1) + (1/6)(-0.1)</p>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: THE GRADIENT IN PHYSICS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> The Gradient in Physics</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The gradient is not just a mathematical object -- it is the central operation connecting scalar fields to vector fields in physics. Every conservative force in nature is the (negative) gradient of a potential energy function.
+    </p>
+
+    <div class="formula-box large amber">Conservative force: <strong>F</strong> = -&nabla;V</div>
+
+    <p class="concept-text">
+      The negative sign is crucial: forces push objects <em>downhill</em> on the potential energy surface. A particle rolls toward lower potential energy, and the force that pushes it is the negative gradient. This is why &nabla;V points uphill and F = -&nabla;V points downhill.
+    </p>
+
+    <div class="two-col">
+      <div class="step-box" style="margin:0">
+        <div class="step-label">Electrostatics</div>
+        <div class="step-content">
+          Electric potential: V(x,y,z)<br>
+          Electric field: <strong>E</strong> = -&nabla;V<br>
+          <span style="color:var(--text-dim)">Field lines = paths along -&nabla;V</span>
+        </div>
+      </div>
+      <div class="step-box" style="margin:0">
+        <div class="step-label">Thermodynamics</div>
+        <div class="step-content">
+          Temperature field: T(x,y,z)<br>
+          Heat flux: <strong>q</strong> = -k&nabla;T &nbsp;(Fourier's law)<br>
+          <span style="color:var(--text-dim)">Heat flows from hot to cold</span>
+        </div>
+      </div>
+      <div class="step-box" style="margin:0">
+        <div class="step-label">Fluid Dynamics</div>
+        <div class="step-content">
+          Pressure field: P(x,y,z)<br>
+          Pressure force: <strong>F</strong> = -&nabla;P<br>
+          <span style="color:var(--text-dim)">Fluid flows from high to low P</span>
+        </div>
+      </div>
+      <div class="step-box" style="margin:0">
+        <div class="step-label">Gravity</div>
+        <div class="step-content">
+          Gravitational potential: &Phi; = -GM/r<br>
+          Gravity: <strong>g</strong> = -&nabla;&Phi;<br>
+          <span style="color:var(--text-dim)">Pulls toward mass center</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Electric Potential V(x,y) = 1/r and E-Field Arrows (E = -&nabla;V)</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Heat map shows electric potential V = k/sqrt(x^2 + y^2) for a point charge at center. Arrows show E = -&nabla;V pointing radially outward (away from positive charge). Brighter = higher potential.</p>
+      <canvas id="efieldCanvas" width="560" height="300" style="width:100%;max-width:560px;cursor:default"></canvas>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Selected point (x, y)</span><br><span class="value indigo" id="ef_xy">(1.00, 0.00)</span></div>
+        <div class="readout-item"><span class="label">V(x,y) = k/r</span><br><span class="value amber" id="ef_V">1.00</span></div>
+        <div class="readout-item"><span class="label">|E| = k/r^2</span><br><span class="value green" id="ef_E">1.00</span></div>
+        <div class="readout-item"><span class="label">E direction</span><br><span class="value pink" id="ef_dir">radially out</span></div>
+      </div>
+      <div class="slider-row">
+        <label>Sample point angle</label>
+        <input type="range" id="ef_angle" min="0" max="360" step="1" value="0" oninput="updateEfieldReadout()">
+        <span class="slider-val" id="ef_angle_val">0&deg;</span>
+      </div>
+      <div class="slider-row">
+        <label>Sample point radius</label>
+        <input type="range" id="ef_r" min="0.3" max="2" step="0.1" value="1" oninput="updateEfieldReadout()">
+        <span class="slider-val" id="ef_r_val">1.0</span>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context (four direct applications):</strong>
+      <br><strong>1. Submarine pressure hull:</strong> Stress field sigma(x,y,z). Maximum stress at a given cross-section = direction of &nabla;sigma. Engineers inspect the gradient hotspots first during hull inspections.
+      <br><strong>2. Reactor thermal management:</strong> &nabla;T in the reactor core tells you where coolant flow must be highest. Fourier's law q = -k&nabla;T drives the entire thermal design.
+      <br><strong>3. Underwater acoustics:</strong> Sound speed c(depth) creates a gradient that bends ray paths (Snell's law in continuous form is a gradient equation).
+      <br><strong>4. Mine warfare / EOD:</strong> Magnetic field around a mine is -&nabla;(magnetic potential). Detecting the field gradient signature is how you locate buried mines.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s6p1">
+        <p><strong>1.</strong> For electric potential V(x, y) = x^2 + y^2 (uniform distribution), find the electric field E = -&nabla;V at point (2, 3).</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p1','wrong')">E = (4, 6) -- forgot the negative sign</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p1','correct')">E = (-4, -6) -- since &nabla;V = (2x, 2y) = (4, 6), so E = -&nabla;V</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p1','wrong')">E = (2x, 2y) -- missing both the evaluation and the negative sign</button>
+        </div>
+        <div class="feedback" id="s6p1-fb"></div>
+      </div>
+      <div class="problem" id="s6p2">
+        <p><strong>2.</strong> Fourier's law states the heat flux vector is q = -k&nabla;T. If T(x, y) = 100 - 5x^2 - 3y^2, in which direction does heat flow at the point (1, 1)?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','wrong')">In direction (10, 6) -- along &nabla;T toward higher temperature</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','correct')">In direction (-10, -6) -- along -&nabla;T (heat flows from hot to cold)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','wrong')">In direction (1, 1) -- toward the positive quadrant</button>
+        </div>
+        <div class="feedback" id="s6p2-fb"></div>
+      </div>
+      <div class="problem" id="s6p3">
+        <p><strong>3.</strong> For a conservative force F = -&nabla;V, if you move a particle along a path where V increases, the force does _______ work on the particle.</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p3','wrong')">Positive work (force and motion in same direction)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p3','correct')">Negative work (F = -&nabla;V opposes motion up the potential hill)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p3','wrong')">Zero work (conservative forces never do work)</button>
+        </div>
+        <div class="feedback" id="s6p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- QUIZ SECTION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="quiz">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num" style="background:var(--amber-dim);color:var(--amber)">Q</span> Week 14 Quiz &mdash; 10 Questions</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / <span id="quizTotal">10</span></span>
+      <span style="font-size:.75rem;color:var(--text-dim)" id="quizStatus">Answer all questions to complete</span>
+    </div>
+
+    <div class="quiz-q" id="qq1">
+      <div class="q-num">Question 1</div>
+      <div class="q-text">For f(x, y) = xy / (x^2 + y^2) near (0,0), the limit as (x,y) &rarr; (0,0):</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(this,'qq1',false)">Exists and equals 0</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq1',false)">Exists and equals 1/2</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq1',true)">Does not exist (path along y=0 gives 0, path along y=x gives 1/2)</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq1',false)">Does not exist because the function is undefined everywhere</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq2">
+      <div class="q-num">Question 2</div>
+      <div class="q-text">For f(x, y) = x^3 * y^2, what is &part;f/&part;x?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(this,'qq2',false)">x^3 * 2y</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq2',true)">3x^2 * y^2</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq2',false)">3x^2 * 2y</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq2',false)">x^3 * y</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq3">
+      <div class="q-num">Question 3</div>
+      <div class="q-text">Clairaut's Theorem guarantees that f_xy = f_yx provided:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(this,'qq3',false)">f is a polynomial function</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq3',true)">Both mixed partials are continuous on an open region</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq3',false)">f depends on exactly two variables</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq3',false)">The function has no critical points</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq4">
+      <div class="q-num">Question 4</div>
+      <div class="q-text">If z = f(x, y), x = t^2, y = e^t, then dz/dt equals:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(this,'qq4',false)">(&part;f/&part;x) + (&part;f/&part;y)</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq4',true)">(&part;f/&part;x)(2t) + (&part;f/&part;y)(e^t)</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq4',false)">(&part;f/&part;x)(2t) * (&part;f/&part;y)(e^t)</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq4',false)">dz/dx + dz/dy</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq5">
+      <div class="q-num">Question 5</div>
+      <div class="q-text">The gradient &nabla;f at a point always points in the direction of:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(this,'qq5',false)">Steepest descent of f</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq5',false)">The positive x-axis</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq5',true)">Steepest ascent of f</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq5',false)">Along the nearest level curve</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq6">
+      <div class="q-num">Question 6</div>
+      <div class="q-text">For f(x, y) = x^2 + 4y^2, the directional derivative at (1, 1) in direction &ucirc; = (3/5, 4/5) is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(this,'qq6',false)">10 (the magnitude of the gradient)</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq6',true)">38/5 = 7.6 (since &nabla;f = (2, 8), dot with (3/5, 4/5) = 6/5 + 32/5)</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq6',false)">2 (only the x-component contributes)</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq6',false)">0 (the unit vector is perpendicular to &nabla;f)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq7">
+      <div class="q-num">Question 7</div>
+      <div class="q-text">The tangent plane to z = f(x, y) at (x0, y0, z0) has normal vector:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(this,'qq7',false)">(f_x, f_y) -- the 2D gradient</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq7',true)">(-f_x, -f_y, 1) -- or equivalently (f_x, f_y, -1)</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq7',false)">(x0, y0, z0) -- the position vector</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq7',false)">(1, 0, -f_x) -- only the x-direction matters</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq8">
+      <div class="q-num">Question 8</div>
+      <div class="q-text">The total differential dz = f_x dx + f_y dy is used for:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(this,'qq8',false)">Finding the exact value of f at a new point</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq8',true)">Approximating the change in f due to small changes in x and y; error propagation</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq8',false)">Computing the gradient magnitude</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq8',false)">Solving differential equations with two variables</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq9">
+      <div class="q-num">Question 9</div>
+      <div class="q-text">In electrostatics, if V is the electric potential, the electric field E is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(this,'qq9',false)">E = &nabla;V (gradient of potential)</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq9',true)">E = -&nabla;V (negative gradient of potential)</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq9',false)">E = |&nabla;V| (magnitude only)</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq9',false)">E = &nabla;^2 V (Laplacian)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq10">
+      <div class="q-num">Question 10</div>
+      <div class="q-text">A submarine reactor has temperature field T(r, z) = 800 - 5r^2 - 2z^2 (in Celsius). The heat flux direction at (r, z) = (2, 3) according to Fourier's law q = -k&nabla;T is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(this,'qq10',false)">Toward (20, 12) -- in direction of increasing T</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq10',true)">Toward (-20, -12) -- since &nabla;T = (-10r, -4z) = (-20, -12), heat flows in direction of -&nabla;T... wait: q = -k*(-20,-12) = (20k, 12k) outward -- so heat flows radially outward from the hot center</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq10',false)">Purely in the z-direction (axial flow only)</button>
+        <button class="choice-btn" onclick="answerQuiz(this,'qq10',false)">No heat flow because the gradients cancel</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ============================================================
+// PROGRESS TRACKING
+// ============================================================
+const TOTAL_SECTIONS = 6;
+const completedSections = new Set();
+
+function updateProgress() {
+  const pct = (completedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+function toggleSection(header) {
+  const card = header.parentElement;
+  const sectionId = card.dataset.section;
+  const isOpening = !card.classList.contains('open');
+  card.classList.toggle('open');
+  if (isOpening && sectionId !== 'quiz' && !completedSections.has(sectionId)) {
+    completedSections.add(sectionId);
+    card.classList.add('completed');
+    updateProgress();
+  }
+}
+
+// ============================================================
+// PRACTICE HELPERS
+// ============================================================
+function checkNum(inputId, answer, tolerance, fbId) {
+  const val = parseFloat(document.getElementById(inputId).value);
+  const fb = document.getElementById(fbId);
+  if (isNaN(val)) { fb.className='feedback incorrect'; fb.textContent='Enter a number first.'; return; }
+  if (Math.abs(val - answer) <= tolerance) {
+    fb.className='feedback correct'; fb.textContent='Correct! Well done.';
+    triggerAnim(document.getElementById(inputId).closest('.problem'), 'pop');
+  } else {
+    fb.className='feedback incorrect'; fb.textContent='Not quite. Expected ~' + answer + '. Try again.';
+    triggerAnim(document.getElementById(inputId).closest('.problem'), 'shake');
+  }
+}
+
+function checkMC(btn, problemId, result) {
+  const container = document.getElementById(problemId);
+  const btns = container.querySelectorAll('.mc-btn');
+  const fb = document.getElementById(problemId + '-fb');
+  btns.forEach(b => { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    triggerAnim(container, 'pop');
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite -- look at the other option.';
+    triggerAnim(container, 'shake');
+  }
+}
+
+function triggerAnim(el, cls) {
+  el.classList.remove('pop','shake');
+  void el.offsetWidth;
+  el.classList.add(cls);
+  el.addEventListener('animationend', () => el.classList.remove(cls), {once:true});
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+let quizScore = 0;
+let quizAnswered = 0;
+const QUIZ_TOTAL = 10;
+
+function answerQuiz(btn, qqId, isCorrect) {
+  const container = document.getElementById(qqId);
+  const allBtns = container.querySelectorAll('.choice-btn');
+  allBtns.forEach(b => b.classList.add('disabled'));
+  if (isCorrect) {
+    btn.classList.add('selected-correct');
+    quizScore++;
+    document.getElementById('quizScore').textContent = quizScore;
+    triggerAnim(container, 'pop');
+  } else {
+    btn.classList.add('selected-wrong');
+    allBtns.forEach(b => { if (b.onclick && b.onclick.toString().includes('true')) b.classList.add('reveal-correct'); });
+    triggerAnim(container, 'shake');
+  }
+  quizAnswered++;
+  if (quizAnswered === QUIZ_TOTAL) {
+    const pct = Math.round((quizScore / QUIZ_TOTAL) * 100);
+    const status = document.getElementById('quizStatus');
+    status.textContent = 'Complete! ' + pct + '% -- ' + (pct >= 80 ? 'Excellent mastery.' : pct >= 60 ? 'Good -- review missed topics.' : 'Revisit the sections above.');
+    status.style.color = pct >= 80 ? 'var(--green)' : pct >= 60 ? 'var(--amber)' : 'var(--pink)';
+  }
+}
+
+// ============================================================
+// HEAT MAP INTERACTIVE (Section 1)
+// ============================================================
+const heatCanvas = document.getElementById('heatCanvas');
+const heatCtx = heatCanvas.getContext('2d');
+let hmDragging = false;
+let hmPoint = {x: 0, y: 0};
+
+function fHeat(x, y) { return Math.sin(x) * Math.cos(y); }
+
+function getColor(v) {
+  // v in [-1, 1] -> blue through white to red
+  const r = v > 0 ? Math.round(255 * v) : 0;
+  const b = v < 0 ? Math.round(255 * (-v)) : 0;
+  const g = Math.round(80 * (1 - Math.abs(v)));
+  return `rgb(${r},${g},${b})`;
+}
+
+function drawHeatMap(highlightX, highlightY) {
+  const W = heatCanvas.width, H = heatCanvas.height;
+  const xMin = -Math.PI * 1.5, xMax = Math.PI * 1.5;
+  const yMin = -Math.PI, yMax = Math.PI;
+  const img = heatCtx.createImageData(W, H);
+  for (let py = 0; py < H; py++) {
+    for (let px = 0; px < W; px++) {
+      const x = xMin + (px / W) * (xMax - xMin);
+      const y = yMax - (py / H) * (yMax - yMin);
+      const v = fHeat(x, y);
+      const r = v > 0 ? Math.round(200 * v) : 0;
+      const b = v < 0 ? Math.round(200 * (-v)) : 0;
+      const g = Math.round(60 * (1 - Math.abs(v)));
+      const idx = (py * W + px) * 4;
+      img.data[idx] = r + 30; img.data[idx+1] = g + 20; img.data[idx+2] = b + 80; img.data[idx+3] = 255;
+    }
+  }
+  heatCtx.putImageData(img, 0, 0);
+  // Level curves
+  heatCtx.strokeStyle = 'rgba(255,255,255,0.25)';
+  heatCtx.lineWidth = 1;
+  for (let c = -0.8; c <= 0.8; c += 0.2) {
+    // approximate level curves by scanning
+    for (let py = 1; py < H-1; py++) {
+      for (let px = 1; px < W-1; px++) {
+        const x = xMin + (px / W) * (xMax - xMin);
+        const y = yMax - (py / H) * (yMax - yMin);
+        const v = fHeat(x, y);
+        const vr = fHeat(xMin + ((px+1)/W)*(xMax-xMin), y);
+        if (Math.sign(v - c) !== Math.sign(vr - c)) {
+          heatCtx.fillStyle = 'rgba(255,255,255,0.3)';
+          heatCtx.fillRect(px, py, 1, 1);
+        }
+      }
+    }
+  }
+  // Draggable point
+  const px = Math.round((highlightX - xMin) / (xMax - xMin) * W);
+  const py = Math.round((yMax - highlightY) / (yMax - yMin) * H);
+  heatCtx.beginPath();
+  heatCtx.arc(px, py, 7, 0, Math.PI*2);
+  heatCtx.fillStyle = '#fff';
+  heatCtx.fill();
+  heatCtx.strokeStyle = 'var(--indigo)';
+  heatCtx.lineWidth = 2;
+  heatCtx.stroke();
+  // Crosshair
+  heatCtx.strokeStyle = 'rgba(255,255,255,0.5)';
+  heatCtx.lineWidth = 1;
+  heatCtx.setLineDash([4,4]);
+  heatCtx.beginPath(); heatCtx.moveTo(px, 0); heatCtx.lineTo(px, H); heatCtx.stroke();
+  heatCtx.beginPath(); heatCtx.moveTo(0, py); heatCtx.lineTo(W, py); heatCtx.stroke();
+  heatCtx.setLineDash([]);
+  // Readouts
+  const fv = fHeat(highlightX, highlightY);
+  document.getElementById('hm_x').textContent = highlightX.toFixed(2);
+  document.getElementById('hm_y').textContent = highlightY.toFixed(2);
+  document.getElementById('hm_fxy').textContent = fv.toFixed(3);
+  document.getElementById('hm_level').textContent = (Math.round(fv * 5) / 5).toFixed(1);
+}
+
+function hmCanvasCoords(e) {
+  const rect = heatCanvas.getBoundingClientRect();
+  const scaleX = heatCanvas.width / rect.width;
+  const scaleY = heatCanvas.height / rect.height;
+  const cx = e.touches ? e.touches[0].clientX : e.clientX;
+  const cy = e.touches ? e.touches[0].clientY : e.clientY;
+  const px = (cx - rect.left) * scaleX;
+  const py = (cy - rect.top) * scaleY;
+  const xMin = -Math.PI * 1.5, xMax = Math.PI * 1.5;
+  const yMin = -Math.PI, yMax = Math.PI;
+  return { x: xMin + (px / heatCanvas.width) * (xMax - xMin), y: yMax - (py / heatCanvas.height) * (yMax - yMin) };
+}
+
+heatCanvas.addEventListener('mousedown', e => { hmDragging = true; const c = hmCanvasCoords(e); hmPoint = c; drawHeatMap(c.x, c.y); });
+heatCanvas.addEventListener('mousemove', e => { if (hmDragging) { const c = hmCanvasCoords(e); hmPoint = c; drawHeatMap(c.x, c.y); }});
+heatCanvas.addEventListener('mouseup', () => hmDragging = false);
+heatCanvas.addEventListener('touchstart', e => { e.preventDefault(); const c = hmCanvasCoords(e); hmPoint = c; drawHeatMap(c.x, c.y); }, {passive:false});
+heatCanvas.addEventListener('touchmove', e => { e.preventDefault(); const c = hmCanvasCoords(e); hmPoint = c; drawHeatMap(c.x, c.y); }, {passive:false});
+
+// ============================================================
+// PARTIAL DERIVATIVES INTERACTIVE (Section 2)
+// ============================================================
+// f(x,y) = x^2 - y^2   fx = 2x   fy = -2y   fxy = 0
+const partialCanvas = document.getElementById('partialCanvas');
+const partialCtx = partialCanvas.getContext('2d');
+
+function drawPartials() {
+  const x0 = parseFloat(document.getElementById('pd_x').value);
+  const y0 = parseFloat(document.getElementById('pd_y').value);
+  document.getElementById('pd_x_val').textContent = x0.toFixed(1);
+  document.getElementById('pd_y_val').textContent = y0.toFixed(1);
+
+  const W = partialCanvas.width, H = partialCanvas.height;
+  const halfW = W / 2;
+  partialCtx.clearRect(0, 0, W, H);
+
+  // Background
+  partialCtx.fillStyle = '#1a1d24';
+  partialCtx.fillRect(0, 0, W, H);
+
+  // Divider
+  partialCtx.strokeStyle = '#363b47';
+  partialCtx.lineWidth = 1;
+  partialCtx.beginPath(); partialCtx.moveTo(halfW, 0); partialCtx.lineTo(halfW, H); partialCtx.stroke();
+
+  // LEFT PANEL: x-cross-section at y = y0:  g(x) = x^2 - y0^2
+  const xRange = 3, yRange = 6;
+  const toCanvasL = (x, g) => ({ cx: x0pad(x, halfW), cy: g0pad(g, H) });
+  function x0pad(x, maxW) { return (x + xRange) / (2 * xRange) * (maxW - 40) + 20; }
+  function g0pad(g, maxH) { return maxH/2 - (g / yRange) * (maxH/2 - 20); }
+
+  // Axes - left
+  partialCtx.strokeStyle = '#4a5060';
+  partialCtx.lineWidth = 1;
+  const midY = H/2;
+  partialCtx.beginPath(); partialCtx.moveTo(20, midY); partialCtx.lineTo(halfW-10, midY); partialCtx.stroke();
+  partialCtx.beginPath(); partialCtx.moveTo(halfW/2, 20); partialCtx.lineTo(halfW/2, H-20); partialCtx.stroke();
+
+  // Draw g(x) = x^2 - y0^2 curve
+  partialCtx.strokeStyle = '#22c55e';
+  partialCtx.lineWidth = 2;
+  partialCtx.beginPath();
+  for (let px = 0; px < halfW - 20; px++) {
+    const x = -xRange + (px / (halfW - 40)) * (2 * xRange);
+    const g = x*x - y0*y0;
+    const cx = px + 20;
+    const cy = midY - (g / yRange) * (H/2 - 20);
+    px === 0 ? partialCtx.moveTo(cx, cy) : partialCtx.lineTo(cx, cy);
+  }
+  partialCtx.stroke();
+
+  // Tangent line at x = x0
+  const fx0 = 2 * x0; // df/dx = 2x
+  const f0L = x0*x0 - y0*y0;
+  partialCtx.strokeStyle = '#fff';
+  partialCtx.lineWidth = 1.5;
+  partialCtx.setLineDash([5,3]);
+  partialCtx.beginPath();
+  for (let t = -1; t <= 1; t += 2) {
+    const x = x0 + t * 0.8;
+    const g = f0L + fx0 * (x - x0);
+    const cx = (x + xRange) / (2*xRange) * (halfW - 40) + 20;
+    const cy = midY - (g / yRange) * (H/2 - 20);
+    t === -1 ? partialCtx.moveTo(cx, cy) : partialCtx.lineTo(cx, cy);
+  }
+  partialCtx.stroke();
+  partialCtx.setLineDash([]);
+
+  // Point on left curve
+  const pxL = (x0 + xRange) / (2*xRange) * (halfW - 40) + 20;
+  const pyL = midY - (f0L / yRange) * (H/2 - 20);
+  partialCtx.beginPath(); partialCtx.arc(pxL, pyL, 5, 0, Math.PI*2);
+  partialCtx.fillStyle = '#22c55e'; partialCtx.fill();
+
+  // Label
+  partialCtx.fillStyle = '#9ca3af';
+  partialCtx.font = '10px JetBrains Mono, monospace';
+  partialCtx.fillText('f(x, y\u2080) = x\u00b2 - ' + (y0*y0).toFixed(1), 24, 16);
+  partialCtx.fillStyle = '#22c55e';
+  partialCtx.fillText('\u2202f/\u2202x = ' + fx0.toFixed(2), 24, 30);
+
+  // RIGHT PANEL: y-cross-section at x = x0:  h(y) = x0^2 - y^2
+  const offX = halfW;
+  function x1pad(y, maxW) { return offX + (y + xRange) / (2 * xRange) * (maxW - halfW - 40) + 20; }
+
+  // Axes - right
+  partialCtx.strokeStyle = '#4a5060';
+  partialCtx.lineWidth = 1;
+  partialCtx.beginPath(); partialCtx.moveTo(offX + 20, midY); partialCtx.lineTo(W - 10, midY); partialCtx.stroke();
+  partialCtx.beginPath(); partialCtx.moveTo(offX + (halfW-40)/2 + 20, 20); partialCtx.lineTo(offX + (halfW-40)/2 + 20, H-20); partialCtx.stroke();
+
+  // Draw h(y) = x0^2 - y^2
+  partialCtx.strokeStyle = '#ec4899';
+  partialCtx.lineWidth = 2;
+  partialCtx.beginPath();
+  for (let px = 0; px < halfW - 40; px++) {
+    const y = -xRange + (px / (halfW - 40)) * (2 * xRange);
+    const h = x0*x0 - y*y;
+    const cx = offX + px + 20;
+    const cy = midY - (h / yRange) * (H/2 - 20);
+    px === 0 ? partialCtx.moveTo(cx, cy) : partialCtx.lineTo(cx, cy);
+  }
+  partialCtx.stroke();
+
+  // Tangent at y = y0
+  const fy0 = -2 * y0;
+  const f0R = x0*x0 - y0*y0;
+  partialCtx.strokeStyle = '#fff';
+  partialCtx.lineWidth = 1.5;
+  partialCtx.setLineDash([5,3]);
+  partialCtx.beginPath();
+  for (let t = -1; t <= 1; t += 2) {
+    const y = y0 + t * 0.8;
+    const h = f0R + fy0 * (y - y0);
+    const cx = offX + (y + xRange) / (2*xRange) * (halfW - 40) + 20;
+    const cy = midY - (h / yRange) * (H/2 - 20);
+    t === -1 ? partialCtx.moveTo(cx, cy) : partialCtx.lineTo(cx, cy);
+  }
+  partialCtx.stroke();
+  partialCtx.setLineDash([]);
+
+  // Point on right curve
+  const pxR = offX + (y0 + xRange) / (2*xRange) * (halfW - 40) + 20;
+  const pyR = midY - (f0R / yRange) * (H/2 - 20);
+  partialCtx.beginPath(); partialCtx.arc(pxR, pyR, 5, 0, Math.PI*2);
+  partialCtx.fillStyle = '#ec4899'; partialCtx.fill();
+
+  // Label right
+  partialCtx.fillStyle = '#9ca3af';
+  partialCtx.font = '10px JetBrains Mono, monospace';
+  partialCtx.fillText('f(x\u2080, y) = ' + (x0*x0).toFixed(1) + ' - y\u00b2', offX + 24, 16);
+  partialCtx.fillStyle = '#ec4899';
+  partialCtx.fillText('\u2202f/\u2202y = ' + fy0.toFixed(2), offX + 24, 30);
+
+  // Update readouts
+  document.getElementById('pd_f').textContent = f0L.toFixed(3);
+  document.getElementById('pd_fx').textContent = fx0.toFixed(3);
+  document.getElementById('pd_fy').textContent = fy0.toFixed(3);
+  document.getElementById('pd_fxy').textContent = '0 (= f_yx = 0)';
+}
+
+// ============================================================
+// GRADIENT INTERACTIVE (Section 4)
+// ============================================================
+// f(x,y) = x^2 + 0.5*y^2   gradient = (2x, y)
+const gradCanvas = document.getElementById('gradCanvas');
+const gradCtx = gradCanvas.getContext('2d');
+
+function drawGradient() {
+  const theta = parseFloat(document.getElementById('grad_theta').value) * Math.PI / 180;
+  const px0 = parseFloat(document.getElementById('grad_px').value);
+  const py0 = parseFloat(document.getElementById('grad_py').value);
+  document.getElementById('grad_theta_val').textContent = document.getElementById('grad_theta').value + '\u00b0';
+  document.getElementById('grad_px_val').textContent = px0.toFixed(1);
+  document.getElementById('grad_py_val').textContent = py0.toFixed(1);
+
+  const W = gradCanvas.width, H = gradCanvas.height;
+  gradCtx.clearRect(0, 0, W, H);
+  gradCtx.fillStyle = '#1a1d24';
+  gradCtx.fillRect(0, 0, W, H);
+
+  const xMin = -2.5, xMax = 2.5, yMin = -2.5, yMax = 2.5;
+  const toC = (x, y) => ({ cx: (x - xMin) / (xMax - xMin) * W, cy: H - (y - yMin) / (yMax - yMin) * H });
+
+  // Level curves of f = x^2 + 0.5*y^2
+  const levels = [0.5, 1, 2, 3, 4];
+  levels.forEach((lv, i) => {
+    gradCtx.strokeStyle = `rgba(99,102,241,${0.15 + i*0.06})`;
+    gradCtx.lineWidth = 1;
+    gradCtx.beginPath();
+    let first = true;
+    for (let a = 0; a <= Math.PI*2 + 0.01; a += 0.02) {
+      // parametric: x = sqrt(lv)*cos(a), y = sqrt(2*lv)*sin(a)
+      const x = Math.sqrt(lv) * Math.cos(a);
+      const y = Math.sqrt(2*lv) * Math.sin(a);
+      if (x < xMin || x > xMax || y < yMin || y > yMax) { first = true; continue; }
+      const {cx, cy} = toC(x, y);
+      first ? gradCtx.moveTo(cx, cy) : gradCtx.lineTo(cx, cy);
+      first = false;
+    }
+    gradCtx.stroke();
+  });
+
+  // Grid gradient arrows
+  const step = 0.7;
+  for (let gx = xMin + step/2; gx < xMax; gx += step) {
+    for (let gy = yMin + step/2; gy < yMax; gy += step) {
+      const gfx = 2 * gx, gfy = gy;
+      const mag = Math.sqrt(gfx*gfx + gfy*gfy);
+      if (mag < 0.01) continue;
+      const scale = 0.18 / Math.max(mag, 1);
+      const {cx: ax, cy: ay} = toC(gx, gy);
+      const dx = gfx * scale, dy = -gfy * scale;
+      const len = Math.sqrt(dx*dx + dy*dy) * (W / (xMax-xMin));
+      if (len < 2) continue;
+      gradCtx.strokeStyle = 'rgba(99,102,241,0.5)';
+      gradCtx.lineWidth = 1;
+      gradCtx.beginPath();
+      gradCtx.moveTo(ax, ay);
+      const ex = ax + gfx * scale * (W / (xMax - xMin));
+      const ey = ay - gfy * scale * (H / (yMax - yMin));
+      gradCtx.lineTo(ex, ey);
+      gradCtx.stroke();
+      // arrowhead
+      const angle = Math.atan2(ey - ay, ex - ax);
+      gradCtx.beginPath();
+      gradCtx.moveTo(ex, ey);
+      gradCtx.lineTo(ex - 5*Math.cos(angle-0.4), ey - 5*Math.sin(angle-0.4));
+      gradCtx.moveTo(ex, ey);
+      gradCtx.lineTo(ex - 5*Math.cos(angle+0.4), ey - 5*Math.sin(angle+0.4));
+      gradCtx.stroke();
+    }
+  }
+
+  // Gradient at selected point
+  const gfx = 2*px0, gfy = py0;
+  const gmag = Math.sqrt(gfx*gfx + gfy*gfy);
+  const {cx: pcx, cy: pcy} = toC(px0, py0);
+  const arrowScale = 0.5 * (W / (xMax - xMin));
+
+  // Gradient arrow (green)
+  if (gmag > 0.01) {
+    const ex = pcx + gfx / gmag * arrowScale;
+    const ey = pcy - gfy / gmag * arrowScale;
+    gradCtx.strokeStyle = '#22c55e';
+    gradCtx.lineWidth = 2.5;
+    gradCtx.beginPath(); gradCtx.moveTo(pcx, pcy); gradCtx.lineTo(ex, ey); gradCtx.stroke();
+    const angle = Math.atan2(ey - pcy, ex - pcx);
+    gradCtx.beginPath();
+    gradCtx.moveTo(ex, ey);
+    gradCtx.lineTo(ex - 10*Math.cos(angle-0.4), ey - 10*Math.sin(angle-0.4));
+    gradCtx.lineTo(ex - 10*Math.cos(angle+0.4), ey - 10*Math.sin(angle+0.4));
+    gradCtx.closePath(); gradCtx.fillStyle = '#22c55e'; gradCtx.fill();
+    gradCtx.fillStyle = '#22c55e'; gradCtx.font = '10px JetBrains Mono, monospace';
+    gradCtx.fillText('\u2207f', ex + 5, ey - 5);
+  }
+
+  // Direction arrow (pink)
+  const ux = Math.cos(theta), uy = Math.sin(theta);
+  const dex = pcx + ux * arrowScale;
+  const dey = pcy - uy * arrowScale;
+  gradCtx.strokeStyle = '#ec4899';
+  gradCtx.lineWidth = 2;
+  gradCtx.setLineDash([4,3]);
+  gradCtx.beginPath(); gradCtx.moveTo(pcx, pcy); gradCtx.lineTo(dex, dey); gradCtx.stroke();
+  gradCtx.setLineDash([]);
+  const dangle = Math.atan2(dey - pcy, dex - pcx);
+  gradCtx.beginPath();
+  gradCtx.moveTo(dex, dey);
+  gradCtx.lineTo(dex - 8*Math.cos(dangle-0.4), dey - 8*Math.sin(dangle-0.4));
+  gradCtx.lineTo(dex - 8*Math.cos(dangle+0.4), dey - 8*Math.sin(dangle+0.4));
+  gradCtx.closePath(); gradCtx.fillStyle = '#ec4899'; gradCtx.fill();
+  gradCtx.fillStyle = '#ec4899'; gradCtx.font = '10px JetBrains Mono, monospace';
+  gradCtx.fillText('\u00fb', dex + 5, dey - 5);
+
+  // Selected point dot
+  gradCtx.beginPath(); gradCtx.arc(pcx, pcy, 6, 0, Math.PI*2);
+  gradCtx.fillStyle = '#fff'; gradCtx.fill();
+  gradCtx.strokeStyle = '#6366f1'; gradCtx.lineWidth = 2; gradCtx.stroke();
+
+  // Axes
+  gradCtx.strokeStyle = '#4a5060'; gradCtx.lineWidth = 1;
+  const {cx: ox, cy: oy} = toC(0, 0);
+  gradCtx.beginPath(); gradCtx.moveTo(0, oy); gradCtx.lineTo(W, oy); gradCtx.stroke();
+  gradCtx.beginPath(); gradCtx.moveTo(ox, 0); gradCtx.lineTo(ox, H); gradCtx.stroke();
+
+  // Readouts
+  const Du = gfx * ux + gfy * uy;
+  const gradAngleRad = Math.atan2(gfy, gfx);
+  const angleDiff = Math.abs((theta - gradAngleRad * 180 / Math.PI + 720) % 360);
+  const displayAngle = Math.min(angleDiff, 360 - angleDiff).toFixed(1);
+  document.getElementById('grad_vec').textContent = '(' + gfx.toFixed(2) + ', ' + gfy.toFixed(2) + ')';
+  document.getElementById('grad_mag').textContent = gmag.toFixed(3);
+  document.getElementById('grad_dir').textContent = Du.toFixed(3);
+  document.getElementById('grad_angle').textContent = displayAngle + '\u00b0';
+}
+
+// ============================================================
+// E-FIELD INTERACTIVE (Section 6)
+// ============================================================
+
+
+
+let efCanvasEl;
+
+function initEfieldCanvas() {
+  efCanvasEl = document.getElementById("efieldCanvas");
+  if (!efCanvasEl) return;
+  drawEfield();
+  updateEfieldReadout();
+}
+
+function drawEfield() {
+  if (!efCanvasEl) return;
+  const ctx = efCanvasEl.getContext('2d');
+  const W = efCanvasEl.width, H = efCanvasEl.height;
+  const xMin = -2.5, xMax = 2.5, yMin = -2, yMax = 2;
+
+  // Heat map of V = 1/r (capped)
+  const img = ctx.createImageData(W, H);
+  for (let py = 0; py < H; py++) {
+    for (let px = 0; px < W; px++) {
+      const x = xMin + (px / W) * (xMax - xMin);
+      const y = yMax - (py / H) * (yMax - yMin);
+      const r = Math.sqrt(x*x + y*y);
+      const V = Math.min(1 / Math.max(r, 0.2), 5);
+      const norm = V / 5; // 0 to 1
+      const idx = (py * W + px) * 4;
+      // cool (dark blue) to hot (bright amber/white)
+      img.data[idx]   = Math.round(norm * 255 * 0.9 + 20);
+      img.data[idx+1] = Math.round(norm * 180 * (1 - norm * 0.5));
+      img.data[idx+2] = Math.round((1 - norm) * 120 + norm * 20);
+      img.data[idx+3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+
+  // E-field arrows: E = -gradV = r-hat * (1/r^2) pointing outward
+  const toC = (x, y) => ({ cx: (x - xMin) / (xMax - xMin) * W, cy: H - (y - yMin) / (yMax - yMin) * H });
+  const step = 0.6;
+  for (let gx = xMin + step/2; gx < xMax; gx += step) {
+    for (let gy = yMin + step/2; gy < yMax; gy += step) {
+      const r2 = gx*gx + gy*gy;
+      if (r2 < 0.09) continue;
+      const r = Math.sqrt(r2);
+      const Ex = gx / (r * r2); // 1/r^2 * x/r
+      const Ey = gy / (r * r2);
+      const emag = Math.sqrt(Ex*Ex + Ey*Ey);
+      const scale = 0.15 / Math.max(emag, 0.5);
+      const {cx: ax, cy: ay} = toC(gx, gy);
+      const dx = Ex * scale;
+      const dy = -Ey * scale;
+      const ex2 = ax + dx * (W/(xMax-xMin));
+      const ey2 = ay + dy * (H/(yMax-yMin));
+      ctx.strokeStyle = 'rgba(245,158,11,0.75)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ex2, ey2); ctx.stroke();
+      const ang = Math.atan2(ey2-ay, ex2-ax);
+      ctx.beginPath();
+      ctx.moveTo(ex2, ey2);
+      ctx.lineTo(ex2 - 5*Math.cos(ang-0.4), ey2 - 5*Math.sin(ang-0.4));
+      ctx.moveTo(ex2, ey2);
+      ctx.lineTo(ex2 - 5*Math.cos(ang+0.4), ey2 - 5*Math.sin(ang+0.4));
+      ctx.stroke();
+    }
+  }
+
+  // Charge at center
+  const {cx: cx0, cy: cy0} = toC(0, 0);
+  ctx.beginPath(); ctx.arc(cx0, cy0, 8, 0, Math.PI*2);
+  ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.fillStyle = '#1a1d24'; ctx.font = 'bold 10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('+q', cx0, cy0);
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+}
+
+function updateEfieldReadout() {
+  const angle = parseFloat(document.getElementById('ef_angle').value) * Math.PI / 180;
+  const r = parseFloat(document.getElementById('ef_r').value);
+  document.getElementById('ef_angle_val').textContent = document.getElementById('ef_angle').value + '\u00b0';
+  document.getElementById('ef_r_val').textContent = r.toFixed(1);
+  const x = r * Math.cos(angle), y = r * Math.sin(angle);
+  const V = 1 / r;
+  const E = 1 / (r*r);
+  document.getElementById('ef_xy').textContent = '(' + x.toFixed(2) + ', ' + y.toFixed(2) + ')';
+  document.getElementById('ef_V').textContent = V.toFixed(3) + 'k';
+  document.getElementById('ef_E').textContent = E.toFixed(3) + 'k';
+  document.getElementById('ef_dir').textContent = 'radially out (' + Math.round(angle * 180/Math.PI) + '\u00b0)';
+
+  // Draw sample point on canvas
+  if (!efCanvasEl) return;
+  drawEfield();
+  const ctx = efCanvasEl.getContext('2d');
+  const xMin = -2.5, xMax = 2.5, yMin = -2, yMax = 2;
+  const W = efCanvasEl.width, H = efCanvasEl.height;
+  const cx = (x - xMin) / (xMax - xMin) * W;
+  const cy = H - (y - yMin) / (yMax - yMin) * H;
+  ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI*2);
+  ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2; ctx.stroke();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', () => {
+  drawHeatMap(0, 0);
+  drawPartials();
+  drawGradient();
+  initEfieldCanvas();
+  updateProgress();
+});
+</script>
+</body>
+</html>

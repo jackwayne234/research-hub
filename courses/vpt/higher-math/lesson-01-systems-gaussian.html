@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 1: Systems of Linear Equations &amp; Gaussian Elimination</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1);--spring:cubic-bezier(.34,1.56,.64,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .35s var(--spring);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:120000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.btn-danger{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.btn-danger:hover{background:rgba(236,72,153,.25)}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+/* Matrix display */
+.matrix-display{display:inline-flex;align-items:center;margin:12px 0;font-size:.9rem;font-weight:600}
+.matrix-bracket{font-size:2.2em;font-weight:200;color:var(--text-dim);line-height:1}
+.matrix-grid{display:inline-grid;gap:4px 12px;padding:4px 8px}
+.matrix-grid span{text-align:center;min-width:28px;padding:2px 4px;border-radius:3px;transition:all .3s}
+.matrix-grid span.coeff{color:var(--indigo)}
+.matrix-grid span.const{color:var(--green)}
+.matrix-grid span.var-col{color:var(--amber)}
+.matrix-grid span.highlight{background:var(--amber-dim);color:var(--amber)}
+.matrix-grid span.pivot{background:var(--indigo-dim);color:var(--indigo);font-weight:700}
+.matrix-grid span.target{background:var(--pink-dim);color:var(--pink)}
+.aug-line{width:2px;background:var(--text-dim);margin:0 6px;align-self:stretch;border-radius:1px}
+/* Row op buttons */
+.row-op-btn{padding:6px 14px;font-size:.72rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;font-family:'JetBrains Mono',monospace;transition:var(--transition)}
+.row-op-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover);color:var(--text-bright)}
+.row-op-btn.active{background:var(--indigo);border-color:var(--indigo);color:#fff}
+/* Step indicator */
+.step-info{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:10px 16px;margin:10px 0;font-size:.78rem;color:var(--indigo);font-weight:500}
+/* Quiz */
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+/* Matrix input grids */
+.matrix-input-grid{display:inline-grid;gap:6px 8px;margin:8px 0}
+.matrix-input-grid input{width:50px;padding:6px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.8rem;outline:none;transition:border-color var(--transition)}
+.matrix-input-grid input:focus{border-color:var(--indigo)}
+/* Animations */
+@keyframes springPop{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.pop{animation:springPop .35s var(--spring)}
+.shake{animation:shake .4s ease}
+/* Case label badges */
+.case-badge{display:inline-block;padding:3px 10px;border-radius:4px;font-size:.7rem;font-weight:600;margin:4px 0}
+.case-badge.one{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.case-badge.none{background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.case-badge.inf{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.matrix-input-grid input{width:40px;padding:4px;font-size:.72rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>01</span> Systems of Linear Equations &amp; Gaussian Elimination</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: WHAT IS A SYSTEM OF LINEAR EQUATIONS? -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> What is a System of Linear Equations?</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>system of linear equations</strong> is a set of two or more linear equations with the same variables. The <strong>solution</strong> is the set of values that satisfies all equations simultaneously. Geometrically, each linear equation in two variables represents a line -- the solution is where the lines intersect.
+    </p>
+
+    <div class="formula-box large">
+      a<sub>1</sub>x + b<sub>1</sub>y = c<sub>1</sub> &nbsp;&nbsp;&amp;&nbsp;&nbsp; a<sub>2</sub>x + b<sub>2</sub>y = c<sub>2</sub>
+    </div>
+
+    <p class="concept-text">There are exactly three possible outcomes:</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+      <span class="case-badge one">One solution -- lines cross at a single point</span>
+      <span class="case-badge none">No solution -- lines are parallel (never meet)</span>
+      <span class="case-badge inf">Infinite solutions -- lines are the same (overlap)</span>
+    </div>
+
+    <div class="key-point">In physics, systems of equations arise constantly: balancing forces in two directions, Kirchhoff's circuit laws, constraint equations in mechanics. Every equilibrium problem is a system waiting to be solved.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Two Lines on a Coordinate Plane</div>
+      <svg id="s1Svg" width="100%" viewBox="0 0 600 400" style="display:block"></svg>
+      <div class="slider-row">
+        <label>Line 1: slope m<sub>1</sub></label>
+        <input type="range" id="s1m1" min="-3" max="3" value="1" step="0.25" oninput="updateS1()">
+        <span class="slider-val" id="s1m1Val">1.00</span>
+      </div>
+      <div class="slider-row">
+        <label>Line 1: intercept b<sub>1</sub></label>
+        <input type="range" id="s1b1" min="-4" max="4" value="0" step="0.5" oninput="updateS1()">
+        <span class="slider-val" id="s1b1Val">0.00</span>
+      </div>
+      <div class="slider-row">
+        <label>Line 2: slope m<sub>2</sub></label>
+        <input type="range" id="s1m2" min="-3" max="3" value="-0.5" step="0.25" oninput="updateS1()">
+        <span class="slider-val" id="s1m2Val">-0.50</span>
+      </div>
+      <div class="slider-row">
+        <label>Line 2: intercept b<sub>2</sub></label>
+        <input type="range" id="s1b2" min="-4" max="4" value="2" step="0.5" oninput="updateS1()">
+        <span class="slider-val" id="s1b2Val">2.00</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Case</span><br><span class="value indigo" id="s1Case">One Solution</span></div>
+        <div class="readout-item"><span class="label">Intersection</span><br><span class="value green" id="s1Intersection">(1.33, 1.33)</span></div>
+        <div class="readout-item"><span class="label">Line 1</span><br><span class="value amber" id="s1Eq1">y = 1.00x + 0.00</span></div>
+        <div class="readout-item"><span class="label">Line 2</span><br><span class="value pink" id="s1Eq2">y = -0.50x + 2.00</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Physics Context:</strong> Two constraint equations in mechanics: if a block on a ramp is in equilibrium, you get F_x = 0 and F_y = 0 -- two equations, two unknowns (normal force and friction). The intersection of those constraint lines gives the unique physical solution.</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> Use the sliders above: set Line 1 to y = 2x - 1 and Line 2 to y = -x + 5. What is the x-coordinate of the intersection?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1" step="0.1" placeholder="x = ?" onkeydown="if(event.key==='Enter')checkNum('s1p1',2,0.15)">
+          <button class="btn btn-sm" onclick="checkNum('s1p1',2,0.15)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> Set both lines to the same slope (m1 = m2 = 1.5) but different intercepts. How many solutions are there?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2" step="1" placeholder="0, 1, or inf?" onkeydown="if(event.key==='Enter')checkNum('s1p2',0,0.01)">
+          <span style="font-size:.7rem;color:var(--text-dim)">(enter 0)</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p2',0,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: MATRIX NOTATION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Matrix Notation</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Instead of writing equations longhand, we organize the coefficients into a compact <strong>augmented matrix</strong>. The coefficients go on the left, a vertical bar separates them from the constants on the right. This lets us focus on the numbers and apply systematic row operations.
+    </p>
+
+    <p class="concept-text">For example, the system:</p>
+    <div class="formula-box">2x + 3y = 7<br>x - y = 1</div>
+    <p class="concept-text">Becomes the augmented matrix:</p>
+
+    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin:16px 0">
+      <span class="matrix-bracket" style="color:var(--text-dim)">[</span>
+      <div class="matrix-grid" style="grid-template-columns:repeat(2,1fr)">
+        <span class="coeff">2</span><span class="coeff">3</span>
+        <span class="coeff">1</span><span class="coeff">-1</span>
+      </div>
+      <div class="aug-line"></div>
+      <div class="matrix-grid" style="grid-template-columns:1fr">
+        <span class="const">7</span>
+        <span class="const">1</span>
+      </div>
+      <span class="matrix-bracket" style="color:var(--text-dim)">]</span>
+    </div>
+
+    <p class="concept-text">
+      Color code: <span style="color:var(--indigo);font-weight:600">Coefficient matrix A</span> (the numbers multiplying variables), <span style="color:var(--amber);font-weight:600">variable column x</span> (what we solve for), <span style="color:var(--green);font-weight:600">constants b</span> (right-hand side). The full equation is <span style="color:var(--indigo);font-weight:600">A</span><span style="color:var(--amber);font-weight:600">x</span> = <span style="color:var(--green);font-weight:600">b</span>.
+    </p>
+
+    <div class="key-point">The augmented matrix [A | b] contains all information needed to solve the system. Variable names (x, y, z) are implied by column position -- first column = first variable, second column = second variable, etc.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Enter a 2-equation system, see its augmented matrix</div>
+      <p style="font-size:.78rem;color:var(--text-dim);margin-bottom:12px">Enter coefficients for: a<sub>1</sub>x + b<sub>1</sub>y = c<sub>1</sub> and a<sub>2</sub>x + b<sub>2</sub>y = c<sub>2</sub></p>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:start">
+        <div>
+          <div class="sub-label">Equation 1</div>
+          <div style="display:flex;gap:4px;align-items:center;font-size:.8rem">
+            <input type="number" id="s2a1" value="3" style="width:50px;padding:6px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--indigo);font-family:'JetBrains Mono',monospace;font-size:.8rem" oninput="updateS2()">
+            <span style="color:var(--amber)">x</span> +
+            <input type="number" id="s2b1" value="-2" style="width:50px;padding:6px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--indigo);font-family:'JetBrains Mono',monospace;font-size:.8rem" oninput="updateS2()">
+            <span style="color:var(--amber)">y</span> =
+            <input type="number" id="s2c1" value="5" style="width:50px;padding:6px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--green);font-family:'JetBrains Mono',monospace;font-size:.8rem" oninput="updateS2()">
+          </div>
+          <div class="sub-label">Equation 2</div>
+          <div style="display:flex;gap:4px;align-items:center;font-size:.8rem">
+            <input type="number" id="s2a2" value="1" style="width:50px;padding:6px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--indigo);font-family:'JetBrains Mono',monospace;font-size:.8rem" oninput="updateS2()">
+            <span style="color:var(--amber)">x</span> +
+            <input type="number" id="s2b2" value="4" style="width:50px;padding:6px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--indigo);font-family:'JetBrains Mono',monospace;font-size:.8rem" oninput="updateS2()">
+            <span style="color:var(--amber)">y</span> =
+            <input type="number" id="s2c2" value="7" style="width:50px;padding:6px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--green);font-family:'JetBrains Mono',monospace;font-size:.8rem" oninput="updateS2()">
+          </div>
+        </div>
+        <div style="font-size:.75rem;color:var(--text-dim);display:flex;align-items:center">
+          <span style="font-size:1.5em;margin-right:10px">&#8594;</span>
+        </div>
+        <div id="s2MatrixOut" style="display:flex;align-items:center;gap:6px"></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> Write the augmented matrix for: 5x + y = 3, 2x - 3y = -1. What is the entry in row 2, column 1?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1" step="1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s2p1',2,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s2p1',2,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> For the system x + 2y + 3z = 6, 2x - y + z = 1, 3x + y - z = 4 -- how many columns does the augmented matrix have?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" step="1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s2p2',4,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s2p2',4,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem" id="s2p3mc">
+        <p><strong>3.</strong> Which augmented matrix represents: 4x - y = 10, -2x + 3y = 5?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p3mc','wrong')">[4  1 | 10;  -2  3 | 5]</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3mc','correct')">[4  -1 | 10;  -2  3 | 5]</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3mc','wrong')">[4  -1 | 10;  2  3 | 5]</button>
+        </div>
+        <div class="feedback" id="s2p3mc-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: ROW OPERATIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Row Operations</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      There are exactly <strong>three elementary row operations</strong> that transform a matrix without changing the solution set. These are the only moves you are allowed to make:
+    </p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0">
+      <div class="formula-box" style="text-align:left;font-size:.85rem"><strong style="color:var(--green)">1. Swap two rows:</strong> R<sub>i</sub> &#8596; R<sub>j</sub> -- interchange row i and row j</div>
+      <div class="formula-box" style="text-align:left;font-size:.85rem"><strong style="color:var(--amber)">2. Scale a row:</strong> kR<sub>i</sub> &#8594; R<sub>i</sub> -- multiply every entry in row i by nonzero scalar k</div>
+      <div class="formula-box" style="text-align:left;font-size:.85rem"><strong style="color:var(--pink)">3. Add a multiple of one row to another:</strong> R<sub>i</sub> + kR<sub>j</sub> &#8594; R<sub>i</sub></div>
+    </div>
+
+    <div class="key-point">These operations correspond to legal algebraic moves on equations: swapping equations, multiplying both sides by a constant, adding one equation to another. The solution set is preserved because each operation is reversible.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Apply Row Operations</div>
+      <p style="font-size:.78rem;color:var(--text-dim);margin-bottom:10px">Start with this 3x4 augmented matrix and apply operations. Try to get zeros below the main diagonal (row echelon form).</p>
+      <div id="s3MatrixDisplay" style="display:flex;align-items:center;justify-content:center;margin:16px 0"></div>
+      <div id="s3History" style="font-size:.7rem;color:var(--text-dim);margin:8px 0;min-height:20px"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0">
+        <button class="row-op-btn" onclick="s3Swap(0,1)">R1 &#8596; R2</button>
+        <button class="row-op-btn" onclick="s3Swap(0,2)">R1 &#8596; R3</button>
+        <button class="row-op-btn" onclick="s3Swap(1,2)">R2 &#8596; R3</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0">
+        <span style="font-size:.72rem;color:var(--text-dim)">Scale:</span>
+        <select id="s3ScaleRow" style="background:var(--bg-card);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem">
+          <option value="0">R1</option><option value="1">R2</option><option value="2">R3</option>
+        </select>
+        <span style="font-size:.72rem;color:var(--text-dim)">by k =</span>
+        <input type="number" id="s3ScaleK" value="2" step="0.5" style="width:55px;padding:4px 6px;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.72rem;text-align:center">
+        <button class="row-op-btn" onclick="s3Scale()">Apply Scale</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0">
+        <span style="font-size:.72rem;color:var(--text-dim)">Add:</span>
+        <select id="s3AddTarget" style="background:var(--bg-card);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem">
+          <option value="0">R1</option><option value="1">R2</option><option value="2">R3</option>
+        </select>
+        <span style="font-size:.72rem;color:var(--text-dim)">+ k</span>
+        <input type="number" id="s3AddK" value="-2" step="0.5" style="width:55px;padding:4px 6px;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.72rem;text-align:center">
+        <span style="font-size:.72rem;color:var(--text-dim)">*</span>
+        <select id="s3AddSource" style="background:var(--bg-card);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem">
+          <option value="0">R1</option><option value="1">R2</option><option value="2">R3</option>
+        </select>
+        <button class="row-op-btn" onclick="s3Add()">Apply Add</button>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-danger" onclick="s3Reset()">Reset Matrix</button>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s3p1mc">
+        <p><strong>1.</strong> Starting with [2  4 | 6; 1  3 | 5], you apply R2 + (-1/2)R1 &#8594; R2. What is the new entry in row 2, column 1?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="0.1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s3p1',0,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s3p1',0,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> After that same operation, what is the new entry in row 2, column 2? (Original was [2  4 | 6; 1  3 | 5], applied R2 + (-1/2)R1 &#8594; R2)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2" step="0.1" placeholder="?" onkeydown="if(event.key==='Enter')checkNum('s3p2',1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s3p2',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: GAUSSIAN ELIMINATION -> ROW ECHELON FORM -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Gaussian Elimination &#8594; Row Echelon Form</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Gaussian elimination</strong> is the systematic algorithm for solving systems via row operations. The goal is to transform the augmented matrix into <strong>row echelon form (REF)</strong>: a staircase pattern where each leading entry is to the right of the one above, and all entries below each leading entry are zero.
+    </p>
+
+    <div class="formula-box large" style="text-align:left;line-height:2.2">
+      Row Echelon Form:<br>
+      [ <span style="color:var(--indigo)">*</span>  a  b | d ]<br>
+      [ 0  <span style="color:var(--indigo)">*</span>  c | e ]<br>
+      [ 0  0  <span style="color:var(--indigo)">*</span> | f ]<br>
+      <span style="font-size:.75rem;color:var(--text-dim)">* = pivot (leading nonzero entry in each row)</span>
+    </div>
+
+    <p class="concept-text">
+      Once in REF, solve by <strong>back-substitution</strong>: the bottom row gives one variable directly, substitute up to find the rest.
+    </p>
+
+    <div class="key-point">Algorithm: (1) Find leftmost nonzero column. (2) Swap to get nonzero pivot on top. (3) Use row operations to zero out all entries below the pivot. (4) Move to the next column/row and repeat.</div>
+
+    <div class="navy-context"><strong>Physics Context:</strong> Solving force balance for a truss: at each joint you get two equations (sum of x-forces = 0, sum of y-forces = 0). A truss with 5 joints gives 10 equations in 10 unknowns -- Gaussian elimination handles this systematically where substitution would be chaos.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Step-by-Step Gaussian Elimination Solver</div>
+      <p style="font-size:.78rem;color:var(--text-dim);margin-bottom:10px">Enter a 3x3 system (augmented matrix). Click "Next Step" to walk through elimination.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:start;margin-bottom:12px">
+        <div>
+          <div class="sub-label">Enter 3x4 augmented matrix [A | b]</div>
+          <div class="matrix-input-grid" style="grid-template-columns:repeat(3,1fr) 6px 1fr" id="s4InputGrid">
+            <input type="number" id="s4r0c0" value="2"><input type="number" id="s4r0c1" value="1"><input type="number" id="s4r0c2" value="-1"><div class="aug-line"></div><input type="number" id="s4r0c3" value="8">
+            <input type="number" id="s4r1c0" value="-3"><input type="number" id="s4r1c1" value="-1"><input type="number" id="s4r1c2" value="2"><div class="aug-line"></div><input type="number" id="s4r1c3" value="-11">
+            <input type="number" id="s4r2c0" value="-2"><input type="number" id="s4r2c1" value="1"><input type="number" id="s4r2c2" value="2"><div class="aug-line"></div><input type="number" id="s4r2c3" value="-3">
+          </div>
+        </div>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" id="s4StartBtn" onclick="s4Start()">Start Elimination</button>
+        <button class="btn btn-primary" id="s4NextBtn" onclick="s4Next()" style="display:none">Next Step</button>
+        <button class="btn" onclick="s4Reset()">Reset</button>
+      </div>
+      <div id="s4StepInfo" class="step-info" style="display:none"></div>
+      <div id="s4MatrixDisplay" style="display:flex;align-items:center;justify-content:center;margin:16px 0"></div>
+      <div id="s4Solution" style="font-size:.82rem;margin-top:12px;display:none"></div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> Solve using Gaussian elimination (use the solver above to check): x + y + z = 6, 2x + 3y + z = 14, x - y + 2z = 2. What is z?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="0.1" placeholder="z = ?" onkeydown="if(event.key==='Enter')checkNum('s4p1',2,0.1)">
+          <button class="btn btn-sm" onclick="checkNum('s4p1',2,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> Solve: 3x - y = 5, x + 2y = 8, 2x + y = 7. What is x? (Hint: check consistency first)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2" step="0.01" placeholder="x = ?" onkeydown="if(event.key==='Enter')checkNum('s4p2',2.57,0.1)">
+          <button class="btn btn-sm" onclick="checkNum('s4p2',2.57,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> Solve: 2x + y - z = 1, x - y + 2z = 5, 4x - y + 3z = 11. What is y?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p3" step="0.1" placeholder="y = ?" onkeydown="if(event.key==='Enter')checkNum('s4p3',-1,0.15)">
+          <button class="btn btn-sm" onclick="checkNum('s4p3',-1,0.15)">Check</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: RREF & SPECIAL CASES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> RREF &amp; Special Cases</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Reduced Row Echelon Form (RREF)</strong> goes further than REF: every pivot equals 1, and every entry above and below each pivot is 0. The result reads off the solution directly -- no back-substitution needed.
+    </p>
+
+    <div class="formula-box large" style="text-align:left;line-height:2.2">
+      RREF (unique solution):<br>
+      [ <span style="color:var(--green)">1</span>  0  0 | <span style="color:var(--green)">x</span> ]<br>
+      [ 0  <span style="color:var(--green)">1</span>  0 | <span style="color:var(--green)">y</span> ]<br>
+      [ 0  0  <span style="color:var(--green)">1</span> | <span style="color:var(--green)">z</span> ]
+    </div>
+
+    <p class="concept-text"><strong>Special cases</strong> to recognize:</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin:12px 0">
+      <div class="formula-box green" style="text-align:left;font-size:.85rem">
+        <strong>Unique solution:</strong> Every variable has a pivot column. RREF is the identity on the left.
+      </div>
+      <div class="formula-box pink" style="text-align:left;font-size:.85rem">
+        <strong>No solution (inconsistent):</strong> A row like [0  0  0 | 5] appears -- this says 0 = 5, a contradiction.
+      </div>
+      <div class="formula-box amber" style="text-align:left;font-size:.85rem">
+        <strong>Infinite solutions (free variables):</strong> Fewer pivots than variables. Non-pivot columns are "free" -- set them to parameters (t, s, ...) and express pivot variables in terms of them.
+      </div>
+    </div>
+
+    <div class="key-point">In physics, an inconsistent system means your model has contradictory constraints (check your setup). Infinite solutions mean you need more equations -- the system is underdetermined.</div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Navigation fix with 3 bearing lines: ideally they intersect at one point (unique solution). In practice, measurement errors create a "cocked hat" triangle. If two bearing lines are nearly parallel (close to the same slope), the fix is poorly conditioned -- small errors cause large position uncertainty. This is the geometric version of near-singularity in the matrix.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: RREF Solver with Step Display</div>
+      <p style="font-size:.78rem;color:var(--text-dim);margin-bottom:10px">Enter any 3x3 system. The solver computes RREF and identifies the case.</p>
+      <div>
+        <div class="sub-label">Enter 3x4 augmented matrix [A | b]</div>
+        <div class="matrix-input-grid" style="grid-template-columns:repeat(3,1fr) 6px 1fr">
+          <input type="number" id="s5r0c0" value="1"><input type="number" id="s5r0c1" value="2"><input type="number" id="s5r0c2" value="-1"><div class="aug-line"></div><input type="number" id="s5r0c3" value="3">
+          <input type="number" id="s5r1c0" value="2"><input type="number" id="s5r1c1" value="4"><input type="number" id="s5r1c2" value="-2"><div class="aug-line"></div><input type="number" id="s5r1c3" value="6">
+          <input type="number" id="s5r2c0" value="3"><input type="number" id="s5r2c1" value="5"><input type="number" id="s5r2c2" value="0"><div class="aug-line"></div><input type="number" id="s5r2c3" value="10">
+        </div>
+      </div>
+      <div class="controls-row">
+        <button class="btn btn-primary" onclick="s5Solve()">Compute RREF</button>
+        <button class="btn" onclick="s5TryUnique()">Load: Unique</button>
+        <button class="btn" onclick="s5TryNone()">Load: No Solution</button>
+        <button class="btn" onclick="s5TryInf()">Load: Infinite</button>
+      </div>
+      <div id="s5Steps" style="margin-top:12px"></div>
+      <div id="s5Result" style="margin-top:12px"></div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s5p1mc">
+        <p><strong>1.</strong> The RREF of a system is [1 0 0 | 3; 0 1 0 | -1; 0 0 0 | 7]. What kind of solution does this have?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p1mc','wrong')">Unique solution: (3, -1, 7)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1mc','correct')">No solution (inconsistent)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1mc','wrong')">Infinite solutions</button>
+        </div>
+        <div class="feedback" id="s5p1mc-fb"></div>
+      </div>
+      <div class="problem" id="s5p2mc">
+        <p><strong>2.</strong> The RREF is [1 0 3 | 2; 0 1 -1 | 5; 0 0 0 | 0]. How many free variables are there?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2mc','wrong')">0 -- unique solution</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2mc','correct')">1 free variable (z is free)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2mc','wrong')">2 free variables</button>
+        </div>
+        <div class="feedback" id="s5p2mc-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> Solve via RREF (use the solver): 2x + y + z = 4, 4x + 2y + 2z = 8, x - y + z = 1. What is x when z = 0?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p3" step="0.01" placeholder="x = ?" onkeydown="if(event.key==='Enter')checkNum('s5p3',1.67,0.1)">
+          <button class="btn btn-sm" onclick="checkNum('s5p3',1.67,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s5p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUICK QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quick Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 8</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-q" data-qn="q1">
+      <div class="q-num">Question 1</div>
+      <div class="q-text">Two lines have slopes m1 = 3 and m2 = 3 with different y-intercepts. How many solutions does this system have?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">One solution</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">No solution (parallel lines)</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Infinitely many solutions</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q" data-qn="q2">
+      <div class="q-num">Question 2</div>
+      <div class="q-text">The augmented matrix for 3x - 2y = 7, x + 5y = -1 is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">[3  -2 | 7;  1  5 | -1]</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">[3  2 | 7;  1  5 | -1]</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">[3  -2 | 7;  1  -5 | -1]</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q" data-qn="q3">
+      <div class="q-num">Question 3</div>
+      <div class="q-text">Which row operation is NOT elementary?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">R1 &#8596; R3 (swap rows)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">3R2 &#8594; R2 (scale by 3)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">R1 * R2 &#8594; R1 (multiply rows together)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">R1 + (-2)R3 &#8594; R1 (add multiple)</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q" data-qn="q4">
+      <div class="q-num">Question 4</div>
+      <div class="q-text">In row echelon form, a "pivot" is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">The first nonzero entry in each row</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">The largest entry in each column</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">The diagonal entries of the matrix</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q" data-qn="q5">
+      <div class="q-num">Question 5</div>
+      <div class="q-text">You see this row in an augmented matrix during elimination: [0  0  0 | 4]. This means:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">The fourth variable equals zero</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">The system has no solution (0 = 4 is a contradiction)</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">There are free variables</button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q" data-qn="q6">
+      <div class="q-num">Question 6</div>
+      <div class="q-text">Solve: x + y = 5, x - y = 1. What is x?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">3</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">2</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">4</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">1</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q" data-qn="q7">
+      <div class="q-num">Question 7</div>
+      <div class="q-text">What distinguishes RREF from REF?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">RREF requires integer entries only</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">In RREF, all pivots are 1 and all entries above and below pivots are 0</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">RREF requires the matrix to be square</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q" data-qn="q8">
+      <div class="q-num">Question 8</div>
+      <div class="q-text">A 3x3 system reduces to RREF: [1 2 0 | 3; 0 0 1 | -1; 0 0 0 | 0]. Column 2 has no pivot, so:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">The system is inconsistent</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">y = 0</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">y is a free variable; infinite solutions parameterized by y = t</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== SECTION TOGGLE & PROGRESS ==================== */
+var completedSections = new Set();
+var totalSections = 6;
+
+function toggleSection(header) {
+  var card = header.closest('.section-card');
+  var wasOpen = card.classList.contains('open');
+  card.classList.toggle('open');
+  if (!wasOpen) {
+    var sn = card.getAttribute('data-section');
+    completedSections.add(sn);
+    card.classList.add('completed');
+    updateProgress();
+  }
+}
+
+function updateProgress() {
+  var pct = (completedSections.size / totalSections) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + totalSections + ' sections';
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.closest('.problem').classList.add('shake'); setTimeout(function(){ inp.parentElement.closest('.problem').classList.remove('shake'); }, 400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.closest('.problem').classList.add('pop'); setTimeout(function(){ inp.parentElement.closest('.problem').classList.remove('pop'); }, 350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again.';
+    inp.parentElement.closest('.problem').classList.add('shake'); setTimeout(function(){ inp.parentElement.closest('.problem').classList.remove('shake'); }, 400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){ btn.closest('.problem').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){ btn.closest('.problem').classList.remove('shake'); }, 400);
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf("'correct'") !== -1) b.classList.add('correct');
+    });
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){ btn.closest('.quiz-q').classList.remove('pop'); }, 350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){ btn.closest('.quiz-q').classList.remove('shake'); }, 400);
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: INTERACTIVE COORDINATE PLANE ==================== */
+function updateS1() {
+  var m1 = parseFloat(document.getElementById('s1m1').value);
+  var b1 = parseFloat(document.getElementById('s1b1').value);
+  var m2 = parseFloat(document.getElementById('s1m2').value);
+  var b2 = parseFloat(document.getElementById('s1b2').value);
+  document.getElementById('s1m1Val').textContent = m1.toFixed(2);
+  document.getElementById('s1b1Val').textContent = b1.toFixed(2);
+  document.getElementById('s1m2Val').textContent = m2.toFixed(2);
+  document.getElementById('s1b2Val').textContent = b2.toFixed(2);
+  document.getElementById('s1Eq1').textContent = 'y = ' + m1.toFixed(2) + 'x + ' + b1.toFixed(2);
+  document.getElementById('s1Eq2').textContent = 'y = ' + m2.toFixed(2) + 'x + ' + b2.toFixed(2);
+
+  var svg = document.getElementById('s1Svg');
+  var W = 600, H = 400;
+  var ox = W / 2, oy = H / 2;
+  var scale = 40; // pixels per unit
+
+  var h = '';
+  // Grid
+  h += '<rect width="' + W + '" height="' + H + '" fill="#1a1d24" rx="8"/>';
+  for (var gx = -7; gx <= 7; gx++) {
+    var px = ox + gx * scale;
+    h += '<line x1="' + px + '" y1="0" x2="' + px + '" y2="' + H + '" stroke="#2a2e38" stroke-width="1"/>';
+  }
+  for (var gy = -4; gy <= 4; gy++) {
+    var py = oy - gy * scale;
+    h += '<line x1="0" y1="' + py + '" x2="' + W + '" y2="' + py + '" stroke="#2a2e38" stroke-width="1"/>';
+  }
+  // Axes
+  h += '<line x1="0" y1="' + oy + '" x2="' + W + '" y2="' + oy + '" stroke="#4a4e5a" stroke-width="1.5"/>';
+  h += '<line x1="' + ox + '" y1="0" x2="' + ox + '" y2="' + H + '" stroke="#4a4e5a" stroke-width="1.5"/>';
+  // Axis labels
+  for (var lx = -7; lx <= 7; lx++) {
+    if (lx === 0) continue;
+    h += '<text x="' + (ox + lx * scale) + '" y="' + (oy + 14) + '" text-anchor="middle" fill="#6b7080" font-size="9">' + lx + '</text>';
+  }
+  for (var ly = -4; ly <= 4; ly++) {
+    if (ly === 0) continue;
+    h += '<text x="' + (ox - 10) + '" y="' + (oy - ly * scale + 4) + '" text-anchor="end" fill="#6b7080" font-size="9">' + ly + '</text>';
+  }
+  h += '<text x="' + (ox + 8) + '" y="' + (oy + 14) + '" fill="#6b7080" font-size="9">0</text>';
+
+  // Draw lines by computing endpoints at the edges of the viewport
+  function linePoints(m, b) {
+    var xMin = -W / (2 * scale), xMax = W / (2 * scale);
+    var y1v = m * xMin + b, y2v = m * xMax + b;
+    return {
+      x1: ox + xMin * scale, y1: oy - y1v * scale,
+      x2: ox + xMax * scale, y2: oy - y2v * scale
+    };
+  }
+
+  var l1 = linePoints(m1, b1);
+  var l2 = linePoints(m2, b2);
+  h += '<line x1="' + l1.x1 + '" y1="' + l1.y1 + '" x2="' + l1.x2 + '" y2="' + l1.y2 + '" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>';
+  h += '<line x1="' + l2.x1 + '" y1="' + l2.y1 + '" x2="' + l2.x2 + '" y2="' + l2.y2 + '" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/>';
+
+  // Labels
+  h += '<text x="20" y="25" fill="#f59e0b" font-size="11" font-weight="600">L1: y = ' + m1.toFixed(1) + 'x + ' + b1.toFixed(1) + '</text>';
+  h += '<text x="20" y="42" fill="#ec4899" font-size="11" font-weight="600">L2: y = ' + m2.toFixed(1) + 'x + ' + b2.toFixed(1) + '</text>';
+
+  // Determine case
+  var EPS = 1e-9;
+  if (Math.abs(m1 - m2) > EPS) {
+    // One solution
+    var ix = (b2 - b1) / (m1 - m2);
+    var iy = m1 * ix + b1;
+    var px_i = ox + ix * scale, py_i = oy - iy * scale;
+    if (px_i > 10 && px_i < W - 10 && py_i > 10 && py_i < H - 10) {
+      h += '<circle cx="' + px_i + '" cy="' + py_i + '" r="7" fill="none" stroke="#22c55e" stroke-width="2.5"/>';
+      h += '<circle cx="' + px_i + '" cy="' + py_i + '" r="3" fill="#22c55e"/>';
+      h += '<text x="' + (px_i + 12) + '" y="' + (py_i - 10) + '" fill="#22c55e" font-size="11" font-weight="600">(' + ix.toFixed(2) + ', ' + iy.toFixed(2) + ')</text>';
+    }
+    document.getElementById('s1Case').textContent = 'One Solution';
+    document.getElementById('s1Case').style.color = 'var(--green)';
+    document.getElementById('s1Intersection').textContent = '(' + ix.toFixed(2) + ', ' + iy.toFixed(2) + ')';
+  } else if (Math.abs(b1 - b2) < EPS) {
+    // Same line
+    document.getElementById('s1Case').textContent = 'Infinite Solutions (same line)';
+    document.getElementById('s1Case').style.color = 'var(--amber)';
+    document.getElementById('s1Intersection').textContent = 'all points on line';
+    h += '<text x="' + (W / 2) + '" y="60" text-anchor="middle" fill="#f59e0b" font-size="13" font-weight="600">Same line -- infinite solutions</text>';
+  } else {
+    // Parallel
+    document.getElementById('s1Case').textContent = 'No Solution (parallel)';
+    document.getElementById('s1Case').style.color = 'var(--pink)';
+    document.getElementById('s1Intersection').textContent = 'none';
+    h += '<text x="' + (W / 2) + '" y="60" text-anchor="middle" fill="#ec4899" font-size="13" font-weight="600">Parallel -- no solution</text>';
+  }
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 2: MATRIX NOTATION INTERACTIVE ==================== */
+function updateS2() {
+  var a1 = document.getElementById('s2a1').value || '0';
+  var b1 = document.getElementById('s2b1').value || '0';
+  var c1 = document.getElementById('s2c1').value || '0';
+  var a2 = document.getElementById('s2a2').value || '0';
+  var b2 = document.getElementById('s2b2').value || '0';
+  var c2 = document.getElementById('s2c2').value || '0';
+
+  var html = '<span class="matrix-bracket">[</span>';
+  html += '<div class="matrix-grid" style="grid-template-columns:repeat(2,1fr)">';
+  html += '<span class="coeff">' + a1 + '</span><span class="coeff">' + b1 + '</span>';
+  html += '<span class="coeff">' + a2 + '</span><span class="coeff">' + b2 + '</span>';
+  html += '</div>';
+  html += '<div class="aug-line"></div>';
+  html += '<div class="matrix-grid" style="grid-template-columns:1fr">';
+  html += '<span class="const">' + c1 + '</span>';
+  html += '<span class="const">' + c2 + '</span>';
+  html += '</div>';
+  html += '<span class="matrix-bracket">]</span>';
+  document.getElementById('s2MatrixOut').innerHTML = html;
+}
+
+/* ==================== SECTION 3: ROW OPERATIONS INTERACTIVE ==================== */
+var s3Matrix, s3OrigMatrix, s3HistoryLog;
+
+function s3Init() {
+  s3OrigMatrix = [
+    [1, 2, -1, 3],
+    [3, 8, 1, 12],
+    [2, 4, 1, 9]
+  ];
+  s3Matrix = s3OrigMatrix.map(function(r) { return r.slice(); });
+  s3HistoryLog = [];
+  s3Render();
+}
+
+function s3Render(highlightRow) {
+  var html = '<span class="matrix-bracket" style="font-size:2.5em;color:var(--text-dim)">[</span>';
+  html += '<div class="matrix-grid" style="grid-template-columns:repeat(3,1fr) 6px 1fr;gap:6px 14px">';
+  for (var i = 0; i < 3; i++) {
+    for (var j = 0; j < 3; j++) {
+      var cls = (highlightRow !== undefined && highlightRow === i) ? 'highlight' : 'coeff';
+      html += '<span class="' + cls + '">' + fmtNum(s3Matrix[i][j]) + '</span>';
+    }
+    html += '<div class="aug-line" style="grid-row:1/4"></div>';
+    var cls2 = (highlightRow !== undefined && highlightRow === i) ? 'highlight' : 'const';
+    html += '<span class="' + cls2 + '">' + fmtNum(s3Matrix[i][3]) + '</span>';
+  }
+  html += '</div>';
+  html += '<span class="matrix-bracket" style="font-size:2.5em;color:var(--text-dim)">]</span>';
+  document.getElementById('s3MatrixDisplay').innerHTML = html;
+  document.getElementById('s3History').textContent = s3HistoryLog.length ? 'History: ' + s3HistoryLog.join(' -> ') : '';
+}
+
+function fmtNum(n) {
+  if (Number.isInteger(n)) return n.toString();
+  return n % 1 === 0 ? n.toFixed(0) : n.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+}
+
+function s3Swap(i, j) {
+  var temp = s3Matrix[i]; s3Matrix[i] = s3Matrix[j]; s3Matrix[j] = temp;
+  s3HistoryLog.push('R' + (i + 1) + '<->R' + (j + 1));
+  s3Render();
+}
+
+function s3Scale() {
+  var row = parseInt(document.getElementById('s3ScaleRow').value);
+  var k = parseFloat(document.getElementById('s3ScaleK').value);
+  if (k === 0 || isNaN(k)) return;
+  for (var j = 0; j < 4; j++) s3Matrix[row][j] *= k;
+  s3HistoryLog.push(k + '*R' + (row + 1));
+  s3Render(row);
+}
+
+function s3Add() {
+  var target = parseInt(document.getElementById('s3AddTarget').value);
+  var source = parseInt(document.getElementById('s3AddSource').value);
+  var k = parseFloat(document.getElementById('s3AddK').value);
+  if (isNaN(k) || target === source) return;
+  for (var j = 0; j < 4; j++) s3Matrix[target][j] += k * s3Matrix[source][j];
+  s3HistoryLog.push('R' + (target + 1) + '+(' + k + ')R' + (source + 1));
+  s3Render(target);
+}
+
+function s3Reset() {
+  s3Init();
+}
+
+/* ==================== SECTION 4: GAUSSIAN ELIMINATION SOLVER ==================== */
+var s4Steps = [];
+var s4StepIndex = 0;
+var s4Mat = null;
+
+function s4ReadInput() {
+  var m = [];
+  for (var i = 0; i < 3; i++) {
+    m[i] = [];
+    for (var j = 0; j < 4; j++) {
+      m[i][j] = parseFloat(document.getElementById('s4r' + i + 'c' + j).value) || 0;
+    }
+  }
+  return m;
+}
+
+function s4Start() {
+  var m = s4ReadInput();
+  s4Steps = [];
+  s4StepIndex = 0;
+  s4Mat = m.map(function(r) { return r.slice(); });
+
+  // Record initial state
+  s4Steps.push({ mat: s4Mat.map(function(r) { return r.slice(); }), msg: 'Initial augmented matrix', pivotR: -1, pivotC: -1, targets: [] });
+
+  // Gaussian elimination (forward phase only)
+  var rows = 3, cols = 3;
+  var pivotRow = 0;
+  for (var col = 0; col < cols && pivotRow < rows; col++) {
+    // Find pivot
+    var maxRow = pivotRow;
+    var maxVal = Math.abs(s4Mat[pivotRow][col]);
+    for (var r = pivotRow + 1; r < rows; r++) {
+      if (Math.abs(s4Mat[r][col]) > maxVal) { maxRow = r; maxVal = Math.abs(s4Mat[r][col]); }
+    }
+    if (maxVal < 1e-10) {
+      s4Steps.push({ mat: s4Mat.map(function(r) { return r.slice(); }), msg: 'Column ' + (col + 1) + ': no nonzero pivot found, skip.', pivotR: -1, pivotC: col, targets: [] });
+      continue;
+    }
+    if (maxRow !== pivotRow) {
+      var tmp = s4Mat[pivotRow]; s4Mat[pivotRow] = s4Mat[maxRow]; s4Mat[maxRow] = tmp;
+      s4Steps.push({ mat: s4Mat.map(function(r) { return r.slice(); }), msg: 'Swap R' + (pivotRow + 1) + ' <-> R' + (maxRow + 1) + ' (partial pivoting)', pivotR: pivotRow, pivotC: col, targets: [] });
+    }
+    // Eliminate below
+    var targets = [];
+    for (var r2 = pivotRow + 1; r2 < rows; r2++) {
+      if (Math.abs(s4Mat[r2][col]) > 1e-10) {
+        var factor = s4Mat[r2][col] / s4Mat[pivotRow][col];
+        for (var j = col; j < 4; j++) {
+          s4Mat[r2][j] -= factor * s4Mat[pivotRow][j];
+          if (Math.abs(s4Mat[r2][j]) < 1e-10) s4Mat[r2][j] = 0;
+        }
+        targets.push(r2);
+        s4Steps.push({ mat: s4Mat.map(function(r) { return r.slice(); }), msg: 'R' + (r2 + 1) + ' = R' + (r2 + 1) + ' - (' + fmtNum(factor) + ')R' + (pivotRow + 1) + '  [zero out row ' + (r2 + 1) + ', col ' + (col + 1) + ']', pivotR: pivotRow, pivotC: col, targets: [r2] });
+      }
+    }
+    pivotRow++;
+  }
+
+  // Back substitution
+  s4Steps.push({ mat: s4Mat.map(function(r) { return r.slice(); }), msg: 'Row Echelon Form achieved. Now back-substitute.', pivotR: -1, pivotC: -1, targets: [], isREF: true });
+
+  // Compute solution via back substitution
+  var solution = s4BackSubstitute(s4Mat);
+  if (solution) {
+    s4Steps.push({ mat: s4Mat.map(function(r) { return r.slice(); }), msg: 'Solution: x = ' + fmtNum(solution[0]) + ', y = ' + fmtNum(solution[1]) + ', z = ' + fmtNum(solution[2]), pivotR: -1, pivotC: -1, targets: [], solution: solution });
+  } else {
+    s4Steps.push({ mat: s4Mat.map(function(r) { return r.slice(); }), msg: 'System has no unique solution (check for inconsistency or free variables).', pivotR: -1, pivotC: -1, targets: [] });
+  }
+
+  document.getElementById('s4StartBtn').style.display = 'none';
+  document.getElementById('s4NextBtn').style.display = '';
+  s4ShowStep();
+}
+
+function s4BackSubstitute(m) {
+  // Check for zero row with nonzero constant
+  for (var i = 0; i < 3; i++) {
+    var allZero = Math.abs(m[i][0]) < 1e-10 && Math.abs(m[i][1]) < 1e-10 && Math.abs(m[i][2]) < 1e-10;
+    if (allZero && Math.abs(m[i][3]) > 1e-10) return null; // inconsistent
+  }
+  // Check if upper triangular with nonzero diagonal
+  if (Math.abs(m[2][2]) < 1e-10) return null; // no unique solution
+  var z = m[2][3] / m[2][2];
+  if (Math.abs(m[1][1]) < 1e-10) return null;
+  var y = (m[1][3] - m[1][2] * z) / m[1][1];
+  if (Math.abs(m[0][0]) < 1e-10) return null;
+  var x = (m[0][3] - m[0][1] * y - m[0][2] * z) / m[0][0];
+  return [x, y, z];
+}
+
+function s4ShowStep() {
+  if (s4StepIndex >= s4Steps.length) return;
+  var step = s4Steps[s4StepIndex];
+  document.getElementById('s4StepInfo').style.display = 'block';
+  document.getElementById('s4StepInfo').textContent = 'Step ' + (s4StepIndex + 1) + '/' + s4Steps.length + ': ' + step.msg;
+  s4RenderMatrix(step);
+  if (step.solution) {
+    document.getElementById('s4Solution').style.display = 'block';
+    document.getElementById('s4Solution').innerHTML = '<div class="formula-box green">Solution: <strong>x = ' + fmtNum(step.solution[0]) + '</strong>, <strong>y = ' + fmtNum(step.solution[1]) + '</strong>, <strong>z = ' + fmtNum(step.solution[2]) + '</strong></div>';
+  }
+  if (s4StepIndex >= s4Steps.length - 1) {
+    document.getElementById('s4NextBtn').textContent = 'Done';
+    document.getElementById('s4NextBtn').disabled = true;
+  }
+}
+
+function s4Next() {
+  s4StepIndex++;
+  s4ShowStep();
+}
+
+function s4RenderMatrix(step) {
+  var m = step.mat;
+  var html = '<span class="matrix-bracket" style="font-size:2.5em;color:var(--text-dim)">[</span>';
+  html += '<div class="matrix-grid" style="grid-template-columns:repeat(3,1fr) 6px 1fr;gap:6px 14px">';
+  for (var i = 0; i < 3; i++) {
+    for (var j = 0; j < 3; j++) {
+      var cls = 'coeff';
+      if (i === step.pivotR && j === step.pivotC) cls = 'pivot';
+      else if (step.targets && step.targets.indexOf(i) !== -1) cls = 'highlight';
+      html += '<span class="' + cls + '">' + fmtNum(m[i][j]) + '</span>';
+    }
+    if (i === 0) html += '<div class="aug-line" style="grid-row:1/4"></div>';
+    var cls2 = (step.targets && step.targets.indexOf(i) !== -1) ? 'highlight' : 'const';
+    html += '<span class="' + cls2 + '">' + fmtNum(m[i][3]) + '</span>';
+  }
+  html += '</div>';
+  html += '<span class="matrix-bracket" style="font-size:2.5em;color:var(--text-dim)">]</span>';
+  document.getElementById('s4MatrixDisplay').innerHTML = html;
+}
+
+function s4Reset() {
+  s4Steps = []; s4StepIndex = 0; s4Mat = null;
+  document.getElementById('s4StartBtn').style.display = '';
+  document.getElementById('s4NextBtn').style.display = 'none';
+  document.getElementById('s4NextBtn').textContent = 'Next Step';
+  document.getElementById('s4NextBtn').disabled = false;
+  document.getElementById('s4StepInfo').style.display = 'none';
+  document.getElementById('s4MatrixDisplay').innerHTML = '';
+  document.getElementById('s4Solution').style.display = 'none';
+}
+
+/* ==================== SECTION 5: RREF SOLVER ==================== */
+function s5ReadInput() {
+  var m = [];
+  for (var i = 0; i < 3; i++) {
+    m[i] = [];
+    for (var j = 0; j < 4; j++) {
+      m[i][j] = parseFloat(document.getElementById('s5r' + i + 'c' + j).value) || 0;
+    }
+  }
+  return m;
+}
+
+function s5Solve() {
+  var m = s5ReadInput();
+  var stepsLog = [];
+  stepsLog.push({ mat: m.map(function(r) { return r.slice(); }), msg: 'Initial matrix' });
+
+  var rows = 3, cols = 3;
+  var pivotRow = 0;
+
+  // Forward elimination
+  for (var col = 0; col < cols && pivotRow < rows; col++) {
+    var maxRow = pivotRow, maxVal = Math.abs(m[pivotRow][col]);
+    for (var r = pivotRow + 1; r < rows; r++) {
+      if (Math.abs(m[r][col]) > maxVal) { maxRow = r; maxVal = Math.abs(m[r][col]); }
+    }
+    if (maxVal < 1e-10) continue;
+    if (maxRow !== pivotRow) {
+      var tmp = m[pivotRow]; m[pivotRow] = m[maxRow]; m[maxRow] = tmp;
+      stepsLog.push({ mat: m.map(function(r) { return r.slice(); }), msg: 'Swap R' + (pivotRow + 1) + ' <-> R' + (maxRow + 1) });
+    }
+    // Scale pivot to 1
+    var pv = m[pivotRow][col];
+    if (Math.abs(pv - 1) > 1e-10) {
+      for (var j = 0; j < 4; j++) m[pivotRow][j] /= pv;
+      stepsLog.push({ mat: m.map(function(r) { return r.slice(); }), msg: 'R' + (pivotRow + 1) + ' = R' + (pivotRow + 1) + ' / ' + fmtNum(pv) + '  (make pivot = 1)' });
+    }
+    // Eliminate above and below
+    for (var r2 = 0; r2 < rows; r2++) {
+      if (r2 === pivotRow) continue;
+      if (Math.abs(m[r2][col]) > 1e-10) {
+        var factor = m[r2][col];
+        for (var j2 = 0; j2 < 4; j2++) {
+          m[r2][j2] -= factor * m[pivotRow][j2];
+          if (Math.abs(m[r2][j2]) < 1e-10) m[r2][j2] = 0;
+        }
+        stepsLog.push({ mat: m.map(function(r) { return r.slice(); }), msg: 'R' + (r2 + 1) + ' = R' + (r2 + 1) + ' - (' + fmtNum(factor) + ')R' + (pivotRow + 1) });
+      }
+    }
+    pivotRow++;
+  }
+
+  // Clean up tiny values
+  for (var i = 0; i < 3; i++) for (var j = 0; j < 4; j++) if (Math.abs(m[i][j]) < 1e-10) m[i][j] = 0;
+
+  // Display steps
+  var stepsHtml = '<div class="sub-label" style="margin-bottom:8px">Steps to RREF:</div>';
+  stepsLog.forEach(function(s, idx) {
+    stepsHtml += '<div style="margin-bottom:6px;font-size:.72rem"><span style="color:var(--indigo);font-weight:600">Step ' + (idx + 1) + ':</span> <span style="color:var(--text-dim)">' + s.msg + '</span></div>';
+  });
+  document.getElementById('s5Steps').innerHTML = stepsHtml;
+
+  // Analyze result
+  var resultHtml = '<div class="sub-label">RREF Result:</div>';
+  resultHtml += s5RenderMatrix(m);
+
+  // Determine case
+  var pivots = [];
+  for (var i2 = 0; i2 < 3; i2++) {
+    for (var j2 = 0; j2 < 3; j2++) {
+      if (Math.abs(m[i2][j2] - 1) < 1e-10) {
+        var isPivot = true;
+        for (var k = 0; k < 3; k++) { if (k !== i2 && Math.abs(m[k][j2]) > 1e-10) isPivot = false; }
+        if (isPivot) { pivots.push({ row: i2, col: j2 }); break; }
+      }
+    }
+  }
+
+  // Check for inconsistency
+  var inconsistent = false;
+  for (var i3 = 0; i3 < 3; i3++) {
+    var rowAllZero = Math.abs(m[i3][0]) < 1e-10 && Math.abs(m[i3][1]) < 1e-10 && Math.abs(m[i3][2]) < 1e-10;
+    if (rowAllZero && Math.abs(m[i3][3]) > 1e-10) { inconsistent = true; break; }
+  }
+
+  if (inconsistent) {
+    resultHtml += '<div class="formula-box pink" style="text-align:left;margin-top:12px"><strong>No Solution (Inconsistent)</strong><br>A row reads 0 = nonzero -- the constraints contradict each other.</div>';
+  } else if (pivots.length === 3) {
+    resultHtml += '<div class="formula-box green" style="text-align:left;margin-top:12px"><strong>Unique Solution:</strong> x = ' + fmtNum(m[0][3]) + ', y = ' + fmtNum(m[1][3]) + ', z = ' + fmtNum(m[2][3]) + '</div>';
+  } else {
+    var freeCols = [];
+    var pivotCols = pivots.map(function(p) { return p.col; });
+    for (var c = 0; c < 3; c++) { if (pivotCols.indexOf(c) === -1) freeCols.push(c); }
+    var varNames = ['x', 'y', 'z'];
+    var freeNames = freeCols.map(function(c) { return varNames[c]; });
+    resultHtml += '<div class="formula-box amber" style="text-align:left;margin-top:12px"><strong>Infinite Solutions</strong><br>Free variable(s): ' + freeNames.join(', ') + '. Set free variables to parameters and express pivot variables in terms of them.</div>';
+  }
+
+  document.getElementById('s5Result').innerHTML = resultHtml;
+}
+
+function s5RenderMatrix(m) {
+  var html = '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin:12px 0">';
+  html += '<span class="matrix-bracket" style="font-size:2.5em;color:var(--text-dim)">[</span>';
+  html += '<div class="matrix-grid" style="grid-template-columns:repeat(3,1fr) 6px 1fr;gap:6px 14px">';
+  for (var i = 0; i < 3; i++) {
+    for (var j = 0; j < 3; j++) {
+      var cls = 'coeff';
+      if (Math.abs(m[i][j] - 1) < 1e-10) {
+        // Check if this is a pivot
+        var isPivot = true;
+        for (var k = 0; k < 3; k++) { if (k !== i && Math.abs(m[k][j]) > 1e-10) isPivot = false; }
+        if (isPivot) cls = 'pivot';
+      }
+      html += '<span class="' + cls + '">' + fmtNum(m[i][j]) + '</span>';
+    }
+    if (i === 0) html += '<div class="aug-line" style="grid-row:1/4"></div>';
+    html += '<span class="const">' + fmtNum(m[i][3]) + '</span>';
+  }
+  html += '</div>';
+  html += '<span class="matrix-bracket" style="font-size:2.5em;color:var(--text-dim)">]</span></div>';
+  return html;
+}
+
+function s5TryUnique() {
+  var vals = [[2,1,-1,8],[-3,-1,2,-11],[-2,1,2,-3]];
+  for (var i = 0; i < 3; i++) for (var j = 0; j < 4; j++) document.getElementById('s5r' + i + 'c' + j).value = vals[i][j];
+  document.getElementById('s5Steps').innerHTML = '';
+  document.getElementById('s5Result').innerHTML = '';
+}
+
+function s5TryNone() {
+  var vals = [[1,1,1,2],[0,1,1,3],[1,2,2,4]];
+  for (var i = 0; i < 3; i++) for (var j = 0; j < 4; j++) document.getElementById('s5r' + i + 'c' + j).value = vals[i][j];
+  document.getElementById('s5Steps').innerHTML = '';
+  document.getElementById('s5Result').innerHTML = '';
+}
+
+function s5TryInf() {
+  var vals = [[1,2,-1,3],[2,4,-2,6],[3,5,0,10]];
+  for (var i = 0; i < 3; i++) for (var j = 0; j < 4; j++) document.getElementById('s5r' + i + 'c' + j).value = vals[i][j];
+  document.getElementById('s5Steps').innerHTML = '';
+  document.getElementById('s5Result').innerHTML = '';
+}
+
+/* ==================== INIT ==================== */
+// Mark section 1 as completed since it starts open
+completedSections.add('1');
+updateProgress();
+updateS1();
+updateS2();
+s3Init();
+</script>
+</body>
+</html>

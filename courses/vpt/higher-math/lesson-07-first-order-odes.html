@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 7: First-Order ODEs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.step-box{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:12px 0}
+.step-box .step-num{font-size:.65rem;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.step-box .step-content{font-size:.78rem;line-height:1.8}
+.step-box .step-content strong{color:var(--text-bright)}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.formula-box{font-size:.85rem;padding:12px 14px}.formula-box.large{font-size:.95rem;padding:14px 16px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>07</span> First-Order Ordinary Differential Equations</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 7 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: WHAT IS AN ODE? -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> What Is an ODE?</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      An <strong>ordinary differential equation (ODE)</strong> is an equation that relates a function y(x) to its derivatives. Unlike algebraic equations where you solve for a number, an ODE solution is an entire <strong>function</strong>. The word "ordinary" distinguishes it from partial differential equations (PDEs) which involve partial derivatives of functions of multiple variables.
+    </p>
+    <div class="formula-box large">dy/dx = f(x, y) &mdash; general first-order ODE</div>
+
+    <p class="concept-text">
+      The <strong>order</strong> of an ODE is the highest derivative that appears. A <strong>first-order</strong> ODE involves only dy/dx (no d&sup2;y/dx&sup2; or higher). The <strong>degree</strong> is the power of the highest-order derivative, after clearing fractions and radicals. Most ODEs we study are degree 1.
+    </p>
+
+    <div class="formula-box green">First order, degree 1: &nbsp; dy/dx = x&sup2; + y</div>
+    <div class="formula-box pink">Second order, degree 1: &nbsp; d&sup2;y/dx&sup2; + 3 dy/dx + 2y = 0</div>
+
+    <p class="concept-text">
+      A <strong>general solution</strong> contains an arbitrary constant C and represents a family of curves. A <strong>particular solution</strong> is obtained by specifying an <strong>initial condition</strong> y(x&#8320;) = y&#8320;, which pins down the value of C and selects one specific curve from the family.
+    </p>
+
+    <div class="key-point">Example: dy/dx = 2x has general solution y = x&sup2; + C. The initial condition y(0) = 3 gives C = 3, so the particular solution is y = x&sup2; + 3.</div>
+
+    <p class="concept-text">
+      A <strong>direction field</strong> (slope field) visualizes an ODE by drawing short line segments at grid points (x, y) with slope f(x, y). Solution curves follow these tangent segments. This gives geometric intuition before doing any algebra.
+    </p>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> ODEs model nearly every dynamic system on a ship. Temperature of cooling engine components, voltage across an RC filter circuit, radioactive decay in reactor shielding calculations -- all governed by first-order ODEs. Understanding the slope field means understanding system behavior before you even solve the equation.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> What is the order of the ODE: &nbsp; (dy/dx)&sup3; + y = sin(x)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1v" step="1" placeholder="order = ?" onkeydown="if(event.key==='Enter')checkNum('s1p1v',1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s1p1v',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1v-fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> The general solution to dy/dx = 3x&sup2; is y = x&sup3; + C. If y(1) = 5, what is C?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2v" step="1" placeholder="C = ?" onkeydown="if(event.key==='Enter')checkNum('s1p2v',4,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s1p2v',4,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2v-fb"></div>
+      </div>
+      <div class="problem" id="s1p3">
+        <p><strong>3.</strong> Is y = Ce^(2x) a general solution or a particular solution?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','correct')">General -- it contains the arbitrary constant C</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">Particular -- it is a single exponential function</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">Neither -- exponentials cannot be ODE solutions</button>
+        </div>
+        <div class="feedback" id="s1p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: SEPARABLE EQUATIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Separable Equations</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A separable ODE can be written so that all y terms are on one side and all x terms on the other. This is the simplest class of first-order ODEs and often the first technique you should try.
+    </p>
+    <div class="formula-box large">dy/dx = f(x) g(y) &nbsp;&rarr;&nbsp; (1/g(y)) dy = f(x) dx</div>
+
+    <div class="step-box">
+      <div class="step-num">Step 1</div>
+      <div class="step-content"><strong>Separate variables:</strong> Write dy/dx = f(x)g(y), then move all y to the left, all x to the right: (1/g(y)) dy = f(x) dx</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">Step 2</div>
+      <div class="step-content"><strong>Integrate both sides:</strong> &int; (1/g(y)) dy = &int; f(x) dx + C</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">Step 3</div>
+      <div class="step-content"><strong>Solve for y</strong> (if possible) and apply initial conditions to find C.</div>
+    </div>
+
+    <div class="key-point">Worked example: dy/dx = xy. Separate: (1/y) dy = x dx. Integrate: ln|y| = x&sup2;/2 + C. Solve: y = Ae^(x&sup2;/2) where A = &plusmn;e^C.</div>
+
+    <p class="concept-text">
+      <strong>Newton's Law of Cooling</strong> is a classic separable ODE: dT/dt = -k(T - T_env). Separating: dT/(T - T_env) = -k dt. Integrating: ln|T - T_env| = -kt + C, giving T(t) = T_env + (T&#8320; - T_env)e^(-kt).
+    </p>
+    <div class="formula-box green">T(t) = T_env + (T&#8320; - T_env)e^(-kt) &mdash; Newton's cooling</div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Newton's cooling law models engine component cooling after shutdown. If a turbine bearing runs at 200&deg;F in a 70&deg;F engine room with k = 0.05 min&sup1;, you can compute exactly when it is safe to service. The same equation governs cooling of electronics in sealed equipment cabinets.
+    </div>
+
+    <p class="concept-text">
+      <strong>Radioactive decay</strong> is another separable ODE: dN/dt = -&lambda;N. Separating: dN/N = -&lambda; dt. Solution: N(t) = N&#8320; e^(-&lambda;t). The half-life t_(1/2) = ln(2)/&lambda;.
+    </p>
+    <div class="formula-box pink">N(t) = N&#8320; e^(-&lambda;t) &mdash; radioactive decay</div>
+
+    <!-- INTERACTIVE: Slope Field + Solution Curves -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Slope Field Visualizer</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Select an ODE to see its slope field. Click anywhere on the canvas to draw a solution curve through that point.</p>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setSlopeODE('sep1',this)">dy/dx = xy</button>
+        <button class="scenario-tab" onclick="setSlopeODE('sep2',this)">dy/dx = -y</button>
+        <button class="scenario-tab" onclick="setSlopeODE('cool',this)">dT/dt = -0.5(T-1)</button>
+        <button class="scenario-tab" onclick="setSlopeODE('decay',this)">dN/dt = -0.3N</button>
+      </div>
+      <canvas id="slopeCanvas" width="600" height="400" style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);cursor:crosshair;display:block"></canvas>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn btn-sm" onclick="clearCurves()">Clear Curves</button>
+        <span style="font-size:.68rem;color:var(--text-dim);align-self:center">Click canvas to draw solution curves</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Equation</span><br><span class="value indigo" id="slopeEqn">dy/dx = xy</span></div>
+        <div class="readout-item"><span class="label">Type</span><br><span class="value green" id="slopeType">Separable</span></div>
+        <div class="readout-item"><span class="label">Curves drawn</span><br><span class="value amber" id="slopeCurves">0</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s2p1">
+        <p><strong>1.</strong> Solve dy/dx = 2x with y(0) = 1. What is y(3)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1v" step="0.1" placeholder="y(3) = ?" onkeydown="if(event.key==='Enter')checkNum('s2p1v',10,0.1)">
+          <button class="btn btn-sm" onclick="checkNum('s2p1v',10,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1v-fb"></div>
+      </div>
+      <div class="problem" id="s2p2">
+        <p><strong>2.</strong> A bearing at 200&deg;F cools in a 70&deg;F room with k = 0.05/min. Using T(t) = 70 + 130e^(-0.05t), what is T(20)? Round to nearest integer.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2v" step="1" placeholder="T(20) = ?" onkeydown="if(event.key==='Enter')checkNum('s2p2v',118,2)">
+          <button class="btn btn-sm" onclick="checkNum('s2p2v',118,2)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2v-fb"></div>
+      </div>
+      <div class="problem" id="s2p3">
+        <p><strong>3.</strong> Is dy/dx = x + y separable?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','correct')">No -- you cannot write x + y as f(x)g(y)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">Yes -- separate as dy - y dx = x dx</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">Yes -- factor out x from both terms</button>
+        </div>
+        <div class="feedback" id="s2p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: FIRST-ORDER LINEAR ODEs -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> First-Order Linear ODEs</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>first-order linear ODE</strong> has the standard form shown below. The key property is that y and dy/dx appear only to the first power -- no y&sup2;, no (dy/dx)&sup2;, no y&middot;(dy/dx). The functions P(x) and Q(x) can be anything; it is y that must be linear.
+    </p>
+    <div class="formula-box large">dy/dx + P(x)y = Q(x) &mdash; standard form</div>
+
+    <p class="concept-text">
+      The <strong>integrating factor method</strong> is a systematic algorithm that always works for linear ODEs. The idea: multiply both sides by a carefully chosen function &mu;(x) that makes the left side collapse into a perfect derivative.
+    </p>
+    <div class="formula-box green large">&mu;(x) = e^(&int; P(x) dx) &mdash; the integrating factor</div>
+
+    <div class="step-box">
+      <div class="step-num">Step 1</div>
+      <div class="step-content"><strong>Put in standard form:</strong> dy/dx + P(x)y = Q(x). Identify P(x) and Q(x).</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">Step 2</div>
+      <div class="step-content"><strong>Compute the integrating factor:</strong> &mu;(x) = e^(&int; P(x) dx). You can drop the constant of integration here.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">Step 3</div>
+      <div class="step-content"><strong>Multiply both sides by &mu;(x):</strong> &mu; dy/dx + &mu; P y = &mu; Q. The left side is now d/dx[&mu; y].</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">Step 4</div>
+      <div class="step-content"><strong>Integrate:</strong> &mu;(x) y = &int; &mu;(x) Q(x) dx + C</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">Step 5</div>
+      <div class="step-content"><strong>Solve for y:</strong> y = (1/&mu;(x)) [&int; &mu;(x) Q(x) dx + C]</div>
+    </div>
+
+    <div class="key-point">Worked example: dy/dx + 2y = 6. Here P = 2, Q = 6. So &mu; = e^(2x). Multiply: d/dx[e^(2x) y] = 6e^(2x). Integrate: e^(2x) y = 3e^(2x) + C. Solution: y = 3 + Ce^(-2x).</div>
+
+    <p class="concept-text">
+      <strong>RC Circuit ODE:</strong> In a series RC circuit with voltage source V(t), Kirchhoff's voltage law gives the first-order linear ODE for charge q(t):
+    </p>
+    <div class="formula-box amber">R dq/dt + q/C = V(t) &nbsp;&rarr;&nbsp; dq/dt + (1/RC)q = V(t)/R</div>
+
+    <p class="concept-text">
+      Here P = 1/RC (a constant) and Q = V(t)/R. The integrating factor is &mu; = e^(t/RC). The quantity RC is called the <strong>time constant</strong> &tau;. After one time constant, a charging capacitor reaches about 63% of its final voltage.
+    </p>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> RC circuits appear everywhere in shipboard electronics -- power supply filters, signal conditioning, timing circuits. An RL circuit (inductor + resistor) follows the same math: L di/dt + Ri = V(t), with &tau; = L/R. Understanding the integrating factor method lets you analyze transient behavior in any first-order circuit.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">RC Circuit Transient Response</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust R, C, and source voltage to see the capacitor charging curve. The solution is q(t) = CV(1 - e^(-t/RC)).</p>
+      <div class="slider-row">
+        <label>R (k&Omega;)</label>
+        <input type="range" id="rcR" min="1" max="20" value="10" step="1" oninput="drawRC()">
+        <span class="slider-val" id="rcRVal">10</span>
+      </div>
+      <div class="slider-row">
+        <label>C (&mu;F)</label>
+        <input type="range" id="rcC" min="1" max="100" value="47" step="1" oninput="drawRC()">
+        <span class="slider-val" id="rcCVal">47</span>
+      </div>
+      <div class="slider-row">
+        <label>V (volts)</label>
+        <input type="range" id="rcV" min="1" max="24" value="12" step="1" oninput="drawRC()">
+        <span class="slider-val" id="rcVVal">12</span>
+      </div>
+      <canvas id="rcCanvas" width="600" height="300" style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);display:block"></canvas>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Time constant &tau;</span><br><span class="value indigo" id="rcTau">0.47 s</span></div>
+        <div class="readout-item"><span class="label">Final voltage</span><br><span class="value green" id="rcFinal">12.0 V</span></div>
+        <div class="readout-item"><span class="label">V at t = &tau;</span><br><span class="value amber" id="rcAtTau">7.6 V</span></div>
+        <div class="readout-item"><span class="label">63.2% of V</span><br><span class="value pink" id="rc63">7.6 V</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s3p1">
+        <p><strong>1.</strong> For dy/dx + 3y = 12, what is the integrating factor &mu;(x)?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','correct')">e^(3x)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','wrong')">3x</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','wrong')">e^(12x)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p1','wrong')">e^(-3x)</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem" id="s3p2">
+        <p><strong>2.</strong> Solve dy/dx + 2y = 6 with y(0) = 0. What is y as t goes to infinity?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2v" step="0.1" placeholder="y(&infin;) = ?" onkeydown="if(event.key==='Enter')checkNum('s3p2v',3,0.1)">
+          <button class="btn btn-sm" onclick="checkNum('s3p2v',3,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2v-fb"></div>
+      </div>
+      <div class="problem" id="s3p3">
+        <p><strong>3.</strong> An RC circuit has R = 5 k&Omega; and C = 100 &mu;F. What is the time constant &tau; = RC in seconds?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p3v" step="0.01" placeholder="&tau; = ?" onkeydown="if(event.key==='Enter')checkNum('s3p3v',0.5,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s3p3v',0.5,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p3v-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: EXACT EQUATIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Exact Equations</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      An ODE written as M(x,y) dx + N(x,y) dy = 0 is called <strong>exact</strong> if there exists a function F(x,y) such that &part;F/&part;x = M and &part;F/&part;y = N. The solution is then simply F(x,y) = C -- a level curve of the potential function F. The key is the mixed-partial test from multivariable calculus.
+    </p>
+    <div class="formula-box large">M dx + N dy = 0 is exact &nbsp;&hArr;&nbsp; &part;M/&part;y = &part;N/&part;x</div>
+
+    <p class="concept-text">
+      This condition comes from Clairaut's theorem: if F has continuous second partials, then &part;&sup2;F/&part;y&part;x = &part;&sup2;F/&part;x&part;y. Since M = F_x and N = F_y, we need M_y = F_xy = F_yx = N_x.
+    </p>
+
+    <div class="step-box">
+      <div class="step-num">Step 1</div>
+      <div class="step-content"><strong>Check exactness:</strong> Compute &part;M/&part;y and &part;N/&part;x. If they are equal, the equation is exact.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">Step 2</div>
+      <div class="step-content"><strong>Find F by integrating M with respect to x:</strong> F(x,y) = &int; M(x,y) dx + g(y), where g(y) is an unknown function of y alone.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">Step 3</div>
+      <div class="step-content"><strong>Determine g(y):</strong> Differentiate F with respect to y, set &part;F/&part;y = N, and solve for g'(y). Integrate to find g(y).</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">Step 4</div>
+      <div class="step-content"><strong>Write the solution:</strong> F(x,y) = C.</div>
+    </div>
+
+    <div class="key-point">Worked example: (2xy + 3) dx + (x&sup2; + 4y) dy = 0. Check: M = 2xy + 3, N = x&sup2; + 4y. M_y = 2x, N_x = 2x. Exact! F = &int;(2xy+3)dx = x&sup2;y + 3x + g(y). F_y = x&sup2; + g'(y) = x&sup2; + 4y, so g'(y) = 4y, g(y) = 2y&sup2;. Solution: x&sup2;y + 3x + 2y&sup2; = C.</div>
+
+    <div class="formula-box green">F(x,y) = x&sup2;y + 3x + 2y&sup2; = C</div>
+
+    <p class="concept-text">
+      <strong>Geometric interpretation:</strong> The solution curves F(x,y) = C are level curves (contours) of the potential surface z = F(x,y). The ODE says "move along the level curve" -- the direction field at every point is tangent to these contours.
+    </p>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s4p1">
+        <p><strong>1.</strong> Is (y cos(x)) dx + (sin(x)) dy = 0 exact? Compute M_y and N_x.</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p1','correct')">Yes -- M_y = cos(x) and N_x = cos(x), they are equal</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p1','wrong')">No -- M_y = -sin(x) but N_x = cos(x)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p1','wrong')">Cannot determine without finding F first</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> For the exact equation (2x + y) dx + (x + 6y) dy = 0, find F. What is F(1, 2)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2v" step="0.1" placeholder="F(1,2) = ?" onkeydown="if(event.key==='Enter')checkNum('s4p2v',15,0.1)">
+          <button class="btn btn-sm" onclick="checkNum('s4p2v',15,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s4p2v-fb"></div>
+      </div>
+      <div class="problem" id="s4p3">
+        <p><strong>3.</strong> Is (y) dx + (-x) dy = 0 exact?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','correct')">No -- M_y = 1 but N_x = -1, they are not equal</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">Yes -- both partial derivatives are 1</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">Yes -- M and N are both linear functions</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: INTEGRATING FACTORS FOR NON-EXACT -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Integrating Factors for Non-Exact Equations</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When M dx + N dy = 0 is <strong>not exact</strong> (M_y &ne; N_x), we can sometimes find a function &mu; such that &mu;M dx + &mu;N dy = 0 <strong>is</strong> exact. This function &mu; is called an <strong>integrating factor</strong>. The trick is recognizing when &mu; depends only on x, only on y, or has some other special form.
+    </p>
+
+    <div class="formula-box large">If (M_y - N_x) / N depends only on x &rarr; &mu;(x) = e^(&int; (M_y - N_x)/N dx)</div>
+    <div class="formula-box pink large">If (N_x - M_y) / M depends only on y &rarr; &mu;(y) = e^(&int; (N_x - M_y)/M dy)</div>
+
+    <p class="concept-text">
+      <strong>Recognition pattern for &mu;(x):</strong> Compute (M_y - N_x)/N. If the result is a function of x alone (no y), then &mu;(x) exists. This is the most common case in practice.
+    </p>
+    <p class="concept-text">
+      <strong>Recognition pattern for &mu;(y):</strong> Compute (N_x - M_y)/M. If the result is a function of y alone (no x), then &mu;(y) exists. Notice the numerator is reversed compared to the &mu;(x) formula.
+    </p>
+
+    <div class="key-point">Worked example: y dx - x dy = 0. Here M = y, N = -x. Check: M_y = 1, N_x = -1, not exact. Try &mu;(x): (M_y - N_x)/N = (1-(-1))/(-x) = -2/x -- function of x only! So &mu;(x) = e^(&int; -2/x dx) = e^(-2 ln|x|) = 1/x&sup2;. Multiply: (y/x&sup2;) dx + (-1/x) dy = 0. Check: M_y = 1/x&sup2;, N_x = 1/x&sup2;. Exact! Solution: F = -y/x = C, i.e., y = Cx.</div>
+
+    <p class="concept-text">
+      <strong>Special cases to memorize:</strong> For y dx - x dy = 0, common integrating factors include 1/x&sup2;, 1/y&sup2;, 1/(xy), and 1/(x&sup2;+y&sup2;). Each yields a different (but equivalent) form of the solution. In practice, you usually just try the &mu;(x) and &mu;(y) formulas first.
+    </p>
+
+    <div class="formula-box amber">Strategy: Not exact? &rarr; Try &mu;(x) formula &rarr; Try &mu;(y) formula &rarr; Try special forms</div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s5p1">
+        <p><strong>1.</strong> For (3y) dx + (2x) dy = 0: M_y = 3, N_x = 2. Is this exact?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','correct')">No -- M_y = 3 but N_x = 2, they are not equal</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">Yes -- both are constants</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">Cannot tell without integrating</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> For (2y) dx + (x) dy = 0, compute (M_y - N_x)/N = (2 - 1)/x = 1/x. This depends only on x, so &mu;(x) = e^(&int; 1/x dx) = ?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','correct')">&mu;(x) = x</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">&mu;(x) = e^x</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">&mu;(x) = ln(x)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">&mu;(x) = 1/x</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem" id="s5p3">
+        <p><strong>3.</strong> After multiplying (2y) dx + (x) dy = 0 by &mu;(x) = x, we get (2xy) dx + (x&sup2;) dy = 0. Check: M_y = 2x, N_x = 2x. This is now exact. What is the potential function F(x,y)?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','correct')">F(x,y) = x&sup2;y (since F_x = 2xy and F_y = x&sup2;)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">F(x,y) = xy&sup2;</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">F(x,y) = x&sup2; + y&sup2;</button>
+        </div>
+        <div class="feedback" id="s5p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: EXISTENCE & UNIQUENESS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Existence and Uniqueness</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Before solving an ODE, you should ask: does a solution even exist? And if it does, is it the only one? The <strong>Picard-Lindelof theorem</strong> (existence and uniqueness theorem) gives precise conditions that guarantee a "yes" to both questions.
+    </p>
+    <div class="formula-box large">dy/dx = f(x, y), &nbsp; y(x&#8320;) = y&#8320;</div>
+
+    <p class="concept-text">
+      <strong>Picard's Theorem:</strong> If f(x,y) and &part;f/&part;y are both continuous in some rectangle R containing the point (x&#8320;, y&#8320;), then there exists a <strong>unique</strong> solution y(x) to the initial value problem (IVP) on some interval around x&#8320;.
+    </p>
+    <div class="formula-box green">f and &part;f/&part;y continuous near (x&#8320;, y&#8320;) &nbsp;&rArr;&nbsp; unique local solution exists</div>
+
+    <p class="concept-text">
+      <strong>What can go wrong when conditions fail?</strong>
+    </p>
+
+    <p class="concept-text">
+      <strong>Non-uniqueness:</strong> Consider dy/dx = y^(1/3), y(0) = 0. Here f = y^(1/3) is continuous, but &part;f/&part;y = (1/3)y^(-2/3) blows up at y = 0. Picard's condition fails. Indeed, both y = 0 and y = (2x/3)^(3/2) are solutions through (0,0) -- uniqueness is lost.
+    </p>
+    <div class="formula-box pink">dy/dx = y^(1/3), y(0) = 0 has infinitely many solutions -- Picard fails at y = 0</div>
+
+    <p class="concept-text">
+      <strong>Finite-time blowup:</strong> Consider dy/dx = y&sup2;, y(0) = 1. Solution: y = 1/(1 - x). This blows up at x = 1. The solution exists but only on (-&infin;, 1). Picard guarantees <strong>local</strong> existence -- it says nothing about how far the solution extends.
+    </p>
+    <div class="formula-box amber">dy/dx = y&sup2;, y(0) = 1 &nbsp;&rarr;&nbsp; y = 1/(1-x) &nbsp; (blows up at x = 1)</div>
+
+    <div class="key-point">Key takeaway: For linear ODEs dy/dx + P(x)y = Q(x) where P and Q are continuous, Picard's conditions are automatically satisfied everywhere. Solutions exist and are unique on any interval where P and Q are continuous. This is why linear ODEs are so well-behaved.</div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Existence and uniqueness matter in engineering because they tell you whether your model has a single predictable outcome. In circuit analysis, linear ODEs guarantee unique voltage/current waveforms -- there is no ambiguity. But nonlinear models (e.g., saturation effects, arcing) can have bifurcations and non-unique behavior, which is why engineers linearize around operating points.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s6p1">
+        <p><strong>1.</strong> For dy/dx = 3y + x, y(0) = 2: f(x,y) = 3y + x. Is &part;f/&part;y = 3 continuous everywhere?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p1','correct')">Yes -- so by Picard's theorem, a unique solution exists</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p1','wrong')">No -- constant functions are not continuous</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p1','wrong')">Only in a neighborhood of y = 0</button>
+        </div>
+        <div class="feedback" id="s6p1-fb"></div>
+      </div>
+      <div class="problem" id="s6p2">
+        <p><strong>2.</strong> dy/dx = sqrt(y), y(0) = 0. Does Picard guarantee uniqueness?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','correct')">No -- &part;f/&part;y = 1/(2 sqrt(y)) is not continuous at y = 0</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','wrong')">Yes -- sqrt(y) is continuous for y &ge; 0</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','wrong')">Yes -- all ODEs with continuous f have unique solutions</button>
+        </div>
+        <div class="feedback" id="s6p2-fb"></div>
+      </div>
+      <div class="problem" id="s6p3">
+        <p><strong>3.</strong> dy/dx = y&sup2;, y(0) = 1 has solution y = 1/(1-x). At what value of x does it blow up?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p3v" step="0.1" placeholder="x = ?" onkeydown="if(event.key==='Enter')checkNum('s6p3v',1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s6p3v',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s6p3v-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- FINAL QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">Q</span> Final Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Classification</div>
+      <p class="q-text">What is the order of the ODE d&sup2;y/dx&sup2; + 3 dy/dx = sin(x)?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">1</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">2 (highest derivative is d&sup2;y/dx&sup2;)</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">3</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">0</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Separable Equations</div>
+      <p class="q-text">Which of the following is separable?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">dy/dx = x + y</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">dy/dx = x&sup2; e^(-y) (can write e^y dy = x&sup2; dx)</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">dy/dx = xy + x&sup2;</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">dy/dx = sin(x + y)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Newton's Cooling</div>
+      <p class="q-text">An object at 150&deg;F cools in a 50&deg;F room. Using T(t) = 50 + 100e^(-kt), after many hours (t &rarr; &infin;), what temperature does it approach?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">0&deg;F</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">50&deg;F (the environment temperature)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">100&deg;F</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">150&deg;F</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Integrating Factor</div>
+      <p class="q-text">For dy/dx + 5y = 10, what is the integrating factor?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">e^(5x)</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">e^(-5x)</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">5x</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">e^(10x)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Linear ODE Solution</div>
+      <p class="q-text">Solve dy/dx + y = 5, y(0) = 0. The solution y(x) = 5(1 - e^(-x)). What is y(ln 2)?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">2.5 (since e^(-ln2) = 1/2, so y = 5(1 - 1/2) = 2.5)</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">5</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">3.5</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">1.0</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- RC Circuits</div>
+      <p class="q-text">In an RC circuit with time constant &tau; = RC, after how many time constants does the capacitor reach approximately 63.2% of its final voltage?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">1 time constant (e^(-1) = 0.368, so 1 - 0.368 = 0.632)</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">2 time constants</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">0.5 time constants</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">5 time constants</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Exact Equations</div>
+      <p class="q-text">For (3x&sup2; + y) dx + (x + 2y) dy = 0: M_y = 1, N_x = 1. Is this exact?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">Yes -- M_y = N_x = 1</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">No -- you also need to check second derivatives</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Only if we can find an integrating factor</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Cannot determine from partial derivatives alone</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Integrating Factor for Non-Exact</div>
+      <p class="q-text">For a non-exact equation, if (M_y - N_x)/N is a function of x only, what form does the integrating factor take?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">&mu;(x) = e^(&int; (M_y - N_x)/N dx) -- depends only on x</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">&mu;(y) = e^(&int; (M_y - N_x)/M dy)</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">&mu;(x,y) = e^(xy)</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">No integrating factor exists</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Existence & Uniqueness</div>
+      <p class="q-text">Picard's theorem requires which two conditions for a unique solution to dy/dx = f(x,y), y(x&#8320;) = y&#8320;?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">f is bounded and differentiable everywhere</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">f and &part;f/&part;y are continuous near (x&#8320;, y&#8320;)</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">f is linear in y</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">f has no singularities in the entire plane</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Blowup</div>
+      <p class="q-text">The ODE dy/dx = y&sup2; with y(0) = 2 has solution y = 2/(1 - 2x). At what x does the solution blow up?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">x = 1</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">x = 1/2 (denominator 1 - 2x = 0 when x = 1/2)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">x = 2</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">It never blows up</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again.';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 2: SLOPE FIELD INTERACTIVE ==================== */
+var slopeODEs = {
+  sep1: { fn: function(x,y){return x*y}, label:'dy/dx = xy', type:'Separable' },
+  sep2: { fn: function(x,y){return -y}, label:'dy/dx = -y', type:'Separable (decay)' },
+  cool: { fn: function(x,y){return -0.5*(y-1)}, label:'dT/dt = -0.5(T-1)', type:'Separable (cooling)' },
+  decay: { fn: function(x,y){return -0.3*y}, label:'dN/dt = -0.3N', type:'Separable (decay)' }
+};
+var currentODE = 'sep1';
+var drawnCurves = [];
+
+function setSlopeODE(key, btn) {
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(t){t.classList.remove('active')});
+  btn.classList.add('active');
+  currentODE = key;
+  drawnCurves = [];
+  document.getElementById('slopeEqn').textContent = slopeODEs[key].label;
+  document.getElementById('slopeType').textContent = slopeODEs[key].type;
+  document.getElementById('slopeCurves').textContent = '0';
+  drawSlopeField();
+}
+
+function clearCurves() {
+  drawnCurves = [];
+  document.getElementById('slopeCurves').textContent = '0';
+  drawSlopeField();
+}
+
+function drawSlopeField() {
+  var canvas = document.getElementById('slopeCanvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var xMin = -3, xMax = 3, yMin = -3, yMax = 3;
+  ctx.clearRect(0, 0, W, H);
+
+  // coordinate transform
+  function toCanvasX(x) { return (x - xMin) / (xMax - xMin) * W; }
+  function toCanvasY(y) { return H - (y - yMin) / (yMax - yMin) * H; }
+  function toMathX(cx) { return xMin + cx / W * (xMax - xMin); }
+  function toMathY(cy) { return yMax - cy / H * (yMax - yMin); }
+
+  // grid
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 0.5;
+  for (var i = Math.ceil(xMin); i <= Math.floor(xMax); i++) {
+    ctx.beginPath(); ctx.moveTo(toCanvasX(i), 0); ctx.lineTo(toCanvasX(i), H); ctx.stroke();
+  }
+  for (var j = Math.ceil(yMin); j <= Math.floor(yMax); j++) {
+    ctx.beginPath(); ctx.moveTo(0, toCanvasY(j)); ctx.lineTo(W, toCanvasY(j)); ctx.stroke();
+  }
+  // axes
+  ctx.strokeStyle = '#9ca3af';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(toCanvasX(0), 0); ctx.lineTo(toCanvasX(0), H); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, toCanvasY(0)); ctx.lineTo(W, toCanvasY(0)); ctx.stroke();
+
+  // axis labels
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  for (var i = Math.ceil(xMin); i <= Math.floor(xMax); i++) {
+    if (i !== 0) ctx.fillText(i, toCanvasX(i), toCanvasY(0) + 14);
+  }
+  ctx.textAlign = 'right';
+  for (var j = Math.ceil(yMin); j <= Math.floor(yMax); j++) {
+    if (j !== 0) ctx.fillText(j, toCanvasX(0) - 6, toCanvasY(j) + 4);
+  }
+
+  // slope field segments
+  var f = slopeODEs[currentODE].fn;
+  var segLen = 0.18;
+  ctx.strokeStyle = 'rgba(99,102,241,0.5)';
+  ctx.lineWidth = 1.2;
+  var step = 0.3;
+  for (var x = xMin + step/2; x <= xMax; x += step) {
+    for (var y = yMin + step/2; y <= yMax; y += step) {
+      var slope = f(x, y);
+      // clamp extreme slopes
+      if (Math.abs(slope) > 20) slope = 20 * Math.sign(slope);
+      var angle = Math.atan(slope);
+      var dx = segLen * Math.cos(angle);
+      var dy = segLen * Math.sin(angle);
+      ctx.beginPath();
+      ctx.moveTo(toCanvasX(x - dx/2), toCanvasY(y - dy/2));
+      ctx.lineTo(toCanvasX(x + dx/2), toCanvasY(y + dy/2));
+      ctx.stroke();
+    }
+  }
+
+  // draw solution curves
+  var colors = ['#22c55e','#ec4899','#f59e0b','#6366f1','#06b6d4','#f97316','#a855f7','#ef4444'];
+  drawnCurves.forEach(function(curve, idx) {
+    ctx.strokeStyle = colors[idx % colors.length];
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    var started = false;
+    for (var k = 0; k < curve.length; k++) {
+      var cx = toCanvasX(curve[k][0]);
+      var cy = toCanvasY(curve[k][1]);
+      if (cx < -10 || cx > W + 10 || cy < -10 || cy > H + 10) { started = false; continue; }
+      if (!started) { ctx.moveTo(cx, cy); started = true; } else { ctx.lineTo(cx, cy); }
+    }
+    ctx.stroke();
+  });
+}
+
+function solveCurve(x0, y0) {
+  var f = slopeODEs[currentODE].fn;
+  var dt = 0.01;
+  var points = [[x0, y0]];
+
+  // forward Euler (forward)
+  var x = x0, y = y0;
+  for (var i = 0; i < 600; i++) {
+    var slope = f(x, y);
+    if (!isFinite(slope) || Math.abs(y) > 50) break;
+    y = y + slope * dt;
+    x = x + dt;
+    if (x > 3.5) break;
+    points.push([x, y]);
+  }
+
+  // backward Euler (backward)
+  x = x0; y = y0;
+  for (var i = 0; i < 600; i++) {
+    var slope = f(x, y);
+    if (!isFinite(slope) || Math.abs(y) > 50) break;
+    y = y - slope * dt;
+    x = x - dt;
+    if (x < -3.5) break;
+    points.unshift([x, y]);
+  }
+
+  return points;
+}
+
+// Canvas click handler
+document.getElementById('slopeCanvas').addEventListener('click', function(e) {
+  var rect = this.getBoundingClientRect();
+  var scaleX = this.width / rect.width;
+  var scaleY = this.height / rect.height;
+  var cx = (e.clientX - rect.left) * scaleX;
+  var cy = (e.clientY - rect.top) * scaleY;
+  var xMin = -3, xMax = 3, yMin = -3, yMax = 3;
+  var mx = xMin + cx / this.width * (xMax - xMin);
+  var my = yMax - cy / this.height * (yMax - yMin);
+  var curve = solveCurve(mx, my);
+  drawnCurves.push(curve);
+  document.getElementById('slopeCurves').textContent = drawnCurves.length;
+  drawSlopeField();
+});
+
+/* ==================== SECTION 3: RC CIRCUIT INTERACTIVE ==================== */
+function drawRC() {
+  var R = +document.getElementById('rcR').value;  // kOhm
+  var C = +document.getElementById('rcC').value;  // uF
+  var V = +document.getElementById('rcV').value;  // volts
+  document.getElementById('rcRVal').textContent = R;
+  document.getElementById('rcCVal').textContent = C;
+  document.getElementById('rcVVal').textContent = V;
+
+  var tau = R * C / 1000; // seconds (kOhm * uF = ms, /1000 = s)
+  document.getElementById('rcTau').textContent = tau.toFixed(3) + ' s';
+  document.getElementById('rcFinal').textContent = V.toFixed(1) + ' V';
+  var vAtTau = V * (1 - Math.exp(-1));
+  document.getElementById('rcAtTau').textContent = vAtTau.toFixed(1) + ' V';
+  document.getElementById('rc63').textContent = (V * 0.632).toFixed(1) + ' V';
+
+  var canvas = document.getElementById('rcCanvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var pad = { l: 50, r: 20, t: 20, b: 40 };
+  var pw = W - pad.l - pad.r;
+  var ph = H - pad.t - pad.b;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // axes
+  ctx.strokeStyle = '#9ca3af';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t + ph); ctx.lineTo(pad.l + pw, pad.t + ph);
+  ctx.stroke();
+
+  // labels
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('time (s)', pad.l + pw / 2, H - 5);
+  ctx.save();
+  ctx.translate(12, pad.t + ph / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('V_C (V)', 0, 0);
+  ctx.restore();
+
+  var tMax = Math.max(5 * tau, 0.5);
+  var vMax = V * 1.2;
+
+  // tick marks
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '9px JetBrains Mono';
+  ctx.textAlign = 'center';
+  for (var i = 0; i <= 5; i++) {
+    var tx = i * tMax / 5;
+    var cx = pad.l + (tx / tMax) * pw;
+    ctx.fillText(tx.toFixed(2), cx, pad.t + ph + 16);
+    ctx.beginPath(); ctx.moveTo(cx, pad.t + ph); ctx.lineTo(cx, pad.t + ph + 4); ctx.strokeStyle='#9ca3af'; ctx.stroke();
+  }
+  ctx.textAlign = 'right';
+  for (var i = 0; i <= 4; i++) {
+    var vy = i * V / 4;
+    var cy = pad.t + ph - (vy / vMax) * ph;
+    ctx.fillText(vy.toFixed(1), pad.l - 6, cy + 4);
+    ctx.strokeStyle = '#363b47'; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(pad.l, cy); ctx.lineTo(pad.l + pw, cy); ctx.stroke();
+  }
+
+  // tau dashed line
+  var tauX = pad.l + (tau / tMax) * pw;
+  var tauY = pad.t + ph - (vAtTau / vMax) * ph;
+  ctx.strokeStyle = 'rgba(245,158,11,0.4)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(tauX, pad.t + ph); ctx.lineTo(tauX, tauY); ctx.lineTo(pad.l, tauY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#f59e0b';
+  ctx.font = '10px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('t=tau', tauX, pad.t + ph + 28);
+
+  // final voltage line
+  var vFinalY = pad.t + ph - (V / vMax) * ph;
+  ctx.strokeStyle = 'rgba(34,197,94,0.3)';
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath(); ctx.moveTo(pad.l, vFinalY); ctx.lineTo(pad.l + pw, vFinalY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#22c55e';
+  ctx.font = '10px JetBrains Mono';
+  ctx.textAlign = 'left';
+  ctx.fillText('V = ' + V, pad.l + pw - 50, vFinalY - 6);
+
+  // charging curve
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (var px = 0; px <= pw; px++) {
+    var t = (px / pw) * tMax;
+    var vc = V * (1 - Math.exp(-t / tau));
+    var cy = pad.t + ph - (vc / vMax) * ph;
+    if (px === 0) ctx.moveTo(pad.l + px, cy); else ctx.lineTo(pad.l + px, cy);
+  }
+  ctx.stroke();
+
+  // tau dot
+  ctx.fillStyle = '#f59e0b';
+  ctx.beginPath();
+  ctx.arc(tauX, tauY, 4, 0, 2 * Math.PI);
+  ctx.fill();
+}
+
+/* ==================== INIT ==================== */
+markComplete(1);
+drawSlopeField();
+drawRC();
+</script>
+</body>
+</html>

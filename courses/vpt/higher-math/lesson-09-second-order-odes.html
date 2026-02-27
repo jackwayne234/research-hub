@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 9: Second-Order Linear ODEs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>09</span> Second-Order Linear ODEs</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 7 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: INTRODUCTION TO SECOND-ORDER -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Introduction to Second-Order ODEs</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>second-order linear ODE with constant coefficients</strong> is the workhorse equation of physics. It shows up everywhere: masses on springs, pendulums, circuits, beam deflection, orbital mechanics. The general homogeneous form is:
+    </p>
+
+    <div class="formula-box large">ay'' + by' + cy = 0</div>
+
+    <p class="concept-text">
+      Here <strong>a</strong>, <strong>b</strong>, and <strong>c</strong> are real constants (a &ne; 0), and y is a function of some independent variable (usually t for time, or x). The primes denote derivatives: y' = dy/dx, y'' = d&sup2;y/dx&sup2;.
+    </p>
+
+    <div class="key-point">Newton's second law F = ma is a second-order ODE! For a spring: m&middot;x'' = -kx - b&middot;x', which is m&middot;x'' + b&middot;x' + k&middot;x = 0. Every oscillation and vibration problem in physics reduces to this form.</div>
+
+    <p class="concept-text">
+      <strong>Why two solutions?</strong> A second-order ODE needs <strong>two initial conditions</strong> (position and velocity, for instance) to pin down a unique solution. The general solution is built from two <strong>linearly independent</strong> solutions y&#8321; and y&#8322;:
+    </p>
+
+    <div class="formula-box green">y = C&#8321;&middot;y&#8321; + C&#8322;&middot;y&#8322;</div>
+
+    <p class="concept-text">
+      "Linearly independent" means one is not a constant multiple of the other -- they are genuinely different solution shapes. Together they <strong>span the full solution space</strong>, just like two linearly independent vectors span R&sup2;. The constants C&#8321; and C&#8322; are determined by initial conditions.
+    </p>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Every shipboard vibration problem -- from hull flexing to mast oscillation to radar antenna wobble -- is governed by second-order ODEs. When the ship rolls in heavy seas, the roll angle &theta; satisfies I&middot;&theta;'' + B&middot;&theta;' + K&middot;&theta; = M(t), where I is the moment of inertia, B is damping, K is the restoring force, and M(t) is the wave excitation. Understanding this equation is the key to understanding why some ships roll gently and others snap violently.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> Which of the following is a second-order linear ODE with constant coefficients?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">y' + 3y = 0 (this is first-order)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','correct')">2y'' + 5y' - 3y = 0</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">y'' + xy' + y = 0 (coefficient x is not constant)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p1','wrong')">y&middot;y'' + y' = 0 (nonlinear -- y multiplies y'')</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> How many linearly independent solutions does a second-order ODE have?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">1</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','correct')">2 -- matching the order of the ODE</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">Infinitely many</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: THE CHARACTERISTIC EQUATION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> The Characteristic Equation</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The brilliant trick: <strong>guess y = e^{rx}</strong> and plug it in. Since (e^{rx})' = r&middot;e^{rx} and (e^{rx})'' = r&sup2;&middot;e^{rx}, the ODE ay'' + by' + cy = 0 becomes:
+    </p>
+
+    <div class="formula-box large">(ar&sup2; + br + c)&middot;e^{rx} = 0</div>
+
+    <p class="concept-text">
+      Since e^{rx} is never zero, we need the polynomial factor to vanish. This gives us the <strong>characteristic equation</strong> (also called the auxiliary equation):
+    </p>
+
+    <div class="formula-box pink large">ar&sup2; + br + c = 0</div>
+
+    <p class="concept-text">
+      This is just the quadratic formula! The discriminant <strong>&Delta; = b&sup2; - 4ac</strong> determines which of three cases we get:
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Decision Tree: Three Cases</div>
+      <svg id="treeSvg" width="100%" viewBox="0 0 500 260" style="display:block">
+        <!-- Root node -->
+        <rect x="160" y="10" width="180" height="40" rx="8" fill="var(--indigo-dim)" stroke="var(--indigo)" stroke-width="1.5"/>
+        <text x="250" y="35" fill="var(--indigo)" font-size="12" text-anchor="middle" font-weight="600">&Delta; = b&sup2; - 4ac</text>
+
+        <!-- Branches -->
+        <line x1="200" y1="50" x2="80" y2="100" stroke="var(--border)" stroke-width="1.5"/>
+        <line x1="250" y1="50" x2="250" y2="100" stroke="var(--border)" stroke-width="1.5"/>
+        <line x1="300" y1="50" x2="420" y2="100" stroke="var(--border)" stroke-width="1.5"/>
+
+        <!-- Labels on branches -->
+        <text x="120" y="72" fill="var(--green)" font-size="10" text-anchor="middle">&Delta; &gt; 0</text>
+        <text x="270" y="72" fill="var(--amber)" font-size="10" text-anchor="middle">&Delta; = 0</text>
+        <text x="385" y="72" fill="var(--pink)" font-size="10" text-anchor="middle">&Delta; &lt; 0</text>
+
+        <!-- Case 1 -->
+        <rect x="10" y="100" width="140" height="36" rx="8" fill="var(--green-dim)" stroke="var(--green)" stroke-width="1"/>
+        <text x="80" y="122" fill="var(--green)" font-size="10" text-anchor="middle" font-weight="600">Distinct Real Roots</text>
+        <text x="80" y="155" fill="var(--text-dim)" font-size="9" text-anchor="middle">r&#8321; &ne; r&#8322;, both real</text>
+        <rect x="10" y="170" width="140" height="44" rx="8" fill="var(--bg-card)" stroke="var(--border)" stroke-width="1"/>
+        <text x="80" y="188" fill="var(--green)" font-size="10" text-anchor="middle">y = C&#8321;e^{r&#8321;x}</text>
+        <text x="80" y="204" fill="var(--green)" font-size="10" text-anchor="middle">+ C&#8322;e^{r&#8322;x}</text>
+        <text x="80" y="232" fill="var(--text-dim)" font-size="9" text-anchor="middle" font-style="italic">Overdamped</text>
+
+        <!-- Case 2 -->
+        <rect x="180" y="100" width="140" height="36" rx="8" fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="1"/>
+        <text x="250" y="122" fill="var(--amber)" font-size="10" text-anchor="middle" font-weight="600">Repeated Root</text>
+        <text x="250" y="155" fill="var(--text-dim)" font-size="9" text-anchor="middle">r&#8321; = r&#8322; = r</text>
+        <rect x="180" y="170" width="140" height="44" rx="8" fill="var(--bg-card)" stroke="var(--border)" stroke-width="1"/>
+        <text x="250" y="188" fill="var(--amber)" font-size="10" text-anchor="middle">y = (C&#8321; + C&#8322;x)</text>
+        <text x="250" y="204" fill="var(--amber)" font-size="10" text-anchor="middle">&middot; e^{rx}</text>
+        <text x="250" y="232" fill="var(--text-dim)" font-size="9" text-anchor="middle" font-style="italic">Critically Damped</text>
+
+        <!-- Case 3 -->
+        <rect x="350" y="100" width="140" height="36" rx="8" fill="var(--pink-dim)" stroke="var(--pink)" stroke-width="1"/>
+        <text x="420" y="122" fill="var(--pink)" font-size="10" text-anchor="middle" font-weight="600">Complex Conjugate</text>
+        <text x="420" y="155" fill="var(--text-dim)" font-size="9" text-anchor="middle">r = &alpha; &plusmn; &beta;i</text>
+        <rect x="350" y="170" width="140" height="44" rx="8" fill="var(--bg-card)" stroke="var(--border)" stroke-width="1"/>
+        <text x="420" y="188" fill="var(--pink)" font-size="10" text-anchor="middle">y = e^{&alpha;x}(C&#8321;cos&beta;x</text>
+        <text x="420" y="204" fill="var(--pink)" font-size="10" text-anchor="middle">+ C&#8322;sin&beta;x)</text>
+        <text x="420" y="232" fill="var(--text-dim)" font-size="9" text-anchor="middle" font-style="italic">Underdamped</text>
+      </svg>
+    </div>
+
+    <div class="key-point">The discriminant &Delta; = b&sup2; - 4ac is your instant classifier. Positive: two real roots (overdamped). Zero: one repeated root (critically damped). Negative: complex conjugate pair (underdamped oscillation). This maps directly onto damping regimes in physics.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Classify the Equation</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Enter coefficients a, b, c for ay'' + by' + cy = 0 and see which case applies.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+        <div>
+          <span style="font-size:.68rem;color:var(--text-dim)">a =</span>
+          <input type="number" id="classA" value="1" step="0.5" style="width:70px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;outline:none" oninput="updateClassifier()">
+        </div>
+        <div>
+          <span style="font-size:.68rem;color:var(--text-dim)">b =</span>
+          <input type="number" id="classB" value="5" step="0.5" style="width:70px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;outline:none" oninput="updateClassifier()">
+        </div>
+        <div>
+          <span style="font-size:.68rem;color:var(--text-dim)">c =</span>
+          <input type="number" id="classC" value="6" step="0.5" style="width:70px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;outline:none" oninput="updateClassifier()">
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Discriminant &Delta;</span><br><span class="value indigo" id="classDisc">1.00</span></div>
+        <div class="readout-item"><span class="label">Case</span><br><span class="value green" id="classCase">Distinct Real</span></div>
+        <div class="readout-item"><span class="label">r&#8321;</span><br><span class="value amber" id="classR1">-2.00</span></div>
+        <div class="readout-item"><span class="label">r&#8322;</span><br><span class="value amber" id="classR2">-3.00</span></div>
+      </div>
+      <div style="margin-top:10px;font-size:.76rem;color:var(--text-dim)" id="classSolution">y = C&#8321;e^{-2x} + C&#8322;e^{-3x}</div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s2p1">
+        <p><strong>1.</strong> For y'' + 4y' + 4y = 0, what is the discriminant &Delta;?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1-inp" placeholder="&Delta; = ?">
+          <button class="btn btn-sm" onclick="checkNum('s2p1-inp', 0, 0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-inp-fb"></div>
+      </div>
+      <div class="problem" id="s2p2">
+        <p><strong>2.</strong> For y'' + y = 0 (a=1, b=0, c=1), which case applies?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">Distinct real roots (&Delta; > 0)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','wrong')">Repeated root (&Delta; = 0)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p2','correct')">Complex conjugate roots (&Delta; = 0 - 4 = -4 &lt; 0)</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: CASE 1 -- DISTINCT REAL ROOTS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Case 1: Distinct Real Roots (Overdamped)</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When <strong>&Delta; = b&sup2; - 4ac &gt; 0</strong>, the characteristic equation has two distinct real roots r&#8321; and r&#8322;. The general solution is a sum of two exponentials:
+    </p>
+
+    <div class="formula-box green large">y = C&#8321;e^{r&#8321;x} + C&#8322;e^{r&#8322;x}</div>
+
+    <p class="concept-text">
+      <strong>Example:</strong> y'' + 5y' + 6y = 0. The characteristic equation is r&sup2; + 5r + 6 = 0 &rarr; (r+2)(r+3) = 0 &rarr; r&#8321; = -2, r&#8322; = -3. Both roots are negative, so both exponentials decay. The solution is <strong>y = C&#8321;e^{-2x} + C&#8322;e^{-3x}</strong>.
+    </p>
+
+    <p class="concept-text">
+      In physics, this corresponds to the <strong>overdamped</strong> case -- so much damping that the system returns to equilibrium without oscillating. Think of pushing a door through thick honey: it creeps back slowly without swinging.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Two Exponentials Combining</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust C&#8321;, C&#8322; and the roots r&#8321;, r&#8322; to see how two exponential components combine into the total solution.</p>
+      <div class="slider-row">
+        <label>C&#8321; =</label>
+        <input type="range" id="dr_c1" min="-3" max="3" step="0.1" value="2" oninput="drawDistinct()">
+        <span class="slider-val" id="dr_c1v">2.0</span>
+      </div>
+      <div class="slider-row">
+        <label>C&#8322; =</label>
+        <input type="range" id="dr_c2" min="-3" max="3" step="0.1" value="-1" oninput="drawDistinct()">
+        <span class="slider-val" id="dr_c2v">-1.0</span>
+      </div>
+      <div class="slider-row">
+        <label>r&#8321; =</label>
+        <input type="range" id="dr_r1" min="-5" max="1" step="0.1" value="-2" oninput="drawDistinct()">
+        <span class="slider-val" id="dr_r1v">-2.0</span>
+      </div>
+      <div class="slider-row">
+        <label>r&#8322; =</label>
+        <input type="range" id="dr_r2" min="-5" max="1" step="0.1" value="-3" oninput="drawDistinct()">
+        <span class="slider-val" id="dr_r2v">-3.0</span>
+      </div>
+      <canvas id="distinctCanvas" width="800" height="320" style="width:100%;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--border)"></canvas>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Component 1</span><br><span class="value green" id="dr_comp1">C&#8321;e^{r&#8321;x}</span></div>
+        <div class="readout-item"><span class="label">Component 2</span><br><span class="value pink" id="dr_comp2">C&#8322;e^{r&#8322;x}</span></div>
+        <div class="readout-item"><span class="label">Behavior</span><br><span class="value amber" id="dr_behavior">Overdamped decay</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> An overdamped system is like a ship with very heavy bilge keels in calm water -- if it gets pushed to one side, it slowly returns to upright without ever rocking past center. Submarine depth control systems are often designed to be slightly overdamped so the boat smoothly reaches ordered depth without oscillating.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s3p1">
+        <p><strong>1.</strong> Solve y'' + 5y' + 6y = 0. What are the roots r&#8321; and r&#8322;? (Enter the less negative root.)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1-inp" placeholder="r&#8321; = ?">
+          <button class="btn btn-sm" onclick="checkNum('s3p1-inp', -2, 0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-inp-fb"></div>
+      </div>
+      <div class="problem" id="s3p2">
+        <p><strong>2.</strong> For y'' - y = 0, the roots are r = &plusmn;1. What is the general solution?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','correct')">y = C&#8321;e^x + C&#8322;e^{-x}</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">y = C&#8321;cos(x) + C&#8322;sin(x)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">y = (C&#8321; + C&#8322;x)e^x</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: CASE 2 -- REPEATED ROOTS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Case 2: Repeated Root (Critically Damped)</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When <strong>&Delta; = b&sup2; - 4ac = 0</strong>, the characteristic equation has one repeated root r = -b/(2a). But we need <em>two</em> linearly independent solutions! The first is y&#8321; = e^{rx}, and for the second we multiply by x:
+    </p>
+
+    <div class="formula-box amber large">y = (C&#8321; + C&#8322;x)&middot;e^{rx}</div>
+
+    <p class="concept-text">
+      <strong>Why the extra x factor?</strong> This comes from a method called <strong>reduction of order</strong>. If y&#8321; = e^{rx} is one solution, we guess y&#8322; = v(x)&middot;e^{rx} and plug it in. After simplification (using the fact that &Delta;=0), we get v'' = 0, so v = x. The two solutions e^{rx} and x&middot;e^{rx} are linearly independent because their ratio x is not constant.
+    </p>
+
+    <p class="concept-text">
+      <strong>Example:</strong> y'' + 4y' + 4y = 0. Characteristic equation: r&sup2; + 4r + 4 = (r+2)&sup2; = 0 &rarr; r = -2 (repeated). Solution: <strong>y = (C&#8321; + C&#8322;x)e^{-2x}</strong>.
+    </p>
+
+    <div class="key-point">Critically damped is the fastest return to equilibrium without oscillation. It is the boundary between overdamped (too slow) and underdamped (oscillates). Engineers design shock absorbers, door closers, and instrument needles to be critically damped.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Critically Damped Response</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Compare overdamped, critically damped, and underdamped responses. The critically damped case returns to zero fastest without crossing it.</p>
+      <div class="scenario-tabs" id="dampTabs">
+        <button class="scenario-tab active" onclick="setDampCase('over',this)">Overdamped</button>
+        <button class="scenario-tab" onclick="setDampCase('critical',this)">Critically Damped</button>
+        <button class="scenario-tab" onclick="setDampCase('under',this)">Underdamped</button>
+        <button class="scenario-tab" onclick="setDampCase('all',this)">All Three</button>
+      </div>
+      <canvas id="dampCanvas" width="800" height="300" style="width:100%;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--border)"></canvas>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Damping Type</span><br><span class="value amber" id="dampType">Overdamped</span></div>
+        <div class="readout-item"><span class="label">Crosses zero?</span><br><span class="value pink" id="dampCross">No</span></div>
+        <div class="readout-item"><span class="label">Return speed</span><br><span class="value green" id="dampSpeed">Slow</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Ship stabilizer fins are designed to be near critically damped. If overdamped, the ship responds too slowly to wave action and passengers get seasick. If underdamped, the fins overcorrect and create their own oscillation. The sweet spot is critical damping -- the fastest correction without overshooting.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s4p1">
+        <p><strong>1.</strong> Solve y'' + 6y' + 9y = 0. What is the repeated root r?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1-inp" placeholder="r = ?">
+          <button class="btn btn-sm" onclick="checkNum('s4p1-inp', -3, 0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-inp-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> Why can't y = C&#8321;e^{rx} + C&#8322;e^{rx} work as the general solution when the root is repeated?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','correct')">Because e^{rx} and e^{rx} are the same function -- they are not linearly independent, so (C&#8321;+C&#8322;)e^{rx} is really just one parameter</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">Because e^{rx} is not a valid solution when the root is repeated</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p2','wrong')">Because two constants are too many for one root</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: CASE 3 -- COMPLEX ROOTS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Case 3: Complex Roots (Underdamped)</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When <strong>&Delta; = b&sup2; - 4ac &lt; 0</strong>, the roots are complex conjugates: <strong>r = &alpha; &plusmn; &beta;i</strong>, where &alpha; = -b/(2a) and &beta; = &radic;(4ac - b&sup2;)/(2a). Using Euler's formula e^{i&theta;} = cos&theta; + i&middot;sin&theta;, we convert to real-valued functions:
+    </p>
+
+    <div class="formula-box pink large">y = e^{&alpha;x}(C&#8321;cos(&beta;x) + C&#8322;sin(&beta;x))</div>
+
+    <p class="concept-text">
+      This is the <strong>underdamped oscillation</strong> -- the system oscillates with frequency &beta; while the amplitude decays (or grows) exponentially according to &alpha;. The envelope e^{&alpha;x} controls the decay:
+    </p>
+
+    <ul style="font-size:.8rem;margin:12px 0 16px 20px;color:var(--text);line-height:2">
+      <li><strong>&alpha; &lt; 0:</strong> Damped oscillation (amplitude shrinks) -- the physical case with friction/resistance</li>
+      <li><strong>&alpha; = 0:</strong> Pure oscillation (constant amplitude) -- the ideal harmonic oscillator</li>
+      <li><strong>&alpha; &gt; 0:</strong> Growing oscillation (amplitude increases) -- unstable, like feedback in a speaker</li>
+    </ul>
+
+    <p class="concept-text">
+      <strong>Example:</strong> y'' + 2y' + 5y = 0. Characteristic: r&sup2; + 2r + 5 = 0. Roots: r = (-2 &plusmn; &radic;(4-20))/2 = -1 &plusmn; 2i. So &alpha; = -1, &beta; = 2. Solution: <strong>y = e^{-x}(C&#8321;cos(2x) + C&#8322;sin(2x))</strong>.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Damped Oscillation</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust &alpha; (damping) and &beta; (frequency) to see how the oscillation changes. Watch the envelope e^{&alpha;x} control the amplitude.</p>
+      <div class="slider-row">
+        <label>&alpha; (damping) =</label>
+        <input type="range" id="cx_alpha" min="-3" max="1" step="0.05" value="-0.5" oninput="drawComplex()">
+        <span class="slider-val" id="cx_alphaV">-0.50</span>
+      </div>
+      <div class="slider-row">
+        <label>&beta; (frequency) =</label>
+        <input type="range" id="cx_beta" min="0.5" max="8" step="0.1" value="3" oninput="drawComplex()">
+        <span class="slider-val" id="cx_betaV">3.0</span>
+      </div>
+      <div class="slider-row">
+        <label>C&#8321; =</label>
+        <input type="range" id="cx_c1" min="-2" max="2" step="0.1" value="1" oninput="drawComplex()">
+        <span class="slider-val" id="cx_c1V">1.0</span>
+      </div>
+      <div class="slider-row">
+        <label>C&#8322; =</label>
+        <input type="range" id="cx_c2" min="-2" max="2" step="0.1" value="0" oninput="drawComplex()">
+        <span class="slider-val" id="cx_c2V">0.0</span>
+      </div>
+      <canvas id="complexCanvas" width="800" height="340" style="width:100%;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--border)"></canvas>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Decay rate &alpha;</span><br><span class="value pink" id="cx_decayR">-0.50</span></div>
+        <div class="readout-item"><span class="label">Frequency &beta;</span><br><span class="value indigo" id="cx_freqR">3.0</span></div>
+        <div class="readout-item"><span class="label">Period T</span><br><span class="value green" id="cx_periodR">2.09</span></div>
+        <div class="readout-item"><span class="label">Half-life</span><br><span class="value amber" id="cx_halfR">1.39</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> RLC circuits in radar systems exhibit this exact behavior. The circuit equation L&middot;q'' + R&middot;q' + q/C = 0 is a direct analog: inductance L plays the role of mass, resistance R plays the role of damping, and 1/C plays the role of spring stiffness. A radar pulse hitting an RLC filter rings with damped oscillation -- the Q factor (quality factor) measures how many cycles occur before the energy dissipates. High-Q filters in sonar and radar are tuned to specific frequencies by choosing L and C to set &beta;.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s5p1">
+        <p><strong>1.</strong> For y'' + 2y' + 5y = 0, what is the oscillation frequency &beta;?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1-inp" placeholder="&beta; = ?">
+          <button class="btn btn-sm" onclick="checkNum('s5p1-inp', 2, 0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1-inp-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> For y'' + 4y = 0 (no damping), what is &alpha;?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p2-inp" placeholder="&alpha; = ?">
+          <button class="btn btn-sm" onclick="checkNum('s5p2-inp', 0, 0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s5p2-inp-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: THE HARMONIC OSCILLATOR -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> The Harmonic Oscillator</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>simple harmonic oscillator</strong> is the special case with no damping (b = 0) and the ODE reduces to:
+    </p>
+
+    <div class="formula-box large">y'' + &omega;&sup2;y = 0</div>
+
+    <p class="concept-text">
+      where <strong>&omega;</strong> (omega) is the angular frequency. The characteristic equation is r&sup2; + &omega;&sup2; = 0, giving roots r = &plusmn;&omega;i. This is the complex case with &alpha; = 0 (no decay), so:
+    </p>
+
+    <div class="formula-box green large">y = C&#8321;cos(&omega;x) + C&#8322;sin(&omega;x)</div>
+
+    <p class="concept-text">
+      Or equivalently: <strong>y = A&middot;cos(&omega;x - &phi;)</strong>, where A is the amplitude and &phi; is the phase. This is pure oscillation that goes on forever -- the idealized model for a mass on a frictionless spring: <strong>m&middot;x'' = -kx</strong> gives &omega; = &radic;(k/m).
+    </p>
+
+    <div class="key-point">The harmonic oscillator is the single most important model in all of physics. Nearly every system near a stable equilibrium behaves like a harmonic oscillator for small displacements. This is why &omega; = &radic;(k/m) shows up everywhere: pendulums, molecular vibrations, electromagnetic waves, quantum mechanics.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Mass-Spring Animation</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust &omega; and initial conditions. Watch the mass oscillate and the position trace on the graph.</p>
+      <div class="slider-row">
+        <label>&omega; (frequency) =</label>
+        <input type="range" id="sho_omega" min="0.5" max="6" step="0.1" value="2" oninput="updateSHO()">
+        <span class="slider-val" id="sho_omegaV">2.0</span>
+      </div>
+      <div class="slider-row">
+        <label>Amplitude A =</label>
+        <input type="range" id="sho_amp" min="0.1" max="2" step="0.1" value="1" oninput="updateSHO()">
+        <span class="slider-val" id="sho_ampV">1.0</span>
+      </div>
+      <div style="display:flex;gap:10px;margin:10px 0;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" id="sho_playBtn" onclick="toggleSHO()">Play</button>
+        <button class="btn btn-sm" onclick="resetSHO()">Reset</button>
+      </div>
+      <!-- Spring animation -->
+      <div style="position:relative;height:80px;margin:10px 0;overflow:hidden">
+        <svg id="springSvg" width="100%" height="80" viewBox="0 0 600 80">
+          <!-- Wall -->
+          <rect x="0" y="10" width="10" height="60" fill="var(--text-dim)" rx="2"/>
+          <line x1="10" y1="10" x2="10" y2="70" stroke="var(--text-bright)" stroke-width="2"/>
+          <!-- Spring (drawn dynamically) -->
+          <path id="springPath" d="" stroke="var(--indigo)" stroke-width="2" fill="none"/>
+          <!-- Mass -->
+          <rect id="springMass" x="300" y="20" width="50" height="40" rx="6" fill="var(--green-dim)" stroke="var(--green)" stroke-width="2"/>
+          <text id="springMassLabel" x="325" y="45" fill="var(--green)" font-size="12" text-anchor="middle" font-weight="600">m</text>
+          <!-- Equilibrium line -->
+          <line x1="325" y1="65" x2="325" y2="75" stroke="var(--text-dim)" stroke-width="1" stroke-dasharray="3,3"/>
+          <text x="325" y="78" fill="var(--text-dim)" font-size="8" text-anchor="middle">eq</text>
+        </svg>
+      </div>
+      <!-- Position vs time graph -->
+      <canvas id="shoCanvas" width="800" height="220" style="width:100%;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--border)"></canvas>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Angular freq &omega;</span><br><span class="value indigo" id="sho_omegaR">2.0 rad/s</span></div>
+        <div class="readout-item"><span class="label">Period T</span><br><span class="value green" id="sho_periodR">3.14 s</span></div>
+        <div class="readout-item"><span class="label">Frequency f</span><br><span class="value pink" id="sho_freqR">0.32 Hz</span></div>
+        <div class="readout-item"><span class="label">Position</span><br><span class="value amber" id="sho_posR">1.00</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> The mass-spring-damper model is the universal analog computer of physics. Ship roll period is T = 2&pi;&radic;(I/K) -- identical structure to &omega; = &radic;(k/m). The GM (metacentric height) acts like the spring constant. A ship with high GM has a short, snappy roll period (uncomfortable). A ship with low GM has a long, gentle roll period (but risks capsizing). Naval architects tune GM to get a roll period of about 10-14 seconds for crew comfort.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s6p1">
+        <p><strong>1.</strong> A mass-spring system has m = 2 kg and k = 8 N/m. What is &omega;?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p1-inp" placeholder="&omega; = ?">
+          <button class="btn btn-sm" onclick="checkNum('s6p1-inp', 2, 0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s6p1-inp-fb"></div>
+      </div>
+      <div class="problem" id="s6p2">
+        <p><strong>2.</strong> What is the period of oscillation for &omega; = 2 rad/s? (T = 2&pi;/&omega;, answer to 2 decimal places)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p2-inp" placeholder="T = ?">
+          <button class="btn btn-sm" onclick="checkNum('s6p2-inp', 3.14, 0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s6p2-inp-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: FINAL QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">Q</span> Final Quiz: Second-Order ODEs</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <span style="font-size:.72rem;color:var(--text-dim)">Answer all 10 questions</span>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Classification</div>
+      <p class="q-text">For y'' + 3y' + 2y = 0, what is the discriminant &Delta; = b&sup2; - 4ac?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">1 (9 - 8 = 1, so &Delta; > 0: distinct real roots)</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">0</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">-1</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">5</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Distinct Real Roots</div>
+      <p class="q-text">The roots of y'' + 3y' + 2y = 0 are r = -1 and r = -2. What is the general solution?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">y = C&#8321;e^{-x} + C&#8322;e^{-2x}</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">y = C&#8321;e^{x} + C&#8322;e^{2x}</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">y = (C&#8321; + C&#8322;x)e^{-x}</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">y = e^{-x}(C&#8321;cos(2x) + C&#8322;sin(2x))</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Repeated Root</div>
+      <p class="q-text">y'' + 10y' + 25y = 0. What is the general solution?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">y = C&#8321;e^{-5x} + C&#8322;e^{5x}</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">y = (C&#8321; + C&#8322;x)e^{-5x} (repeated root r = -5)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">y = e^{-5x}(C&#8321;cos(5x) + C&#8322;sin(5x))</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">y = C&#8321;e^{-5x}</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Complex Roots</div>
+      <p class="q-text">y'' + 4y' + 13y = 0. The roots are r = -2 &plusmn; 3i. What is the general solution?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">y = C&#8321;e^{-2x} + C&#8322;e^{-3x}</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">y = (C&#8321; + C&#8322;x)e^{-2x}</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">y = e^{-2x}(C&#8321;cos(3x) + C&#8322;sin(3x))</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">y = e^{-3x}(C&#8321;cos(2x) + C&#8322;sin(2x))</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Harmonic Oscillator</div>
+      <p class="q-text">y'' + 9y = 0. What is the angular frequency &omega;?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">9</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">3 (since &omega;&sup2; = 9, so &omega; = 3)</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">81</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">4.5</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Physics Connection</div>
+      <p class="q-text">In the mass-spring-damper equation m&middot;x'' + b&middot;x' + k&middot;x = 0, what does the coefficient b represent?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Mass</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Spring constant</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">Damping coefficient (friction/resistance)</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Frequency</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Discriminant Interpretation</div>
+      <p class="q-text">If the damping is strong enough that b&sup2; > 4mk, the system is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">Overdamped (returns to equilibrium slowly, no oscillation)</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Underdamped (oscillates with decreasing amplitude)</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Critically damped</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Unstable</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- RLC Circuit Analog</div>
+      <p class="q-text">In the RLC circuit equation L&middot;q'' + R&middot;q' + q/C = 0, what is the analog of the spring constant k?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Inductance L</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Resistance R</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">1/C (inverse of capacitance)</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Charge q</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Reduction of Order</div>
+      <p class="q-text">In the repeated root case, why do we multiply the second solution by x?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">To make the solution bigger</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">To get a second linearly independent solution (reduction of order gives v'' = 0 so v = x)</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Because the quadratic formula requires it</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">To account for initial velocity</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Envelope Function</div>
+      <p class="q-text">For y = e^{-2x}(cos(5x) + sin(5x)), what is the envelope that controls the amplitude decay?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">cos(5x) + sin(5x)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">e^{-2x} (the exponential factor with &alpha; = -2)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">e^{-2x}&middot;cos(5x)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">5x</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again.';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+/* ==================== SECTION 2: CLASSIFIER INTERACTIVE ==================== */
+function updateClassifier() {
+  var a = +document.getElementById('classA').value || 1;
+  var b = +document.getElementById('classB').value;
+  var c = +document.getElementById('classC').value;
+  var disc = b*b - 4*a*c;
+  document.getElementById('classDisc').textContent = disc.toFixed(2);
+
+  if (disc > 0.001) {
+    var r1 = (-b + Math.sqrt(disc))/(2*a);
+    var r2 = (-b - Math.sqrt(disc))/(2*a);
+    document.getElementById('classCase').textContent = 'Distinct Real';
+    document.getElementById('classCase').style.color = 'var(--green)';
+    document.getElementById('classR1').textContent = r1.toFixed(3);
+    document.getElementById('classR2').textContent = r2.toFixed(3);
+    document.getElementById('classSolution').innerHTML = 'y = C&#8321;e^{' + r1.toFixed(2) + 'x} + C&#8322;e^{' + r2.toFixed(2) + 'x}';
+  } else if (disc > -0.001) {
+    var r = -b/(2*a);
+    document.getElementById('classCase').textContent = 'Repeated Root';
+    document.getElementById('classCase').style.color = 'var(--amber)';
+    document.getElementById('classR1').textContent = r.toFixed(3);
+    document.getElementById('classR2').textContent = r.toFixed(3) + ' (same)';
+    document.getElementById('classSolution').innerHTML = 'y = (C&#8321; + C&#8322;x)e^{' + r.toFixed(2) + 'x}';
+  } else {
+    var alpha = -b/(2*a);
+    var beta = Math.sqrt(-disc)/(2*a);
+    document.getElementById('classCase').textContent = 'Complex Conjugate';
+    document.getElementById('classCase').style.color = 'var(--pink)';
+    document.getElementById('classR1').textContent = alpha.toFixed(2) + ' + ' + beta.toFixed(2) + 'i';
+    document.getElementById('classR2').textContent = alpha.toFixed(2) + ' - ' + beta.toFixed(2) + 'i';
+    document.getElementById('classSolution').innerHTML = 'y = e^{' + alpha.toFixed(2) + 'x}(C&#8321;cos(' + beta.toFixed(2) + 'x) + C&#8322;sin(' + beta.toFixed(2) + 'x))';
+  }
+}
+
+/* ==================== SECTION 3: DISTINCT REAL ROOTS INTERACTIVE ==================== */
+function drawDistinct() {
+  var c1 = +document.getElementById('dr_c1').value;
+  var c2 = +document.getElementById('dr_c2').value;
+  var r1 = +document.getElementById('dr_r1').value;
+  var r2 = +document.getElementById('dr_r2').value;
+  document.getElementById('dr_c1v').textContent = c1.toFixed(1);
+  document.getElementById('dr_c2v').textContent = c2.toFixed(1);
+  document.getElementById('dr_r1v').textContent = r1.toFixed(1);
+  document.getElementById('dr_r2v').textContent = r2.toFixed(1);
+
+  var canvas = document.getElementById('distinctCanvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  var xMin = 0, xMax = 5;
+  var yRange = 4;
+
+  function toX(x) { return (x - xMin) / (xMax - xMin) * (W - 80) + 60; }
+  function toY(y) { return H/2 - y * (H/2 - 30) / yRange; }
+
+  // Grid
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1;
+  for (var gx = 0; gx <= 5; gx++) {
+    ctx.beginPath(); ctx.moveTo(toX(gx), 10); ctx.lineTo(toX(gx), H - 10); ctx.stroke();
+  }
+  // Zero line
+  ctx.strokeStyle = '#9ca3af';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(toX(0), toY(0)); ctx.lineTo(toX(5), toY(0)); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  for (var lx = 0; lx <= 5; lx++) {
+    ctx.fillText(lx, toX(lx), H - 2);
+  }
+  ctx.textAlign = 'right';
+  for (var ly = -3; ly <= 3; ly++) {
+    if (ly === 0) continue;
+    ctx.fillText(ly, 50, toY(ly) + 4);
+  }
+  ctx.fillText('x', W - 10, toY(0) - 5);
+
+  // Component 1 (green dashed)
+  ctx.strokeStyle = '#22c55e';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  for (var x = xMin; x <= xMax; x += 0.02) {
+    var y = c1 * Math.exp(r1 * x);
+    var px = toX(x), py = toY(y);
+    if (py < -200 || py > H + 200) { ctx.moveTo(px, Math.max(-200, Math.min(H+200, py))); continue; }
+    if (x === xMin) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Component 2 (pink dashed)
+  ctx.strokeStyle = '#ec4899';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  for (var x = xMin; x <= xMax; x += 0.02) {
+    var y = c2 * Math.exp(r2 * x);
+    var px = toX(x), py = toY(y);
+    if (py < -200 || py > H + 200) { ctx.moveTo(px, Math.max(-200, Math.min(H+200, py))); continue; }
+    if (x === xMin) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Total solution (bright white)
+  ctx.strokeStyle = '#e2e4e9';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  for (var x = xMin; x <= xMax; x += 0.02) {
+    var y = c1 * Math.exp(r1 * x) + c2 * Math.exp(r2 * x);
+    var px = toX(x), py = toY(y);
+    if (py < -200 || py > H + 200) { ctx.moveTo(px, Math.max(-200, Math.min(H+200, py))); continue; }
+    if (x === xMin) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Legend
+  ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'left';
+  ctx.setLineDash([6,4]);
+  ctx.strokeStyle = '#22c55e'; ctx.beginPath(); ctx.moveTo(W-180,20); ctx.lineTo(W-155,20); ctx.stroke();
+  ctx.fillStyle = '#22c55e'; ctx.fillText('C\u2081e^{r\u2081x}', W-150, 24);
+  ctx.strokeStyle = '#ec4899'; ctx.beginPath(); ctx.moveTo(W-180,38); ctx.lineTo(W-155,38); ctx.stroke();
+  ctx.fillStyle = '#ec4899'; ctx.fillText('C\u2082e^{r\u2082x}', W-150, 42);
+  ctx.setLineDash([]);
+  ctx.strokeStyle = '#e2e4e9'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(W-180,56); ctx.lineTo(W-155,56); ctx.stroke();
+  ctx.fillStyle = '#e2e4e9'; ctx.fillText('Total y(x)', W-150, 60);
+
+  // Readout
+  var behavior = 'Overdamped decay';
+  if (r1 > 0 || r2 > 0) behavior = 'Has growing component';
+  if (r1 >= 0 && r2 >= 0) behavior = 'Both roots non-negative: growth';
+  document.getElementById('dr_behavior').textContent = behavior;
+}
+
+/* ==================== SECTION 4: DAMPING COMPARISON ==================== */
+var dampMode = 'over';
+
+function setDampCase(mode, btn) {
+  dampMode = mode;
+  var tabs = document.querySelectorAll('#dampTabs .scenario-tab');
+  tabs.forEach(function(t) { t.classList.remove('active'); });
+  btn.classList.add('active');
+  drawDampComparison();
+}
+
+function drawDampComparison() {
+  var canvas = document.getElementById('dampCanvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  var xMax = 6;
+  function toX(x) { return x / xMax * (W - 80) + 60; }
+  function toY(y) { return H/2 - y * (H/2 - 30) / 2; }
+
+  // Grid + zero line
+  ctx.strokeStyle = '#363b47'; ctx.lineWidth = 1;
+  for (var gx = 0; gx <= 6; gx++) { ctx.beginPath(); ctx.moveTo(toX(gx), 10); ctx.lineTo(toX(gx), H-10); ctx.stroke(); }
+  ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(toX(0), toY(0)); ctx.lineTo(toX(xMax), toY(0)); ctx.stroke();
+  ctx.fillStyle = '#9ca3af'; ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'center';
+  for (var lx = 0; lx <= 6; lx++) ctx.fillText(lx, toX(lx), H-2);
+
+  // Overdamped: y = 2e^{-x} - e^{-3x} (y(0)=1, y'(0)=1)
+  function yOver(t) { return 2*Math.exp(-t) - Math.exp(-3*t); }
+  // Critically damped: y = (1 + 2t)e^{-2t}
+  function yCrit(t) { return (1 + 2*t)*Math.exp(-2*t); }
+  // Underdamped: y = e^{-0.5t}*(cos(3t) + (1/6)*sin(3t))
+  function yUnder(t) { return Math.exp(-0.5*t)*(Math.cos(3*t) + (1/6)*Math.sin(3*t)); }
+
+  function drawCurve(fn, color, dashed) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash(dashed ? [6,4] : []);
+    ctx.beginPath();
+    for (var x = 0; x <= xMax; x += 0.02) {
+      var px = toX(x), py = toY(fn(x));
+      if (x === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  if (dampMode === 'over' || dampMode === 'all') drawCurve(yOver, '#22c55e', dampMode === 'all');
+  if (dampMode === 'critical' || dampMode === 'all') drawCurve(yCrit, '#f59e0b', false);
+  if (dampMode === 'under' || dampMode === 'all') drawCurve(yUnder, '#ec4899', dampMode === 'all');
+
+  // Legend for 'all' mode
+  if (dampMode === 'all') {
+    ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'left';
+    ctx.fillStyle = '#22c55e'; ctx.fillText('Overdamped', W-160, 24);
+    ctx.fillStyle = '#f59e0b'; ctx.fillText('Critically damped', W-160, 42);
+    ctx.fillStyle = '#ec4899'; ctx.fillText('Underdamped', W-160, 60);
+  }
+
+  // Update readouts
+  var typeMap = { over: 'Overdamped', critical: 'Critically Damped', under: 'Underdamped', all: 'All Three' };
+  var crossMap = { over: 'No', critical: 'No', under: 'Yes', all: 'Under: Yes' };
+  var speedMap = { over: 'Slow', critical: 'Fastest (no overshoot)', under: 'Fast but oscillates', all: 'Compare above' };
+  document.getElementById('dampType').textContent = typeMap[dampMode];
+  document.getElementById('dampCross').textContent = crossMap[dampMode];
+  document.getElementById('dampSpeed').textContent = speedMap[dampMode];
+}
+
+/* ==================== SECTION 5: COMPLEX ROOTS INTERACTIVE ==================== */
+function drawComplex() {
+  var alpha = +document.getElementById('cx_alpha').value;
+  var beta = +document.getElementById('cx_beta').value;
+  var c1 = +document.getElementById('cx_c1').value;
+  var c2 = +document.getElementById('cx_c2').value;
+  document.getElementById('cx_alphaV').textContent = alpha.toFixed(2);
+  document.getElementById('cx_betaV').textContent = beta.toFixed(1);
+  document.getElementById('cx_c1V').textContent = c1.toFixed(1);
+  document.getElementById('cx_c2V').textContent = c2.toFixed(1);
+
+  var canvas = document.getElementById('complexCanvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  var xMax = 8;
+  var amp = Math.sqrt(c1*c1 + c2*c2);
+  var yRange = Math.max(amp * 1.5, 1);
+
+  function toX(x) { return x / xMax * (W - 80) + 60; }
+  function toY(y) { return H/2 - y * (H/2 - 30) / yRange; }
+
+  // Grid
+  ctx.strokeStyle = '#363b47'; ctx.lineWidth = 1;
+  for (var gx = 0; gx <= 8; gx++) { ctx.beginPath(); ctx.moveTo(toX(gx), 10); ctx.lineTo(toX(gx), H-10); ctx.stroke(); }
+  ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(toX(0), toY(0)); ctx.lineTo(toX(xMax), toY(0)); ctx.stroke();
+  ctx.fillStyle = '#9ca3af'; ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'center';
+  for (var lx = 0; lx <= 8; lx++) ctx.fillText(lx, toX(lx), H-2);
+
+  // Envelope e^{alpha*x} (amber dashed)
+  ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.5; ctx.setLineDash([6,4]);
+  ctx.beginPath();
+  for (var x = 0; x <= xMax; x += 0.02) {
+    var env = amp * Math.exp(alpha * x);
+    var px = toX(x), py = toY(env);
+    if (py < -100 || py > H+100) { ctx.moveTo(px, Math.max(-100, Math.min(H+100, py))); continue; }
+    if (x === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  // Negative envelope
+  ctx.beginPath();
+  for (var x = 0; x <= xMax; x += 0.02) {
+    var env = -amp * Math.exp(alpha * x);
+    var px = toX(x), py = toY(env);
+    if (py < -100 || py > H+100) { ctx.moveTo(px, Math.max(-100, Math.min(H+100, py))); continue; }
+    if (x === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Solution curve (pink solid)
+  ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (var x = 0; x <= xMax; x += 0.01) {
+    var y = Math.exp(alpha * x) * (c1 * Math.cos(beta * x) + c2 * Math.sin(beta * x));
+    var px = toX(x), py = toY(y);
+    if (py < -100 || py > H+100) { ctx.moveTo(px, Math.max(-100, Math.min(H+100, py))); continue; }
+    if (x === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Legend
+  ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'left';
+  ctx.setLineDash([6,4]); ctx.strokeStyle = '#f59e0b'; ctx.beginPath(); ctx.moveTo(W-200,20); ctx.lineTo(W-175,20); ctx.stroke();
+  ctx.fillStyle = '#f59e0b'; ctx.fillText('Envelope e^{\u03b1x}', W-170, 24);
+  ctx.setLineDash([]);
+  ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(W-200,40); ctx.lineTo(W-175,40); ctx.stroke();
+  ctx.fillStyle = '#ec4899'; ctx.fillText('y(x)', W-170, 44);
+
+  // Readouts
+  document.getElementById('cx_decayR').textContent = alpha.toFixed(2);
+  document.getElementById('cx_freqR').textContent = beta.toFixed(1);
+  var period = (2 * Math.PI / beta);
+  document.getElementById('cx_periodR').textContent = period.toFixed(2);
+  if (alpha < 0) {
+    var halfLife = Math.log(2) / Math.abs(alpha);
+    document.getElementById('cx_halfR').textContent = halfLife.toFixed(2);
+  } else if (alpha === 0) {
+    document.getElementById('cx_halfR').textContent = 'Inf (no decay)';
+  } else {
+    document.getElementById('cx_halfR').textContent = 'N/A (growing)';
+  }
+}
+
+/* ==================== SECTION 6: HARMONIC OSCILLATOR ==================== */
+var shoAnimId = null;
+var shoTime = 0;
+var shoPlaying = false;
+
+function updateSHO() {
+  document.getElementById('sho_omegaV').textContent = (+document.getElementById('sho_omega').value).toFixed(1);
+  document.getElementById('sho_ampV').textContent = (+document.getElementById('sho_amp').value).toFixed(1);
+  drawSHO();
+}
+
+function toggleSHO() {
+  shoPlaying = !shoPlaying;
+  document.getElementById('sho_playBtn').textContent = shoPlaying ? 'Pause' : 'Play';
+  if (shoPlaying) animateSHO();
+  else if (shoAnimId) { cancelAnimationFrame(shoAnimId); shoAnimId = null; }
+}
+
+function resetSHO() {
+  shoPlaying = false;
+  shoTime = 0;
+  document.getElementById('sho_playBtn').textContent = 'Play';
+  if (shoAnimId) { cancelAnimationFrame(shoAnimId); shoAnimId = null; }
+  drawSHO();
+}
+
+function animateSHO() {
+  if (!shoPlaying) return;
+  shoTime += 0.03;
+  drawSHO();
+  shoAnimId = requestAnimationFrame(animateSHO);
+}
+
+function drawSHO() {
+  var omega = +document.getElementById('sho_omega').value;
+  var amp = +document.getElementById('sho_amp').value;
+  var pos = amp * Math.cos(omega * shoTime);
+
+  // Update spring SVG
+  var eqX = 325;
+  var massW = 50;
+  var massX = eqX + pos * 120; // scale displacement
+  document.getElementById('springMass').setAttribute('x', massX - massW/2);
+  document.getElementById('springMassLabel').setAttribute('x', massX);
+
+  // Draw spring coils
+  var springStart = 10;
+  var springEnd = massX - massW/2;
+  var coils = 12;
+  var segLen = (springEnd - springStart) / (coils * 2);
+  var d = 'M ' + springStart + ' 40';
+  for (var i = 0; i < coils * 2; i++) {
+    var sx = springStart + (i + 1) * segLen;
+    var sy = 40 + (i % 2 === 0 ? -15 : 15);
+    d += ' L ' + sx.toFixed(1) + ' ' + sy;
+  }
+  d += ' L ' + springEnd.toFixed(1) + ' 40';
+  document.getElementById('springPath').setAttribute('d', d);
+
+  // Draw position vs time graph
+  var canvas = document.getElementById('shoCanvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  var tMax = 10;
+  function toX(t) { return t / tMax * (W - 80) + 60; }
+  function toY(y) { return H/2 - y * (H/2 - 25) / (amp * 1.3); }
+
+  // Grid
+  ctx.strokeStyle = '#363b47'; ctx.lineWidth = 1;
+  for (var gt = 0; gt <= 10; gt += 2) { ctx.beginPath(); ctx.moveTo(toX(gt), 10); ctx.lineTo(toX(gt), H-10); ctx.stroke(); }
+  ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(toX(0), toY(0)); ctx.lineTo(toX(tMax), toY(0)); ctx.stroke();
+  ctx.fillStyle = '#9ca3af'; ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'center';
+  for (var lt = 0; lt <= 10; lt += 2) ctx.fillText(lt + 's', toX(lt), H-2);
+  ctx.fillText('t', W-10, toY(0)-5);
+
+  // Curve
+  ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (var t = 0; t <= tMax; t += 0.02) {
+    var y = amp * Math.cos(omega * t);
+    var px = toX(t), py = toY(y);
+    if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Current time marker
+  if (shoTime > 0 && shoTime <= tMax) {
+    var mx = toX(shoTime), my = toY(pos);
+    ctx.fillStyle = '#22c55e';
+    ctx.beginPath(); ctx.arc(mx, my, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 1;
+    ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(mx, toY(0)); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Readouts
+  var T = 2 * Math.PI / omega;
+  var f = 1 / T;
+  document.getElementById('sho_omegaR').textContent = omega.toFixed(1) + ' rad/s';
+  document.getElementById('sho_periodR').textContent = T.toFixed(2) + ' s';
+  document.getElementById('sho_freqR').textContent = f.toFixed(2) + ' Hz';
+  document.getElementById('sho_posR').textContent = pos.toFixed(3);
+}
+
+/* ==================== INIT ==================== */
+markComplete(1);
+updateClassifier();
+drawDistinct();
+drawDampComparison();
+drawComplex();
+drawSHO();
+</script>
+</body>
+</html>

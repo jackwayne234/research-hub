@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 12: Systems of ODEs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.step-box{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:12px 0}
+.step-box .step-label{font-size:.68rem;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.step-box .step-content{font-size:.78rem;line-height:1.8}
+.step-box .step-content strong{color:var(--text-bright)}
+.matrix-input-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0;max-width:200px}
+.matrix-input-grid input{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.82rem;width:100%;text-align:center;outline:none;transition:border-color var(--transition)}
+.matrix-input-grid input:focus{border-color:var(--indigo)}
+.matrix-bracket{display:flex;align-items:center;gap:4px}
+.matrix-bracket .bracket{font-size:2rem;color:var(--text-dim);line-height:1}
+canvas{border-radius:var(--radius);display:block}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.two-col{grid-template-columns:1fr}.matrix-input-grid{max-width:160px}}
+@keyframes popCorrect{0%{transform:scale(1)}40%{transform:scale(1.07)}70%{transform:scale(.97)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .4s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>12</span> Systems of ODEs</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: FROM SINGLE ODE TO SYSTEM -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> From Single ODE to System</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Every <strong>nth-order ODE</strong> can be rewritten as a system of n first-order ODEs. This is not just a mathematical trick -- it is the standard form that computers use to integrate ODEs, and it reveals the deep geometric structure of solutions.
+    </p>
+
+    <p class="concept-text">
+      <strong>The conversion recipe:</strong> Take a second-order ODE like x'' + bx' + kx = 0. Introduce new variables: let x&#8321; = x and x&#8322; = x'. Then:
+    </p>
+
+    <div class="formula-box">
+      x&#8321;' = x&#8322;<br>
+      x&#8322;' = -kx&#8321; - bx&#8322;
+    </div>
+
+    <p class="concept-text">
+      Written in <strong>matrix form</strong> with the state vector <strong>x</strong> = (x&#8321;, x&#8322;)&#7488;:
+    </p>
+
+    <div class="formula-box large green">
+      <strong>x</strong>' = A<strong>x</strong> &nbsp; where &nbsp; A = [[0, 1], [-k, -b]]
+    </div>
+
+    <p class="concept-text">
+      The matrix A encodes all the physics. The off-diagonal 1 in the top row says "velocity is the derivative of position." The bottom row encodes Newton's law: acceleration is determined by position and velocity.
+    </p>
+
+    <div class="key-point">
+      An nth-order scalar ODE always converts to a first-order system in n dimensions. The state vector at time t tells you everything about the future -- this is the <strong>state space</strong> concept from control theory.
+    </div>
+
+    <p class="concept-text">
+      <strong>Why do systems arise naturally?</strong> Many physical systems have multiple interacting variables that each evolve in time. The coupling between variables is what makes them a system rather than independent equations.
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Coupled Oscillators</div>
+      <div class="step-content">
+        Two masses connected by springs. Mass 1 affects mass 2 and vice versa. The system has two positions x&#8321;(t) and x&#8322;(t) with coupling terms crossing between equations. A = [[-k&#8321;/m - k/m, k/m], [k/m, -k&#8322;/m - k/m]] where k is the coupling spring.
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Predator-Prey (Lotka-Volterra)</div>
+      <div class="step-content">
+        Rabbits R and foxes F. R' = aR - bRF (rabbits grow but get eaten). F' = cRF - dF (foxes fed by rabbits but die off). The product terms RF make this nonlinear -- but near equilibrium we can linearize to get x' = Ax.
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Coupled RLC Circuits</div>
+      <div class="step-content">
+        Two loops sharing a component. Current in loop 1 induces voltage in loop 2 via mutual inductance M. L&#8321;I&#8321;' + M I&#8322;' + R&#8321;I&#8321; = V. The coupling is through M -- set M = 0 and the loops decouple entirely.
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> A ship's heave (up/down) and pitch (nose/tail) motions are coupled -- as the bow rises in a wave, it changes the pitching moment, which changes the heave. The two-axis equation of motion is exactly <strong>x</strong>' = A<strong>x</strong> where <strong>x</strong> = (heave, heave-rate, pitch, pitch-rate). Naval architects solve for eigenvalues of A to find natural seakeeping frequencies.
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem">
+        <p>Convert the ODE y'' - 3y' + 2y = 0 to a 2x2 system x' = Ax. What is the entry A[1][0] (bottom-left entry, using 0-indexing)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1a1" placeholder="-2">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1a1',-2,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="p1a1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p>For y'' - 3y' + 2y = 0, what is A[1][1] (bottom-right)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1a2" placeholder="3">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1a2',3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="p1a2-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p>A spring-mass system mx'' + kx = 0 is converted to x' = Ax. How many eigenvalues does A have?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'mc1a','wrong')">A) 1</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc1a','correct')">B) 2</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc1a','wrong')">C) 4</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc1a','wrong')">D) It depends on m and k</button>
+        </div>
+        <div class="feedback" id="mc1a-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: MATRIX METHODS (EIGENVALUE METHOD) -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Matrix Methods: The Eigenvalue Approach</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      For the system <strong>x</strong>' = A<strong>x</strong>, we guess a solution of the form <strong>x</strong>(t) = <strong>v</strong>e<sup>&#955;t</sup> where <strong>v</strong> is a constant vector. Plugging in:
+    </p>
+
+    <div class="formula-box">
+      <strong>v</strong>&#955;e<sup>&#955;t</sup> = A<strong>v</strong>e<sup>&#955;t</sup> &nbsp; &#8658; &nbsp; A<strong>v</strong> = &#955;<strong>v</strong>
+    </div>
+
+    <p class="concept-text">
+      This is the <strong>eigenvalue equation</strong>. The vector <strong>v</strong> must be an eigenvector of A, and &#955; must be the corresponding eigenvalue. Each eigenvalue-eigenvector pair gives one solution mode.
+    </p>
+
+    <p class="concept-text">
+      For a 2x2 matrix with <strong>two real distinct eigenvalues</strong> &#955;&#8321; and &#955;&#8322; with eigenvectors <strong>v</strong>&#8321; and <strong>v</strong>&#8322;, the general solution is:
+    </p>
+
+    <div class="formula-box large green">
+      <strong>x</strong>(t) = c&#8321;<strong>v</strong>&#8321;e<sup>&#955;&#8321;t</sup> + c&#8322;<strong>v</strong>&#8322;e<sup>&#955;&#8322;t</sup>
+    </div>
+
+    <p class="concept-text">
+      Each term <strong>v</strong>&#8320;e<sup>&#955;&#8318;t</sup> is an <strong>exponential mode</strong>. The eigenvector tells you the direction in state space; the eigenvalue tells you how fast that mode grows or decays. The constants c&#8321;, c&#8322; are fixed by initial conditions.
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Step-by-Step: Finding the Solution</div>
+      <div class="step-content">
+        <strong>1.</strong> Solve det(A - &#955;I) = 0 for eigenvalues &#955;&#8321;, &#955;&#8322;<br>
+        <strong>2.</strong> For each &#955;&#8320;, solve (A - &#955;&#8320;I)<strong>v</strong> = <strong>0</strong> for eigenvector <strong>v</strong>&#8320;<br>
+        <strong>3.</strong> Write <strong>x</strong>(t) = c&#8321;<strong>v</strong>&#8321;e<sup>&#955;&#8321;t</sup> + c&#8322;<strong>v</strong>&#8322;e<sup>&#955;&#8322;t</sup><br>
+        <strong>4.</strong> Apply <strong>x</strong>(0) = <strong>x</strong>&#8320; to get a 2x2 linear system for c&#8321;, c&#8322;
+      </div>
+    </div>
+
+    <p class="concept-text">
+      <strong>Worked example:</strong> Solve <strong>x</strong>' = [[-1, 0], [0, -3]]<strong>x</strong> with <strong>x</strong>(0) = (2, 1).
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Solution</div>
+      <div class="step-content">
+        A is diagonal, so eigenvalues are &#955;&#8321; = -1, &#955;&#8322; = -3 (read off the diagonal).<br>
+        Eigenvectors: <strong>v</strong>&#8321; = (1, 0), <strong>v</strong>&#8322; = (0, 1)<br>
+        General solution: <strong>x</strong>(t) = c&#8321;(1, 0)e<sup>-t</sup> + c&#8322;(0, 1)e<sup>-3t</sup><br>
+        Apply IC: (2, 1) = c&#8321;(1, 0) + c&#8322;(0, 1) gives c&#8321; = 2, c&#8322; = 1<br>
+        <strong>x</strong>(t) = (2e<sup>-t</sup>, e<sup>-3t</sup>)
+      </div>
+    </div>
+
+    <p class="concept-text">
+      <strong>Physics connection:</strong> In a system of two coupled oscillators, the eigenvalues give the <strong>normal mode frequencies</strong>. Each normal mode is a pattern of motion where both masses oscillate at the same frequency. Any motion is a superposition of the two normal modes -- exactly the formula above.
+    </p>
+
+    <div class="formula-box pink">
+      Normal mode &#8594; eigenvector direction<br>
+      Normal frequency &#8594; |eigenvalue|<br>
+      Amplitude &#8594; coefficient c&#8320;
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> In a two-state fire control system tracking a target in azimuth and elevation, the state vector <strong>x</strong> = (azimuth error, elevation error) evolves as <strong>x</strong>' = A<strong>x</strong>. The eigenvalues of the control matrix A determine how fast errors decay. Designing A to have eigenvalues with large negative real parts gives a fast-responding targeting system.
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem">
+        <p>For A = [[2, 0], [0, -1]], the eigenvalues are 2 and -1. Write the general solution. What is the coefficient of the growing mode if x(0) = (3, 4)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2a1" placeholder="3">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2a1',3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="p2a1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p>For A = [[2, 0], [0, -1]] with x(0) = (3, 4), what is c&#8322; (coefficient of the decaying mode)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2a2" placeholder="4">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2a2',4,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="p2a2-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p>A 2x2 system has eigenvalues &#955;&#8321; = -2, &#955;&#8322; = -5. As t &#8594; &#8734;, the solution:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'mc2a','wrong')">A) grows without bound</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc2a','correct')">B) decays to zero</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc2a','wrong')">C) oscillates</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc2a','wrong')">D) stays constant</button>
+        </div>
+        <div class="feedback" id="mc2a-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: PHASE PORTRAITS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Phase Portraits</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>phase portrait</strong> shows all possible trajectories of a 2D system in the (x&#8321;, x&#8322;) plane -- the <strong>phase plane</strong>. Instead of plotting each variable vs. time, we plot them against each other. Each trajectory shows how the system evolves from a given initial condition.
+    </p>
+
+    <p class="concept-text">
+      The <strong>classification</strong> of equilibria (fixed points) depends entirely on the eigenvalues of A:
+    </p>
+
+    <div class="formula-box amber">
+      Node: both eigenvalues real, same sign (stable if negative, unstable if positive)<br>
+      Saddle: real eigenvalues with opposite signs (always unstable)<br>
+      Spiral: complex eigenvalues &#955; = &#945; &#177; &#946;i, &#945; &#8800; 0 (in if &#945;&lt;0, out if &#945;&gt;0)<br>
+      Center: pure imaginary eigenvalues &#955; = &#177;&#946;i (closed orbits)
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive Phase Portrait</div>
+
+      <p style="font-size:.74rem;color:var(--text-dim);margin-bottom:12px;">Enter matrix A entries or choose a preset. The portrait draws 12 trajectories from different initial conditions.</p>
+
+      <div class="controls-row">
+        <div>
+          <div class="sub-label">Matrix A = [[a, b], [c, d]]</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+            <span style="font-size:1.4rem;color:var(--text-dim)">[</span>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <input type="number" id="ma" value="-1" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.8rem;width:60px;text-align:center;outline:none" oninput="drawPhasePortrait()">
+              <input type="number" id="mb" value="0" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.8rem;width:60px;text-align:center;outline:none" oninput="drawPhasePortrait()">
+              <input type="number" id="mc_" value="0" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.8rem;width:60px;text-align:center;outline:none" oninput="drawPhasePortrait()">
+              <input type="number" id="md" value="-2" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.8rem;width:60px;text-align:center;outline:none" oninput="drawPhasePortrait()">
+            </div>
+            <span style="font-size:1.4rem;color:var(--text-dim)">]</span>
+          </div>
+        </div>
+        <div>
+          <div class="sub-label">Presets</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
+            <button class="btn btn-sm" onclick="setPreset(-1,0,0,-2)">Stable Node</button>
+            <button class="btn btn-sm" onclick="setPreset(1,0,0,2)">Unstable Node</button>
+            <button class="btn btn-sm" onclick="setPreset(2,0,0,-1)">Saddle</button>
+            <button class="btn btn-sm" onclick="setPreset(-0.3,1,-1,-0.3)">Spiral In</button>
+            <button class="btn btn-sm" onclick="setPreset(0.3,1,-1,0.3)">Spiral Out</button>
+            <button class="btn btn-sm" onclick="setPreset(0,1,-1,0)">Center</button>
+          </div>
+        </div>
+      </div>
+
+      <canvas id="phaseCanvas" width="500" height="400" style="width:100%;max-width:500px;background:var(--bg);border:1px solid var(--border);margin-top:12px"></canvas>
+
+      <div class="readout" id="phaseReadout">
+        <div class="readout-item"><div class="label">Type</div><div class="value indigo" id="ppType">--</div></div>
+        <div class="readout-item"><div class="label">&#955;&#8321;</div><div class="value green" id="ppL1">--</div></div>
+        <div class="readout-item"><div class="label">&#955;&#8322;</div><div class="value pink" id="ppL2">--</div></div>
+        <div class="readout-item"><div class="label">Trace</div><div class="value" id="ppTrace">--</div></div>
+        <div class="readout-item"><div class="label">Det</div><div class="value" id="ppDet">--</div></div>
+      </div>
+    </div>
+
+    <div class="key-point">
+      Trajectories can never cross in a phase portrait (because the ODE has unique solutions). The origin is the equilibrium point (where <strong>x</strong>' = A<strong>0</strong> = <strong>0</strong>). Every trajectory either approaches, moves away from, or orbits around the origin.
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> A dual-tank ballast system on a submarine has two tank fill levels (x&#8321;, x&#8322;). The phase portrait of the linearized dynamics shows whether the system returns to trim (stable node/spiral) or diverges (saddle/unstable node). Operators want a stable spiral -- quick return to equilibrium with some oscillation acceptable.
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem">
+        <p>A system has eigenvalues &#955; = 2 &#177; 3i. What type of phase portrait does this produce?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'mc3a','wrong')">A) Stable node</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc3a','wrong')">B) Saddle</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc3a','correct')">C) Unstable spiral</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc3a','wrong')">D) Center</button>
+        </div>
+        <div class="feedback" id="mc3a-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p>A system has A = [[0, -1], [1, 0]]. Eigenvalues are &#177;i. The phase portrait is:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'mc3b','wrong')">A) Spiral in</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc3b','correct')">B) Center (closed ellipses)</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc3b','wrong')">C) Stable node</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc3b','wrong')">D) Saddle</button>
+        </div>
+        <div class="feedback" id="mc3b-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p>For eigenvalues &#955;&#8321; = -2 and &#955;&#8322; = 3, what type of equilibrium is the origin?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'mc3c','wrong')">A) Stable node</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc3c','correct')">B) Saddle point</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc3c','wrong')">C) Unstable spiral</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc3c','wrong')">D) Center</button>
+        </div>
+        <div class="feedback" id="mc3c-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: STABILITY ANALYSIS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Stability Analysis</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Stability</strong> asks: if you start near the equilibrium, do you stay near it? There are three cases:
+    </p>
+
+    <div class="formula-box green">Asymptotically stable: all solutions &#8594; 0 as t &#8594; &#8734; &nbsp;&nbsp; (Re(&#955;) &lt; 0 for all &#955;)</div>
+    <div class="formula-box amber">Neutrally stable: solutions stay bounded but don't decay &nbsp;&nbsp; (Re(&#955;) &#8804; 0, with &#61;0 cases)</div>
+    <div class="formula-box pink">Unstable: some solutions grow without bound &nbsp;&nbsp; (Re(&#955;) &gt; 0 for some &#955;)</div>
+
+    <p class="concept-text">
+      For a 2x2 matrix A, the eigenvalues satisfy the characteristic equation &#955;&#178; - (tr A)&#955; + det A = 0. We can classify stability using only <strong>trace</strong> and <strong>determinant</strong> -- no need to solve for eigenvalues explicitly.
+    </p>
+
+    <div class="formula-box large">
+      tr(A) = &#955;&#8321; + &#955;&#8322; &nbsp;&nbsp;&nbsp; det(A) = &#955;&#8321; &#955;&#8322;<br>
+      discriminant &#916; = tr(A)&#178; - 4det(A)
+    </div>
+
+    <p class="concept-text">
+      The <strong>trace-determinant diagram</strong> is a complete map of all 2x2 linear system behaviors. Every matrix A maps to a single point (tr A, det A) in this diagram, and the region tells you the behavior type.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive Trace-Determinant Diagram</div>
+      <p style="font-size:.74rem;color:var(--text-dim);margin-bottom:12px;">Drag the point or adjust sliders to move through the diagram. The dot shows where your matrix A lives.</p>
+
+      <div class="two-col">
+        <div>
+          <div class="slider-row">
+            <label>Trace (tr A)</label>
+            <input type="range" id="trSlider" min="-4" max="4" step="0.1" value="-1" oninput="updateTDDiagram()">
+            <span class="slider-val" id="trVal">-1.0</span>
+          </div>
+          <div class="slider-row">
+            <label>Det (det A)</label>
+            <input type="range" id="detSlider" min="-4" max="5" step="0.1" value="2" oninput="updateTDDiagram()">
+            <span class="slider-val" id="detVal">2.0</span>
+          </div>
+        </div>
+        <div class="readout" style="align-content:center">
+          <div class="readout-item"><div class="label">Classification</div><div class="value indigo" id="tdType">Stable Node</div></div>
+          <div class="readout-item"><div class="label">Stability</div><div class="value green" id="tdStab">Stable</div></div>
+          <div class="readout-item"><div class="label">&#916; = tr&#178;-4det</div><div class="value" id="tdDisc">--</div></div>
+        </div>
+      </div>
+
+      <canvas id="tdCanvas" width="500" height="400" style="width:100%;max-width:500px;background:var(--bg);border:1px solid var(--border);margin-top:12px"></canvas>
+    </div>
+
+    <div class="key-point">
+      Quick stability test for 2x2: The system is asymptotically stable if and only if tr(A) &lt; 0 AND det(A) &gt; 0. Both conditions are necessary.
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> A quantum two-state system -- like nuclear spin precession in an NMR sonar sensor -- evolves as |&#968;&#10217;' = -iH|&#968;&#10217;/&#8463;. For a spin-1/2 in a magnetic field, H is a 2x2 Hermitian matrix. The eigenvalues are purely imaginary (pure precession -- center in phase space), so the system is neutrally stable. No energy is gained or lost in the magnetic field alone.
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem">
+        <p>A = [[-3, 1], [0, -2]]. tr(A) = -5, det(A) = 6. Is this system asymptotically stable?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'mc4a','correct')">A) Yes -- tr &lt; 0 and det &gt; 0</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc4a','wrong')">B) No -- det &gt; 0 means unstable</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc4a','wrong')">C) No -- tr &lt; 0 means unstable</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc4a','wrong')">D) Need eigenvalues to decide</button>
+        </div>
+        <div class="feedback" id="mc4a-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p>A system has tr(A) = 0 and det(A) = 4. What is the discriminant &#916; = tr&#178; - 4det?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p4a1" placeholder="-16">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p4a1',-16,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="p4a1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p>From the previous problem (tr=0, det=4, &#916;=-16), the eigenvalues are:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'mc4b','wrong')">A) Real and distinct</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc4b','wrong')">B) Real and equal</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc4b','correct')">C) Pure imaginary (center)</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc4b','wrong')">D) Complex with positive real part</button>
+        </div>
+        <div class="feedback" id="mc4b-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: COMPLEX EIGENVALUES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Complex Eigenvalues</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When A has complex eigenvalues &#955; = &#945; &#177; &#946;i (with &#946; &ne; 0), the eigenvectors are also complex. We write the eigenvector as <strong>v</strong> = <strong>a</strong> + i<strong>b</strong> where <strong>a</strong> and <strong>b</strong> are real vectors.
+    </p>
+
+    <p class="concept-text">
+      Using Euler's formula e<sup>(&#945;+i&#946;)t</sup> = e<sup>&#945;t</sup>(cos&#946;t + i sin&#946;t), the complex solution separates into two real solutions:
+    </p>
+
+    <div class="formula-box large green">
+      <strong>x</strong>&#8321;(t) = e<sup>&#945;t</sup>(cos&#946;t &middot; <strong>a</strong> - sin&#946;t &middot; <strong>b</strong>)<br>
+      <strong>x</strong>&#8322;(t) = e<sup>&#945;t</sup>(sin&#946;t &middot; <strong>a</strong> + cos&#946;t &middot; <strong>b</strong>)
+    </div>
+
+    <p class="concept-text">
+      The general real solution is <strong>x</strong>(t) = c&#8321;<strong>x</strong>&#8321;(t) + c&#8322;<strong>x</strong>&#8322;(t). The e<sup>&#945;t</sup> factor controls growth/decay; the trigonometric factors control rotation in the phase plane.
+    </p>
+
+    <div class="formula-box amber">
+      &#945; &lt; 0: spiral IN (stable) -- amplitude shrinks while rotating<br>
+      &#945; = 0: center -- perfect ellipses, constant amplitude<br>
+      &#945; &gt; 0: spiral OUT (unstable) -- amplitude grows while rotating
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Example: A = [[-1, -2], [2, -1]]</div>
+      <div class="step-content">
+        det(A - &#955;I) = (&#955;+1)&#178; + 4 = 0 &#8658; &#955; = -1 &#177; 2i<br>
+        So &#945; = -1, &#946; = 2. The solution spirals IN with angular frequency 2 rad/s.<br>
+        For &#955; = -1+2i, solve (A - &#955;I)<strong>v</strong> = <strong>0</strong>: get <strong>v</strong> = (1, i), so <strong>a</strong> = (1, 0), <strong>b</strong> = (0, 1)<br>
+        <strong>x</strong>(t) = e<sup>-t</sup>[c&#8321;(cos2t, sin2t) + c&#8322;(-sin2t, cos2t)]
+      </div>
+    </div>
+
+    <p class="concept-text">
+      <strong>Connection to second-order ODEs:</strong> The equation x'' + 2&#945;x' + (&#945;&#178; + &#946;&#178;)x = 0 has characteristic roots &#955; = &#945; &#177; &#946;i. Converting to a system and solving gives exactly the same oscillatory-decaying solution. Complex eigenvalues are just the 2D version of complex characteristic roots.
+    </p>
+
+    <div class="formula-box pink">
+      x(t) = e<sup>&#945;t</sup>(c&#8321; cos&#946;t + c&#8322; sin&#946;t)<br>
+      (scalar ODE version -- same math, one component)
+    </div>
+
+    <p class="concept-text">
+      <strong>Quantum physics connection:</strong> The time evolution operator e<sup>-iHt/&#8463;</sup> for a two-state quantum system involves exactly this structure. With H = [[E&#8321;, 0], [0, E&#8322;]], the eigenvalues of -iH/&#8463; are &#177;i(E&#8322;-E&#8321;)/(2&#8463;) -- pure imaginary. The result is oscillation (Rabi oscillations) with no growth or decay.
+    </p>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> An undamped two-coupled-oscillator model (two masts on a ship, connected through the hull) has A with pure imaginary eigenvalues &#955; = &#177;&#946;i. Adding structural damping shifts eigenvalues to &#955; = -&#948; &#177; &#946;i (spiral in). Naval architects add damping material to ensure &#945; &lt; 0, preventing resonance buildup during prolonged heavy weather.
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem">
+        <p>A = [[0, -4], [4, 0]] has eigenvalues &#955; = &#177;4i. What is the angular frequency &#946; of oscillation?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p5a1" placeholder="4">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p5a1',4,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="p5a1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p>A system has &#955; = -2 + 5i. As t increases, the solution envelope:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'mc5a','correct')">A) Decays like e<sup>-2t</sup> while oscillating at frequency 5</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc5a','wrong')">B) Grows like e<sup>2t</sup></button>
+          <button class="mc-btn" onclick="checkMC(this,'mc5a','wrong')">C) Oscillates at constant amplitude with frequency 2</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc5a','wrong')">D) Decays like e<sup>-5t</sup> with no oscillation</button>
+        </div>
+        <div class="feedback" id="mc5a-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p>The matrix [[-0.5, -3], [3, -0.5]] models a damped RLC circuit pair. The system will:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'mc5b','wrong')">A) Grow in amplitude over time</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc5b','correct')">B) Oscillate with decreasing amplitude (spiral in)</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc5b','wrong')">C) Grow monotonically with no oscillation</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc5b','wrong')">D) Maintain constant amplitude forever</button>
+        </div>
+        <div class="feedback" id="mc5b-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: APPLICATIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Applications</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Systems of ODEs appear throughout physics and engineering. Here we examine three canonical applications, with an interactive Lotka-Volterra simulation you can tune with sliders.
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Coupled Spring-Mass System</div>
+      <div class="step-content">
+        Two masses m&#8321;, m&#8322; connected: wall &#8212;k&#8321;&#8212; m&#8321; &#8212;k&#8321;&#8322;&#8212; m&#8322; &#8212;k&#8322;&#8212; wall.<br>
+        Equations: m&#8321;x&#8321;'' = -(k&#8321;+k&#8321;&#8322;)x&#8321; + k&#8321;&#8322;x&#8322; &nbsp; and &nbsp; m&#8322;x&#8322;'' = k&#8321;&#8322;x&#8321; - (k&#8322;+k&#8321;&#8322;)x&#8322;<br>
+        This gives a 4x4 system. <strong>Normal modes</strong>: masses move in phase (low freq) or out of phase (high freq). Each mode is an eigenvector of the mass-normalized stiffness matrix.
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Lotka-Volterra (Predator-Prey)</div>
+      <div class="step-content">
+        R' = aR - bRF (rabbits: grow at rate a, killed by foxes at rate b)<br>
+        F' = cRF - dF (foxes: fed by rabbits at rate c, die at rate d)<br>
+        Equilibrium at R* = d/c, F* = a/b. Linearize around equilibrium to get x' = Ax.<br>
+        Eigenvalues: &#955; = &#177;i&#8730;(ad) -- pure imaginary! The equilibrium is a center. Populations cycle forever.
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Two-Tank Mixing Problem</div>
+      <div class="step-content">
+        Tank 1 (vol V&#8321;) and Tank 2 (vol V&#8322;) connected with flow rates r&#8321;&#8322; and r&#8322;&#8321;.<br>
+        x&#8321;' = -(r&#8321;&#8322;/V&#8321;)x&#8321; + (r&#8322;&#8321;/V&#8322;)x&#8322; &nbsp; x&#8322;' = (r&#8321;&#8322;/V&#8321;)x&#8321; - (r&#8322;&#8321;/V&#8322;)x&#8322;<br>
+        Eigenvalues: 0 (total salt conserved) and negative (exponential approach to equilibrium).<br>
+        The zero eigenvalue reflects the conservation law. Navy: dual ballast tank salt-water exchange.
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Lotka-Volterra Simulation</div>
+
+      <div class="slider-row">
+        <label>Growth rate a</label>
+        <input type="range" id="lva" min="0.1" max="2.0" step="0.1" value="1.0" oninput="updateLV()">
+        <span class="slider-val" id="lvaVal">1.0</span>
+      </div>
+      <div class="slider-row">
+        <label>Predation b</label>
+        <input type="range" id="lvb" min="0.1" max="2.0" step="0.1" value="0.5" oninput="updateLV()">
+        <span class="slider-val" id="lvbVal">0.5</span>
+      </div>
+      <div class="slider-row">
+        <label>Conversion c</label>
+        <input type="range" id="lvc_" min="0.1" max="2.0" step="0.1" value="0.5" oninput="updateLV()">
+        <span class="slider-val" id="lvcVal">0.5</span>
+      </div>
+      <div class="slider-row">
+        <label>Death rate d</label>
+        <input type="range" id="lvd" min="0.1" max="2.0" step="0.1" value="1.0" oninput="updateLV()">
+        <span class="slider-val" id="lvdVal">1.0</span>
+      </div>
+
+      <div class="readout" style="margin:10px 0">
+        <div class="readout-item"><div class="label">Equilibrium R*</div><div class="value green" id="lvReq">--</div></div>
+        <div class="readout-item"><div class="label">Equilibrium F*</div><div class="value pink" id="lvFeq">--</div></div>
+        <div class="readout-item"><div class="label">Cycle period</div><div class="value amber" id="lvPeriod">--</div></div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="sub-label">Phase Portrait (R vs F)</div>
+          <canvas id="lvPhase" width="260" height="220" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius)"></canvas>
+        </div>
+        <div>
+          <div class="sub-label">Time Series</div>
+          <canvas id="lvTime" width="260" height="220" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius)"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> The predator-prey cycle has a direct analogy in naval logistics: consumables (like fuel, R) and operations (F, which consume fuel). "Operations" increase as fuel availability rises; fuel drops as operations increase. A two-compartment supply model gives similar cyclic behavior. Ensuring the system stays near stable equilibrium is a key aspect of naval logistics planning.
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem">
+        <p>In the Lotka-Volterra model with a=1, b=0.5, c=0.5, d=1, what is the rabbit equilibrium R*?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p6a1" placeholder="2">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p6a1',2,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="p6a1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p>The linearized Lotka-Volterra around equilibrium has pure imaginary eigenvalues. This means the populations:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'mc6a','wrong')">A) Always go extinct</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc6a','wrong')">B) Grow without bound</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc6a','correct')">C) Cycle periodically around equilibrium</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc6a','wrong')">D) Converge exponentially to equilibrium</button>
+        </div>
+        <div class="feedback" id="mc6a-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p>For the two-tank mixing system, one eigenvalue is always 0. What does this physically mean?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'mc6b','wrong')">A) The system is unstable</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc6b','wrong')">B) The concentrations oscillate</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc6b','correct')">C) Total solute is conserved (a conservation law exists)</button>
+          <button class="mc-btn" onclick="checkMC(this,'mc6b','wrong')">D) One tank empties completely</button>
+        </div>
+        <div class="feedback" id="mc6b-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- FINAL QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="quiz">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num" style="background:var(--amber-dim);color:var(--amber)">Q</span> Final Quiz: Systems of ODEs</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / <span id="quizTotal">10</span></span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-q" id="qq1">
+      <div class="q-num">Question 1</div>
+      <div class="q-text">Converting y'' + 5y' + 6y = 0 to x' = Ax, the bottom row of A is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">A) [-5, -6]</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',true)">B) [-6, -5]</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">C) [6, 5]</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">D) [5, 6]</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q" id="qq2">
+      <div class="q-num">Question 2</div>
+      <div class="q-text">A 2x2 system x' = Ax has eigenvalues -3 and -1. The general solution x(t):</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',true)">A) x(t) = c&#8321;v&#8321;e<sup>-3t</sup> + c&#8322;v&#8322;e<sup>-t</sup></button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">B) x(t) = c&#8321;e<sup>-3t</sup> + c&#8322;e<sup>-t</sup> (scalar only)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">C) x(t) = (c&#8321;+c&#8322;t)e<sup>-2t</sup></button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">D) x(t) = e<sup>-4t</sup>(c&#8321; cos t + c&#8322; sin t)</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q" id="qq3">
+      <div class="q-num">Question 3</div>
+      <div class="q-text">Which eigenvalue configuration produces a SADDLE POINT in the phase plane?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">A) &#955; = -2 &#177; 3i</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">B) &#955;&#8321; = -1, &#955;&#8322; = -3</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',true)">C) &#955;&#8321; = -2, &#955;&#8322; = 4</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">D) &#955; = &#177;2i</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q" id="qq4">
+      <div class="q-num">Question 4</div>
+      <div class="q-text">For A = [[1, 2], [-2, 1]], tr(A) = 2 and det(A) = 5. The system is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">A) Asymptotically stable spiral</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',true)">B) Unstable spiral (tr &gt; 0)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">C) Saddle point</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">D) Center</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q" id="qq5">
+      <div class="q-num">Question 5</div>
+      <div class="q-text">A system is asymptotically stable if and only if (for 2x2):</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">A) det(A) &lt; 0</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">B) tr(A) &lt; 0 only</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">C) det(A) &gt; 0 only</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',true)">D) tr(A) &lt; 0 AND det(A) &gt; 0</button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q" id="qq6">
+      <div class="q-num">Question 6</div>
+      <div class="q-text">Eigenvalues &#955; = &#177;&#946;i (pure imaginary) correspond to what phase portrait type?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">A) Stable node</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">B) Unstable spiral</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',true)">C) Center (closed elliptic orbits)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">D) Saddle</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q" id="qq7">
+      <div class="q-num">Question 7</div>
+      <div class="q-text">Two coupled spring-mass systems with identical masses and springs have eigenvectors (1,1) and (1,-1). These represent:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">A) Stable and unstable modes</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',true)">B) In-phase and out-of-phase normal modes</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">C) Growing and decaying solutions</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">D) Real and imaginary parts of one mode</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q" id="qq8">
+      <div class="q-num">Question 8</div>
+      <div class="q-text">In the Lotka-Volterra model, the eigenvalues of the linearization at equilibrium are pure imaginary. This means:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">A) Populations decay to equilibrium exponentially</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">B) One species always goes extinct</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',true)">C) The linearized model predicts indefinite population cycles</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">D) Populations grow without bound</button>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-q" id="qq9">
+      <div class="q-num">Question 9</div>
+      <div class="q-text">A complex eigenvalue &#955; = -2 + 5i gives a solution containing the factor:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">A) e<sup>5t</sup> cos(-2t)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',true)">B) e<sup>-2t</sup> cos(5t)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">C) e<sup>-7t</sup></button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">D) cos(2t) sin(5t)</button>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="quiz-q" id="qq10">
+      <div class="q-num">Question 10</div>
+      <div class="q-text">A third-order ODE y''' + ay'' + by' + cy = 0 converted to a first-order system x' = Ax gives an A matrix of size:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">A) 2x2</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',true)">B) 3x3</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">C) 4x4</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">D) 6x6</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ============================================================
+// PROGRESS TRACKING
+// ============================================================
+const TOTAL_SECTIONS = 6;
+const completedSections = new Set();
+
+function updateProgress() {
+  const pct = (completedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    completedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+// ============================================================
+// TOGGLE SECTIONS
+// ============================================================
+function toggleSection(header) {
+  const card = header.closest('.section-card');
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open');
+  if (!wasOpen) {
+    const sec = card.dataset.section;
+    if (sec && sec !== 'quiz' && !completedSections.has(sec)) {
+      completedSections.add(sec);
+      card.classList.add('completed');
+      updateProgress();
+    }
+  }
+}
+
+// ============================================================
+// PRACTICE PROBLEM CHECKING
+// ============================================================
+function checkNum(id, answer, tol) {
+  const input = document.getElementById(id);
+  const fb = document.getElementById(id + '-fb');
+  const val = parseFloat(input.value);
+  if (isNaN(val)) { showFb(fb, false, 'Enter a number.'); return; }
+  if (Math.abs(val - answer) <= tol) {
+    showFb(fb, true, 'Correct! ' + answer + ' is right.');
+    input.style.borderColor = 'var(--green)';
+  } else {
+    showFb(fb, false, 'Not quite. Got ' + val + ', expected ' + answer + '.');
+    input.style.borderColor = 'var(--pink)';
+    triggerShake(input.closest('.problem'));
+  }
+}
+
+function checkMC(btn, id, result) {
+  const fb = document.getElementById(id + '-fb');
+  const allBtns = btn.closest('.mc-choices').querySelectorAll('.mc-btn');
+  allBtns.forEach(b => b.classList.add('disabled'));
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    showFb(fb, true, 'Correct!');
+    triggerPop(btn);
+  } else {
+    btn.classList.add('wrong');
+    showFb(fb, false, 'Not quite -- try the interactive above or review the section.');
+    triggerShake(btn);
+    allBtns.forEach(b => {
+      if (b.onclick && b.onclick.toString().includes("'correct'")) b.classList.add('correct');
+    });
+  }
+}
+
+function showFb(el, correct, msg) {
+  el.textContent = msg;
+  el.className = 'feedback ' + (correct ? 'correct' : 'incorrect');
+}
+
+function triggerPop(el) {
+  el.classList.remove('pop');
+  void el.offsetWidth;
+  el.classList.add('pop');
+}
+
+function triggerShake(el) {
+  if (!el) return;
+  el.classList.remove('shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+let quizScoreVal = 0;
+let quizAnswered = {};
+
+function quizAnswer(btn, qid, correct) {
+  if (quizAnswered[qid]) return;
+  quizAnswered[qid] = true;
+  const qEl = document.getElementById(qid);
+  const allBtns = qEl.querySelectorAll('.choice-btn');
+  allBtns.forEach(b => b.classList.add('disabled'));
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    document.getElementById('quizScore').textContent = quizScoreVal;
+    triggerPop(btn);
+  } else {
+    btn.classList.add('selected-wrong');
+    triggerShake(btn);
+    allBtns.forEach(b => {
+      if (b.onclick && b.onclick.toString().includes('true')) b.classList.add('reveal-correct');
+    });
+  }
+}
+
+function resetQuiz() {
+  quizScoreVal = 0;
+  quizAnswered = {};
+  document.getElementById('quizScore').textContent = 0;
+  document.querySelectorAll('.quiz-q').forEach(q => {
+    q.querySelectorAll('.choice-btn').forEach(b => {
+      b.className = 'choice-btn';
+    });
+  });
+}
+
+// ============================================================
+// PHASE PORTRAIT
+// ============================================================
+function setPreset(a, b, c, d) {
+  document.getElementById('ma').value = a;
+  document.getElementById('mb').value = b;
+  document.getElementById('mc_').value = c;
+  document.getElementById('md').value = d;
+  drawPhasePortrait();
+}
+
+function getMatrixABCD() {
+  return {
+    a: parseFloat(document.getElementById('ma').value) || 0,
+    b: parseFloat(document.getElementById('mb').value) || 0,
+    c: parseFloat(document.getElementById('mc_').value) || 0,
+    d: parseFloat(document.getElementById('md').value) || 0
+  };
+}
+
+function eigenvalues2x2(a, b, c, d) {
+  const tr = a + d;
+  const det = a * d - b * c;
+  const disc = tr * tr - 4 * det;
+  if (disc >= 0) {
+    const sq = Math.sqrt(disc);
+    return [
+      { re: (tr + sq) / 2, im: 0 },
+      { re: (tr - sq) / 2, im: 0 }
+    ];
+  } else {
+    const im = Math.sqrt(-disc) / 2;
+    return [
+      { re: tr / 2, im: im },
+      { re: tr / 2, im: -im }
+    ];
+  }
+}
+
+function classifyEquilibrium(evs) {
+  const l1 = evs[0], l2 = evs[1];
+  if (Math.abs(l1.im) > 1e-9) {
+    if (Math.abs(l1.re) < 1e-9) return 'Center';
+    return l1.re < 0 ? 'Stable Spiral' : 'Unstable Spiral';
+  }
+  if (l1.re * l2.re < 0) return 'Saddle';
+  if (l1.re < 0 && l2.re < 0) return 'Stable Node';
+  if (l1.re > 0 && l2.re > 0) return 'Unstable Node';
+  return 'Degenerate';
+}
+
+function fmtEV(ev) {
+  if (Math.abs(ev.im) < 1e-6) return ev.re.toFixed(3);
+  const sign = ev.im >= 0 ? '+' : '-';
+  return ev.re.toFixed(2) + sign + Math.abs(ev.im).toFixed(2) + 'i';
+}
+
+function integrateRK4(a, b, c, d, x0, y0, dt, steps) {
+  const xs = [x0], ys = [y0];
+  let x = x0, y = y0;
+  for (let i = 0; i < steps; i++) {
+    const k1x = a * x + b * y, k1y = c * x + d * y;
+    const k2x = a * (x + dt / 2 * k1x) + b * (y + dt / 2 * k1y);
+    const k2y = c * (x + dt / 2 * k1x) + d * (y + dt / 2 * k1y);
+    const k3x = a * (x + dt / 2 * k2x) + b * (y + dt / 2 * k2y);
+    const k3y = c * (x + dt / 2 * k2x) + d * (y + dt / 2 * k2y);
+    const k4x = a * (x + dt * k3x) + b * (y + dt * k3y);
+    const k4y = c * (x + dt * k3x) + d * (y + dt * k3y);
+    x += dt / 6 * (k1x + 2 * k2x + 2 * k3x + k4x);
+    y += dt / 6 * (k1y + 2 * k2y + 2 * k3y + k4y);
+    xs.push(x); ys.push(y);
+    if (Math.abs(x) > 8 || Math.abs(y) > 8) break;
+  }
+  return { xs, ys };
+}
+
+function drawPhasePortrait() {
+  const { a, b, c, d } = getMatrixABCD();
+  const canvas = document.getElementById('phaseCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const scale = W / 10;
+  const cx = W / 2, cy = H / 2;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 0.5;
+  for (let i = -4; i <= 4; i++) {
+    ctx.beginPath(); ctx.moveTo(cx + i * scale, 0); ctx.lineTo(cx + i * scale, H); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, cy + i * scale); ctx.lineTo(W, cy + i * scale); ctx.stroke();
+  }
+  // Axes
+  ctx.strokeStyle = '#9ca3af';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.fillText('x\u2081', W - 18, cy - 6);
+  ctx.fillText('x\u2082', cx + 5, 14);
+
+  // Trajectories
+  const r0 = 2.5;
+  const starts = [];
+  for (let ang = 0; ang < 2 * Math.PI; ang += Math.PI / 6) {
+    starts.push([r0 * Math.cos(ang), r0 * Math.sin(ang)]);
+  }
+  const evs = eigenvalues2x2(a, b, c, d);
+  const type = classifyEquilibrium(evs);
+  const hasGrowth = type.includes('Unstable') || type === 'Saddle';
+
+  const colors = ['#6366f1', '#22c55e', '#ec4899', '#f59e0b', '#06b6d4', '#a78bfa',
+    '#34d399', '#f472b6', '#fbbf24', '#38bdf8', '#818cf8', '#4ade80'];
+
+  starts.forEach((s, i) => {
+    const dt = hasGrowth ? -0.015 : 0.03;
+    const steps = 600;
+    const fwd = integrateRK4(a, b, c, d, s[0], s[1], Math.abs(dt), steps);
+    const bwd = integrateRK4(a, b, c, d, s[0], s[1], -Math.abs(dt), steps);
+
+    const color = colors[i % colors.length];
+    [fwd, bwd].forEach(traj => {
+      ctx.beginPath();
+      ctx.strokeStyle = color + 'cc';
+      ctx.lineWidth = 1.4;
+      let started = false;
+      for (let j = 0; j < traj.xs.length; j++) {
+        const px = cx + traj.xs[j] * scale;
+        const py = cy - traj.ys[j] * scale;
+        if (!started) { ctx.moveTo(px, py); started = true; }
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    });
+
+    // Arrow at midpoint
+    const arr = fwd;
+    const mid = Math.floor(arr.xs.length * 0.35);
+    if (mid < arr.xs.length - 1) {
+      const px = cx + arr.xs[mid] * scale;
+      const py = cy - arr.ys[mid] * scale;
+      const nx = cx + arr.xs[mid + 1] * scale;
+      const ny = cy - arr.ys[mid + 1] * scale;
+      const ang2 = Math.atan2(ny - py, nx - px);
+      ctx.fillStyle = color + 'dd';
+      ctx.beginPath();
+      ctx.moveTo(nx + 6 * Math.cos(ang2), ny + 6 * Math.sin(ang2));
+      ctx.lineTo(nx - 5 * Math.cos(ang2 - 0.5), ny - 5 * Math.sin(ang2 - 0.5));
+      ctx.lineTo(nx - 5 * Math.cos(ang2 + 0.5), ny - 5 * Math.sin(ang2 + 0.5));
+      ctx.fill();
+    }
+  });
+
+  // Origin dot
+  ctx.beginPath();
+  ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+
+  // Update readout
+  const tr = a + d, det = a * d - b * c;
+  document.getElementById('ppType').textContent = type;
+  document.getElementById('ppL1').textContent = fmtEV(evs[0]);
+  document.getElementById('ppL2').textContent = fmtEV(evs[1]);
+  document.getElementById('ppTrace').textContent = tr.toFixed(3);
+  document.getElementById('ppDet').textContent = det.toFixed(3);
+  const stab = evs.every(ev => ev.re < -1e-9) ? 'Stable' : evs.some(ev => ev.re > 1e-9) ? 'Unstable' : 'Neutral';
+  document.getElementById('ppType').className = 'value ' + (stab === 'Stable' ? 'green' : stab === 'Unstable' ? 'pink' : 'amber');
+}
+
+// ============================================================
+// TRACE-DETERMINANT DIAGRAM
+// ============================================================
+function updateTDDiagram() {
+  const tr = parseFloat(document.getElementById('trSlider').value);
+  const det = parseFloat(document.getElementById('detSlider').value);
+  document.getElementById('trVal').textContent = tr.toFixed(1);
+  document.getElementById('detVal').textContent = det.toFixed(1);
+
+  const disc = tr * tr - 4 * det;
+  document.getElementById('tdDisc').textContent = disc.toFixed(2);
+
+  let type, stab;
+  if (det < 0) { type = 'Saddle'; stab = 'Unstable'; }
+  else if (det === 0) { type = 'Degenerate'; stab = 'Neutral'; }
+  else if (disc > 0) {
+    if (tr < 0) { type = 'Stable Node'; stab = 'Stable'; }
+    else if (tr > 0) { type = 'Unstable Node'; stab = 'Unstable'; }
+    else { type = 'Node (tr=0)'; stab = 'Neutral'; }
+  } else if (disc < 0) {
+    if (tr < 0) { type = 'Stable Spiral'; stab = 'Stable'; }
+    else if (tr > 0) { type = 'Unstable Spiral'; stab = 'Unstable'; }
+    else { type = 'Center'; stab = 'Neutral'; }
+  } else {
+    type = 'Repeated Eigenvalue'; stab = tr < 0 ? 'Stable' : 'Unstable';
+  }
+
+  const typeEl = document.getElementById('tdType');
+  const stabEl = document.getElementById('tdStab');
+  typeEl.textContent = type;
+  stabEl.textContent = stab;
+  typeEl.className = 'value indigo';
+  stabEl.className = 'value ' + (stab === 'Stable' ? 'green' : stab === 'Unstable' ? 'pink' : 'amber');
+
+  drawTDDiagram(tr, det);
+}
+
+function drawTDDiagram(tr, det) {
+  const canvas = document.getElementById('tdCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  // Map: tr in [-4,4] -> x, det in [-4,5] -> y
+  const trMin = -4, trMax = 4, detMin = -4, detMax = 5;
+  function toCanv(tr_, det_) {
+    const x = (tr_ - trMin) / (trMax - trMin) * W;
+    const y = (1 - (det_ - detMin) / (detMax - detMin)) * H;
+    return [x, y];
+  }
+
+  // Color-fill regions
+  const imgData = ctx.createImageData(W, H);
+  for (let px = 0; px < W; px++) {
+    for (let py = 0; py < H; py++) {
+      const tr_ = trMin + (px / W) * (trMax - trMin);
+      const det_ = detMin + (1 - py / H) * (detMax - detMin);
+      const disc_ = tr_ * tr_ - 4 * det_;
+      let r = 30, g = 36, b_ = 50, alpha = 180;
+      if (det_ < 0) { r = 80; g = 30; b_ = 50; } // saddle - pink
+      else if (tr_ < 0 && disc_ > 0 && det_ > 0) { r = 20; g = 70; b_ = 40; } // stable node - green
+      else if (tr_ > 0 && disc_ > 0 && det_ > 0) { r = 90; g = 30; b_ = 30; } // unstable node - red
+      else if (tr_ < 0 && disc_ < 0) { r = 20; g = 60; b_ = 80; } // stable spiral - cyan
+      else if (tr_ > 0 && disc_ < 0) { r = 80; g = 40; b_ = 80; } // unstable spiral - purple
+      else if (Math.abs(tr_) < 0.08 && det_ > 0 && disc_ < 0) { r = 60; g = 60; b_ = 20; } // center - amber
+      const idx = (py * W + px) * 4;
+      imgData.data[idx] = r; imgData.data[idx+1] = g; imgData.data[idx+2] = b_; imgData.data[idx+3] = alpha;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  // Parabola tr^2 = 4*det
+  ctx.beginPath();
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4, 4]);
+  for (let tval = trMin; tval <= trMax; tval += 0.05) {
+    const dval = tval * tval / 4;
+    if (dval < detMin || dval > detMax) continue;
+    const [x, y] = toCanv(tval, dval);
+    tval === trMin || ctx.moveTo === undefined ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // tr=0 axis
+  const [x0, y0] = toCanv(0, detMin);
+  const [x1, y1] = toCanv(0, detMax);
+  ctx.strokeStyle = '#9ca3af';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+
+  // det=0 axis
+  const [xa, ya] = toCanv(trMin, 0);
+  const [xb, yb] = toCanv(trMax, 0);
+  ctx.beginPath(); ctx.moveTo(xa, ya); ctx.lineTo(xb, yb); ctx.stroke();
+
+  // Region labels
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.fillStyle = 'rgba(226,228,233,0.7)';
+  ctx.fillText('Stable Node', ...toCanv(-2.5, 1.5));
+  ctx.fillText('Unstable Node', ...toCanv(1.2, 1.5));
+  ctx.fillText('Stable Spiral', ...toCanv(-2.5, 3.5));
+  ctx.fillText('Unstable Spiral', ...toCanv(1.0, 3.5));
+  ctx.fillText('Saddle', ...toCanv(-1.5, -2));
+  ctx.fillText('\u0394=tr\u00b2-4det=0', ...toCanv(1.5, 0.8));
+
+  // Current point
+  const [px, py] = toCanv(tr, det);
+  ctx.beginPath();
+  ctx.arc(px, py, 8, 0, 2 * Math.PI);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(px, py, 5, 0, 2 * Math.PI);
+  ctx.fillStyle = '#6366f1';
+  ctx.fill();
+
+  // Axes labels
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.fillText('tr(A)', W - 44, H / 2 - 6);
+  ctx.fillText('det(A)', ...toCanv(trMin + 0.2, detMax - 0.3));
+}
+
+// ============================================================
+// LOTKA-VOLTERRA
+// ============================================================
+function lvRHS(R, F, a, b, c, d) {
+  return { dR: a * R - b * R * F, dF: c * R * F - d * F };
+}
+
+function updateLV() {
+  const a = parseFloat(document.getElementById('lva').value);
+  const b = parseFloat(document.getElementById('lvb').value);
+  const c = parseFloat(document.getElementById('lvc_').value);
+  const d = parseFloat(document.getElementById('lvd').value);
+  document.getElementById('lvaVal').textContent = a.toFixed(1);
+  document.getElementById('lvbVal').textContent = b.toFixed(1);
+  document.getElementById('lvcVal').textContent = c.toFixed(1);
+  document.getElementById('lvdVal').textContent = d.toFixed(1);
+
+  const Req = d / c, Feq = a / b;
+  document.getElementById('lvReq').textContent = Req.toFixed(2);
+  document.getElementById('lvFeq').textContent = Feq.toFixed(2);
+
+  const period = (2 * Math.PI / Math.sqrt(a * d)).toFixed(2);
+  document.getElementById('lvPeriod').textContent = period + ' units';
+
+  // Integrate
+  const dt = 0.02, steps = 1200;
+  const R0 = Req * 1.5, F0 = Feq * 0.8;
+  const Rs = [R0], Fs = [F0];
+  let R = R0, F = F0;
+  for (let i = 0; i < steps; i++) {
+    const k1 = lvRHS(R, F, a, b, c, d);
+    const k2 = lvRHS(R + dt/2*k1.dR, F + dt/2*k1.dF, a, b, c, d);
+    const k3 = lvRHS(R + dt/2*k2.dR, F + dt/2*k2.dF, a, b, c, d);
+    const k4 = lvRHS(R + dt*k3.dR, F + dt*k3.dF, a, b, c, d);
+    R += dt/6*(k1.dR + 2*k2.dR + 2*k3.dR + k4.dR);
+    F += dt/6*(k1.dF + 2*k2.dF + 2*k3.dF + k4.dF);
+    if (R <= 0 || F <= 0 || R > 50 || F > 50) break;
+    Rs.push(R); Fs.push(F);
+  }
+
+  drawLVPhase(Rs, Fs, Req, Feq);
+  drawLVTime(Rs, Fs, dt);
+}
+
+function drawLVPhase(Rs, Fs, Req, Feq) {
+  const canvas = document.getElementById('lvPhase');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  const Rmax = Math.max(...Rs) * 1.2, Fmax = Math.max(...Fs) * 1.2;
+  function tp(R, F) {
+    return [(R / Rmax) * (W - 30) + 15, H - 15 - (F / Fmax) * (H - 30)];
+  }
+
+  // Axes
+  ctx.strokeStyle = '#363b47'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(15, 0); ctx.lineTo(15, H - 15); ctx.lineTo(W, H - 15); ctx.stroke();
+
+  // Trajectory
+  ctx.beginPath();
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 2;
+  Rs.forEach((R, i) => {
+    const [x, y] = tp(R, Fs[i]);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Equilibrium
+  const [ex, ey] = tp(Req, Feq);
+  ctx.beginPath(); ctx.arc(ex, ey, 5, 0, 2*Math.PI); ctx.fillStyle = '#f59e0b'; ctx.fill();
+
+  // Start point
+  const [sx, sy] = tp(Rs[0], Fs[0]);
+  ctx.beginPath(); ctx.arc(sx, sy, 4, 0, 2*Math.PI); ctx.fillStyle = '#22c55e'; ctx.fill();
+
+  // Labels
+  ctx.fillStyle = '#9ca3af'; ctx.font = '9px JetBrains Mono, monospace';
+  ctx.fillText('Rabbits (R)', W/2 - 20, H - 2);
+  ctx.save(); ctx.translate(6, H/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Foxes (F)', -22, 0); ctx.restore();
+}
+
+function drawLVTime(Rs, Fs, dt) {
+  const canvas = document.getElementById('lvTime');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  const n = Rs.length;
+  const Tmax = (n - 1) * dt;
+  const Ymax = Math.max(...Rs, ...Fs) * 1.1;
+
+  function tp(t, v) {
+    return [(t / Tmax) * (W - 20) + 10, H - 10 - (v / Ymax) * (H - 20)];
+  }
+
+  // Axes
+  ctx.strokeStyle = '#363b47'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(10, H - 10); ctx.lineTo(W, H - 10); ctx.stroke();
+
+  // Rabbits
+  ctx.beginPath(); ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 1.5;
+  Rs.forEach((R, i) => { const [x,y] = tp(i*dt, R); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.stroke();
+
+  // Foxes
+  ctx.beginPath(); ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 1.5;
+  Fs.forEach((F, i) => { const [x,y] = tp(i*dt, F); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.stroke();
+
+  // Legend
+  ctx.font = '9px JetBrains Mono, monospace';
+  ctx.fillStyle = '#22c55e'; ctx.fillText('Rabbits', 15, 16);
+  ctx.fillStyle = '#ec4899'; ctx.fillText('Foxes', 15, 28);
+  ctx.fillStyle = '#9ca3af'; ctx.fillText('Time', W/2 - 10, H - 1);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', () => {
+  drawPhasePortrait();
+  updateTDDiagram();
+  updateLV();
+});
+</script>
+</body>
+</html>

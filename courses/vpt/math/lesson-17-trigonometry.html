@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 17 -- Trigonometry</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #262a33;
+    --border: #363b47;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* -- Progress Bar -- */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* -- Header -- */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* -- Collapsible Cards -- */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details[open] { border-color: var(--accent); }
+  details.completed { border-color: var(--green); }
+  details.completed summary::after {
+    content: 'Done';
+    font-size: 0.65rem;
+    background: rgba(34,197,94,0.15);
+    color: var(--green);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    margin-left: auto;
+    font-weight: 600;
+  }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s var(--spring);
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .card-body { padding: 1.25rem; }
+  .card-body p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+  .card-body h3 {
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  /* -- Equation display -- */
+  .eq {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--orange);
+    text-align: center;
+    margin: 0.75rem 0;
+    padding: 0.5rem;
+    background: rgba(245,158,11,0.06);
+    border-radius: var(--radius);
+  }
+
+  /* -- Info boxes -- */
+  .info-box {
+    background: rgba(99,102,241,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+  }
+  .info-box.green {
+    background: rgba(34,197,94,0.08);
+    border-color: var(--green);
+  }
+  .info-box.pink {
+    background: rgba(236,72,153,0.08);
+    border-color: var(--pink);
+  }
+  .info-box.amber {
+    background: rgba(245,158,11,0.08);
+    border-color: var(--orange);
+  }
+
+  /* -- Buttons -- */
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn.green { background: var(--green); }
+  .btn.pink { background: var(--pink); }
+  .btn.orange { background: var(--orange); color: #1e2128; }
+  .btn.outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0.75rem 0;
+  }
+
+  /* -- Rule Cards -- */
+  .rule-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .rule-card {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .rule-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .rule-card .rule-name {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  .rule-card .rule-formula {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .rule-card .rule-example {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .rule-card .rule-example strong { color: var(--green); }
+
+  /* -- Practice Problems -- */
+  .problem-set {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    transition: border-color 0.3s, transform 0.15s;
+  }
+  .problem.correct { border-color: var(--green); }
+  .problem.incorrect { border-color: var(--pink); }
+  .problem .prompt {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    min-width: 200px;
+  }
+  .problem input[type="text"] {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .problem input:focus { border-color: var(--accent); }
+  .problem .feedback {
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 60px;
+  }
+  .problem .feedback.correct { color: var(--green); }
+  .problem .feedback.incorrect { color: var(--pink); }
+
+  /* -- Graph wrap -- */
+  .graph-wrap {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .graph-wrap svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* -- SVG interactive area -- */
+  .svg-interactive {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.5rem;
+    margin: 1rem 0;
+    overflow: hidden;
+    touch-action: none;
+  }
+  .svg-interactive svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+    cursor: default;
+  }
+
+  /* -- Slider rows -- */
+  .slider-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0.75rem 0;
+    align-items: center;
+  }
+  .slider-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 200px;
+  }
+  .slider-group label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    min-width: 15px;
+  }
+  .slider-group input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    outline: none;
+  }
+  .slider-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+  .slider-group input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+  }
+  .slider-val {
+    font-size: 0.8rem;
+    color: var(--orange);
+    min-width: 50px;
+    text-align: right;
+    font-weight: 600;
+  }
+
+  /* -- Feature tags -- */
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+  }
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .tag.indigo { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .tag.green { background: rgba(34,197,94,0.15); color: var(--green); }
+  .tag.pink { background: rgba(236,72,153,0.15); color: var(--pink); }
+  .tag.amber { background: rgba(245,158,11,0.15); color: var(--orange); }
+
+  /* -- Quiz -- */
+  .quiz-score {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    background: rgba(99,102,241,0.08);
+    border-radius: var(--radius);
+  }
+  .quiz-score span { color: var(--green); }
+
+  .quiz-problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.75rem 0;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem.correct { border-color: var(--green); }
+  .quiz-problem.incorrect { border-color: var(--pink); }
+  .quiz-problem .q-num {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  .quiz-problem .q-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .quiz-problem input[type="text"] {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .quiz-problem input:focus { border-color: var(--accent); }
+  .quiz-problem .q-feedback {
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    min-height: 1.2em;
+  }
+  .quiz-problem .q-feedback.correct { color: var(--green); }
+  .quiz-problem .q-feedback.incorrect { color: var(--pink); }
+
+  /* -- Unit circle tooltip -- */
+  .uc-tooltip {
+    position: absolute;
+    background: var(--card);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    color: var(--text);
+    pointer-events: none;
+    z-index: 10;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .uc-tooltip.visible { opacity: 1; }
+  .uc-tooltip .tt-angle { color: var(--accent); font-weight: 600; }
+  .uc-tooltip .tt-coord { color: var(--orange); font-weight: 600; }
+  .uc-tooltip .tt-tan { color: var(--pink); font-weight: 600; }
+
+  /* -- Quadrant label -- */
+  .quad-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* -- Animations -- */
+  @keyframes popIn {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* -- Responsive -- */
+  @media (max-width: 640px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.2rem; }
+    summary { font-size: 0.9rem; padding: 0.75rem 1rem; }
+    .card-body { padding: 1rem; }
+    .rule-cards { grid-template-columns: 1fr; }
+    .problem { flex-direction: column; align-items: stretch; }
+    .problem .prompt { min-width: unset; }
+    .slider-group { min-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar">
+  <div class="seg" data-section="0"></div>
+  <div class="seg" data-section="1"></div>
+  <div class="seg" data-section="2"></div>
+  <div class="seg" data-section="3"></div>
+  <div class="seg" data-section="4"></div>
+  <div class="seg" data-section="5"></div>
+</div>
+
+<h1>Lesson 17 -- Trigonometry</h1>
+<p class="subtitle">Right triangles, the unit circle, trig graphs, and identities</p>
+
+<!-- ===================== SECTION 0: Right Triangle Trig ===================== -->
+<details id="sec0" open>
+  <summary>1. Right Triangle Trigonometry</summary>
+  <div class="card-body">
+
+    <p>Trigonometry begins with right triangles. Given a right triangle with an acute angle theta, we define three fundamental ratios using the sides relative to that angle.</p>
+
+    <div class="info-box amber">
+      <strong>SOH-CAH-TOA</strong> -- the mnemonic for remembering the three primary trig ratios. Each letter group tells you numerator / denominator.
+    </div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Sine (SOH)</div>
+        <div class="rule-formula">sin(theta) = Opposite / Hypotenuse</div>
+        <div class="rule-example">sin(30) = 1/2 = <strong>0.5</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Cosine (CAH)</div>
+        <div class="rule-formula">cos(theta) = Adjacent / Hypotenuse</div>
+        <div class="rule-example">cos(60) = 1/2 = <strong>0.5</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Tangent (TOA)</div>
+        <div class="rule-formula">tan(theta) = Opposite / Adjacent</div>
+        <div class="rule-example">tan(45) = 1/1 = <strong>1</strong></div>
+      </div>
+    </div>
+
+    <h3>Interactive Right Triangle</h3>
+    <p>Drag the angle slider to see how the ratios change.</p>
+
+    <div class="slider-row">
+      <div class="slider-group">
+        <label>Angle</label>
+        <input type="range" id="rtAngle" min="5" max="85" value="30" step="1">
+        <span class="slider-val" id="rtAngleVal">30deg</span>
+      </div>
+    </div>
+
+    <div class="svg-interactive">
+      <svg id="rtTriSvg" viewBox="0 0 440 260" width="440" height="260"></svg>
+    </div>
+
+    <div class="features" id="rtRatios">
+      <span class="tag green">sin = 0.500</span>
+      <span class="tag amber">cos = 0.866</span>
+      <span class="tag pink">tan = 0.577</span>
+    </div>
+
+    <h3>Special Right Triangles</h3>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">30-60-90 Triangle</div>
+        <div class="rule-formula">Sides: 1, sqrt(3), 2</div>
+        <div class="rule-example">Short leg : long leg : hyp = <strong>1 : sqrt(3) : 2</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">45-45-90 Triangle</div>
+        <div class="rule-formula">Sides: 1, 1, sqrt(2)</div>
+        <div class="rule-example">Leg : leg : hyp = <strong>1 : 1 : sqrt(2)</strong></div>
+      </div>
+    </div>
+
+    <h3>Finding Missing Sides</h3>
+    <div class="info-box">
+      To find a missing side: identify your angle, decide which ratio involves the known side and the unknown side, set up the equation, and solve.
+    </div>
+
+    <div class="eq">Example: angle = 35deg, adjacent = 10. Find opposite.</div>
+    <div class="eq">tan(35) = opp / 10 --> opp = 10 * tan(35) = 7.00</div>
+
+    <h3>Finding Missing Angles</h3>
+    <div class="info-box green">
+      Use inverse trig functions: theta = arcsin(O/H), theta = arccos(A/H), or theta = arctan(O/A).
+    </div>
+
+    <div class="eq">Example: opp = 5, hyp = 10. theta = arcsin(5/10) = arcsin(0.5) = 30deg</div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="rtProblems"></div>
+    <div class="btn-row">
+      <button class="btn green" onclick="checkRtProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showRtAnswers()">Show Answers</button>
+    </div>
+
+  </div>
+</details>
+
+<!-- ===================== SECTION 1: Unit Circle ===================== -->
+<details id="sec1">
+  <summary>2. The Unit Circle</summary>
+  <div class="card-body">
+
+    <p>The unit circle is a circle of radius 1 centered at the origin. Every point on the circle has coordinates <strong>(cos(theta), sin(theta))</strong>, where theta is the angle from the positive x-axis.</p>
+
+    <div class="info-box">
+      The unit circle extends trig beyond right triangles to all angles, including negatives and angles greater than 360 degrees.
+    </div>
+
+    <h3>Interactive Unit Circle</h3>
+    <p>Hover or click on any marked angle to see its sine, cosine, and tangent values. Quadrants are color-coded.</p>
+
+    <div class="svg-interactive" style="position:relative;">
+      <svg id="unitCircleSvg" viewBox="0 0 500 500" width="500" height="500"></svg>
+      <div class="uc-tooltip" id="ucTooltip">
+        <div>Angle: <span class="tt-angle" id="ttAngle">--</span></div>
+        <div>Coords: <span class="tt-coord" id="ttCoord">--</span></div>
+        <div>tan: <span class="tt-tan" id="ttTan">--</span></div>
+      </div>
+    </div>
+
+    <h3>Quadrant Sign Rules (All Students Take Calculus)</h3>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Quadrant I (0 - 90)</div>
+        <div class="rule-formula">ALL positive</div>
+        <div class="rule-example">sin+, cos+, tan+</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Quadrant II (90 - 180)</div>
+        <div class="rule-formula">SIN positive</div>
+        <div class="rule-example">sin+, cos-, tan-</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Quadrant III (180 - 270)</div>
+        <div class="rule-formula">TAN positive</div>
+        <div class="rule-example">sin-, cos-, tan+</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Quadrant IV (270 - 360)</div>
+        <div class="rule-formula">COS positive</div>
+        <div class="rule-example">sin-, cos+, tan-</div>
+      </div>
+    </div>
+
+    <h3>Key Unit Circle Values</h3>
+    <div class="info-box amber">
+      Memorize these angles: 0, pi/6 (30), pi/4 (45), pi/3 (60), pi/2 (90), and their counterparts in each quadrant. The coordinates follow a pattern using 0, 1/2, sqrt(2)/2, sqrt(3)/2, and 1.
+    </div>
+
+    <h3>Reference Angles</h3>
+    <p>A reference angle is the acute angle formed between the terminal side and the x-axis. It is always between 0 and 90 degrees. Use reference angles to find trig values in any quadrant.</p>
+
+    <div class="eq">Reference angle for 150deg = 180 - 150 = 30deg</div>
+    <div class="eq">sin(150) = sin(30) = 0.5 (QII: sin is positive)</div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="ucProblems"></div>
+    <div class="btn-row">
+      <button class="btn green" onclick="checkUcProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showUcAnswers()">Show Answers</button>
+    </div>
+
+  </div>
+</details>
+
+<!-- ===================== SECTION 2: Radians & Degrees ===================== -->
+<details id="sec2">
+  <summary>3. Radians & Degrees</summary>
+  <div class="card-body">
+
+    <p>Degrees and radians are two ways to measure angles. Radians use the radius of a circle as the measuring unit: one radian is the angle that subtends an arc equal to the radius.</p>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Conversion: Degrees to Radians</div>
+        <div class="rule-formula">radians = degrees * (pi / 180)</div>
+        <div class="rule-example">90deg = 90 * pi/180 = <strong>pi/2</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Conversion: Radians to Degrees</div>
+        <div class="rule-formula">degrees = radians * (180 / pi)</div>
+        <div class="rule-example">pi/3 rad = 60 * 180/pi... wait: (pi/3)(180/pi) = <strong>60deg</strong></div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      Key equivalences: 360deg = 2*pi rad, 180deg = pi rad, 90deg = pi/2 rad, 60deg = pi/3 rad, 45deg = pi/4 rad, 30deg = pi/6 rad.
+    </div>
+
+    <h3>Arc Length</h3>
+    <div class="eq">s = r * theta (theta in radians)</div>
+    <p>The arc length is simply the radius times the angle in radians. This is why radians are natural -- when r = 1, the arc length equals the angle.</p>
+
+    <div class="info-box green">
+      Example: r = 5, theta = pi/3. Arc length s = 5 * pi/3 = 5.24
+    </div>
+
+    <h3>Sector Area</h3>
+    <div class="eq">A = (1/2) * r^2 * theta (theta in radians)</div>
+    <p>A sector is a "pizza slice" of a circle. Its area is proportional to the angle.</p>
+
+    <div class="info-box green">
+      Example: r = 8, theta = pi/4. A = (1/2)(64)(pi/4) = 8*pi = 25.13
+    </div>
+
+    <h3>Interactive Converter</h3>
+    <div class="slider-row">
+      <div class="slider-group">
+        <label>Angle</label>
+        <input type="range" id="convSlider" min="0" max="360" value="90" step="1">
+        <span class="slider-val" id="convDeg">90deg</span>
+      </div>
+    </div>
+    <div class="features" id="convResult">
+      <span class="tag amber">90deg</span>
+      <span class="tag indigo">pi/2 rad</span>
+      <span class="tag green">1.571 rad</span>
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="radProblems"></div>
+    <div class="btn-row">
+      <button class="btn green" onclick="checkRadProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showRadAnswers()">Show Answers</button>
+    </div>
+
+  </div>
+</details>
+
+<!-- ===================== SECTION 3: Trig Graphs ===================== -->
+<details id="sec3">
+  <summary>4. Trig Graphs</summary>
+  <div class="card-body">
+
+    <p>The sine, cosine, and tangent functions create distinctive wave patterns. Understanding how to transform these graphs is essential for modeling periodic phenomena.</p>
+
+    <div class="eq">y = A * sin(B(x - C)) + D</div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Amplitude (A)</div>
+        <div class="rule-formula">|A| = vertical stretch</div>
+        <div class="rule-example">Height from midline to peak. <strong>Default: 1</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Period</div>
+        <div class="rule-formula">Period = 2*pi / |B|</div>
+        <div class="rule-example">One full cycle length. <strong>Default: 2*pi</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Phase Shift (C)</div>
+        <div class="rule-formula">Horizontal shift = C</div>
+        <div class="rule-example">Positive C shifts right. <strong>Default: 0</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Vertical Shift (D)</div>
+        <div class="rule-formula">Midline = D</div>
+        <div class="rule-example">Shifts entire graph up/down. <strong>Default: 0</strong></div>
+      </div>
+    </div>
+
+    <h3>Interactive Graph</h3>
+    <p>Adjust the parameters to see how sine and cosine transform.</p>
+
+    <div class="features" id="graphFuncLabel">
+      <span class="tag indigo" id="graphEqLabel">y = 1.0 sin(1.0x)</span>
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-group">
+        <label>A</label>
+        <input type="range" id="sliderA" min="0.5" max="3" value="1" step="0.1">
+        <span class="slider-val" id="valA">1.0</span>
+      </div>
+      <div class="slider-group">
+        <label>B</label>
+        <input type="range" id="sliderB" min="0.5" max="4" value="1" step="0.1">
+        <span class="slider-val" id="valB">1.0</span>
+      </div>
+    </div>
+    <div class="slider-row">
+      <div class="slider-group">
+        <label>C</label>
+        <input type="range" id="sliderC" min="-3.14" max="3.14" value="0" step="0.1">
+        <span class="slider-val" id="valC">0.0</span>
+      </div>
+      <div class="slider-group">
+        <label>D</label>
+        <input type="range" id="sliderD" min="-2" max="2" value="0" step="0.1">
+        <span class="slider-val" id="valD">0.0</span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="btnSin" onclick="setGraphFunc('sin')">sin</button>
+      <button class="btn outline" id="btnCos" onclick="setGraphFunc('cos')">cos</button>
+      <button class="btn outline" id="btnTan" onclick="setGraphFunc('tan')">tan</button>
+    </div>
+
+    <div class="graph-wrap">
+      <svg id="trigGraphSvg" viewBox="0 0 800 300" width="800" height="300"></svg>
+    </div>
+
+    <div class="features" id="graphInfo">
+      <span class="tag amber">Amplitude: 1</span>
+      <span class="tag green">Period: 6.28</span>
+      <span class="tag indigo">Phase: 0</span>
+      <span class="tag pink">Midline: y=0</span>
+    </div>
+
+    <h3>Key Graph Facts</h3>
+    <div class="info-box">
+      <strong>sin(x)</strong> starts at 0, rises to 1 at pi/2, back to 0 at pi, down to -1 at 3pi/2, returns to 0 at 2pi.
+    </div>
+    <div class="info-box green">
+      <strong>cos(x)</strong> starts at 1, drops to 0 at pi/2, down to -1 at pi, back to 0 at 3pi/2, returns to 1 at 2pi.
+    </div>
+    <div class="info-box pink">
+      <strong>tan(x)</strong> has vertical asymptotes at pi/2 + n*pi. Period is pi (not 2pi). No amplitude.
+    </div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="graphProblems"></div>
+    <div class="btn-row">
+      <button class="btn green" onclick="checkGraphProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showGraphAnswers()">Show Answers</button>
+    </div>
+
+  </div>
+</details>
+
+<!-- ===================== SECTION 4: Trig Identities ===================== -->
+<details id="sec4">
+  <summary>5. Basic Trig Identities</summary>
+  <div class="card-body">
+
+    <p>Trig identities are equations that are true for all valid values of the variable. They let you simplify expressions, solve equations, and prove other identities.</p>
+
+    <h3>Pythagorean Identities</h3>
+    <div class="eq">sin^2(theta) + cos^2(theta) = 1</div>
+    <div class="eq">1 + tan^2(theta) = sec^2(theta)</div>
+    <div class="eq">1 + cot^2(theta) = csc^2(theta)</div>
+
+    <div class="info-box amber">
+      The first identity comes directly from the Pythagorean theorem applied to the unit circle: x^2 + y^2 = 1, where x = cos(theta) and y = sin(theta). The other two are derived by dividing by cos^2 or sin^2.
+    </div>
+
+    <h3>Reciprocal Identities</h3>
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Cosecant</div>
+        <div class="rule-formula">csc(theta) = 1 / sin(theta)</div>
+        <div class="rule-example">csc(30) = 1/0.5 = <strong>2</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Secant</div>
+        <div class="rule-formula">sec(theta) = 1 / cos(theta)</div>
+        <div class="rule-example">sec(60) = 1/0.5 = <strong>2</strong></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Cotangent</div>
+        <div class="rule-formula">cot(theta) = 1 / tan(theta)</div>
+        <div class="rule-example">cot(45) = 1/1 = <strong>1</strong></div>
+      </div>
+    </div>
+
+    <h3>Quotient Identities</h3>
+    <div class="eq">tan(theta) = sin(theta) / cos(theta)</div>
+    <div class="eq">cot(theta) = cos(theta) / sin(theta)</div>
+
+    <h3>Simplifying Expressions</h3>
+    <div class="info-box green">
+      Strategy: (1) Convert everything to sin and cos. (2) Look for Pythagorean identity patterns. (3) Factor and cancel.
+    </div>
+
+    <div class="eq">Example: Simplify sin^2(x) * sec^2(x)</div>
+    <div class="eq">= sin^2(x) * (1/cos^2(x)) = sin^2(x)/cos^2(x) = tan^2(x)</div>
+
+    <div class="eq">Example: Simplify (1 - cos^2(x)) / sin(x)</div>
+    <div class="eq">= sin^2(x) / sin(x) = sin(x)</div>
+
+    <h3>Practice Problems</h3>
+    <div class="problem-set" id="idProblems"></div>
+    <div class="btn-row">
+      <button class="btn green" onclick="checkIdProblems()">Check Answers</button>
+      <button class="btn outline" onclick="showIdAnswers()">Show Answers</button>
+    </div>
+
+  </div>
+</details>
+
+<!-- ===================== SECTION 5: Quick Quiz ===================== -->
+<details id="sec5">
+  <summary>6. Quick Quiz</summary>
+  <div class="card-body">
+
+    <p>Test your trigonometry knowledge. Score 7 or more to complete this section.</p>
+
+    <div class="quiz-score" id="quizScore">Score: <span>-- / 10</span></div>
+    <div id="quizProblems"></div>
+
+    <div class="btn-row">
+      <button class="btn green" onclick="gradeQuiz()">Grade Quiz</button>
+      <button class="btn outline" onclick="showQuizAnswers()">Show Answers</button>
+      <button class="btn pink" onclick="resetQuiz()">Reset</button>
+    </div>
+
+  </div>
+</details>
+
+<script>
+// ====== CORE UTILITIES ======
+
+const $ = id => document.getElementById(id);
+const normalize = s => s.toString().trim().toLowerCase().replace(/\s+/g, ' ');
+const completed = Array(6).fill(false);
+
+function markComplete(idx) {
+  completed[idx] = true;
+  $('sec' + idx).classList.add('completed');
+  updateProgress();
+}
+
+function updateProgress() {
+  document.querySelectorAll('.progress-bar .seg').forEach((s, i) =>
+    s.classList.toggle('done', completed[i])
+  );
+}
+
+function springPop(el) {
+  el.style.transform = 'scale(1.03)';
+  setTimeout(() => el.style.transform = 'scale(1)', 300);
+}
+
+function shakeEl(el) {
+  el.style.animation = 'shake 0.4s';
+  setTimeout(() => el.style.animation = '', 400);
+}
+
+function checkNum(input, answer, tol) {
+  const val = parseFloat(input);
+  if (isNaN(val)) return false;
+  return Math.abs(val - answer) <= (tol || 0.05);
+}
+
+function buildProblems(data, containerId, prefix) {
+  const cont = $(containerId);
+  cont.innerHTML = '';
+  data.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = prefix + i;
+    div.innerHTML = `
+      <span class="prompt">${p.prompt}</span>
+      <input type="text" id="${prefix}In${i}" placeholder="answer">
+      <span class="feedback" id="${prefix}Fb${i}"></span>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function checkProblems(data, prefix, secIdx) {
+  let allCorrect = true;
+  data.forEach((p, i) => {
+    const raw = normalize($(prefix + 'In' + i).value);
+    const answers = [p.answer, ...(p.alts || [])].map(normalize);
+    let isRight = answers.includes(raw);
+    if (!isRight && p.numeric !== undefined) {
+      isRight = checkNum(raw, p.numeric, p.tol || 0.05);
+    }
+    if (isRight) {
+      $(prefix + i).className = 'problem correct';
+      $(prefix + 'Fb' + i).textContent = 'Correct!';
+      $(prefix + 'Fb' + i).className = 'feedback correct';
+      springPop($(prefix + i));
+    } else {
+      allCorrect = false;
+      $(prefix + i).className = 'problem incorrect';
+      $(prefix + 'Fb' + i).textContent = 'Try again';
+      $(prefix + 'Fb' + i).className = 'feedback incorrect';
+      shakeEl($(prefix + i));
+    }
+  });
+  if (allCorrect) markComplete(secIdx);
+}
+
+function showAnswers(data, prefix, secIdx) {
+  data.forEach((p, i) => {
+    $(prefix + 'In' + i).value = p.display || p.answer;
+    $(prefix + i).className = 'problem correct';
+    $(prefix + 'Fb' + i).textContent = p.explanation || 'Answer shown';
+    $(prefix + 'Fb' + i).className = 'feedback correct';
+  });
+  markComplete(secIdx);
+}
+
+
+// ====== SECTION 0: Right Triangle Interactive ======
+
+function drawRtTriangle() {
+  const angleDeg = parseFloat($('rtAngle').value);
+  $('rtAngleVal').textContent = angleDeg + 'deg';
+  const angleRad = angleDeg * Math.PI / 180;
+  const hyp = 180;
+  const opp = hyp * Math.sin(angleRad);
+  const adj = hyp * Math.cos(angleRad);
+
+  const ox = 50, oy = 230;
+  const bx = ox + adj, by = oy;
+  const cx = bx, cy = oy - opp;
+
+  const svg = $('rtTriSvg');
+  let h = '';
+
+  // Triangle fill
+  h += `<polygon points="${ox},${oy} ${bx},${by} ${cx},${cy}" fill="rgba(99,102,241,0.08)" stroke="#6366f1" stroke-width="2"/>`;
+
+  // Right angle box
+  const bs = 15;
+  h += `<polyline points="${bx - bs},${by} ${bx - bs},${by - bs} ${bx},${by - bs}" fill="none" stroke="#8a8578" stroke-width="1.5"/>`;
+
+  // Labels
+  h += `<text x="${(ox + bx) / 2}" y="${oy + 20}" fill="#22c55e" font-size="13" font-family="JetBrains Mono" font-weight="600" text-anchor="middle">adj = ${adj.toFixed(1)}</text>`;
+  h += `<text x="${bx + 15}" y="${(oy + cy) / 2}" fill="#ec4899" font-size="13" font-family="JetBrains Mono" font-weight="600">opp = ${opp.toFixed(1)}</text>`;
+  h += `<text x="${(ox + cx) / 2 - 25}" y="${(oy + cy) / 2 - 10}" fill="#f59e0b" font-size="13" font-family="JetBrains Mono" font-weight="600">hyp = ${hyp}</text>`;
+
+  // Angle arc
+  const arcR = 30;
+  const ax1 = ox + arcR, ay1 = oy;
+  const ax2 = ox + arcR * Math.cos(angleRad), ay2 = oy - arcR * Math.sin(angleRad);
+  const largeArc = angleDeg > 180 ? 1 : 0;
+  h += `<path d="M${ax1},${ay1} A${arcR},${arcR} 0 ${largeArc} 0 ${ax2},${ay2}" fill="none" stroke="#6366f1" stroke-width="2"/>`;
+  h += `<text x="${ox + 38}" y="${oy - 8}" fill="#6366f1" font-size="12" font-family="JetBrains Mono" font-weight="600">${angleDeg}deg</text>`;
+
+  svg.innerHTML = h;
+
+  // Update ratios
+  const s = Math.sin(angleRad), c = Math.cos(angleRad), t = Math.tan(angleRad);
+  $('rtRatios').innerHTML = `
+    <span class="tag green">sin = ${s.toFixed(3)}</span>
+    <span class="tag amber">cos = ${c.toFixed(3)}</span>
+    <span class="tag pink">tan = ${t.toFixed(3)}</span>
+  `;
+}
+
+$('rtAngle').addEventListener('input', drawRtTriangle);
+drawRtTriangle();
+
+// Section 0 problems
+const rtProbData = [
+  { prompt: 'sin(30deg) = ?', answer: '0.5', alts: ['0.50', '1/2', '.5'], numeric: 0.5, tol: 0.01, display: '0.5', explanation: 'sin(30) = opp/hyp = 1/2' },
+  { prompt: 'cos(60deg) = ?', answer: '0.5', alts: ['0.50', '1/2', '.5'], numeric: 0.5, tol: 0.01, display: '0.5', explanation: 'cos(60) = adj/hyp = 1/2' },
+  { prompt: 'tan(45deg) = ?', answer: '1', alts: ['1.0', '1.00'], numeric: 1, tol: 0.01, display: '1', explanation: 'tan(45) = opp/adj = 1/1 = 1' },
+  { prompt: 'angle=40deg, adj=12. Find opp (2 dec)', answer: '10.07', alts: [], numeric: 10.07, tol: 0.05, display: '10.07', explanation: 'opp = 12*tan(40) = 10.07' },
+  { prompt: 'opp=7, hyp=14. Find angle in deg', answer: '30', alts: ['30.0', '30deg'], numeric: 30, tol: 0.5, display: '30', explanation: 'arcsin(7/14) = arcsin(0.5) = 30deg' },
+];
+buildProblems(rtProbData, 'rtProblems', 'rt');
+function checkRtProblems() { checkProblems(rtProbData, 'rt', 0); }
+function showRtAnswers() { showAnswers(rtProbData, 'rt', 0); }
+
+
+// ====== SECTION 1: Unit Circle Interactive ======
+
+const ucAngles = [
+  { deg: 0,   rad: '0',        cos: 1,          sin: 0,          cosLabel: '1',        sinLabel: '0' },
+  { deg: 30,  rad: 'pi/6',     cos: Math.sqrt(3)/2, sin: 0.5,    cosLabel: 'sqrt3/2',  sinLabel: '1/2' },
+  { deg: 45,  rad: 'pi/4',     cos: Math.SQRT2/2,   sin: Math.SQRT2/2, cosLabel: 'sqrt2/2', sinLabel: 'sqrt2/2' },
+  { deg: 60,  rad: 'pi/3',     cos: 0.5,        sin: Math.sqrt(3)/2, cosLabel: '1/2',   sinLabel: 'sqrt3/2' },
+  { deg: 90,  rad: 'pi/2',     cos: 0,          sin: 1,          cosLabel: '0',        sinLabel: '1' },
+  { deg: 120, rad: '2pi/3',    cos: -0.5,       sin: Math.sqrt(3)/2, cosLabel: '-1/2', sinLabel: 'sqrt3/2' },
+  { deg: 135, rad: '3pi/4',    cos: -Math.SQRT2/2, sin: Math.SQRT2/2, cosLabel: '-sqrt2/2', sinLabel: 'sqrt2/2' },
+  { deg: 150, rad: '5pi/6',    cos: -Math.sqrt(3)/2, sin: 0.5,   cosLabel: '-sqrt3/2', sinLabel: '1/2' },
+  { deg: 180, rad: 'pi',       cos: -1,         sin: 0,          cosLabel: '-1',       sinLabel: '0' },
+  { deg: 210, rad: '7pi/6',    cos: -Math.sqrt(3)/2, sin: -0.5,  cosLabel: '-sqrt3/2', sinLabel: '-1/2' },
+  { deg: 225, rad: '5pi/4',    cos: -Math.SQRT2/2, sin: -Math.SQRT2/2, cosLabel: '-sqrt2/2', sinLabel: '-sqrt2/2' },
+  { deg: 240, rad: '4pi/3',    cos: -0.5,       sin: -Math.sqrt(3)/2, cosLabel: '-1/2', sinLabel: '-sqrt3/2' },
+  { deg: 270, rad: '3pi/2',    cos: 0,          sin: -1,         cosLabel: '0',        sinLabel: '-1' },
+  { deg: 300, rad: '5pi/3',    cos: 0.5,        sin: -Math.sqrt(3)/2, cosLabel: '1/2', sinLabel: '-sqrt3/2' },
+  { deg: 315, rad: '7pi/4',    cos: Math.SQRT2/2, sin: -Math.SQRT2/2, cosLabel: 'sqrt2/2', sinLabel: '-sqrt2/2' },
+  { deg: 330, rad: '11pi/6',   cos: Math.sqrt(3)/2, sin: -0.5,   cosLabel: 'sqrt3/2',  sinLabel: '-1/2' },
+  { deg: 360, rad: '2pi',      cos: 1,          sin: 0,          cosLabel: '1',        sinLabel: '0' },
+];
+
+function drawUnitCircle() {
+  const svg = $('unitCircleSvg');
+  const cx = 250, cy = 250, r = 190;
+  let h = '';
+
+  // Quadrant fills
+  h += `<path d="M${cx},${cy} L${cx+r},${cy} A${r},${r} 0 0 0 ${cx},${cy-r} Z" fill="rgba(34,197,94,0.06)"/>`;
+  h += `<path d="M${cx},${cy} L${cx},${cy-r} A${r},${r} 0 0 0 ${cx-r},${cy} Z" fill="rgba(99,102,241,0.06)"/>`;
+  h += `<path d="M${cx},${cy} L${cx-r},${cy} A${r},${r} 0 0 0 ${cx},${cy+r} Z" fill="rgba(245,158,11,0.06)"/>`;
+  h += `<path d="M${cx},${cy} L${cx},${cy+r} A${r},${r} 0 0 0 ${cx+r},${cy} Z" fill="rgba(236,72,153,0.06)"/>`;
+
+  // Circle
+  h += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#363b47" stroke-width="2"/>`;
+
+  // Axes
+  h += `<line x1="${cx-r-20}" y1="${cy}" x2="${cx+r+20}" y2="${cy}" stroke="#363b47" stroke-width="1"/>`;
+  h += `<line x1="${cx}" y1="${cy-r-20}" x2="${cx}" y2="${cy+r+20}" stroke="#363b47" stroke-width="1"/>`;
+
+  // Axis labels
+  h += `<text x="${cx+r+8}" y="${cy-6}" fill="#8a8578" font-size="11" font-family="JetBrains Mono">x</text>`;
+  h += `<text x="${cx+6}" y="${cy-r-8}" fill="#8a8578" font-size="11" font-family="JetBrains Mono">y</text>`;
+
+  // Quadrant labels
+  h += `<text x="${cx+70}" y="${cy-70}" fill="rgba(34,197,94,0.5)" font-size="10" font-family="JetBrains Mono" font-weight="600" class="quad-label">QI: ALL+</text>`;
+  h += `<text x="${cx-120}" y="${cy-70}" fill="rgba(99,102,241,0.5)" font-size="10" font-family="JetBrains Mono" font-weight="600" class="quad-label">QII: SIN+</text>`;
+  h += `<text x="${cx-120}" y="${cy+80}" fill="rgba(245,158,11,0.5)" font-size="10" font-family="JetBrains Mono" font-weight="600" class="quad-label">QIII: TAN+</text>`;
+  h += `<text x="${cx+70}" y="${cy+80}" fill="rgba(236,72,153,0.5)" font-size="10" font-family="JetBrains Mono" font-weight="600" class="quad-label">QIV: COS+</text>`;
+
+  // Angle points
+  ucAngles.forEach((a, i) => {
+    if (a.deg === 360) return; // skip duplicate of 0
+    const rad = a.deg * Math.PI / 180;
+    const px = cx + r * Math.cos(rad);
+    const py = cy - r * Math.sin(rad);
+
+    // Line from center to point
+    h += `<line x1="${cx}" y1="${cy}" x2="${px}" y2="${py}" stroke="rgba(99,102,241,0.15)" stroke-width="1" stroke-dasharray="4,4"/>`;
+
+    // Point
+    h += `<circle cx="${px}" cy="${py}" r="6" fill="var(--accent)" stroke="var(--card)" stroke-width="2"
+      class="uc-point" data-idx="${i}" style="cursor:pointer; transition: r 0.2s var(--spring), fill 0.2s;"/>`;
+
+    // Degree label
+    const lx = cx + (r + 22) * Math.cos(rad);
+    const ly = cy - (r + 22) * Math.sin(rad);
+    h += `<text x="${lx}" y="${ly + 4}" fill="#8a8578" font-size="9" font-family="JetBrains Mono" text-anchor="middle">${a.deg}</text>`;
+  });
+
+  svg.innerHTML = h;
+
+  // Event listeners for points
+  const tooltip = $('ucTooltip');
+  const container = svg.closest('.svg-interactive');
+  svg.querySelectorAll('.uc-point').forEach(pt => {
+    const idx = parseInt(pt.getAttribute('data-idx'));
+    const a = ucAngles[idx];
+
+    function showTip(e) {
+      pt.setAttribute('r', '9');
+      pt.setAttribute('fill', '#f59e0b');
+
+      const tanVal = Math.abs(a.cos) < 0.001 ? 'undefined' : (a.sin / a.cos).toFixed(3);
+      $('ttAngle').textContent = a.deg + 'deg = ' + a.rad + ' rad';
+      $('ttCoord').textContent = '(' + a.cosLabel + ', ' + a.sinLabel + ')';
+      $('ttTan').textContent = tanVal;
+
+      // Draw sin/cos lines
+      const rad = a.deg * Math.PI / 180;
+      const px = 250 + 190 * Math.cos(rad);
+      const py = 250 - 190 * Math.sin(rad);
+      // Remove old highlight lines
+      svg.querySelectorAll('.hl').forEach(l => l.remove());
+      // cos line (horizontal)
+      const cosLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      cosLine.setAttribute('x1', 250); cosLine.setAttribute('y1', py);
+      cosLine.setAttribute('x2', px); cosLine.setAttribute('y2', py);
+      cosLine.setAttribute('stroke', '#22c55e'); cosLine.setAttribute('stroke-width', '2.5');
+      cosLine.classList.add('hl');
+      svg.appendChild(cosLine);
+      // sin line (vertical)
+      const sinLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      sinLine.setAttribute('x1', px); sinLine.setAttribute('y1', 250);
+      sinLine.setAttribute('x2', px); sinLine.setAttribute('y2', py);
+      sinLine.setAttribute('stroke', '#ec4899'); sinLine.setAttribute('stroke-width', '2.5');
+      sinLine.classList.add('hl');
+      svg.appendChild(sinLine);
+
+      const rect = container.getBoundingClientRect();
+      const svgRect = svg.getBoundingClientRect();
+      const scaleX = svgRect.width / 500;
+      const scaleY = svgRect.height / 500;
+      tooltip.style.left = (px * scaleX + svgRect.left - rect.left + 12) + 'px';
+      tooltip.style.top = (py * scaleY + svgRect.top - rect.top - 40) + 'px';
+      tooltip.classList.add('visible');
+    }
+
+    function hideTip() {
+      pt.setAttribute('r', '6');
+      pt.setAttribute('fill', 'var(--accent)');
+      tooltip.classList.remove('visible');
+      svg.querySelectorAll('.hl').forEach(l => l.remove());
+    }
+
+    pt.addEventListener('mouseenter', showTip);
+    pt.addEventListener('mouseleave', hideTip);
+    pt.addEventListener('click', showTip);
+    pt.addEventListener('touchstart', (e) => { e.preventDefault(); showTip(e); });
+  });
+}
+
+drawUnitCircle();
+
+// Section 1 problems
+const ucProbData = [
+  { prompt: 'sin(90deg) = ?', answer: '1', alts: ['1.0', '1.00'], numeric: 1, tol: 0.01, display: '1', explanation: 'Top of unit circle: (0, 1)' },
+  { prompt: 'cos(180deg) = ?', answer: '-1', alts: ['-1.0'], numeric: -1, tol: 0.01, display: '-1', explanation: 'Left of unit circle: (-1, 0)' },
+  { prompt: 'sin(150deg) = ?', answer: '0.5', alts: ['0.50', '1/2', '.5'], numeric: 0.5, tol: 0.01, display: '0.5', explanation: 'ref angle 30. QII: sin positive. sin(30) = 0.5' },
+  { prompt: 'cos(315deg) = ? (3 dec)', answer: '0.707', alts: ['sqrt(2)/2', 'sqrt2/2'], numeric: Math.SQRT2/2, tol: 0.01, display: '0.707 (sqrt2/2)', explanation: 'ref angle 45. QIV: cos positive. cos(45) = sqrt2/2' },
+  { prompt: 'In which quadrant is sin negative and cos positive? (I/II/III/IV)', answer: 'iv', alts: ['4', 'qiv', 'q4', 'quadrant iv', 'quadrant 4'], display: 'IV', explanation: 'QIV: cos+, sin-' },
+];
+buildProblems(ucProbData, 'ucProblems', 'uc');
+function checkUcProblems() { checkProblems(ucProbData, 'uc', 1); }
+function showUcAnswers() { showAnswers(ucProbData, 'uc', 1); }
+
+
+// ====== SECTION 2: Radians & Degrees ======
+
+function updateConverter() {
+  const deg = parseFloat($('convSlider').value);
+  $('convDeg').textContent = deg + 'deg';
+  const rad = deg * Math.PI / 180;
+
+  // Pretty fraction display
+  const fracs = {
+    0:'0', 30:'pi/6', 45:'pi/4', 60:'pi/3', 90:'pi/2',
+    120:'2pi/3', 135:'3pi/4', 150:'5pi/6', 180:'pi',
+    210:'7pi/6', 225:'5pi/4', 240:'4pi/3', 270:'3pi/2',
+    300:'5pi/3', 315:'7pi/4', 330:'11pi/6', 360:'2pi'
+  };
+  const fracLabel = fracs[deg] || (rad / Math.PI).toFixed(3) + 'pi';
+
+  $('convResult').innerHTML = `
+    <span class="tag amber">${deg}deg</span>
+    <span class="tag indigo">${fracLabel} rad</span>
+    <span class="tag green">${rad.toFixed(3)} rad</span>
+  `;
+}
+$('convSlider').addEventListener('input', updateConverter);
+updateConverter();
+
+// Section 2 problems
+const radProbData = [
+  { prompt: 'Convert 270deg to radians (as fraction of pi)', answer: '3pi/2', alts: ['3*pi/2', '3/2 pi', '3/2pi', '1.5pi'], display: '3pi/2', explanation: '270 * pi/180 = 3pi/2' },
+  { prompt: 'Convert pi/4 to degrees', answer: '45', alts: ['45.0', '45deg'], numeric: 45, tol: 0.1, display: '45', explanation: '(pi/4)(180/pi) = 45' },
+  { prompt: 'Arc length: r=10, theta=pi/3 (2 dec)', answer: '10.47', alts: ['10.5'], numeric: 10 * Math.PI / 3, tol: 0.05, display: '10.47', explanation: 's = r*theta = 10*pi/3 = 10.47' },
+  { prompt: 'Sector area: r=6, theta=pi/2 (2 dec)', answer: '14.14', alts: ['14.13'], numeric: 0.5 * 36 * Math.PI / 2, tol: 0.05, display: '14.14', explanation: 'A = (1/2)(36)(pi/2) = 9pi = 28.27... wait: (1/2)(36)(pi/2) = 9*pi/1 = nope. A = (1/2)(6^2)(pi/2) = (1/2)(36)(1.5708) = 28.27. Hmm let me recalc: (1/2)*36*(pi/2) = 18*(pi/2) = 9pi = 28.27' },
+  { prompt: 'Convert 2pi/3 to degrees', answer: '120', alts: ['120.0', '120deg'], numeric: 120, tol: 0.1, display: '120', explanation: '(2pi/3)(180/pi) = 120' },
+];
+// Fix sector area problem
+radProbData[3] = { prompt: 'Sector area: r=6, theta=pi/2 (2 dec)', answer: '28.27', alts: ['28.3'], numeric: 0.5 * 36 * Math.PI / 2, tol: 0.1, display: '28.27', explanation: 'A = (1/2)(36)(pi/2) = 9*pi = 28.27' };
+buildProblems(radProbData, 'radProblems', 'rad');
+function checkRadProblems() { checkProblems(radProbData, 'rad', 2); }
+function showRadAnswers() { showAnswers(radProbData, 'rad', 2); }
+
+
+// ====== SECTION 3: Trig Graphs ======
+
+let graphFunc = 'sin';
+
+function setGraphFunc(fn) {
+  graphFunc = fn;
+  $('btnSin').className = fn === 'sin' ? 'btn' : 'btn outline';
+  $('btnCos').className = fn === 'cos' ? 'btn' : 'btn outline';
+  $('btnTan').className = fn === 'tan' ? 'btn' : 'btn outline';
+  drawTrigGraph();
+}
+
+function drawTrigGraph() {
+  const A = parseFloat($('sliderA').value);
+  const B = parseFloat($('sliderB').value);
+  const C = parseFloat($('sliderC').value);
+  const D = parseFloat($('sliderD').value);
+
+  $('valA').textContent = A.toFixed(1);
+  $('valB').textContent = B.toFixed(1);
+  $('valC').textContent = C.toFixed(1);
+  $('valD').textContent = D.toFixed(1);
+
+  const period = graphFunc === 'tan' ? (Math.PI / Math.abs(B)) : (2 * Math.PI / Math.abs(B));
+  $('graphEqLabel').textContent = `y = ${A.toFixed(1)} ${graphFunc}(${B.toFixed(1)}(x - ${C.toFixed(1)})) + ${D.toFixed(1)}`;
+
+  $('graphInfo').innerHTML = `
+    <span class="tag amber">Amplitude: ${graphFunc === 'tan' ? 'N/A' : A.toFixed(2)}</span>
+    <span class="tag green">Period: ${period.toFixed(2)}</span>
+    <span class="tag indigo">Phase: ${C.toFixed(2)}</span>
+    <span class="tag pink">Midline: y=${D.toFixed(1)}</span>
+  `;
+
+  const svg = $('trigGraphSvg');
+  const w = 800, h = 300;
+  const padL = 50, padR = 20, padT = 20, padB = 30;
+  const gw = w - padL - padR;
+  const gh = h - padT - padB;
+  const midY = padT + gh / 2;
+
+  // X range: -2pi to 2pi
+  const xMin = -2 * Math.PI, xMax = 2 * Math.PI;
+  const xScale = gw / (xMax - xMin);
+  const yRange = 4; // -4 to 4
+  const yScale = gh / (2 * yRange);
+
+  function toSvgX(x) { return padL + (x - xMin) * xScale; }
+  function toSvgY(y) { return midY - y * yScale; }
+
+  let html = '';
+
+  // Grid
+  html += `<rect x="${padL}" y="${padT}" width="${gw}" height="${gh}" fill="#1a1d24"/>`;
+
+  // Horizontal grid lines
+  for (let y = -3; y <= 3; y++) {
+    const sy = toSvgY(y);
+    const col = y === 0 ? '#4a4f5c' : '#2a2e38';
+    const sw = y === 0 ? 1.5 : 0.5;
+    html += `<line x1="${padL}" y1="${sy}" x2="${padL+gw}" y2="${sy}" stroke="${col}" stroke-width="${sw}"/>`;
+    if (y !== 0) {
+      html += `<text x="${padL-8}" y="${sy+4}" fill="#8a8578" font-size="10" font-family="JetBrains Mono" text-anchor="end">${y}</text>`;
+    }
+  }
+
+  // Vertical grid lines at multiples of pi/2
+  for (let k = -4; k <= 4; k++) {
+    const x = k * Math.PI / 2;
+    const sx = toSvgX(x);
+    if (sx < padL || sx > padL + gw) continue;
+    html += `<line x1="${sx}" y1="${padT}" x2="${sx}" y2="${padT+gh}" stroke="#2a2e38" stroke-width="0.5"/>`;
+    const labels = { '-4':'-2pi', '-3':'-3pi/2', '-2':'-pi', '-1':'-pi/2', '0':'0', '1':'pi/2', '2':'pi', '3':'3pi/2', '4':'2pi' };
+    html += `<text x="${sx}" y="${padT+gh+15}" fill="#8a8578" font-size="9" font-family="JetBrains Mono" text-anchor="middle">${labels[k]}</text>`;
+  }
+
+  // Axes labels
+  html += `<text x="${padL-8}" y="${toSvgY(0)+4}" fill="#8a8578" font-size="10" font-family="JetBrains Mono" text-anchor="end">0</text>`;
+
+  // Midline if D !== 0
+  if (Math.abs(D) > 0.01) {
+    const my = toSvgY(D);
+    html += `<line x1="${padL}" y1="${my}" x2="${padL+gw}" y2="${my}" stroke="rgba(236,72,153,0.3)" stroke-width="1" stroke-dasharray="6,4"/>`;
+  }
+
+  // Draw curve
+  const fn = graphFunc === 'sin' ? Math.sin : graphFunc === 'cos' ? Math.cos : Math.tan;
+  const step = (xMax - xMin) / 600;
+  let path = '';
+  let prevY = null;
+  let prevSY = null;
+
+  for (let i = 0; i <= 600; i++) {
+    const x = xMin + i * step;
+    const y = A * fn(B * (x - C)) + D;
+    const sx = toSvgX(x);
+    const sy = toSvgY(y);
+
+    // Clip
+    if (sy < padT - 50 || sy > padT + gh + 50) {
+      if (path) {
+        html += `<path d="${path}" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round"/>`;
+        path = '';
+      }
+      prevSY = null;
+      continue;
+    }
+
+    // Break path for tan asymptotes
+    if (graphFunc === 'tan' && prevSY !== null && Math.abs(sy - prevSY) > gh * 0.5) {
+      if (path) {
+        html += `<path d="${path}" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round"/>`;
+        path = '';
+      }
+      prevSY = sy;
+      continue;
+    }
+
+    if (!path) {
+      path = `M${sx.toFixed(1)},${sy.toFixed(1)}`;
+    } else {
+      path += ` L${sx.toFixed(1)},${sy.toFixed(1)}`;
+    }
+    prevSY = sy;
+  }
+  if (path) {
+    html += `<path d="${path}" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round"/>`;
+  }
+
+  // Clip rect
+  html += `<clipPath id="graphClip"><rect x="${padL}" y="${padT}" width="${gw}" height="${gh}"/></clipPath>`;
+
+  svg.innerHTML = html;
+}
+
+['sliderA', 'sliderB', 'sliderC', 'sliderD'].forEach(id => {
+  $(id).addEventListener('input', drawTrigGraph);
+});
+drawTrigGraph();
+
+// Section 3 problems
+const graphProbData = [
+  { prompt: 'Period of y = 3sin(2x)?', answer: 'pi', alts: ['3.14', '3.1416', 'pi', '3.14159'], numeric: Math.PI, tol: 0.02, display: 'pi (3.14)', explanation: 'Period = 2pi/|B| = 2pi/2 = pi' },
+  { prompt: 'Amplitude of y = -5cos(x)?', answer: '5', alts: ['5.0'], numeric: 5, tol: 0.01, display: '5', explanation: 'Amplitude = |A| = |-5| = 5' },
+  { prompt: 'Phase shift of y = sin(x - pi/3)?', answer: 'pi/3', alts: ['1.05', '1.047'], numeric: Math.PI/3, tol: 0.02, display: 'pi/3 (1.05)', explanation: 'C = pi/3, shift right by pi/3' },
+  { prompt: 'Midline of y = 2sin(x) + 4?', answer: '4', alts: ['y=4', 'y = 4', '4.0'], numeric: 4, tol: 0.01, display: 'y = 4', explanation: 'D = 4, midline is y = 4' },
+  { prompt: 'Period of y = tan(3x)?', answer: 'pi/3', alts: ['1.05', '1.047'], numeric: Math.PI/3, tol: 0.02, display: 'pi/3', explanation: 'tan period = pi/|B| = pi/3' },
+];
+buildProblems(graphProbData, 'graphProblems', 'gp');
+function checkGraphProblems() { checkProblems(graphProbData, 'gp', 3); }
+function showGraphAnswers() { showAnswers(graphProbData, 'gp', 3); }
+
+
+// ====== SECTION 4: Identities ======
+
+const idProbData = [
+  { prompt: 'Simplify: sin^2(x) + cos^2(x)', answer: '1', alts: ['1.0'], display: '1', explanation: 'Pythagorean identity' },
+  { prompt: 'Simplify: sin^2(x)*sec^2(x)', answer: 'tan^2(x)', alts: ['tan^2x', 'tan^2(x)', 'tan2x', 'tan2(x)'], display: 'tan^2(x)', explanation: 'sin^2*sec^2 = sin^2/cos^2 = tan^2' },
+  { prompt: 'Simplify: (1-cos^2(x))/sin(x)', answer: 'sin(x)', alts: ['sinx', 'sin x', 'sin(x)'], display: 'sin(x)', explanation: '1-cos^2 = sin^2. Then sin^2/sin = sin' },
+  { prompt: 'csc(30deg) = ?', answer: '2', alts: ['2.0', '2.00'], numeric: 2, tol: 0.01, display: '2', explanation: 'csc = 1/sin. 1/sin(30) = 1/0.5 = 2' },
+  { prompt: 'If sin(x) = 3/5, cos(x) = 4/5, find tan(x)', answer: '3/4', alts: ['0.75', '.75', '0.750'], numeric: 0.75, tol: 0.01, display: '3/4 = 0.75', explanation: 'tan = sin/cos = (3/5)/(4/5) = 3/4' },
+];
+buildProblems(idProbData, 'idProblems', 'id');
+function checkIdProblems() { checkProblems(idProbData, 'id', 4); }
+function showIdAnswers() { showAnswers(idProbData, 'id', 4); }
+
+
+// ====== SECTION 5: Quick Quiz ======
+
+const quizData = [
+  { q: 'sin(30deg) = ?', answer: '0.5', alts: ['0.50', '1/2', '.5'], explanation: 'sin(30) = opposite/hypotenuse = 1/2 = 0.5' },
+  { q: 'Convert 270deg to radians (fraction of pi)', answer: '3pi/2', alts: ['3*pi/2', '3/2pi', '1.5pi', '3pi / 2'], explanation: '270 * pi/180 = 3pi/2' },
+  { q: 'cos(0deg) = ?', answer: '1', alts: ['1.0', '1.00'], explanation: 'At 0 degrees, the point is (1, 0). cos = 1.' },
+  { q: 'tan(45deg) = ?', answer: '1', alts: ['1.0', '1.00'], explanation: 'tan(45) = sin(45)/cos(45) = 1' },
+  { q: 'Period of y = 3sin(2x)?', answer: 'pi', alts: ['3.14', '3.1416'], explanation: 'Period = 2pi/|B| = 2pi/2 = pi' },
+  { q: 'Simplify: sin^2(theta) + cos^2(theta)', answer: '1', alts: ['1.0'], explanation: 'Pythagorean identity: always equals 1.' },
+  { q: 'In which quadrant is tan positive and cos negative? (I/II/III/IV)', answer: 'iii', alts: ['3', 'qiii', 'q3', 'quadrant iii', 'quadrant 3'], explanation: 'QIII: tan+, sin-, cos-' },
+  { q: 'Arc length: r=4, theta=pi/2? (2 decimal places)', answer: '6.28', alts: ['6.283', '2pi'], explanation: 's = r*theta = 4*pi/2 = 2pi = 6.28' },
+  { q: 'Right triangle: angle=60deg, hypotenuse=20. Find opposite side. (2 dec)', answer: '17.32', alts: ['17.3', '17.321'], explanation: 'opp = hyp*sin(60) = 20*0.866 = 17.32' },
+  { q: 'sec(60deg) = ? (reciprocal of cos(60))', answer: '2', alts: ['2.0', '2.00'], explanation: 'cos(60) = 0.5, so sec(60) = 1/0.5 = 2' },
+];
+
+function buildQuiz() {
+  const cont = $('quizProblems');
+  cont.innerHTML = '';
+  quizData.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-problem';
+    div.id = 'qp' + i;
+    div.innerHTML = `
+      <div class="q-num">Question ${i + 1}</div>
+      <div class="q-text">${q.q}</div>
+      <input type="text" id="qIn${i}" placeholder="your answer">
+      <div class="q-feedback" id="qFb${i}"></div>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function gradeQuiz() {
+  let score = 0;
+  quizData.forEach((q, i) => {
+    const input = normalize($('qIn' + i).value);
+    const answers = [q.answer, ...q.alts].map(normalize);
+    const isRight = answers.includes(input);
+
+    if (isRight) {
+      score++;
+      $('qp' + i).className = 'quiz-problem correct';
+      $('qFb' + i).textContent = 'Correct!';
+      $('qFb' + i).className = 'q-feedback correct';
+      springPop($('qp' + i));
+    } else {
+      $('qp' + i).className = 'quiz-problem incorrect';
+      $('qFb' + i).innerHTML = `Incorrect. Answer: ${q.answer}. ${q.explanation}`;
+      $('qFb' + i).className = 'q-feedback incorrect';
+      shakeEl($('qp' + i));
+    }
+  });
+
+  $('quizScore').innerHTML = `Score: <span>${score} / 10</span>`;
+  if (score >= 7) markComplete(5);
+}
+
+function showQuizAnswers() {
+  quizData.forEach((q, i) => {
+    $('qIn' + i).value = q.answer;
+    $('qp' + i).className = 'quiz-problem correct';
+    $('qFb' + i).innerHTML = q.explanation;
+    $('qFb' + i).className = 'q-feedback correct';
+  });
+  $('quizScore').innerHTML = `Score: <span>10 / 10</span>`;
+  markComplete(5);
+}
+
+function resetQuiz() {
+  quizData.forEach((q, i) => {
+    $('qIn' + i).value = '';
+    $('qp' + i).className = 'quiz-problem';
+    $('qFb' + i).textContent = '';
+    $('qFb' + i).className = 'q-feedback';
+  });
+  $('quizScore').innerHTML = `Score: <span>-- / 10</span>`;
+  completed[5] = false;
+  $('sec5').classList.remove('completed');
+  updateProgress();
+}
+
+buildQuiz();
+
+</script>
+</body>
+</html>

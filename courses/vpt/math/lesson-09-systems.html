@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 09 -- Systems of Equations</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #262a33;
+    --border: #363b47;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* -- Progress Bar -- */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* -- Header -- */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* -- Collapsible Cards -- */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details[open] { border-color: var(--accent); }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .section-body {
+    padding: 1.25rem;
+  }
+
+  /* -- Typography -- */
+  h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent); }
+  h3 { font-size: 0.95rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: var(--text); }
+  p { margin-bottom: 0.75rem; font-size: 0.85rem; }
+  .dim { color: var(--text-dim); }
+  .accent { color: var(--accent); }
+  .green { color: var(--green); }
+  .pink { color: var(--pink); }
+  .orange { color: var(--orange); }
+
+  /* -- Math Display -- */
+  .math-block {
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    margin: 0.75rem 0;
+    font-size: 0.9rem;
+    text-align: center;
+    line-height: 1.8;
+  }
+
+  /* -- Concept Box -- */
+  .concept-box {
+    background: rgba(34,197,94,0.06);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+  }
+  .concept-box.warn {
+    background: rgba(245,158,11,0.06);
+    border-color: rgba(245,158,11,0.2);
+  }
+  .concept-box.info {
+    background: rgba(99,102,241,0.06);
+    border-color: rgba(99,102,241,0.2);
+  }
+  .concept-box.pink-box {
+    background: rgba(236,72,153,0.06);
+    border-color: rgba(236,72,153,0.2);
+  }
+  .concept-label {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+  }
+
+  /* -- Interactive Areas -- */
+  .interactive-area {
+    background: rgba(99,102,241,0.04);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  .interactive-label {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+
+  /* -- SVG -- */
+  .svg-container {
+    margin: 1rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .svg-container svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* -- Buttons -- */
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--accent); background: rgba(99,102,241,0.1); }
+  .btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn.correct { background: var(--green); color: #fff; border-color: var(--green); }
+  .btn-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0.75rem 0;
+  }
+
+  /* -- Inputs -- */
+  input[type="text"], input[type="number"] {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.3s;
+    width: 80px;
+    text-align: center;
+  }
+  input:focus { border-color: var(--accent); }
+
+  /* -- Sliders -- */
+  .slider-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.5rem 0;
+    font-size: 0.8rem;
+  }
+  .slider-group label {
+    min-width: 40px;
+    text-align: right;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+  }
+  .slider-group .val {
+    min-width: 35px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    transition: transform 0.15s var(--spring);
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+  }
+
+  /* -- Feedback Animations -- */
+  @keyframes correctGlow {
+    0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+    50% { box-shadow: 0 0 20px 4px rgba(34,197,94,0.3); }
+    100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+  }
+  @keyframes incorrectShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  .glow-correct { animation: correctGlow 0.6s ease; }
+  .shake-incorrect { animation: incorrectShake 0.4s ease; }
+
+  /* -- Step Solver -- */
+  .step-container {
+    margin: 1rem 0;
+  }
+  .step {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.65rem 1rem;
+    margin: 0.4rem 0;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    opacity: 0.3;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s var(--spring), border-color 0.3s;
+  }
+  .step.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .step.current {
+    border-color: var(--accent);
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .step .step-num {
+    color: var(--accent);
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+  .step .hl-sub { color: var(--orange); font-weight: 600; }
+  .step .hl-elim { color: var(--pink); font-weight: 600; }
+  .step .hl-result { color: var(--green); font-weight: 600; }
+
+  /* -- Problem Tabs -- */
+  .prob-tabs {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+  .prob-tab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .prob-tab:hover { border-color: var(--accent); color: var(--text); }
+  .prob-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* -- Intersection Dot -- */
+  .intersection-dot {
+    transition: cx 0.2s ease, cy 0.2s ease;
+  }
+
+  /* -- Quiz -- */
+  .quiz-score {
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 1rem 0;
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.2);
+  }
+  .quiz-q {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.75rem 0;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .quiz-q.q-correct {
+    border-color: var(--green);
+    animation: correctGlow 0.6s ease;
+  }
+  .quiz-q.q-incorrect {
+    border-color: var(--pink);
+    animation: incorrectShake 0.4s ease;
+  }
+  .quiz-q .q-num {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+  .quiz-q .q-prompt {
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+  .quiz-q .q-inputs {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .quiz-q .q-feedback {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    min-height: 1.2em;
+    transition: opacity 0.3s;
+  }
+  .quiz-q .explanation {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(99,102,241,0.04);
+    border-radius: 4px;
+    display: none;
+  }
+
+  /* -- Physics boxes -- */
+  .physics-scenario {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.75rem 0;
+  }
+  .physics-scenario h4 {
+    font-size: 0.85rem;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+  }
+  .physics-scenario p {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* -- Responsive -- */
+  @media (max-width: 600px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.15rem; }
+    .section-body { padding: 1rem; }
+    .slider-group { flex-wrap: wrap; }
+    .quiz-q .q-inputs { flex-direction: column; align-items: flex-start; }
+    .svg-container svg { min-width: 300px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar">
+  <div class="seg" data-section="0"></div>
+  <div class="seg" data-section="1"></div>
+  <div class="seg" data-section="2"></div>
+  <div class="seg" data-section="3"></div>
+  <div class="seg" data-section="4"></div>
+  <div class="seg" data-section="5"></div>
+</div>
+
+<h1>Lesson 09 -- Systems of Equations</h1>
+<p class="subtitle">Week 6 -- Where two truths meet</p>
+
+<!-- ============================== -->
+<!-- SECTION 1: What is a System?   -->
+<!-- ============================== -->
+<details id="sec0" open>
+  <summary>1 -- What is a System?</summary>
+  <div class="section-body">
+    <p>A <span class="accent">system of equations</span> is two or more equations that must be true <em>at the same time</em>. The <span class="green">solution</span> is the point(s) where all equations are satisfied simultaneously.</p>
+
+    <div class="concept-box info">
+      <div class="concept-label accent">Key Insight</div>
+      For two linear equations in two variables, the solution is the <strong>intersection point</strong> of their lines on a coordinate plane.
+    </div>
+
+    <p>Drag the sliders below to change the slope and intercept of Line 2 (pink). Watch how the intersection point moves. Try to create all three cases:</p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive -- Drag to Explore Intersections</div>
+
+      <div class="svg-container">
+        <svg id="svgSystem" width="400" height="400" viewBox="-10 -10 420 420" style="background: rgba(0,0,0,0.15); border-radius: 6px;"></svg>
+      </div>
+
+      <div style="font-size:0.78rem; margin-bottom:0.5rem;">
+        <span class="accent">Line 1 (blue):</span> y = <span id="eq1Display">1x + 0</span>
+      </div>
+      <div class="slider-group">
+        <label>m<sub>1</sub></label>
+        <input type="range" id="m1" min="-3" max="3" step="0.5" value="1">
+        <span class="val" id="m1val">1</span>
+      </div>
+      <div class="slider-group">
+        <label>b<sub>1</sub></label>
+        <input type="range" id="b1" min="-5" max="5" step="0.5" value="0">
+        <span class="val" id="b1val">0</span>
+      </div>
+
+      <div style="font-size:0.78rem; margin:0.75rem 0 0.5rem;">
+        <span class="pink">Line 2 (pink):</span> y = <span id="eq2Display">-1x + 2</span>
+      </div>
+      <div class="slider-group">
+        <label>m<sub>2</sub></label>
+        <input type="range" id="m2" min="-3" max="3" step="0.5" value="-1">
+        <span class="val" id="m2val">-1</span>
+      </div>
+      <div class="slider-group">
+        <label>b<sub>2</sub></label>
+        <input type="range" id="b2" min="-5" max="5" step="0.5" value="2">
+        <span class="val" id="b2val">2</span>
+      </div>
+
+      <div id="systemResult" style="font-size:0.85rem; font-weight:600; margin-top:0.75rem; padding:0.5rem 0.75rem; border-radius:4px; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); transition: all 0.3s;">
+        Intersection: (1, 1) -- One unique solution
+      </div>
+    </div>
+
+    <h3>Three Possible Outcomes</h3>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:0.75rem; margin-top:0.75rem;">
+      <div class="concept-box">
+        <div class="concept-label green">One Solution</div>
+        Lines cross at exactly one point. Different slopes (m1 != m2).
+      </div>
+      <div class="concept-box warn">
+        <div class="concept-label orange">No Solution</div>
+        Lines are parallel -- same slope, different intercept. They never meet.
+      </div>
+      <div class="concept-box pink-box">
+        <div class="concept-label pink">Infinite Solutions</div>
+        Same line -- same slope AND intercept. Every point is a solution.
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- ================================ -->
+<!-- SECTION 2: Substitution Method   -->
+<!-- ================================ -->
+<details id="sec1">
+  <summary>2 -- Substitution Method</summary>
+  <div class="section-body">
+    <p>The <span class="accent">substitution method</span> works by solving one equation for a variable, then <span class="orange">substituting</span> that expression into the other equation.</p>
+
+    <div class="concept-box info">
+      <div class="concept-label accent">When to Use</div>
+      Best when one equation already has a variable isolated (like y = ... or x = ...).
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Step-by-Step Solver -- Substitution</div>
+
+      <div class="prob-tabs" id="subTabs">
+        <button class="prob-tab active" data-prob="0">Problem 1</button>
+        <button class="prob-tab" data-prob="1">Problem 2</button>
+        <button class="prob-tab" data-prob="2">Problem 3</button>
+        <button class="prob-tab" data-prob="3">Problem 4</button>
+      </div>
+
+      <div id="subProblem" class="math-block" style="font-size:0.85rem;"></div>
+
+      <div class="step-container" id="subSteps"></div>
+
+      <div class="btn-row">
+        <button class="btn" id="subNext">Next Step</button>
+        <button class="btn" id="subReset">Reset</button>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- ============================== -->
+<!-- SECTION 3: Elimination Method  -->
+<!-- ============================== -->
+<details id="sec2">
+  <summary>3 -- Elimination Method</summary>
+  <div class="section-body">
+    <p>The <span class="accent">elimination method</span> adds or subtracts equations to <span class="pink">eliminate</span> one variable. Sometimes you need to multiply first to make coefficients match.</p>
+
+    <div class="concept-box info">
+      <div class="concept-label accent">When to Use</div>
+      Best when both equations are in standard form (ax + by = c) and no variable is already isolated.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Step-by-Step Solver -- Elimination</div>
+
+      <div class="prob-tabs" id="elimTabs">
+        <button class="prob-tab active" data-prob="0">Problem 1</button>
+        <button class="prob-tab" data-prob="1">Problem 2</button>
+        <button class="prob-tab" data-prob="2">Problem 3</button>
+        <button class="prob-tab" data-prob="3">Problem 4</button>
+      </div>
+
+      <div id="elimProblem" class="math-block" style="font-size:0.85rem;"></div>
+
+      <div class="step-container" id="elimSteps"></div>
+
+      <div class="btn-row">
+        <button class="btn" id="elimNext">Next Step</button>
+        <button class="btn" id="elimReset">Reset</button>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- ================================== -->
+<!-- SECTION 4: Graphical Interpretation -->
+<!-- ================================== -->
+<details id="sec3">
+  <summary>4 -- Graphical Interpretation</summary>
+  <div class="section-body">
+    <p>Every linear equation represents a line. A system of two linear equations represents two lines. The <span class="green">solution</span> is where they cross.</p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive Coordinate Plane -- Adjust Coefficients</div>
+
+      <div class="svg-container">
+        <svg id="svgGraph" width="400" height="400" viewBox="-10 -10 420 420" style="background: rgba(0,0,0,0.15); border-radius: 6px;"></svg>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:0.75rem;">
+        <div>
+          <div style="font-size:0.78rem; margin-bottom:0.5rem;">
+            <span class="accent">Eq 1:</span> <span id="gEq1">1</span>x + <span id="gEq1b">1</span>y = <span id="gEq1c">4</span>
+          </div>
+          <div class="slider-group">
+            <label>a<sub>1</sub></label>
+            <input type="range" id="ga1" min="-4" max="4" step="0.5" value="1">
+            <span class="val" id="ga1v">1</span>
+          </div>
+          <div class="slider-group">
+            <label>b<sub>1</sub></label>
+            <input type="range" id="gb1" min="-4" max="4" step="0.5" value="1">
+            <span class="val" id="gb1v">1</span>
+          </div>
+          <div class="slider-group">
+            <label>c<sub>1</sub></label>
+            <input type="range" id="gc1" min="-8" max="8" step="0.5" value="4">
+            <span class="val" id="gc1v">4</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.78rem; margin-bottom:0.5rem;">
+            <span class="pink">Eq 2:</span> <span id="gEq2">1</span>x + <span id="gEq2b">-1</span>y = <span id="gEq2c">0</span>
+          </div>
+          <div class="slider-group">
+            <label>a<sub>2</sub></label>
+            <input type="range" id="ga2" min="-4" max="4" step="0.5" value="1">
+            <span class="val" id="ga2v">1</span>
+          </div>
+          <div class="slider-group">
+            <label>b<sub>2</sub></label>
+            <input type="range" id="gb2" min="-4" max="4" step="0.5" value="-1">
+            <span class="val" id="gb2v">-1</span>
+          </div>
+          <div class="slider-group">
+            <label>c<sub>2</sub></label>
+            <input type="range" id="gc2" min="-8" max="8" step="0.5" value="0">
+            <span class="val" id="gc2v">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="graphResult" style="font-size:0.85rem; font-weight:600; margin-top:0.75rem; padding:0.5rem 0.75rem; border-radius:4px; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2);">
+        Solution: (2, 2)
+      </div>
+
+      <div class="btn-row" style="margin-top:0.75rem;">
+        <button class="btn" id="snapBtn">Snap to Solution</button>
+        <button class="btn" id="graphResetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- ============================== -->
+<!-- SECTION 5: Physics Connection  -->
+<!-- ============================== -->
+<details id="sec4">
+  <summary>5 -- Physics Connection</summary>
+  <div class="section-body">
+    <p>Systems of equations appear <em>everywhere</em> in physics. Here are three fundamental examples:</p>
+
+    <div class="physics-scenario">
+      <h4>Collision Course -- When and Where Do Two Ships Meet?</h4>
+      <p>Ship A is at position x = 0 heading east at 15 knots. Ship B is at x = 60 nautical miles heading west at 10 knots. When and where do they meet?</p>
+      <div class="math-block" style="text-align:left; font-size:0.82rem;">
+        Ship A: x = 15t<br>
+        Ship B: x = 60 - 10t<br>
+        <br>
+        Set equal: 15t = 60 - 10t<br>
+        <span class="orange">25t = 60</span><br>
+        <span class="green">t = 2.4 hours, x = 36 nautical miles</span>
+      </div>
+      <p class="dim" style="font-size:0.78rem;">This is a system where both equations describe position as a function of time. The solution tells you the collision point in both space and time.</p>
+    </div>
+
+    <div class="physics-scenario">
+      <h4>Equilibrium -- Sum of Forces = 0</h4>
+      <p>A 10 kg object hangs from two cables at angles. Cable 1 makes 30 degrees with horizontal, Cable 2 makes 45 degrees. Find the tension in each cable.</p>
+      <div class="math-block" style="text-align:left; font-size:0.82rem;">
+        x-direction: T1 cos(30) = T2 cos(45)<br>
+        y-direction: T1 sin(30) + T2 sin(45) = 98 N<br>
+        <br>
+        <span class="orange">0.866 T1 = 0.707 T2</span> &rarr; T1 = 0.816 T2<br>
+        Substitute: 0.816(0.5)T2 + 0.707 T2 = 98<br>
+        <span class="green">T2 = 87.9 N, T1 = 71.7 N</span>
+      </div>
+      <p class="dim" style="font-size:0.78rem;">Newton's second law in each direction gives you one equation. Two directions = two equations = solvable system.</p>
+    </div>
+
+    <div class="physics-scenario">
+      <h4>Kirchhoff's Rules -- Circuit Analysis</h4>
+      <p>A circuit has two loops with unknown currents I1 and I2. Kirchhoff's voltage law gives:</p>
+      <div class="math-block" style="text-align:left; font-size:0.82rem;">
+        Loop 1: 12 - 4 I1 - 2(I1 - I2) = 0<br>
+        Loop 2: -6 I2 - 3 I2 + 2(I1 - I2) = 0<br>
+        <br>
+        Simplify: <span class="orange">6 I1 - 2 I2 = 12</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="orange">2 I1 - 11 I2 = 0</span><br>
+        <br>
+        Elimination: <span class="green">I1 = 2.13 A, I2 = 0.387 A</span>
+      </div>
+      <p class="dim" style="font-size:0.78rem;">Every loop and every junction in a circuit gives an equation. Complex circuits can have systems of 5+ equations -- matrix methods (Week 8+) handle those.</p>
+    </div>
+
+    <div class="concept-box warn">
+      <div class="concept-label orange">The Pattern</div>
+      In physics, each <strong>independent constraint</strong> (direction, loop, conservation law) gives one equation. You need as many equations as unknowns to solve the system.
+    </div>
+  </div>
+</details>
+
+<!-- ============================== -->
+<!-- SECTION 6: Quick Quiz          -->
+<!-- ============================== -->
+<details id="sec5">
+  <summary>6 -- Quick Quiz</summary>
+  <div class="section-body">
+    <div class="quiz-score" id="quizScore">Score: 0 / 8</div>
+
+    <div id="quizContainer"></div>
+
+    <div class="btn-row" style="justify-content: center; margin-top:1rem;">
+      <button class="btn" id="quizReset">Reset Quiz</button>
+    </div>
+  </div>
+</details>
+
+<script>
+// ============================================================
+// UTILITIES
+// ============================================================
+function $(sel) { return document.querySelector(sel); }
+function $$(sel) { return document.querySelectorAll(sel); }
+
+// Progress tracking
+const sectionsDone = new Set();
+function markDone(idx) {
+  sectionsDone.add(idx);
+  $$('.progress-bar .seg').forEach((s, i) => {
+    if (sectionsDone.has(i)) s.classList.add('done');
+  });
+}
+
+// Track when sections open
+$$('details').forEach((d, i) => {
+  d.addEventListener('toggle', () => { if (d.open) markDone(i); });
+});
+// Mark first section done since it starts open
+markDone(0);
+
+function round2(n) { return Math.round(n * 100) / 100; }
+
+// ============================================================
+// SECTION 1: What is a System? (Interactive SVG Graph)
+// ============================================================
+(function() {
+  const svg = $('#svgSystem');
+  const W = 400, H = 400;
+  const margin = 40;
+  const gridMin = -5, gridMax = 5;
+
+  function toSVG(x, y) {
+    const sx = margin + (x - gridMin) / (gridMax - gridMin) * (W - 2 * margin);
+    const sy = H - margin - (y - gridMin) / (gridMax - gridMin) * (H - 2 * margin);
+    return [sx, sy];
+  }
+
+  function drawGrid() {
+    let html = '';
+    // Grid lines
+    for (let i = gridMin; i <= gridMax; i++) {
+      const [x1, y1] = toSVG(i, gridMin);
+      const [x2, y2] = toSVG(i, gridMax);
+      const col = i === 0 ? '#555' : '#2a2e38';
+      const w = i === 0 ? 1.5 : 0.5;
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w}"/>`;
+      const [lx, ly] = toSVG(i, 0);
+      if (i !== 0) html += `<text x="${lx}" y="${ly + 14}" fill="#8a8578" font-size="10" text-anchor="middle" font-family="JetBrains Mono">${i}</text>`;
+    }
+    for (let i = gridMin; i <= gridMax; i++) {
+      const [x1, y1] = toSVG(gridMin, i);
+      const [x2, y2] = toSVG(gridMax, i);
+      const col = i === 0 ? '#555' : '#2a2e38';
+      const w = i === 0 ? 1.5 : 0.5;
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w}"/>`;
+      const [lx, ly] = toSVG(0, i);
+      if (i !== 0) html += `<text x="${lx - 10}" y="${ly + 4}" fill="#8a8578" font-size="10" text-anchor="end" font-family="JetBrains Mono">${i}</text>`;
+    }
+    return html;
+  }
+
+  function linePoints(m, b) {
+    // Compute y at gridMin and gridMax x
+    const pts = [];
+    for (let x = gridMin - 1; x <= gridMax + 1; x += 0.1) {
+      const y = m * x + b;
+      if (y >= gridMin - 1 && y <= gridMax + 1) {
+        pts.push(toSVG(x, y));
+      }
+    }
+    return pts;
+  }
+
+  function polyline(pts, color, width) {
+    if (pts.length < 2) return '';
+    const d = pts.map(p => p.join(',')).join(' ');
+    return `<polyline points="${d}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
+  }
+
+  function update() {
+    const m1 = parseFloat($('#m1').value);
+    const b1 = parseFloat($('#b1').value);
+    const m2 = parseFloat($('#m2').value);
+    const b2 = parseFloat($('#b2').value);
+
+    $('#m1val').textContent = m1;
+    $('#b1val').textContent = b1;
+    $('#m2val').textContent = m2;
+    $('#b2val').textContent = b2;
+
+    const sign1 = b1 >= 0 ? '+ ' + b1 : '- ' + Math.abs(b1);
+    const sign2 = b2 >= 0 ? '+ ' + b2 : '- ' + Math.abs(b2);
+    $('#eq1Display').textContent = `${m1}x ${sign1}`;
+    $('#eq2Display').textContent = `${m2}x ${sign2}`;
+
+    let html = drawGrid();
+    html += polyline(linePoints(m1, b1), '#6366f1', 2.5);
+    html += polyline(linePoints(m2, b2), '#ec4899', 2.5);
+
+    const resEl = $('#systemResult');
+
+    if (m1 === m2 && b1 === b2) {
+      resEl.textContent = 'Same line -- Infinite solutions';
+      resEl.style.borderColor = 'rgba(236,72,153,0.4)';
+      resEl.style.background = 'rgba(236,72,153,0.08)';
+    } else if (m1 === m2) {
+      resEl.textContent = 'Parallel lines -- No solution';
+      resEl.style.borderColor = 'rgba(245,158,11,0.4)';
+      resEl.style.background = 'rgba(245,158,11,0.08)';
+    } else {
+      const ix = (b2 - b1) / (m1 - m2);
+      const iy = m1 * ix + b1;
+      const [sx, sy] = toSVG(ix, iy);
+      if (ix >= gridMin && ix <= gridMax && iy >= gridMin && iy <= gridMax) {
+        html += `<circle cx="${sx}" cy="${sy}" r="6" fill="#22c55e" opacity="0.3"/>`;
+        html += `<circle cx="${sx}" cy="${sy}" r="3" fill="#22c55e"/>`;
+        html += `<text x="${sx + 10}" y="${sy - 8}" fill="#22c55e" font-size="11" font-family="JetBrains Mono" font-weight="600">(${round2(ix)}, ${round2(iy)})</text>`;
+      }
+      resEl.textContent = `Intersection: (${round2(ix)}, ${round2(iy)}) -- One unique solution`;
+      resEl.style.borderColor = 'rgba(34,197,94,0.4)';
+      resEl.style.background = 'rgba(34,197,94,0.08)';
+    }
+
+    svg.innerHTML = html;
+  }
+
+  ['m1','b1','m2','b2'].forEach(id => {
+    $('#' + id).addEventListener('input', update);
+  });
+  update();
+})();
+
+// ============================================================
+// SECTION 2: Substitution Method
+// ============================================================
+(function() {
+  const problems = [
+    {
+      title: 'y = 2x + 1 and 3x + y = 11',
+      steps: [
+        { text: '<span class="step-num">1.</span> Identify: Equation 1 already has <span class="hl-sub">y isolated</span>: y = 2x + 1', },
+        { text: '<span class="step-num">2.</span> Substitute <span class="hl-sub">y = 2x + 1</span> into Equation 2: 3x + <span class="hl-sub">(2x + 1)</span> = 11', },
+        { text: '<span class="step-num">3.</span> Combine like terms: 5x + 1 = 11', },
+        { text: '<span class="step-num">4.</span> Solve for x: 5x = 10 &rarr; <span class="hl-result">x = 2</span>', },
+        { text: '<span class="step-num">5.</span> Back-substitute: y = 2(<span class="hl-result">2</span>) + 1 = <span class="hl-result">5</span>', },
+        { text: '<span class="step-num">6.</span> Solution: <span class="hl-result">(2, 5)</span> -- Verify: 3(2) + 5 = 11 &#10003;', },
+      ]
+    },
+    {
+      title: 'x = 4 - y and 2x + 3y = 13',
+      steps: [
+        { text: '<span class="step-num">1.</span> Identify: Equation 1 already has <span class="hl-sub">x isolated</span>: x = 4 - y', },
+        { text: '<span class="step-num">2.</span> Substitute <span class="hl-sub">x = 4 - y</span> into Equation 2: 2<span class="hl-sub">(4 - y)</span> + 3y = 13', },
+        { text: '<span class="step-num">3.</span> Distribute: 8 - 2y + 3y = 13', },
+        { text: '<span class="step-num">4.</span> Combine: 8 + y = 13 &rarr; <span class="hl-result">y = 5</span>', },
+        { text: '<span class="step-num">5.</span> Back-substitute: x = 4 - <span class="hl-result">5</span> = <span class="hl-result">-1</span>', },
+        { text: '<span class="step-num">6.</span> Solution: <span class="hl-result">(-1, 5)</span> -- Verify: 2(-1) + 3(5) = -2 + 15 = 13 &#10003;', },
+      ]
+    },
+    {
+      title: 'y = x&sup2; + 1 and y = 3x - 1 (nonlinear!)',
+      steps: [
+        { text: '<span class="step-num">1.</span> Both equations equal <span class="hl-sub">y</span>, so set them equal: <span class="hl-sub">x&sup2; + 1 = 3x - 1</span>', },
+        { text: '<span class="step-num">2.</span> Rearrange to standard form: x&sup2; - 3x + 2 = 0', },
+        { text: '<span class="step-num">3.</span> Factor: (x - 1)(x - 2) = 0', },
+        { text: '<span class="step-num">4.</span> Two solutions for x: <span class="hl-result">x = 1</span> or <span class="hl-result">x = 2</span>', },
+        { text: '<span class="step-num">5.</span> Find y values: y = 3(1) - 1 = <span class="hl-result">2</span> and y = 3(2) - 1 = <span class="hl-result">5</span>', },
+        { text: '<span class="step-num">6.</span> <span class="orange">Two intersection points:</span> <span class="hl-result">(1, 2)</span> and <span class="hl-result">(2, 5)</span> -- A line can cross a parabola twice!', },
+      ]
+    },
+    {
+      title: '2x + y = 10 and x - y = 2',
+      steps: [
+        { text: '<span class="step-num">1.</span> Solve Equation 2 for <span class="hl-sub">x</span>: x = <span class="hl-sub">y + 2</span>', },
+        { text: '<span class="step-num">2.</span> Substitute into Equation 1: 2<span class="hl-sub">(y + 2)</span> + y = 10', },
+        { text: '<span class="step-num">3.</span> Distribute: 2y + 4 + y = 10', },
+        { text: '<span class="step-num">4.</span> Combine: 3y + 4 = 10 &rarr; 3y = 6 &rarr; <span class="hl-result">y = 2</span>', },
+        { text: '<span class="step-num">5.</span> Back-substitute: x = <span class="hl-result">2</span> + 2 = <span class="hl-result">4</span>', },
+        { text: '<span class="step-num">6.</span> Solution: <span class="hl-result">(4, 2)</span> -- Verify: 2(4) + 2 = 10 &#10003; and 4 - 2 = 2 &#10003;', },
+      ]
+    }
+  ];
+
+  let currentProb = 0;
+  let currentStep = 0;
+
+  function render() {
+    const p = problems[currentProb];
+    $('#subProblem').innerHTML = p.title;
+
+    const stepsHTML = p.steps.map((s, i) => {
+      let cls = 'step';
+      if (i < currentStep) cls += ' visible';
+      if (i === currentStep - 1) cls += ' current';
+      return `<div class="${cls}">${s.text}</div>`;
+    }).join('');
+    $('#subSteps').innerHTML = stepsHTML;
+
+    // Update tabs
+    $$('#subTabs .prob-tab').forEach((t, i) => {
+      t.classList.toggle('active', i === currentProb);
+    });
+  }
+
+  $('#subNext').addEventListener('click', () => {
+    const p = problems[currentProb];
+    if (currentStep < p.steps.length) {
+      currentStep++;
+      render();
+    }
+  });
+
+  $('#subReset').addEventListener('click', () => {
+    currentStep = 0;
+    render();
+  });
+
+  $$('#subTabs .prob-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      currentProb = parseInt(tab.dataset.prob);
+      currentStep = 0;
+      render();
+    });
+  });
+
+  render();
+})();
+
+// ============================================================
+// SECTION 3: Elimination Method
+// ============================================================
+(function() {
+  const problems = [
+    {
+      title: 'x + y = 5 and x - y = 1',
+      steps: [
+        { text: '<span class="step-num">1.</span> Write equations aligned:<br>&nbsp;&nbsp;x + <span class="hl-elim">y</span> = 5<br>&nbsp;&nbsp;x - <span class="hl-elim">y</span> = 1', },
+        { text: '<span class="step-num">2.</span> Notice: <span class="hl-elim">+y</span> and <span class="hl-elim">-y</span> are opposites. Add the equations to eliminate y.', },
+        { text: '<span class="step-num">3.</span> Add: (x + y) + (x - y) = 5 + 1 &rarr; 2x = 6', },
+        { text: '<span class="step-num">4.</span> Solve: <span class="hl-result">x = 3</span>', },
+        { text: '<span class="step-num">5.</span> Substitute back: 3 + y = 5 &rarr; <span class="hl-result">y = 2</span>', },
+        { text: '<span class="step-num">6.</span> Solution: <span class="hl-result">(3, 2)</span> -- Verify: 3 + 2 = 5 &#10003; and 3 - 2 = 1 &#10003;', },
+      ]
+    },
+    {
+      title: '2x + 3y = 12 and 4x - 3y = 6',
+      steps: [
+        { text: '<span class="step-num">1.</span> Write equations aligned:<br>&nbsp;&nbsp;2x + <span class="hl-elim">3y</span> = 12<br>&nbsp;&nbsp;4x - <span class="hl-elim">3y</span> = 6', },
+        { text: '<span class="step-num">2.</span> Notice: <span class="hl-elim">+3y</span> and <span class="hl-elim">-3y</span> cancel. Add the equations.', },
+        { text: '<span class="step-num">3.</span> Add: 6x = 18 &rarr; <span class="hl-result">x = 3</span>', },
+        { text: '<span class="step-num">4.</span> Substitute: 2(3) + 3y = 12 &rarr; 6 + 3y = 12 &rarr; <span class="hl-result">y = 2</span>', },
+        { text: '<span class="step-num">5.</span> Solution: <span class="hl-result">(3, 2)</span> -- Verify: 4(3) - 3(2) = 12 - 6 = 6 &#10003;', },
+      ]
+    },
+    {
+      title: '3x + 2y = 16 and 2x + 5y = 21',
+      steps: [
+        { text: '<span class="step-num">1.</span> No terms cancel directly. We need to <span class="hl-elim">multiply to match coefficients</span>.', },
+        { text: '<span class="step-num">2.</span> To eliminate x: Multiply Eq1 by <span class="hl-elim">2</span>, Eq2 by <span class="hl-elim">-3</span>:<br>&nbsp;&nbsp;<span class="hl-elim">2</span>(3x + 2y = 16) &rarr; 6x + 4y = 32<br>&nbsp;&nbsp;<span class="hl-elim">-3</span>(2x + 5y = 21) &rarr; -6x - 15y = -63', },
+        { text: '<span class="step-num">3.</span> Add: (6x - 6x) + (4y - 15y) = 32 - 63<br>&nbsp;&nbsp;-11y = -31', },
+        { text: '<span class="step-num">4.</span> Solve: <span class="hl-result">y = 31/11 &#8776; 2.818</span>', },
+        { text: '<span class="step-num">5.</span> Substitute: 3x + 2(31/11) = 16 &rarr; 3x = 16 - 62/11 = 114/11 &rarr; <span class="hl-result">x = 38/11 &#8776; 3.455</span>', },
+        { text: '<span class="step-num">6.</span> Solution: <span class="hl-result">(38/11, 31/11)</span> -- Exact fractions. Verify: 2(38/11) + 5(31/11) = 76/11 + 155/11 = 231/11 = 21 &#10003;', },
+      ]
+    },
+    {
+      title: '5x - 2y = 4 and 3x + 4y = 30',
+      steps: [
+        { text: '<span class="step-num">1.</span> To eliminate y: Multiply Eq1 by <span class="hl-elim">2</span> so the y-coefficients become -4 and +4.', },
+        { text: '<span class="step-num">2.</span> <span class="hl-elim">2</span>(5x - 2y = 4) &rarr; 10x - 4y = 8<br>&nbsp;&nbsp;3x + 4y = 30 (unchanged)', },
+        { text: '<span class="step-num">3.</span> Add: 10x + 3x + (-4y + 4y) = 8 + 30 &rarr; 13x = 38', },
+        { text: '<span class="step-num">4.</span> Solve: <span class="hl-result">x = 38/13 &#8776; 2.923</span>', },
+        { text: '<span class="step-num">5.</span> Substitute: 3(38/13) + 4y = 30 &rarr; 114/13 + 4y = 30 &rarr; 4y = 276/13 &rarr; <span class="hl-result">y = 69/13 &#8776; 5.308</span>', },
+        { text: '<span class="step-num">6.</span> Solution: <span class="hl-result">(38/13, 69/13)</span> -- Verify: 5(38/13) - 2(69/13) = 190/13 - 138/13 = 52/13 = 4 &#10003;', },
+      ]
+    }
+  ];
+
+  let currentProb = 0;
+  let currentStep = 0;
+
+  function render() {
+    const p = problems[currentProb];
+    $('#elimProblem').innerHTML = p.title;
+
+    const stepsHTML = p.steps.map((s, i) => {
+      let cls = 'step';
+      if (i < currentStep) cls += ' visible';
+      if (i === currentStep - 1) cls += ' current';
+      return `<div class="${cls}">${s.text}</div>`;
+    }).join('');
+    $('#elimSteps').innerHTML = stepsHTML;
+
+    $$('#elimTabs .prob-tab').forEach((t, i) => {
+      t.classList.toggle('active', i === currentProb);
+    });
+  }
+
+  $('#elimNext').addEventListener('click', () => {
+    const p = problems[currentProb];
+    if (currentStep < p.steps.length) {
+      currentStep++;
+      render();
+    }
+  });
+
+  $('#elimReset').addEventListener('click', () => {
+    currentStep = 0;
+    render();
+  });
+
+  $$('#elimTabs .prob-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      currentProb = parseInt(tab.dataset.prob);
+      currentStep = 0;
+      render();
+    });
+  });
+
+  render();
+})();
+
+// ============================================================
+// SECTION 4: Graphical Interpretation
+// ============================================================
+(function() {
+  const svg = $('#svgGraph');
+  const W = 400, H = 400;
+  const margin = 40;
+  const gridMin = -6, gridMax = 6;
+
+  function toSVG(x, y) {
+    const sx = margin + (x - gridMin) / (gridMax - gridMin) * (W - 2 * margin);
+    const sy = H - margin - (y - gridMin) / (gridMax - gridMin) * (H - 2 * margin);
+    return [sx, sy];
+  }
+
+  function drawGrid() {
+    let html = '';
+    for (let i = gridMin; i <= gridMax; i++) {
+      const [x1, y1] = toSVG(i, gridMin);
+      const [x2, y2] = toSVG(i, gridMax);
+      const col = i === 0 ? '#555' : '#2a2e38';
+      const w = i === 0 ? 1.5 : 0.5;
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w}"/>`;
+      const [lx, ly] = toSVG(i, 0);
+      if (i !== 0 && i % 2 === 0) html += `<text x="${lx}" y="${ly + 14}" fill="#8a8578" font-size="9" text-anchor="middle" font-family="JetBrains Mono">${i}</text>`;
+    }
+    for (let i = gridMin; i <= gridMax; i++) {
+      const [x1, y1] = toSVG(gridMin, i);
+      const [x2, y2] = toSVG(gridMax, i);
+      const col = i === 0 ? '#555' : '#2a2e38';
+      const w = i === 0 ? 1.5 : 0.5;
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w}"/>`;
+      const [lx, ly] = toSVG(0, i);
+      if (i !== 0 && i % 2 === 0) html += `<text x="${lx - 8}" y="${ly + 4}" fill="#8a8578" font-size="9" text-anchor="end" font-family="JetBrains Mono">${i}</text>`;
+    }
+    return html;
+  }
+
+  // Draw line from ax + by = c
+  function lineFromStandard(a, b, c) {
+    const pts = [];
+    if (Math.abs(b) > 0.01) {
+      // y = (c - ax) / b
+      for (let x = gridMin - 1; x <= gridMax + 1; x += 0.1) {
+        const y = (c - a * x) / b;
+        if (y >= gridMin - 1 && y <= gridMax + 1) {
+          pts.push(toSVG(x, y));
+        }
+      }
+    } else if (Math.abs(a) > 0.01) {
+      // Vertical: x = c/a
+      const x = c / a;
+      pts.push(toSVG(x, gridMin));
+      pts.push(toSVG(x, gridMax));
+    }
+    return pts;
+  }
+
+  function polyline(pts, color, width) {
+    if (pts.length < 2) return '';
+    const d = pts.map(p => p.join(',')).join(' ');
+    return `<polyline points="${d}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
+  }
+
+  function solveSystem(a1, b1, c1, a2, b2, c2) {
+    const det = a1 * b2 - a2 * b1;
+    if (Math.abs(det) < 0.001) return null;
+    const x = (c1 * b2 - c2 * b1) / det;
+    const y = (a1 * c2 - a2 * c1) / det;
+    return [x, y];
+  }
+
+  function update() {
+    const a1 = parseFloat($('#ga1').value);
+    const b1 = parseFloat($('#gb1').value);
+    const c1 = parseFloat($('#gc1').value);
+    const a2 = parseFloat($('#ga2').value);
+    const b2 = parseFloat($('#gb2').value);
+    const c2 = parseFloat($('#gc2').value);
+
+    $('#ga1v').textContent = a1;
+    $('#gb1v').textContent = b1;
+    $('#gc1v').textContent = c1;
+    $('#ga2v').textContent = a2;
+    $('#gb2v').textContent = b2;
+    $('#gc2v').textContent = c2;
+
+    $('#gEq1').textContent = a1;
+    $('#gEq1b').textContent = b1;
+    $('#gEq1c').textContent = c1;
+    $('#gEq2').textContent = a2;
+    $('#gEq2b').textContent = b2;
+    $('#gEq2c').textContent = c2;
+
+    let html = drawGrid();
+    html += polyline(lineFromStandard(a1, b1, c1), '#6366f1', 2.5);
+    html += polyline(lineFromStandard(a2, b2, c2), '#ec4899', 2.5);
+
+    const sol = solveSystem(a1, b1, c1, a2, b2, c2);
+    const resEl = $('#graphResult');
+
+    if (sol) {
+      const [ix, iy] = sol;
+      const [sx, sy] = toSVG(ix, iy);
+      if (ix >= gridMin && ix <= gridMax && iy >= gridMin && iy <= gridMax) {
+        html += `<circle cx="${sx}" cy="${sy}" r="8" fill="#22c55e" opacity="0.2"/>`;
+        html += `<circle cx="${sx}" cy="${sy}" r="4" fill="#22c55e"/>`;
+        html += `<text x="${sx + 10}" y="${sy - 10}" fill="#22c55e" font-size="11" font-family="JetBrains Mono" font-weight="600">(${round2(ix)}, ${round2(iy)})</text>`;
+      }
+      resEl.textContent = `Solution: (${round2(ix)}, ${round2(iy)})`;
+      resEl.style.borderColor = 'rgba(34,197,94,0.4)';
+      resEl.style.background = 'rgba(34,197,94,0.08)';
+    } else {
+      // Check parallel vs same line
+      if (Math.abs(a1) < 0.01 && Math.abs(b1) < 0.01) {
+        resEl.textContent = 'Equation 1 is degenerate (0x + 0y = c)';
+      } else {
+        resEl.textContent = 'Parallel or coincident lines -- no unique solution';
+      }
+      resEl.style.borderColor = 'rgba(245,158,11,0.4)';
+      resEl.style.background = 'rgba(245,158,11,0.08)';
+    }
+
+    svg.innerHTML = html;
+  }
+
+  ['ga1','gb1','gc1','ga2','gb2','gc2'].forEach(id => {
+    $('#' + id).addEventListener('input', update);
+  });
+
+  $('#snapBtn').addEventListener('click', () => {
+    const a1 = parseFloat($('#ga1').value);
+    const b1 = parseFloat($('#gb1').value);
+    const c1 = parseFloat($('#gc1').value);
+    const a2 = parseFloat($('#ga2').value);
+    const b2 = parseFloat($('#gb2').value);
+    const c2 = parseFloat($('#gc2').value);
+    const sol = solveSystem(a1, b1, c1, a2, b2, c2);
+    if (sol) {
+      const [ix, iy] = sol;
+      const resEl = $('#graphResult');
+      resEl.textContent = `Exact solution: x = ${round2(ix)}, y = ${round2(iy)}`;
+      resEl.classList.add('glow-correct');
+      setTimeout(() => resEl.classList.remove('glow-correct'), 600);
+    }
+  });
+
+  $('#graphResetBtn').addEventListener('click', () => {
+    $('#ga1').value = 1; $('#gb1').value = 1; $('#gc1').value = 4;
+    $('#ga2').value = 1; $('#gb2').value = -1; $('#gc2').value = 0;
+    update();
+  });
+
+  update();
+})();
+
+// ============================================================
+// SECTION 6: Quick Quiz
+// ============================================================
+(function() {
+  const quizData = [
+    {
+      prompt: 'Solve: x + y = 7 and x - y = 3',
+      xAns: 5, yAns: 2, type: 'unique',
+      explanation: 'Add: 2x = 10, x = 5. Then y = 7 - 5 = 2.'
+    },
+    {
+      prompt: 'Solve: y = 3x - 2 and y = x + 4',
+      xAns: 3, yAns: 7, type: 'unique',
+      explanation: 'Set equal: 3x - 2 = x + 4. 2x = 6, x = 3. y = 3 + 4 = 7.'
+    },
+    {
+      prompt: 'Solve: 2x + y = 8 and x + 3y = 14',
+      xAns: 2, yAns: 4, type: 'unique',
+      explanation: 'From Eq1: y = 8 - 2x. Sub into Eq2: x + 3(8-2x) = 14. x + 24 - 6x = 14. -5x = -10. x = 2, y = 4.'
+    },
+    {
+      prompt: 'Solve: 3x - y = 7 and 6x - 2y = 14',
+      xAns: null, yAns: null, type: 'infinite',
+      explanation: 'Equation 2 is exactly 2 times Equation 1. Same line. Infinite solutions.'
+    },
+    {
+      prompt: 'Solve: 4x + 2y = 10 and 4x + 2y = 16',
+      xAns: null, yAns: null, type: 'none',
+      explanation: 'Same left side but different right side. 10 does not equal 16. Parallel lines. No solution.'
+    },
+    {
+      prompt: 'Solve: x + 2y = 9 and 3x - y = 6',
+      xAns: 3, yAns: 3, type: 'unique',
+      explanation: 'From Eq1: x = 9 - 2y. Sub: 3(9-2y) - y = 6. 27 - 6y - y = 6. -7y = -21. y = 3, x = 3.'
+    },
+    {
+      prompt: 'Solve: 5x + 3y = 19 and 2x - y = 0',
+      xAns: '19/11', yAns: '38/11', type: 'unique-frac',
+      explanation: 'From Eq2: y = 2x. Sub: 5x + 3(2x) = 19. 11x = 19. x = 19/11, y = 38/11.'
+    },
+    {
+      prompt: 'Solve: 2x + 3y = 1 and 4x + 6y = 2',
+      xAns: null, yAns: null, type: 'infinite',
+      explanation: 'Equation 2 is exactly 2 times Equation 1. Same line. Infinite solutions.'
+    },
+  ];
+
+  let score = 0;
+  let answered = new Array(quizData.length).fill(false);
+
+  function buildQuiz() {
+    const container = $('#quizContainer');
+    container.innerHTML = quizData.map((q, i) => {
+      let inputHTML = '';
+      if (q.type === 'unique') {
+        inputHTML = `
+          <span style="font-size:0.82rem;">x =</span>
+          <input type="text" class="quiz-input" data-q="${i}" data-var="x" placeholder="?">
+          <span style="font-size:0.82rem;">y =</span>
+          <input type="text" class="quiz-input" data-q="${i}" data-var="y" placeholder="?">
+          <button class="btn quiz-check" data-q="${i}">Check</button>
+        `;
+      } else if (q.type === 'unique-frac') {
+        inputHTML = `
+          <span style="font-size:0.82rem;">x =</span>
+          <input type="text" class="quiz-input" data-q="${i}" data-var="x" placeholder="?" style="width:90px;">
+          <span style="font-size:0.82rem;">y =</span>
+          <input type="text" class="quiz-input" data-q="${i}" data-var="y" placeholder="?" style="width:90px;">
+          <button class="btn quiz-check" data-q="${i}">Check</button>
+          <div style="font-size:0.7rem; color:var(--text-dim); width:100%; margin-top:0.25rem;">Enter as fraction (e.g. 19/11) or decimal</div>
+        `;
+      } else {
+        inputHTML = `
+          <button class="btn quiz-special" data-q="${i}" data-type="none">No Solution</button>
+          <button class="btn quiz-special" data-q="${i}" data-type="infinite">Infinite Solutions</button>
+        `;
+      }
+      return `
+        <div class="quiz-q" id="q${i}">
+          <div class="q-num">Question ${i + 1} of ${quizData.length}</div>
+          <div class="q-prompt">${q.prompt}</div>
+          <div class="q-inputs">${inputHTML}</div>
+          <div class="q-feedback" id="fb${i}"></div>
+          <div class="explanation" id="ex${i}">${q.explanation}</div>
+        </div>
+      `;
+    }).join('');
+
+    // Bind events
+    $$('.quiz-check').forEach(btn => {
+      btn.addEventListener('click', () => checkUnique(parseInt(btn.dataset.q)));
+    });
+
+    $$('.quiz-special').forEach(btn => {
+      btn.addEventListener('click', () => checkSpecial(parseInt(btn.dataset.q), btn.dataset.type));
+    });
+
+    // Enter key
+    $$('.quiz-input').forEach(inp => {
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          checkUnique(parseInt(inp.dataset.q));
+        }
+      });
+    });
+  }
+
+  function parseFrac(s) {
+    s = s.trim();
+    if (s.includes('/')) {
+      const parts = s.split('/');
+      if (parts.length === 2) {
+        const num = parseFloat(parts[0]);
+        const den = parseFloat(parts[1]);
+        if (!isNaN(num) && !isNaN(den) && den !== 0) return num / den;
+      }
+      return NaN;
+    }
+    return parseFloat(s);
+  }
+
+  function checkUnique(qi) {
+    if (answered[qi]) return;
+    const q = quizData[qi];
+    const xInput = document.querySelector(`.quiz-input[data-q="${qi}"][data-var="x"]`);
+    const yInput = document.querySelector(`.quiz-input[data-q="${qi}"][data-var="y"]`);
+    const fb = $(`#fb${qi}`);
+    const el = $(`#q${qi}`);
+    const ex = $(`#ex${qi}`);
+
+    const xVal = parseFrac(xInput.value);
+    const yVal = parseFrac(yInput.value);
+
+    if (isNaN(xVal) || isNaN(yVal)) {
+      fb.innerHTML = '<span class="orange">Enter values for both x and y.</span>';
+      return;
+    }
+
+    const expectedX = typeof q.xAns === 'string' ? parseFrac(q.xAns) : q.xAns;
+    const expectedY = typeof q.yAns === 'string' ? parseFrac(q.yAns) : q.yAns;
+
+    if (Math.abs(xVal - expectedX) < 0.05 && Math.abs(yVal - expectedY) < 0.05) {
+      answered[qi] = true;
+      score++;
+      fb.innerHTML = '<span class="green">Correct!</span>';
+      el.classList.add('q-correct');
+      updateScore();
+    } else {
+      fb.innerHTML = '<span class="pink">Not quite. Try again.</span>';
+      el.classList.add('q-incorrect');
+      setTimeout(() => el.classList.remove('q-incorrect'), 400);
+      ex.style.display = 'block';
+    }
+  }
+
+  function checkSpecial(qi, type) {
+    if (answered[qi]) return;
+    const q = quizData[qi];
+    const fb = $(`#fb${qi}`);
+    const el = $(`#q${qi}`);
+    const ex = $(`#ex${qi}`);
+
+    if (type === q.type) {
+      answered[qi] = true;
+      score++;
+      fb.innerHTML = '<span class="green">Correct!</span>';
+      el.classList.add('q-correct');
+      // Highlight the correct button
+      document.querySelector(`.quiz-special[data-q="${qi}"][data-type="${type}"]`).classList.add('correct');
+      updateScore();
+    } else {
+      fb.innerHTML = '<span class="pink">Not quite. Check the equations again.</span>';
+      el.classList.add('q-incorrect');
+      setTimeout(() => el.classList.remove('q-incorrect'), 400);
+      ex.style.display = 'block';
+    }
+  }
+
+  function updateScore() {
+    $('#quizScore').textContent = `Score: ${score} / ${quizData.length}`;
+    if (score === quizData.length) {
+      $('#quizScore').innerHTML = `<span class="green">Perfect Score: ${score} / ${quizData.length}!</span>`;
+      $('#quizScore').classList.add('glow-correct');
+    }
+  }
+
+  $('#quizReset').addEventListener('click', () => {
+    score = 0;
+    answered = new Array(quizData.length).fill(false);
+    updateScore();
+    buildQuiz();
+  });
+
+  buildQuiz();
+})();
+</script>
+</body>
+</html>

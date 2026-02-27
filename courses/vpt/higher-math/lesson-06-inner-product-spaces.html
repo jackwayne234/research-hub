@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 6: Inner Product Spaces</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.step-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin:10px 0;font-size:.78rem;line-height:1.8}
+.step-box .step-num{color:var(--indigo);font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.step-box .step-formula{color:var(--green);font-weight:600;font-size:.88rem;margin:6px 0}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>06</span> Inner Product Spaces</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: THE DOT PRODUCT REVISITED -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> The Dot Product Revisited</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      You already know the dot product u &middot; v = u1v1 + u2v2 + ... + unvn from R^n. An <strong>inner product</strong> is its generalization to any vector space. It is a function that takes two vectors and returns a scalar, written as &langle;u, v&rangle;. This lets us measure lengths, angles, and distances in spaces far more abstract than R^n -- including function spaces used in quantum mechanics and signal processing.
+    </p>
+
+    <div class="formula-box large">&langle;u, v&rangle; : V &times; V &rarr; R</div>
+
+    <p class="concept-text">
+      An inner product must satisfy three axioms for all vectors u, v, w and scalars c:
+    </p>
+
+    <div class="formula-box green">1. Linearity: &langle;au + bv, w&rangle; = a&langle;u, w&rangle; + b&langle;v, w&rangle;</div>
+    <div class="formula-box pink">2. Symmetry: &langle;u, v&rangle; = &langle;v, u&rangle;</div>
+    <div class="formula-box amber">3. Positive-definiteness: &langle;v, v&rangle; &ge; 0, with equality iff v = 0</div>
+
+    <div class="key-point">These three properties unlock everything: the norm ||v|| = sqrt(&langle;v,v&rangle;), distance d(u,v) = ||u - v||, and angle cos(theta) = &langle;u,v&rangle; / (||u|| ||v||). The familiar dot product in R^n satisfies all three.</div>
+
+    <p class="concept-text">
+      <strong>Geometric interpretation:</strong> The inner product measures how much two vectors "agree" directionally. When &langle;u,v&rangle; &gt; 0, they point roughly the same way. When &langle;u,v&rangle; &lt; 0, they point roughly opposite. When &langle;u,v&rangle; = 0, they are perpendicular (orthogonal). The projection of u onto v is:
+    </p>
+
+    <div class="formula-box large">proj_v(u) = (&langle;u, v&rangle; / &langle;v, v&rangle;) v</div>
+
+    <div class="navy-context">
+      <strong>Quantum mechanics:</strong> In quantum mechanics, the state space is a complex inner product space (Hilbert space). The inner product &langle;&psi;|&phi;&rangle; (Dirac bra-ket notation) gives the probability amplitude for measuring state |&phi;&rangle; when the system is in state |&psi;&rangle;. The probability is |&langle;&psi;|&phi;&rangle;|^2. Orthogonal states (&langle;&psi;|&phi;&rangle; = 0) represent mutually exclusive measurement outcomes.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Inner Product Explorer</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust vectors u and v to see the inner product, angle, and projection in real time.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px">
+        <div>
+          <div class="slider-row"><label>u_x</label><input type="range" id="s1ux" min="-3" max="3" step="0.1" value="2" oninput="drawS1()"><span class="slider-val" id="s1uxV">2.0</span></div>
+          <div class="slider-row"><label>u_y</label><input type="range" id="s1uy" min="-3" max="3" step="0.1" value="1" oninput="drawS1()"><span class="slider-val" id="s1uyV">1.0</span></div>
+        </div>
+        <div>
+          <div class="slider-row"><label>v_x</label><input type="range" id="s1vx" min="-3" max="3" step="0.1" value="1" oninput="drawS1()"><span class="slider-val" id="s1vxV">1.0</span></div>
+          <div class="slider-row"><label>v_y</label><input type="range" id="s1vy" min="-3" max="3" step="0.1" value="2" oninput="drawS1()"><span class="slider-val" id="s1vyV">2.0</span></div>
+        </div>
+      </div>
+      <svg id="s1Svg" width="100%" viewBox="-4 -4 8 8" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-height:380px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">&langle;u,v&rangle;</span><br><span class="value indigo" id="s1dot">4.00</span></div>
+        <div class="readout-item"><span class="label">||u||</span><br><span class="value green" id="s1normu">2.24</span></div>
+        <div class="readout-item"><span class="label">||v||</span><br><span class="value pink" id="s1normv">2.24</span></div>
+        <div class="readout-item"><span class="label">Angle</span><br><span class="value amber" id="s1angle">36.87</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> Compute &langle;u, v&rangle; for u = (3, -1, 2) and v = (1, 4, -2). What is the value?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1" step="1" placeholder="= ?" onkeydown="if(event.key==='Enter')checkNum('s1p1',-5,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s1p1',-5,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> If &langle;v, v&rangle; = 0, what can you conclude about v?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','correct')">v must be the zero vector (positive-definiteness)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">v is orthogonal to itself</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">v has unit length</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> What is ||u|| if u = (1, 2, 2)? (Give a decimal to 1 place.)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p3" step="0.1" placeholder="= ?" onkeydown="if(event.key==='Enter')checkNum('s1p3',3,0.1)">
+          <button class="btn btn-sm" onclick="checkNum('s1p3',3,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s1p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: ORTHOGONALITY -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Orthogonality</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Two vectors u and v are <strong>orthogonal</strong> if &langle;u, v&rangle; = 0. This is the generalization of "perpendicular" to any inner product space. An <strong>orthogonal set</strong> is a collection of vectors that are mutually orthogonal (every pair has inner product zero). An <strong>orthonormal set</strong> adds the requirement that each vector has unit length: ||v_i|| = 1.
+    </p>
+
+    <div class="formula-box large">u &perp; v &hArr; &langle;u, v&rangle; = 0</div>
+    <div class="formula-box green">Orthonormal: &langle;v_i, v_j&rangle; = 0 if i &ne; j, &nbsp; &langle;v_i, v_i&rangle; = 1</div>
+
+    <div class="key-point">The standard basis {e1, e2, ..., en} in R^n is the classic orthonormal set. Any orthogonal set of nonzero vectors is linearly independent -- orthogonality is a strong structural property.</div>
+
+    <p class="concept-text">
+      <strong>Orthogonal decomposition:</strong> Given a subspace W with an orthonormal basis {w1, w2, ..., wk}, any vector v can be decomposed into a component in W and a component perpendicular to W:
+    </p>
+
+    <div class="formula-box pink">v = proj_W(v) + v^&perp; &nbsp; where v^&perp; &perp; W</div>
+
+    <p class="concept-text">
+      If {w1, ..., wk} is orthonormal, the projection formula is especially clean: proj_W(v) = &langle;v, w1&rangle;w1 + &langle;v, w2&rangle;w2 + ... + &langle;v, wk&rangle;wk. Each coefficient &langle;v, w_i&rangle; tells you "how much of v lives along w_i."
+    </p>
+
+    <div class="formula-box large">proj_W(v) = &sum; &langle;v, w_i&rangle; w_i</div>
+
+    <div class="navy-context">
+      <strong>Fourier series:</strong> Expressing a function f(x) as a sum of sines and cosines is exactly this -- projecting f onto the orthogonal basis {1, cos(x), sin(x), cos(2x), sin(2x), ...} in the inner product space of periodic functions. Each Fourier coefficient a_n = &langle;f, cos(nx)&rangle; is an orthogonal projection. This is the mathematical foundation of spectrum analysis.
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Orthogonal Decomposition in 2D</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Drag the sliders to move vector v. The subspace W is the span of w (green line). See how v decomposes into proj_W(v) + v_perp.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px">
+        <div>
+          <div class="slider-row"><label>v_x</label><input type="range" id="s2vx" min="-3" max="3" step="0.1" value="2.5" oninput="drawS2()"><span class="slider-val" id="s2vxV">2.5</span></div>
+          <div class="slider-row"><label>v_y</label><input type="range" id="s2vy" min="-3" max="3" step="0.1" value="2" oninput="drawS2()"><span class="slider-val" id="s2vyV">2.0</span></div>
+        </div>
+        <div>
+          <div class="slider-row"><label>w angle</label><input type="range" id="s2wa" min="0" max="360" step="1" value="25" oninput="drawS2()"><span class="slider-val" id="s2waV">25</span></div>
+        </div>
+      </div>
+      <svg id="s2Svg" width="100%" viewBox="-4 -4 8 8" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-height:380px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">proj_W(v)</span><br><span class="value green" id="s2proj">(0, 0)</span></div>
+        <div class="readout-item"><span class="label">v_perp</span><br><span class="value pink" id="s2perp">(0, 0)</span></div>
+        <div class="readout-item"><span class="label">&langle;proj, v_perp&rangle;</span><br><span class="value amber" id="s2check">0.00</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s2p1">
+        <p><strong>1.</strong> Are u = (1, 2, -1) and v = (3, -1, 1) orthogonal?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','correct')">Yes -- &langle;u,v&rangle; = 3 - 2 - 1 = 0</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','wrong')">No -- they point in different directions but are not perpendicular</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','wrong')">Only if we use a weighted inner product</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> Project v = (4, 2) onto w = (1, 0). What is the x-component of the projection?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" step="1" placeholder="= ?" onkeydown="if(event.key==='Enter')checkNum('s2p2',4,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s2p2',4,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> If {v1, v2, v3} is an orthogonal set of nonzero vectors, how many of them are linearly independent?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p3" step="1" placeholder="= ?" onkeydown="if(event.key==='Enter')checkNum('s2p3',3,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s2p3',3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: GRAM-SCHMIDT PROCESS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Gram-Schmidt Process</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>Gram-Schmidt process</strong> takes any basis {x1, x2, ..., xk} and produces an orthogonal (or orthonormal) basis for the same subspace. The idea: keep the first vector, then subtract away the component of each subsequent vector that lies along the already-processed directions.
+    </p>
+
+    <div class="step-box">
+      <div class="step-num">Step 1</div>
+      <div class="step-formula">v1 = x1</div>
+      <p style="font-size:.75rem;color:var(--text-dim)">Keep the first vector as-is.</p>
+    </div>
+    <div class="step-box">
+      <div class="step-num">Step 2</div>
+      <div class="step-formula">v2 = x2 - (&langle;x2, v1&rangle; / &langle;v1, v1&rangle;) v1</div>
+      <p style="font-size:.75rem;color:var(--text-dim)">Subtract the projection of x2 onto v1. Now v2 &perp; v1.</p>
+    </div>
+    <div class="step-box">
+      <div class="step-num">Step 3</div>
+      <div class="step-formula">v3 = x3 - (&langle;x3, v1&rangle; / &langle;v1, v1&rangle;) v1 - (&langle;x3, v2&rangle; / &langle;v2, v2&rangle;) v2</div>
+      <p style="font-size:.75rem;color:var(--text-dim)">Subtract projections onto v1 and v2. Now v3 &perp; v1 and v3 &perp; v2.</p>
+    </div>
+
+    <div class="formula-box large">To normalize: u_i = v_i / ||v_i||</div>
+
+    <div class="key-point">Pattern: at each step k, subtract from x_k its projection onto each previously computed v_i. This "peels off" the components that already lie in the span of {v1, ..., v_{k-1}}, leaving only the genuinely new direction.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Gram-Schmidt in 3D (Step-by-Step)</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Watch three vectors get orthogonalized one by one. Click through steps to see projection subtraction in action.</p>
+      <div class="scenario-tabs" id="gsStepTabs">
+        <button class="scenario-tab active" onclick="gsStep(0,this)">Original</button>
+        <button class="scenario-tab" onclick="gsStep(1,this)">Step 1: v1</button>
+        <button class="scenario-tab" onclick="gsStep(2,this)">Step 2: v2</button>
+        <button class="scenario-tab" onclick="gsStep(3,this)">Step 3: v3</button>
+        <button class="scenario-tab" onclick="gsStep(4,this)">Normalized</button>
+      </div>
+      <svg id="gsSvg" width="100%" viewBox="-1 -1 12 9" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-height:380px" preserveAspectRatio="xMidYMid meet"></svg>
+      <div id="gsInfo" style="margin-top:12px;font-size:.76rem;color:var(--text-dim);line-height:1.8;min-height:50px"></div>
+      <div class="readout" id="gsReadout">
+        <div class="readout-item"><span class="label">v1</span><br><span class="value green" id="gsV1">(1, 1, 0)</span></div>
+        <div class="readout-item"><span class="label">v2</span><br><span class="value pink" id="gsV2">--</span></div>
+        <div class="readout-item"><span class="label">v3</span><br><span class="value amber" id="gsV3">--</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Signal processing / Navy sonar:</strong> Gram-Schmidt is the computational backbone of orthogonalization in signal processing. In sonar systems, incoming acoustic signals are decomposed into orthogonal components to separate target echoes from noise. The process ensures each "filter direction" captures independent information -- no redundancy, maximum detection power.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> Apply Gram-Schmidt to x1 = (1, 1, 0), x2 = (1, 0, 1). First, v1 = x1 = (1,1,0). Now compute &langle;x2, v1&rangle;. What is the value?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="1" placeholder="= ?" onkeydown="if(event.key==='Enter')checkNum('s3p1',1,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s3p1',1,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> Continuing: &langle;v1, v1&rangle; = 2. So proj_{v1}(x2) = (1/2)(1,1,0) = (0.5, 0.5, 0). Then v2 = x2 - proj = (0.5, -0.5, 1). Verify: what is &langle;v1, v2&rangle;?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2" step="0.1" placeholder="= ?" onkeydown="if(event.key==='Enter')checkNum('s3p2',0,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s3p2',0,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+      <div class="problem" id="s3p3">
+        <p><strong>3.</strong> After Gram-Schmidt, the resulting vectors span the same subspace as the original vectors. True or false?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p3','correct')">True -- Gram-Schmidt preserves the span</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p3','wrong')">False -- the span changes because we subtract projections</button>
+        </div>
+        <div class="feedback" id="s3p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: ORTHOGONAL PROJECTIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Orthogonal Projections</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>orthogonal projection</strong> of a vector v onto a subspace W is the closest point in W to v. The error vector (v - proj_W(v)) is perpendicular to every vector in W. When W has an orthonormal basis {u1, ..., uk}, the projection formula is clean:
+    </p>
+
+    <div class="formula-box large">proj_W(v) = &langle;v, u1&rangle;u1 + &langle;v, u2&rangle;u2 + ... + &langle;v, uk&rangle;uk</div>
+
+    <p class="concept-text">
+      When W = Col(A) (column space of a matrix) and we want to project b onto Col(A), the general formula involves the <strong>normal equation</strong>:
+    </p>
+
+    <div class="formula-box green">A^T A x&#770; = A^T b &nbsp; &rarr; &nbsp; proj = A x&#770;</div>
+
+    <div class="key-point">The projection matrix is P = A(A^T A)^{-1} A^T. It satisfies P^2 = P (idempotent) and P^T = P (symmetric). Applying it twice gives the same result -- you are already in the subspace.</div>
+
+    <p class="concept-text">
+      <strong>Least squares:</strong> When Ax = b has no exact solution (overdetermined system), the least squares solution x&#770; minimizes ||Ax - b||. This x&#770; satisfies the normal equation above. Geometrically, Ax&#770; is the orthogonal projection of b onto Col(A), and the residual b - Ax&#770; is perpendicular to the column space.
+    </p>
+
+    <div class="formula-box pink">Least squares: x&#770; = (A^T A)^{-1} A^T b &nbsp; (best approximate solution)</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Project a Point onto a Line</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Move the point (pink) and adjust the line direction (green). The projection and perpendicular error vector are shown.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px">
+        <div>
+          <div class="slider-row"><label>point_x</label><input type="range" id="s4px" min="-3" max="3" step="0.1" value="1" oninput="drawS4()"><span class="slider-val" id="s4pxV">1.0</span></div>
+          <div class="slider-row"><label>point_y</label><input type="range" id="s4py" min="-3" max="3" step="0.1" value="2.5" oninput="drawS4()"><span class="slider-val" id="s4pyV">2.5</span></div>
+        </div>
+        <div>
+          <div class="slider-row"><label>line angle</label><input type="range" id="s4la" min="0" max="180" step="1" value="20" oninput="drawS4()"><span class="slider-val" id="s4laV">20</span></div>
+        </div>
+      </div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setS4Mode('line',this)">Project onto line</button>
+        <button class="scenario-tab" onclick="setS4Mode('plane',this)">Project onto plane (3D view)</button>
+      </div>
+      <svg id="s4Svg" width="100%" viewBox="-4 -4 8 8" style="display:block;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-height:380px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Projection</span><br><span class="value green" id="s4proj">(0, 0)</span></div>
+        <div class="readout-item"><span class="label">Error ||v - proj||</span><br><span class="value pink" id="s4err">0.00</span></div>
+        <div class="readout-item"><span class="label">&langle;error, line&rangle;</span><br><span class="value amber" id="s4perp">0.00</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy sonar / noise filtering:</strong> In active sonar, the received signal is a mix of the echo you want plus ocean noise. Orthogonal projection lets you project the received signal onto the "signal subspace" and discard the component in the "noise subspace." The perpendicularity of the error vector guarantees the noise component you remove is uncorrelated with the signal you keep -- this is the mathematical basis of matched filtering.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> Project b = (1, 3, 5) onto the line through a = (1, 1, 1). Compute &langle;b, a&rangle; / &langle;a, a&rangle;. What is this scalar?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1" step="0.1" placeholder="= ?" onkeydown="if(event.key==='Enter')checkNum('s4p1',3,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s4p1',3,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> So proj_a(b) = 3(1,1,1) = (3,3,3). The error is b - proj = (-2, 0, 2). What is ||error||^2?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2" step="1" placeholder="= ?" onkeydown="if(event.key==='Enter')checkNum('s4p2',8,0.01)">
+          <button class="btn btn-sm" onclick="checkNum('s4p2',8,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s4p2-fb"></div>
+      </div>
+      <div class="problem" id="s4p3">
+        <p><strong>3.</strong> A projection matrix P satisfies P^2 = P. What does this mean geometrically?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','correct')">Projecting twice gives the same result as projecting once -- you are already in the subspace</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">P doubles the projection each time you apply it</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">P is the identity matrix</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: QR FACTORIZATION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> QR Factorization</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>QR factorization</strong> writes a matrix A with linearly independent columns as A = QR, where Q has orthonormal columns and R is upper triangular with positive diagonal entries. The connection to Gram-Schmidt is direct: apply Gram-Schmidt to the columns of A to get Q, and then R captures the coefficients used.
+    </p>
+
+    <div class="formula-box large">A = QR</div>
+
+    <p class="concept-text">
+      <strong>How it works:</strong> If A = [a1 | a2 | ... | an], apply Gram-Schmidt to get orthonormal vectors {q1, q2, ..., qn}. Then Q = [q1 | q2 | ... | qn]. The matrix R is upper triangular with entries r_{ij} = &langle;a_j, q_i&rangle;. Since each a_j is built from q1 through q_j, entries below the diagonal are zero.
+    </p>
+
+    <div class="formula-box green">Q^T Q = I &nbsp; (Q has orthonormal columns)</div>
+    <div class="formula-box pink">R is upper triangular: r_{ij} = &langle;a_j, q_i&rangle;</div>
+
+    <div class="key-point">Why QR matters: solving the normal equation A^T A x&#770; = A^T b is numerically unstable. With A = QR, the least squares solution becomes R x&#770; = Q^T b, which is solved by back-substitution. Much faster, much more numerically stable.</div>
+
+    <p class="concept-text">
+      <strong>Least squares via QR:</strong> Since A = QR and Q^T Q = I, the normal equation becomes R^T R x&#770; = R^T Q^T b. Since R is invertible (if A has independent columns), this simplifies to:
+    </p>
+
+    <div class="formula-box large amber">R x&#770; = Q^T b &nbsp; (solve by back-substitution)</div>
+
+    <p class="concept-text">
+      <strong>Applications:</strong> QR factorization is used in numerical linear algebra (eigenvalue algorithms), least squares regression (the standard method in practice), signal processing (adaptive filters), and control systems. The QR algorithm for finding eigenvalues iterates QR decompositions and is one of the most important algorithms in computational mathematics.
+    </p>
+
+    <div class="navy-context">
+      <strong>Applications breadth:</strong> QR decomposition is the workhorse behind least squares fitting in GPS positioning, radar tracking, and navigation systems. When a ship's navigation computer processes multiple satellite signals to compute a position fix, it solves an overdetermined system using QR factorization for numerical stability. The same math applies to fitting curves through sonar range data.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s5p1">
+        <p><strong>1.</strong> In A = QR, the columns of Q are obtained by which process?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','correct')">Gram-Schmidt orthonormalization of the columns of A</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">Row reduction of A</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p1','wrong')">Eigenvalue decomposition of A</button>
+        </div>
+        <div class="feedback" id="s5p1-fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> If Q is 3x2 with orthonormal columns, what is Q^T Q?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','correct')">The 2x2 identity matrix I</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">The 3x3 identity matrix I</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">A 2x2 diagonal matrix with entries equal to the column norms</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem" id="s5p3">
+        <p><strong>3.</strong> Why is solving Rx&#770; = Q^T b preferred over solving A^T A x&#770; = A^T b?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">It gives a different (better) answer</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','correct')">Same answer, but much better numerical stability</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p3','wrong')">It avoids computing a matrix transpose</button>
+        </div>
+        <div class="feedback" id="s5p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: FINAL QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Final Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Inner Product Axioms</div>
+      <p class="q-text">Which property does the inner product NOT need to satisfy?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Linearity in the first argument</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Symmetry: &langle;u,v&rangle; = &langle;v,u&rangle;</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">Multiplicativity: &langle;u,v&rangle; = &langle;u,w&rangle;&langle;w,v&rangle;</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Positive-definiteness</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Computing Inner Products</div>
+      <p class="q-text">&langle;(2, -1, 3), (4, 0, -1)&rangle; = ?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">5 (8 + 0 - 3 = 5)</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">11</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">-5</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">7</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Orthogonality</div>
+      <p class="q-text">If &langle;u, v&rangle; = 0, then u and v are:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">Parallel</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">Orthogonal (perpendicular)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">Equal in magnitude</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">Linearly dependent</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Orthonormal Basis</div>
+      <p class="q-text">An orthonormal set requires that each pair of distinct vectors has inner product 0 AND that each vector has:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Norm equal to any positive constant</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">Norm equal to 1 (unit length)</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Integer components</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Norm equal to 0</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Gram-Schmidt</div>
+      <p class="q-text">In Gram-Schmidt, to make v2 orthogonal to v1, you compute v2 = x2 - ___:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">&langle;x2, v1&rangle; * v1</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">(&langle;x2, v1&rangle; / &langle;v1, v1&rangle;) * v1</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">(&langle;v1, v1&rangle; / &langle;x2, v1&rangle;) * v1</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">x2 / ||v1||</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Projection Properties</div>
+      <p class="q-text">A projection matrix P satisfies P^2 = P. This property is called:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Invertibility</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Orthogonality</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">Idempotence</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">Nilpotence</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Least Squares</div>
+      <p class="q-text">The least squares solution x&#770; minimizes:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">||x||</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">||Ax - b|| (the residual)</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">||A|| (the matrix norm)</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">det(A^T A)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- QR Factorization</div>
+      <p class="q-text">In A = QR, R is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Lower triangular</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">Upper triangular with positive diagonal</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Diagonal</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Symmetric</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Quantum Connection</div>
+      <p class="q-text">In quantum mechanics, &langle;&psi;|&phi;&rangle; = 0 means the states are:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Entangled</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">Identical</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">Orthogonal (mutually exclusive outcomes)</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">In superposition</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Fourier Connection</div>
+      <p class="q-text">A Fourier coefficient a_n = &langle;f, cos(nx)&rangle; is best described as:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">The derivative of f at frequency n</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">The integral of f times sin(nx)</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">The orthogonal projection of f onto cos(nx) -- how much of f "lives" at that frequency</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">The norm of cos(nx) in the function space</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again.';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: INNER PRODUCT EXPLORER ==================== */
+function drawS1() {
+  var ux = +document.getElementById('s1ux').value;
+  var uy = +document.getElementById('s1uy').value;
+  var vx = +document.getElementById('s1vx').value;
+  var vy = +document.getElementById('s1vy').value;
+  document.getElementById('s1uxV').textContent = ux.toFixed(1);
+  document.getElementById('s1uyV').textContent = uy.toFixed(1);
+  document.getElementById('s1vxV').textContent = vx.toFixed(1);
+  document.getElementById('s1vyV').textContent = vy.toFixed(1);
+
+  var dot = ux*vx + uy*vy;
+  var normu = Math.sqrt(ux*ux + uy*uy);
+  var normv = Math.sqrt(vx*vx + vy*vy);
+  var angle = (normu > 0.001 && normv > 0.001) ? Math.acos(Math.min(1, Math.max(-1, dot/(normu*normv)))) * 180 / Math.PI : 0;
+
+  document.getElementById('s1dot').textContent = dot.toFixed(2);
+  document.getElementById('s1normu').textContent = normu.toFixed(2);
+  document.getElementById('s1normv').textContent = normv.toFixed(2);
+  document.getElementById('s1angle').textContent = angle.toFixed(1) + '\u00b0';
+
+  // projection of u onto v
+  var projScale = (normv > 0.001) ? dot / (normv * normv) : 0;
+  var projx = projScale * vx;
+  var projy = projScale * vy;
+
+  var svg = document.getElementById('s1Svg');
+  var h = '<defs>';
+  h += '<marker id="aG" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--green)"/></marker>';
+  h += '<marker id="aP" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--pink)"/></marker>';
+  h += '<marker id="aA" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--amber)"/></marker>';
+  h += '<marker id="aI" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--indigo)"/></marker>';
+  h += '</defs>';
+
+  // grid
+  for (var i = -3; i <= 3; i++) {
+    h += '<line x1="'+i+'" y1="-3.5" x2="'+i+'" y2="3.5" stroke="#363b47" stroke-width="0.02"/>';
+    h += '<line x1="-3.5" y1="'+i+'" x2="3.5" y2="'+i+'" stroke="#363b47" stroke-width="0.02"/>';
+  }
+  h += '<line x1="-3.5" y1="0" x2="3.5" y2="0" stroke="#9ca3af" stroke-width="0.03"/>';
+  h += '<line x1="0" y1="-3.5" x2="0" y2="3.5" stroke="#9ca3af" stroke-width="0.03"/>';
+
+  // projection line (dashed)
+  if (normv > 0.001) {
+    h += '<line x1="'+ux+'" y1="'+(-uy)+'" x2="'+projx+'" y2="'+(-projy)+'" stroke="var(--amber)" stroke-width="0.04" stroke-dasharray="0.1,0.06" opacity="0.7"/>';
+    // right angle marker
+    var sz = 0.2;
+    var dx = ux - projx, dy = uy - projy;
+    var dn = Math.sqrt(dx*dx + dy*dy);
+    if (dn > 0.1) {
+      var ndx = dx/dn*sz, ndy = dy/dn*sz;
+      var nvx = vx/normv*sz, nvy = vy/normv*sz;
+      h += '<polyline points="'+(projx+ndx)+','+(-projy-ndy)+' '+(projx+ndx+nvx)+','+(-projy-ndy-nvy)+' '+(projx+nvx)+','+(-projy-nvy)+'" fill="none" stroke="var(--amber)" stroke-width="0.03"/>';
+    }
+  }
+
+  // projection vector (indigo)
+  if (Math.abs(projx) + Math.abs(projy) > 0.05) {
+    h += '<line x1="0" y1="0" x2="'+projx+'" y2="'+(-projy)+'" stroke="var(--indigo)" stroke-width="0.06" marker-end="url(#aI)" opacity="0.8"/>';
+    h += '<text x="'+(projx*0.5+0.2)+'" y="'+(-projy*0.5+0.3)+'" fill="var(--indigo)" font-size="0.28">proj</text>';
+  }
+
+  // u vector (green)
+  h += '<line x1="0" y1="0" x2="'+ux+'" y2="'+(-uy)+'" stroke="var(--green)" stroke-width="0.07" marker-end="url(#aG)"/>';
+  h += '<text x="'+(ux+0.15)+'" y="'+(-uy-0.15)+'" fill="var(--green)" font-size="0.32">u</text>';
+
+  // v vector (pink)
+  h += '<line x1="0" y1="0" x2="'+vx+'" y2="'+(-vy)+'" stroke="var(--pink)" stroke-width="0.07" marker-end="url(#aP)"/>';
+  h += '<text x="'+(vx+0.15)+'" y="'+(-vy-0.15)+'" fill="var(--pink)" font-size="0.32">v</text>';
+
+  // angle arc
+  if (normu > 0.001 && normv > 0.001) {
+    var r = 0.6;
+    var ang1 = Math.atan2(uy, ux);
+    var ang2 = Math.atan2(vy, vx);
+    // draw arc from v direction to u direction
+    var sa = ang2, ea = ang1;
+    var x1a = r * Math.cos(sa), y1a = -r * Math.sin(sa);
+    var x2a = r * Math.cos(ea), y2a = -r * Math.sin(ea);
+    var diff = ((ea - sa) + 2*Math.PI) % (2*Math.PI);
+    var largeArc = diff > Math.PI ? 1 : 0;
+    h += '<path d="M'+x1a+','+y1a+' A'+r+','+r+' 0 '+largeArc+',0 '+x2a+','+y2a+'" fill="none" stroke="var(--amber)" stroke-width="0.04" opacity="0.6"/>';
+  }
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 2: ORTHOGONAL DECOMPOSITION ==================== */
+function drawS2() {
+  var vx = +document.getElementById('s2vx').value;
+  var vy = +document.getElementById('s2vy').value;
+  var wa = +document.getElementById('s2wa').value;
+  document.getElementById('s2vxV').textContent = vx.toFixed(1);
+  document.getElementById('s2vyV').textContent = vy.toFixed(1);
+  document.getElementById('s2waV').textContent = wa + '\u00b0';
+
+  var rad = wa * Math.PI / 180;
+  var wx = Math.cos(rad), wy = Math.sin(rad);
+
+  // project v onto w
+  var dot = vx*wx + vy*wy;
+  var projx = dot * wx, projy = dot * wy;
+  var perpx = vx - projx, perpy = vy - projy;
+  var checkDot = projx*perpx + projy*perpy;
+
+  document.getElementById('s2proj').textContent = '(' + projx.toFixed(2) + ', ' + projy.toFixed(2) + ')';
+  document.getElementById('s2perp').textContent = '(' + perpx.toFixed(2) + ', ' + perpy.toFixed(2) + ')';
+  document.getElementById('s2check').textContent = checkDot.toFixed(4);
+
+  var svg = document.getElementById('s2Svg');
+  var h = '<defs>';
+  h += '<marker id="bG" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--green)"/></marker>';
+  h += '<marker id="bP" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--pink)"/></marker>';
+  h += '<marker id="bA" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--amber)"/></marker>';
+  h += '<marker id="bI" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--indigo)"/></marker>';
+  h += '</defs>';
+
+  // grid
+  for (var i = -3; i <= 3; i++) {
+    h += '<line x1="'+i+'" y1="-3.5" x2="'+i+'" y2="3.5" stroke="#363b47" stroke-width="0.02"/>';
+    h += '<line x1="-3.5" y1="'+i+'" x2="3.5" y2="'+i+'" stroke="#363b47" stroke-width="0.02"/>';
+  }
+  h += '<line x1="-3.5" y1="0" x2="3.5" y2="0" stroke="#9ca3af" stroke-width="0.03"/>';
+  h += '<line x1="0" y1="-3.5" x2="0" y2="3.5" stroke="#9ca3af" stroke-width="0.03"/>';
+
+  // subspace W line (extended green line)
+  h += '<line x1="'+(-3.5*wx)+'" y1="'+(3.5*wy)+'" x2="'+(3.5*wx)+'" y2="'+(-3.5*wy)+'" stroke="var(--green)" stroke-width="0.04" opacity="0.3"/>';
+  h += '<text x="'+(3*wx+0.2)+'" y="'+(-3*wy+0.3)+'" fill="var(--green)" font-size="0.28" opacity="0.6">W</text>';
+
+  // perpendicular drop (dashed amber)
+  h += '<line x1="'+vx+'" y1="'+(-vy)+'" x2="'+projx+'" y2="'+(-projy)+'" stroke="var(--amber)" stroke-width="0.04" stroke-dasharray="0.08,0.06"/>';
+
+  // right angle marker
+  var pn = Math.sqrt(perpx*perpx+perpy*perpy);
+  if (pn > 0.1) {
+    var sz = 0.2;
+    var ndx = perpx/pn*sz, ndy = perpy/pn*sz;
+    var nwx = wx*sz, nwy = wy*sz;
+    h += '<polyline points="'+(projx+ndx)+','+(-projy-ndy)+' '+(projx+ndx+nwx)+','+(-projy-ndy-nwy)+' '+(projx+nwx)+','+(-projy-nwy)+'" fill="none" stroke="var(--amber)" stroke-width="0.03"/>';
+  }
+
+  // proj vector (green, from origin)
+  if (Math.abs(projx)+Math.abs(projy) > 0.05) {
+    h += '<line x1="0" y1="0" x2="'+projx+'" y2="'+(-projy)+'" stroke="var(--green)" stroke-width="0.07" marker-end="url(#bG)"/>';
+    h += '<text x="'+(projx*0.5+0.2)+'" y="'+(-projy*0.5+0.35)+'" fill="var(--green)" font-size="0.28">proj</text>';
+  }
+
+  // v_perp vector (pink, from proj to v)
+  if (pn > 0.05) {
+    h += '<line x1="'+projx+'" y1="'+(-projy)+'" x2="'+vx+'" y2="'+(-vy)+'" stroke="var(--pink)" stroke-width="0.06" marker-end="url(#bP)"/>';
+    h += '<text x="'+((projx+vx)/2+0.2)+'" y="'+(-(projy+vy)/2-0.15)+'" fill="var(--pink)" font-size="0.26">v_perp</text>';
+  }
+
+  // v vector (indigo)
+  h += '<line x1="0" y1="0" x2="'+vx+'" y2="'+(-vy)+'" stroke="var(--indigo)" stroke-width="0.06" marker-end="url(#bI)"/>';
+  h += '<text x="'+(vx+0.15)+'" y="'+(-vy-0.15)+'" fill="var(--indigo)" font-size="0.32">v</text>';
+
+  // dot at projection point
+  h += '<circle cx="'+projx+'" cy="'+(-projy)+'" r="0.08" fill="var(--green)"/>';
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 3: GRAM-SCHMIDT VISUALIZATION ==================== */
+// Starting vectors (in 2D for visualization, representing 3D concept)
+var gsX = [[1,1,0],[1,0,1],[0,1,1]];
+var gsV = [], gsU = [];
+
+function gsCompute() {
+  // v1 = x1
+  var v1 = gsX[0].slice();
+  // v2 = x2 - proj_{v1}(x2)
+  var d21 = gsX[1][0]*v1[0]+gsX[1][1]*v1[1]+gsX[1][2]*v1[2];
+  var d11 = v1[0]*v1[0]+v1[1]*v1[1]+v1[2]*v1[2];
+  var s21 = d21/d11;
+  var v2 = [gsX[1][0]-s21*v1[0], gsX[1][1]-s21*v1[1], gsX[1][2]-s21*v1[2]];
+  // v3 = x3 - proj_{v1}(x3) - proj_{v2}(x3)
+  var d31 = gsX[2][0]*v1[0]+gsX[2][1]*v1[1]+gsX[2][2]*v1[2];
+  var s31 = d31/d11;
+  var d22 = v2[0]*v2[0]+v2[1]*v2[1]+v2[2]*v2[2];
+  var d32 = gsX[2][0]*v2[0]+gsX[2][1]*v2[1]+gsX[2][2]*v2[2];
+  var s32 = d32/d22;
+  var v3 = [gsX[2][0]-s31*v1[0]-s32*v2[0], gsX[2][1]-s31*v1[1]-s32*v2[1], gsX[2][2]-s31*v1[2]-s32*v2[2]];
+  gsV = [v1, v2, v3];
+  // normalize
+  gsU = gsV.map(function(v){
+    var n=Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+    return n>0.001?[v[0]/n,v[1]/n,v[2]/n]:[0,0,0];
+  });
+}
+
+// Simple isometric projection for 3D -> 2D
+function iso(x,y,z) {
+  // isometric: px = (x - z)*cos(30), py = (x + z)*sin(30) - y
+  var c = 0.866, s = 0.5;
+  return [(x - z)*c, -(x + z)*s - y + 4];
+}
+
+function drawVec3d(svg_h, ox, oy, vx, vy, vz, color, label, scale) {
+  scale = scale || 2.5;
+  var p0 = iso(ox, oy, 0);
+  var p1 = iso(ox + vx*scale, oy + vy*scale, vz*scale);
+  svg_h += '<line x1="'+p0[0]+'" y1="'+p0[1]+'" x2="'+p1[0]+'" y2="'+p1[1]+'" stroke="'+color+'" stroke-width="0.08"/>';
+  // arrowhead
+  var dx=p1[0]-p0[0],dy=p1[1]-p0[1],dn=Math.sqrt(dx*dx+dy*dy);
+  if(dn>0.1){
+    var ax=dx/dn,ay=dy/dn;
+    var px=-ay,py=ax;
+    svg_h+='<polygon points="'+p1[0]+','+p1[1]+' '+(p1[0]-ax*0.25+px*0.1)+','+(p1[1]-ay*0.25+py*0.1)+' '+(p1[0]-ax*0.25-px*0.1)+','+(p1[1]-ay*0.25-py*0.1)+'" fill="'+color+'"/>';
+  }
+  if(label){
+    svg_h+='<text x="'+(p1[0]+0.15)+'" y="'+(p1[1]-0.15)+'" fill="'+color+'" font-size="0.35">'+label+'</text>';
+  }
+  return svg_h;
+}
+
+function gsStep(step, btn) {
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(t){t.classList.remove('active')});
+  btn.classList.add('active');
+
+  var svg = document.getElementById('gsSvg');
+  var info = document.getElementById('gsInfo');
+  var h = '';
+
+  // axes
+  h = drawVec3d(h, 0, 0, 1.5, 0, 0, '#9ca3af', '', 1);
+  h = drawVec3d(h, 0, 0, 0, 1.5, 0, '#9ca3af', '', 1);
+  h = drawVec3d(h, 0, 0, 0, 0, 1.5, '#9ca3af', '', 1);
+  var axPts = iso(1.7,0,0);
+  h += '<text x="'+axPts[0]+'" y="'+axPts[1]+'" fill="#9ca3af" font-size="0.3">x</text>';
+  axPts = iso(0,1.7,0);
+  h += '<text x="'+axPts[0]+'" y="'+axPts[1]+'" fill="#9ca3af" font-size="0.3">y</text>';
+  axPts = iso(0,0,1.7);
+  h += '<text x="'+axPts[0]+'" y="'+axPts[1]+'" fill="#9ca3af" font-size="0.3">z</text>';
+
+  if (step === 0) {
+    // original vectors
+    h = drawVec3d(h, 0, 0, gsX[0][0], gsX[0][1], gsX[0][2], 'var(--green)', 'x1', 2.5);
+    h = drawVec3d(h, 0, 0, gsX[1][0], gsX[1][1], gsX[1][2], 'var(--pink)', 'x2', 2.5);
+    h = drawVec3d(h, 0, 0, gsX[2][0], gsX[2][1], gsX[2][2], 'var(--amber)', 'x3', 2.5);
+    info.innerHTML = '<strong style="color:var(--text-bright)">Original basis:</strong> x1 = (1,1,0), x2 = (1,0,1), x3 = (0,1,1). These are linearly independent but NOT orthogonal. We will orthogonalize them.';
+    document.getElementById('gsV1').textContent = '--';
+    document.getElementById('gsV2').textContent = '--';
+    document.getElementById('gsV3').textContent = '--';
+  } else if (step === 1) {
+    h = drawVec3d(h, 0, 0, gsV[0][0], gsV[0][1], gsV[0][2], 'var(--green)', 'v1', 2.5);
+    // show original x2, x3 faint
+    h = drawVec3d(h, 0, 0, gsX[1][0], gsX[1][1], gsX[1][2], 'rgba(236,72,153,0.3)', 'x2', 2.5);
+    h = drawVec3d(h, 0, 0, gsX[2][0], gsX[2][1], gsX[2][2], 'rgba(245,158,11,0.3)', 'x3', 2.5);
+    info.innerHTML = '<strong style="color:var(--green)">Step 1:</strong> v1 = x1 = (1, 1, 0). Keep the first vector unchanged.';
+    document.getElementById('gsV1').textContent = '(1, 1, 0)';
+    document.getElementById('gsV2').textContent = '--';
+    document.getElementById('gsV3').textContent = '--';
+  } else if (step === 2) {
+    h = drawVec3d(h, 0, 0, gsV[0][0], gsV[0][1], gsV[0][2], 'var(--green)', 'v1', 2.5);
+    // show projection of x2 onto v1
+    var d = gsX[1][0]*gsV[0][0]+gsX[1][1]*gsV[0][1]+gsX[1][2]*gsV[0][2];
+    var dd = gsV[0][0]*gsV[0][0]+gsV[0][1]*gsV[0][1]+gsV[0][2]*gsV[0][2];
+    var s = d/dd;
+    var px = s*gsV[0][0], py = s*gsV[0][1], pz = s*gsV[0][2];
+    // faint original x2
+    h = drawVec3d(h, 0, 0, gsX[1][0], gsX[1][1], gsX[1][2], 'rgba(236,72,153,0.3)', 'x2', 2.5);
+    // projection (indigo dashed)
+    var p0 = iso(0,0,0);
+    var p1 = iso(px*2.5, py*2.5, pz*2.5);
+    h += '<line x1="'+p0[0]+'" y1="'+p0[1]+'" x2="'+p1[0]+'" y2="'+p1[1]+'" stroke="var(--indigo)" stroke-width="0.06" stroke-dasharray="0.12,0.08"/>';
+    h += '<text x="'+(p1[0]+0.15)+'" y="'+(p1[1]+0.3)+'" fill="var(--indigo)" font-size="0.28">proj</text>';
+    // v2
+    h = drawVec3d(h, 0, 0, gsV[1][0], gsV[1][1], gsV[1][2], 'var(--pink)', 'v2', 2.5);
+    h = drawVec3d(h, 0, 0, gsX[2][0], gsX[2][1], gsX[2][2], 'rgba(245,158,11,0.3)', 'x3', 2.5);
+    info.innerHTML = '<strong style="color:var(--pink)">Step 2:</strong> v2 = x2 - proj_{v1}(x2) = (1,0,1) - (1/2)(1,1,0) = <strong style="color:var(--pink)">(0.5, -0.5, 1)</strong>. The indigo dashed line shows the projection being subtracted. Verify: &langle;v1,v2&rangle; = 0.5 - 0.5 + 0 = 0.';
+    document.getElementById('gsV1').textContent = '(1, 1, 0)';
+    document.getElementById('gsV2').textContent = '(0.5, -0.5, 1)';
+    document.getElementById('gsV3').textContent = '--';
+  } else if (step === 3) {
+    h = drawVec3d(h, 0, 0, gsV[0][0], gsV[0][1], gsV[0][2], 'var(--green)', 'v1', 2.5);
+    h = drawVec3d(h, 0, 0, gsV[1][0], gsV[1][1], gsV[1][2], 'var(--pink)', 'v2', 2.5);
+    h = drawVec3d(h, 0, 0, gsV[2][0], gsV[2][1], gsV[2][2], 'var(--amber)', 'v3', 2.5);
+    // show faint x3
+    h = drawVec3d(h, 0, 0, gsX[2][0], gsX[2][1], gsX[2][2], 'rgba(245,158,11,0.2)', 'x3', 2.5);
+    info.innerHTML = '<strong style="color:var(--amber)">Step 3:</strong> v3 = x3 - proj_{v1}(x3) - proj_{v2}(x3) = <strong style="color:var(--amber)">(' + gsV[2][0].toFixed(3) + ', ' + gsV[2][1].toFixed(3) + ', ' + gsV[2][2].toFixed(3) + ')</strong>. Now all three vectors are mutually orthogonal!';
+    document.getElementById('gsV1').textContent = '(1, 1, 0)';
+    document.getElementById('gsV2').textContent = '(0.5, -0.5, 1)';
+    document.getElementById('gsV3').textContent = '(' + gsV[2][0].toFixed(2) + ', ' + gsV[2][1].toFixed(2) + ', ' + gsV[2][2].toFixed(2) + ')';
+  } else if (step === 4) {
+    h = drawVec3d(h, 0, 0, gsU[0][0], gsU[0][1], gsU[0][2], 'var(--green)', 'u1', 2.5);
+    h = drawVec3d(h, 0, 0, gsU[1][0], gsU[1][1], gsU[1][2], 'var(--pink)', 'u2', 2.5);
+    h = drawVec3d(h, 0, 0, gsU[2][0], gsU[2][1], gsU[2][2], 'var(--amber)', 'u3', 2.5);
+    info.innerHTML = '<strong style="color:var(--text-bright)">Normalized:</strong> Divide each v_i by its length. u1 = v1/||v1||, u2 = v2/||v2||, u3 = v3/||v3||. Now {u1, u2, u3} is an <strong style="color:var(--indigo)">orthonormal basis</strong>. Each vector has length 1.';
+    document.getElementById('gsV1').textContent = '(' + gsU[0][0].toFixed(3) + ', ' + gsU[0][1].toFixed(3) + ', ' + gsU[0][2].toFixed(3) + ')';
+    document.getElementById('gsV2').textContent = '(' + gsU[1][0].toFixed(3) + ', ' + gsU[1][1].toFixed(3) + ', ' + gsU[1][2].toFixed(3) + ')';
+    document.getElementById('gsV3').textContent = '(' + gsU[2][0].toFixed(3) + ', ' + gsU[2][1].toFixed(3) + ', ' + gsU[2][2].toFixed(3) + ')';
+  }
+
+  svg.innerHTML = h;
+}
+
+/* ==================== SECTION 4: PROJECTION INTERACTIVE ==================== */
+var s4Mode = 'line';
+
+function setS4Mode(mode, btn) {
+  s4Mode = mode;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(t){t.classList.remove('active')});
+  btn.classList.add('active');
+  drawS4();
+}
+
+function drawS4() {
+  var px = +document.getElementById('s4px').value;
+  var py = +document.getElementById('s4py').value;
+  var la = +document.getElementById('s4la').value;
+  document.getElementById('s4pxV').textContent = px.toFixed(1);
+  document.getElementById('s4pyV').textContent = py.toFixed(1);
+  document.getElementById('s4laV').textContent = la + '\u00b0';
+
+  var svg = document.getElementById('s4Svg');
+  var h = '<defs>';
+  h += '<marker id="cG" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--green)"/></marker>';
+  h += '<marker id="cP" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--pink)"/></marker>';
+  h += '<marker id="cA" markerWidth="0.3" markerHeight="0.2" refX="0.3" refY="0.1" orient="auto"><path d="M0,0 L0.3,0.1 L0,0.2Z" fill="var(--amber)"/></marker>';
+  h += '</defs>';
+
+  // grid
+  for (var i = -3; i <= 3; i++) {
+    h += '<line x1="'+i+'" y1="-3.5" x2="'+i+'" y2="3.5" stroke="#363b47" stroke-width="0.02"/>';
+    h += '<line x1="-3.5" y1="'+i+'" x2="3.5" y2="'+i+'" stroke="#363b47" stroke-width="0.02"/>';
+  }
+  h += '<line x1="-3.5" y1="0" x2="3.5" y2="0" stroke="#9ca3af" stroke-width="0.03"/>';
+  h += '<line x1="0" y1="-3.5" x2="0" y2="3.5" stroke="#9ca3af" stroke-width="0.03"/>';
+
+  if (s4Mode === 'line') {
+    var rad = la * Math.PI / 180;
+    var lx = Math.cos(rad), ly = Math.sin(rad);
+
+    // line (extended)
+    h += '<line x1="'+(-3.5*lx)+'" y1="'+(3.5*ly)+'" x2="'+(3.5*lx)+'" y2="'+(-3.5*ly)+'" stroke="var(--green)" stroke-width="0.05" opacity="0.4"/>';
+    h += '<text x="'+(3*lx+0.2)+'" y="'+(-3*ly+0.3)+'" fill="var(--green)" font-size="0.28" opacity="0.6">W</text>';
+
+    // projection
+    var dot = px*lx + py*ly;
+    var projx = dot*lx, projy = dot*ly;
+    var errx = px - projx, erry = py - projy;
+    var errNorm = Math.sqrt(errx*errx + erry*erry);
+    var perpCheck = projx*errx + projy*erry;
+
+    document.getElementById('s4proj').textContent = '(' + projx.toFixed(2) + ', ' + projy.toFixed(2) + ')';
+    document.getElementById('s4err').textContent = errNorm.toFixed(3);
+    document.getElementById('s4perp').textContent = perpCheck.toFixed(5);
+
+    // error line (pink dashed)
+    h += '<line x1="'+px+'" y1="'+(-py)+'" x2="'+projx+'" y2="'+(-projy)+'" stroke="var(--pink)" stroke-width="0.05" stroke-dasharray="0.1,0.06"/>';
+
+    // right angle marker
+    if (errNorm > 0.1) {
+      var sz = 0.2;
+      var ndx = errx/errNorm*sz, ndy = erry/errNorm*sz;
+      var nlx = lx*sz, nly = ly*sz;
+      h += '<polyline points="'+(projx+ndx)+','+(-projy-ndy)+' '+(projx+ndx+nlx)+','+(-projy-ndy-nly)+' '+(projx+nlx)+','+(-projy-nly)+'" fill="none" stroke="var(--amber)" stroke-width="0.035"/>';
+    }
+
+    // projection vector (green)
+    if (Math.abs(projx)+Math.abs(projy)>0.05) {
+      h += '<line x1="0" y1="0" x2="'+projx+'" y2="'+(-projy)+'" stroke="var(--green)" stroke-width="0.07" marker-end="url(#cG)"/>';
+      h += '<text x="'+(projx*0.5+0.2)+'" y="'+(-projy*0.5+0.35)+'" fill="var(--green)" font-size="0.26">proj</text>';
+    }
+
+    // error vector (pink) from proj to point
+    if (errNorm > 0.05) {
+      h += '<line x1="'+projx+'" y1="'+(-projy)+'" x2="'+px+'" y2="'+(-py)+'" stroke="var(--pink)" stroke-width="0.06" marker-end="url(#cP)"/>';
+      h += '<text x="'+((projx+px)/2+0.2)+'" y="'+(-(projy+py)/2-0.15)+'" fill="var(--pink)" font-size="0.24">error</text>';
+    }
+
+    // point (pink dot)
+    h += '<circle cx="'+px+'" cy="'+(-py)+'" r="0.12" fill="var(--pink)"/>';
+    h += '<text x="'+(px+0.2)+'" y="'+(-py-0.2)+'" fill="var(--pink)" font-size="0.3">b</text>';
+
+    // proj dot (green)
+    h += '<circle cx="'+projx+'" cy="'+(-projy)+'" r="0.08" fill="var(--green)"/>';
+
+  } else {
+    // 3D plane projection view (simplified: project onto xy-plane, shown as a tilted grid)
+    // Show a plane (span of two vectors) and project a point onto it
+    var rad1 = la * Math.PI / 180;
+    var rad2 = (la + 90) * Math.PI / 180;
+    var w1x = Math.cos(rad1), w1y = Math.sin(rad1);
+    var w2x = Math.cos(rad2), w2y = Math.sin(rad2);
+
+    // shade the plane
+    var s = 3.5;
+    h += '<polygon points="'+(s*(w1x+w2x))+','+(-s*(w1y+w2y))+' '+(s*(w1x-w2x))+','+(-s*(w1y-w2y))+' '+(s*(-w1x-w2x))+','+(-s*(-w1y-w2y))+' '+(s*(-w1x+w2x))+','+(-s*(-w1y+w2y))+'" fill="rgba(34,197,94,0.06)" stroke="var(--green)" stroke-width="0.02"/>';
+    h += '<text x="'+(2.5*w1x+0.2)+'" y="'+(-2.5*w1y)+'" fill="var(--green)" font-size="0.26" opacity="0.6">W (plane)</text>';
+
+    // In 2D this is trivial (projection is the point itself unless we lift to 3D).
+    // Simulate: treat point as having a z-offset to make it interesting
+    var zOff = 1.5;
+    // proj is just the xy coordinates (the point in the plane), error is z component
+    var projx = px, projy = py;
+    var errNorm = Math.abs(zOff);
+
+    document.getElementById('s4proj').textContent = '(' + projx.toFixed(2) + ', ' + projy.toFixed(2) + ', 0)';
+    document.getElementById('s4err').textContent = errNorm.toFixed(3);
+    document.getElementById('s4perp').textContent = '0.00000';
+
+    // show point "above" the plane
+    var lift = 0.8; // visual offset
+    h += '<line x1="'+px+'" y1="'+(-py)+'" x2="'+px+'" y2="'+(-py-lift)+'" stroke="var(--pink)" stroke-width="0.04" stroke-dasharray="0.08,0.06"/>';
+    h += '<circle cx="'+px+'" cy="'+(-py-lift)+'" r="0.12" fill="var(--pink)"/>';
+    h += '<text x="'+(px+0.2)+'" y="'+(-py-lift-0.15)+'" fill="var(--pink)" font-size="0.28">b (above plane)</text>';
+
+    // proj on plane
+    h += '<circle cx="'+px+'" cy="'+(-py)+'" r="0.08" fill="var(--green)"/>';
+    h += '<text x="'+(px+0.2)+'" y="'+(-py+0.35)+'" fill="var(--green)" font-size="0.24">proj_W(b)</text>';
+
+    // error vector
+    h += '<line x1="'+px+'" y1="'+(-py)+'" x2="'+px+'" y2="'+(-py-lift)+'" stroke="var(--amber)" stroke-width="0.06" marker-end="url(#cA)"/>';
+    h += '<text x="'+(px-0.8)+'" y="'+(-py-lift*0.5)+'" fill="var(--amber)" font-size="0.24">error (perp)</text>';
+  }
+
+  svg.innerHTML = h;
+}
+
+/* ==================== INIT ==================== */
+markComplete(1);
+drawS1();
+drawS2();
+gsCompute();
+gsStep(0, document.querySelector('#gsStepTabs .scenario-tab'));
+drawS4();
+</script>
+</body>
+</html>

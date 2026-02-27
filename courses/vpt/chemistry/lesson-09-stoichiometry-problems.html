@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 9: Stoichiometry Problems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.step-box{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin:12px 0}
+.step-box .step-num{display:inline-block;background:var(--indigo-dim);color:var(--indigo);font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:4px;margin-bottom:6px}
+.step-box p{font-size:.78rem;line-height:1.7}
+.step-box .math{color:var(--text-bright);font-weight:600}
+.flowchart-container{margin:16px 0;overflow-x:auto}
+.converter-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.converter-field{display:flex;flex-direction:column;gap:4px}
+.converter-field label{font-size:.68rem;color:var(--text-dim)}
+.converter-field input,.converter-field select{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;outline:none;transition:border-color var(--transition)}
+.converter-field input:focus,.converter-field select:focus{border-color:var(--indigo)}
+.converter-field select{cursor:pointer}
+.converter-result{background:var(--green-dim);border:1px solid rgba(34,197,94,.3);border-radius:var(--radius);padding:12px 16px;margin-top:12px;font-size:.8rem;color:var(--green);text-align:center;font-weight:600}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.converter-grid{grid-template-columns:1fr}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>09</span> Stoichiometry Problems</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: LIMITING REAGENT -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Limiting Reagent</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>limiting reagent</strong> is the reactant that runs out first and stops the reaction. Think of it like making sandwiches: if you have 10 slices of bread and 3 slices of cheese, the cheese limits you to 3 sandwiches no matter how much bread you have.
+    </p>
+
+    <p class="concept-text">
+      In chemistry, reactions consume reactants in <strong>fixed mole ratios</strong> set by the balanced equation. The limiting reagent is whichever reactant produces the <strong>least amount of product</strong> when you calculate from each one independently.
+    </p>
+
+    <div class="formula-box large">Limiting Reagent = whichever reactant yields FEWER moles of product</div>
+
+    <div class="key-point">Method: (1) Convert each reactant to moles. (2) Use the mole ratio to find how many moles of product each could make. (3) The one that gives less product is the limiting reagent.</div>
+
+    <p class="concept-text" style="margin-top:16px"><strong>Worked Example:</strong> 10.0 g of N<sub>2</sub> reacts with 10.0 g of H<sub>2</sub>. Which is the limiting reagent?</p>
+    <div class="formula-box">N<sub>2</sub> + 3 H<sub>2</sub> &rarr; 2 NH<sub>3</sub></div>
+
+    <div class="step-box">
+      <span class="step-num">Step 1</span>
+      <p>Convert grams to moles of each reactant:</p>
+      <p class="math">N<sub>2</sub>: 10.0 g &divide; 28.02 g/mol = 0.357 mol</p>
+      <p class="math">H<sub>2</sub>: 10.0 g &divide; 2.016 g/mol = 4.96 mol</p>
+    </div>
+
+    <div class="step-box">
+      <span class="step-num">Step 2</span>
+      <p>Find moles of NH<sub>3</sub> each could produce using mole ratio:</p>
+      <p class="math">From N<sub>2</sub>: 0.357 mol N<sub>2</sub> &times; (2 mol NH<sub>3</sub> / 1 mol N<sub>2</sub>) = 0.714 mol NH<sub>3</sub></p>
+      <p class="math">From H<sub>2</sub>: 4.96 mol H<sub>2</sub> &times; (2 mol NH<sub>3</sub> / 3 mol H<sub>2</sub>) = 3.31 mol NH<sub>3</sub></p>
+    </div>
+
+    <div class="step-box">
+      <span class="step-num">Step 3</span>
+      <p>Compare: 0.714 &lt; 3.31, so <strong>N<sub>2</sub> is the limiting reagent</strong>. It produces less NH<sub>3</sub>.</p>
+      <p class="math">Theoretical yield of NH<sub>3</sub> = 0.714 mol &times; 17.03 g/mol = 12.2 g</p>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Identify the Limiting Reagent</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:10px">Reaction: 2 Al + 3 Cl<sub>2</sub> &rarr; 2 AlCl<sub>3</sub></p>
+      <div class="slider-row">
+        <label>Grams of Al</label>
+        <input type="range" id="lrAl" min="1" max="50" value="10" step="0.5" oninput="updateLR()">
+        <span class="slider-val" id="lrAlVal">10.0 g</span>
+      </div>
+      <div class="slider-row">
+        <label>Grams of Cl<sub>2</sub></label>
+        <input type="range" id="lrCl2" min="1" max="100" value="30" step="0.5" oninput="updateLR()">
+        <span class="slider-val" id="lrCl2Val">30.0 g</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">mol Al</span><br><span class="value indigo" id="lrMolAl">0.371</span></div>
+        <div class="readout-item"><span class="label">mol Cl<sub>2</sub></span><br><span class="value amber" id="lrMolCl2">0.423</span></div>
+        <div class="readout-item"><span class="label">AlCl<sub>3</sub> from Al</span><br><span class="value green" id="lrProdAl">0.371</span></div>
+        <div class="readout-item"><span class="label">AlCl<sub>3</sub> from Cl<sub>2</sub></span><br><span class="value green" id="lrProdCl2">0.282</span></div>
+        <div class="readout-item"><span class="label">Limiting Reagent</span><br><span class="value pink" id="lrResult">Cl<sub>2</sub></span></div>
+        <div class="readout-item"><span class="label">Theor. Yield AlCl<sub>3</sub></span><br><span class="value green" id="lrYield">37.6 g</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> 2 H<sub>2</sub> + O<sub>2</sub> &rarr; 2 H<sub>2</sub>O. You have 5.0 g of H<sub>2</sub> and 40.0 g of O<sub>2</sub>. How many moles of H<sub>2</sub>O can be produced from H<sub>2</sub>? (H<sub>2</sub> = 2.016 g/mol)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1" step="0.01" placeholder="mol H2O" onkeydown="if(event.key==='Enter')checkNum('s1p1',2.48,0.05)">
+          <span class="unit-label">mol</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p1',2.48,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> Same reaction above. How many moles of H<sub>2</sub>O from O<sub>2</sub>? (O<sub>2</sub> = 32.00 g/mol)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p2" step="0.01" placeholder="mol H2O" onkeydown="if(event.key==='Enter')checkNum('s1p2',2.50,0.05)">
+          <span class="unit-label">mol</span>
+          <button class="btn btn-sm" onclick="checkNum('s1p2',2.50,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>3.</strong> Which is the limiting reagent in the problem above?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','correct')">H<sub>2</sub> (it produces fewer moles of product)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p3','wrong')">O<sub>2</sub></button>
+        </div>
+        <div class="feedback" id="s1p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: EXCESS REAGENT -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Excess Reagent</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>excess reagent</strong> is the reactant that is NOT completely consumed. After the limiting reagent runs out, some excess reagent remains unreacted. To find how much is left over, calculate how much of the excess was <strong>actually used</strong>, then subtract from the starting amount.
+    </p>
+
+    <div class="formula-box green">Excess remaining = Starting moles &minus; Moles consumed</div>
+    <div class="formula-box amber">Moles consumed = Moles of limiting reagent &times; (coefficient of excess / coefficient of limiting)</div>
+
+    <div class="key-point">Always use the mole ratio from the balanced equation to find how much excess reagent was consumed. Never assume a 1:1 ratio.</div>
+
+    <p class="concept-text" style="margin-top:16px"><strong>Worked Example:</strong> Using our earlier reaction -- 10.0 g N<sub>2</sub> with 10.0 g H<sub>2</sub>. How much H<sub>2</sub> is left over?</p>
+    <div class="formula-box">N<sub>2</sub> + 3 H<sub>2</sub> &rarr; 2 NH<sub>3</sub></div>
+
+    <div class="step-box">
+      <span class="step-num">Step 1</span>
+      <p>We found N<sub>2</sub> is limiting at 0.357 mol. H<sub>2</sub> started at 4.96 mol.</p>
+    </div>
+
+    <div class="step-box">
+      <span class="step-num">Step 2</span>
+      <p>Calculate moles of H<sub>2</sub> consumed using the mole ratio:</p>
+      <p class="math">0.357 mol N<sub>2</sub> &times; (3 mol H<sub>2</sub> / 1 mol N<sub>2</sub>) = 1.071 mol H<sub>2</sub> consumed</p>
+    </div>
+
+    <div class="step-box">
+      <span class="step-num">Step 3</span>
+      <p>Subtract to find the excess remaining:</p>
+      <p class="math">4.96 &minus; 1.071 = 3.89 mol H<sub>2</sub> left over</p>
+      <p class="math">3.89 mol &times; 2.016 g/mol = 7.84 g H<sub>2</sub> remaining</p>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Excess Reagent Calculator</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:10px">Reaction: 2 Al + 3 Cl<sub>2</sub> &rarr; 2 AlCl<sub>3</sub></p>
+      <div class="slider-row">
+        <label>Grams of Al</label>
+        <input type="range" id="exAl" min="1" max="50" value="20" step="0.5" oninput="updateExcess()">
+        <span class="slider-val" id="exAlVal">20.0 g</span>
+      </div>
+      <div class="slider-row">
+        <label>Grams of Cl<sub>2</sub></label>
+        <input type="range" id="exCl2" min="1" max="100" value="30" step="0.5" oninput="updateExcess()">
+        <span class="slider-val" id="exCl2Val">30.0 g</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Limiting Reagent</span><br><span class="value pink" id="exLimiting">Cl<sub>2</sub></span></div>
+        <div class="readout-item"><span class="label">Excess Reagent</span><br><span class="value amber" id="exExcess">Al</span></div>
+        <div class="readout-item"><span class="label">Excess mol used</span><br><span class="value indigo" id="exUsed">0.282</span></div>
+        <div class="readout-item"><span class="label">Excess mol remaining</span><br><span class="value green" id="exRemain">0.459</span></div>
+        <div class="readout-item"><span class="label">Excess grams left</span><br><span class="value green" id="exGrams">12.4 g</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> Fe<sub>2</sub>O<sub>3</sub> + 3 CO &rarr; 2 Fe + 3 CO<sub>2</sub>. You start with 150 g Fe<sub>2</sub>O<sub>3</sub> (159.7 g/mol) and 100 g CO (28.01 g/mol). How many moles of CO are consumed by the limiting reagent?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1" step="0.01" placeholder="mol CO" onkeydown="if(event.key==='Enter')checkNum('s2p1',2.82,0.05)">
+          <span class="unit-label">mol</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p1',2.82,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> How many grams of CO remain as excess in the problem above?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2" step="0.1" placeholder="g CO" onkeydown="if(event.key==='Enter')checkNum('s2p2',21.0,1.0)">
+          <span class="unit-label">g</span>
+          <button class="btn btn-sm" onclick="checkNum('s2p2',21.0,1.0)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: THEORETICAL vs ACTUAL YIELD -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Theoretical vs Actual Yield</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Theoretical yield</strong> is the maximum amount of product possible, calculated from the limiting reagent. <strong>Actual yield</strong> is what you physically collect in a real experiment. <strong>Percent yield</strong> compares the two.
+    </p>
+
+    <div class="formula-box large pink">% Yield = (Actual Yield / Theoretical Yield) &times; 100%</div>
+
+    <p class="concept-text">
+      Percent yields are <strong>always less than 100%</strong> in practice. Reasons include:
+    </p>
+    <p class="concept-text" style="margin-top:0">
+      &bull; Incomplete reactions (equilibrium not reached)<br>
+      &bull; Side reactions that produce unwanted products<br>
+      &bull; Loss during transfer, filtering, or purification<br>
+      &bull; Impurities in reagents<br>
+      &bull; Product decomposes or evaporates
+    </p>
+
+    <div class="formula-box green">Theoretical Yield = moles of product (from LR) &times; molar mass of product</div>
+    <div class="formula-box amber">Actual Yield = measured in the lab (given in the problem)</div>
+
+    <div class="key-point">If your calculated percent yield exceeds 100%, you made an error somewhere -- or there is an impurity contaminating the product that adds extra mass.</div>
+
+    <p class="concept-text" style="margin-top:16px"><strong>Worked Example:</strong> A student reacts 25.0 g of CH<sub>4</sub> with excess O<sub>2</sub> and collects 38.5 g of CO<sub>2</sub>. What is the percent yield?</p>
+    <div class="formula-box">CH<sub>4</sub> + 2 O<sub>2</sub> &rarr; CO<sub>2</sub> + 2 H<sub>2</sub>O</div>
+
+    <div class="step-box">
+      <span class="step-num">Step 1</span>
+      <p>Moles of CH<sub>4</sub>:</p>
+      <p class="math">25.0 g &divide; 16.04 g/mol = 1.559 mol CH<sub>4</sub></p>
+    </div>
+
+    <div class="step-box">
+      <span class="step-num">Step 2</span>
+      <p>Theoretical moles of CO<sub>2</sub> (1:1 ratio):</p>
+      <p class="math">1.559 mol CH<sub>4</sub> &times; (1 mol CO<sub>2</sub> / 1 mol CH<sub>4</sub>) = 1.559 mol CO<sub>2</sub></p>
+    </div>
+
+    <div class="step-box">
+      <span class="step-num">Step 3</span>
+      <p>Theoretical yield in grams:</p>
+      <p class="math">1.559 mol &times; 44.01 g/mol = 68.6 g CO<sub>2</sub></p>
+    </div>
+
+    <div class="step-box">
+      <span class="step-num">Step 4</span>
+      <p>Percent yield:</p>
+      <p class="math">(38.5 / 68.6) &times; 100% = 56.1%</p>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Percent Yield Calculator</div>
+      <div class="slider-row">
+        <label>Theoretical (g)</label>
+        <input type="range" id="yTheor" min="1" max="200" value="100" step="1" oninput="updateYield()">
+        <span class="slider-val" id="yTheorVal">100 g</span>
+      </div>
+      <div class="slider-row">
+        <label>Actual (g)</label>
+        <input type="range" id="yActual" min="0" max="200" value="72" step="1" oninput="updateYield()">
+        <span class="slider-val" id="yActualVal">72 g</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Percent Yield</span><br><span class="value green" id="yPercent">72.0%</span></div>
+        <div class="readout-item"><span class="label">Product Lost</span><br><span class="value pink" id="yLost">28.0 g</span></div>
+        <div class="readout-item"><span class="label">Rating</span><br><span class="value amber" id="yRating">Good</span></div>
+      </div>
+      <div style="margin-top:12px;height:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;overflow:hidden;position:relative">
+        <div id="yBar" style="height:100%;background:var(--green);border-radius:3px;transition:width .3s ease;width:72%"></div>
+        <span style="position:absolute;right:8px;top:3px;font-size:.65rem;color:var(--text-dim)" id="yBarLabel">72%</span>
+      </div>
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem">
+        <p><strong>1.</strong> A reaction has a theoretical yield of 45.0 g and an actual yield of 32.8 g. What is the percent yield?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1" step="0.1" placeholder="% yield" onkeydown="if(event.key==='Enter')checkNum('s3p1',72.9,0.5)">
+          <span class="unit-label">%</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p1',72.9,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1-fb"></div>
+      </div>
+      <div class="problem">
+        <p><strong>2.</strong> If a reaction has 85% yield and produces 51.0 g actual product, what was the theoretical yield?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2" step="0.1" placeholder="theor. g" onkeydown="if(event.key==='Enter')checkNum('s3p2',60.0,0.5)">
+          <span class="unit-label">g</span>
+          <button class="btn btn-sm" onclick="checkNum('s3p2',60.0,0.5)">Check</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: MULTI-STEP STOICHIOMETRY -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Multi-Step Stoichiometry</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Every stoichiometry problem follows the same <strong>four-step pathway</strong>: grams of A &rarr; moles of A &rarr; moles of B &rarr; grams of B. The mole ratio from the balanced equation is always the bridge between substances.
+    </p>
+
+    <div class="flowchart-container">
+      <svg viewBox="0 0 820 170" width="100%" style="max-width:820px">
+        <!-- Boxes -->
+        <rect x="10" y="50" width="160" height="70" rx="10" fill="#262a33" stroke="#6366f1" stroke-width="2"/>
+        <text x="90" y="80" text-anchor="middle" fill="#6366f1" font-size="13" font-weight="600">Grams of A</text>
+        <text x="90" y="100" text-anchor="middle" fill="#9ca3af" font-size="10">(given)</text>
+
+        <rect x="220" y="50" width="160" height="70" rx="10" fill="#262a33" stroke="#22c55e" stroke-width="2"/>
+        <text x="300" y="80" text-anchor="middle" fill="#22c55e" font-size="13" font-weight="600">Moles of A</text>
+        <text x="300" y="100" text-anchor="middle" fill="#9ca3af" font-size="10">&divide; molar mass A</text>
+
+        <rect x="430" y="50" width="160" height="70" rx="10" fill="#262a33" stroke="#ec4899" stroke-width="2"/>
+        <text x="510" y="80" text-anchor="middle" fill="#ec4899" font-size="13" font-weight="600">Moles of B</text>
+        <text x="510" y="100" text-anchor="middle" fill="#9ca3af" font-size="10">&times; mole ratio</text>
+
+        <rect x="640" y="50" width="160" height="70" rx="10" fill="#262a33" stroke="#f59e0b" stroke-width="2"/>
+        <text x="720" y="80" text-anchor="middle" fill="#f59e0b" font-size="13" font-weight="600">Grams of B</text>
+        <text x="720" y="100" text-anchor="middle" fill="#9ca3af" font-size="10">&times; molar mass B</text>
+
+        <!-- Arrows -->
+        <line x1="170" y1="85" x2="215" y2="85" stroke="#9ca3af" stroke-width="2" marker-end="url(#flowArr)"/>
+        <line x1="380" y1="85" x2="425" y2="85" stroke="#9ca3af" stroke-width="2" marker-end="url(#flowArr)"/>
+        <line x1="590" y1="85" x2="635" y2="85" stroke="#9ca3af" stroke-width="2" marker-end="url(#flowArr)"/>
+
+        <!-- Arrow labels -->
+        <text x="192" y="78" text-anchor="middle" fill="#e2e4e9" font-size="16" font-weight="700">&divide;</text>
+        <text x="402" y="78" text-anchor="middle" fill="#e2e4e9" font-size="16" font-weight="700">&times;</text>
+        <text x="612" y="78" text-anchor="middle" fill="#e2e4e9" font-size="16" font-weight="700">&times;</text>
+
+        <!-- Step labels -->
+        <text x="90" y="145" text-anchor="middle" fill="#9ca3af" font-size="10">START</text>
+        <text x="300" y="145" text-anchor="middle" fill="#9ca3af" font-size="10">Step 1</text>
+        <text x="510" y="145" text-anchor="middle" fill="#9ca3af" font-size="10">Step 2</text>
+        <text x="720" y="145" text-anchor="middle" fill="#9ca3af" font-size="10">ANSWER</text>
+
+        <defs><marker id="flowArr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#9ca3af"/></marker></defs>
+      </svg>
+    </div>
+
+    <div class="formula-box large">grams A &times; (1 mol A / MM<sub>A</sub>) &times; (mol B / mol A) &times; (MM<sub>B</sub> / 1 mol B) = grams B</div>
+
+    <p class="concept-text"><strong>Worked Example:</strong> How many grams of CO<sub>2</sub> are produced from burning 50.0 g of C<sub>3</sub>H<sub>8</sub>?</p>
+    <div class="formula-box">C<sub>3</sub>H<sub>8</sub> + 5 O<sub>2</sub> &rarr; 3 CO<sub>2</sub> + 4 H<sub>2</sub>O</div>
+
+    <div class="step-box">
+      <span class="step-num">Grams &rarr; Moles</span>
+      <p class="math">50.0 g C<sub>3</sub>H<sub>8</sub> &divide; 44.10 g/mol = 1.134 mol C<sub>3</sub>H<sub>8</sub></p>
+    </div>
+    <div class="step-box">
+      <span class="step-num">Mole Ratio</span>
+      <p class="math">1.134 mol C<sub>3</sub>H<sub>8</sub> &times; (3 mol CO<sub>2</sub> / 1 mol C<sub>3</sub>H<sub>8</sub>) = 3.401 mol CO<sub>2</sub></p>
+    </div>
+    <div class="step-box">
+      <span class="step-num">Moles &rarr; Grams</span>
+      <p class="math">3.401 mol &times; 44.01 g/mol = 149.7 g CO<sub>2</sub></p>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Stoichiometry Converter</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:10px">Enter values for a generic reaction: aA &rarr; bB</p>
+      <div class="converter-grid">
+        <div class="converter-field">
+          <label>Grams of A (given)</label>
+          <input type="number" id="cvGrams" value="50" step="0.1" oninput="updateConverter()">
+        </div>
+        <div class="converter-field">
+          <label>Molar Mass of A (g/mol)</label>
+          <input type="number" id="cvMMA" value="44.10" step="0.01" oninput="updateConverter()">
+        </div>
+        <div class="converter-field">
+          <label>Coefficient of A</label>
+          <input type="number" id="cvCoeffA" value="1" min="1" max="10" step="1" oninput="updateConverter()">
+        </div>
+        <div class="converter-field">
+          <label>Coefficient of B</label>
+          <input type="number" id="cvCoeffB" value="3" min="1" max="10" step="1" oninput="updateConverter()">
+        </div>
+        <div class="converter-field">
+          <label>Molar Mass of B (g/mol)</label>
+          <input type="number" id="cvMMB" value="44.01" step="0.01" oninput="updateConverter()">
+        </div>
+        <div class="converter-field">
+          <label>% Yield (optional)</label>
+          <input type="number" id="cvYield" value="100" min="1" max="100" step="1" oninput="updateConverter()">
+        </div>
+      </div>
+      <div class="converter-result" id="cvResult">149.7 g of B (theoretical)</div>
+      <div class="readout" style="margin-top:10px">
+        <div class="readout-item"><span class="label">Moles of A</span><br><span class="value indigo" id="cvMolA">1.134</span></div>
+        <div class="readout-item"><span class="label">Moles of B</span><br><span class="value pink" id="cvMolB">3.401</span></div>
+        <div class="readout-item"><span class="label">Grams of B (theor.)</span><br><span class="value green" id="cvGramsB">149.7</span></div>
+        <div class="readout-item"><span class="label">Actual Yield</span><br><span class="value amber" id="cvActual">149.7 g</span></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: PRACTICE PROBLEMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Practice Problems</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">Work through these problems using the full stoichiometry method. Identify limiting reagent, calculate theoretical yield, and find percent yield where applicable.</p>
+
+    <div class="problem">
+      <p><strong>Problem 1 -- Limiting Reagent.</strong> 2 Na + Cl<sub>2</sub> &rarr; 2 NaCl. You have 46.0 g Na (23.00 g/mol) and 71.0 g Cl<sub>2</sub> (70.90 g/mol). What is the theoretical yield of NaCl in grams? (NaCl = 58.44 g/mol)</p>
+      <div class="problem-input-row">
+        <input type="number" id="s5p1" step="0.1" placeholder="g NaCl" onkeydown="if(event.key==='Enter')checkNum('s5p1',116.9,1.0)">
+        <span class="unit-label">g</span>
+        <button class="btn btn-sm" onclick="checkNum('s5p1',116.9,1.0)">Check</button>
+      </div>
+      <div class="feedback" id="s5p1-fb"></div>
+    </div>
+
+    <div class="problem">
+      <p><strong>Problem 2 -- Excess.</strong> In Problem 1, how many grams of the excess reagent remain?</p>
+      <div class="problem-input-row">
+        <input type="number" id="s5p2" step="0.1" placeholder="g excess" onkeydown="if(event.key==='Enter')checkNum('s5p2',0.1,0.5)">
+        <span class="unit-label">g</span>
+        <button class="btn btn-sm" onclick="checkNum('s5p2',0.1,0.5)">Check</button>
+      </div>
+      <div class="feedback" id="s5p2-fb"></div>
+    </div>
+
+    <div class="problem">
+      <p><strong>Problem 3 -- Percent Yield.</strong> 4 Fe + 3 O<sub>2</sub> &rarr; 2 Fe<sub>2</sub>O<sub>3</sub>. A student starts with 100.0 g Fe (55.85 g/mol) and excess O<sub>2</sub>. The student collects 110.0 g Fe<sub>2</sub>O<sub>3</sub> (159.7 g/mol). What is the percent yield?</p>
+      <div class="problem-input-row">
+        <input type="number" id="s5p3" step="0.1" placeholder="% yield" onkeydown="if(event.key==='Enter')checkNum('s5p3',76.8,1.0)">
+        <span class="unit-label">%</span>
+        <button class="btn btn-sm" onclick="checkNum('s5p3',76.8,1.0)">Check</button>
+      </div>
+      <div class="feedback" id="s5p3-fb"></div>
+    </div>
+
+    <div class="problem">
+      <p><strong>Problem 4 -- Multi-Step.</strong> CaCO<sub>3</sub> &rarr; CaO + CO<sub>2</sub>. How many grams of CaO (56.08 g/mol) can be produced from 250.0 g CaCO<sub>3</sub> (100.09 g/mol)?</p>
+      <div class="problem-input-row">
+        <input type="number" id="s5p4" step="0.1" placeholder="g CaO" onkeydown="if(event.key==='Enter')checkNum('s5p4',140.1,1.0)">
+        <span class="unit-label">g</span>
+        <button class="btn btn-sm" onclick="checkNum('s5p4',140.1,1.0)">Check</button>
+      </div>
+      <div class="feedback" id="s5p4-fb"></div>
+    </div>
+
+    <div class="problem">
+      <p><strong>Problem 5 -- Combined.</strong> 2 H<sub>2</sub>O<sub>2</sub> &rarr; 2 H<sub>2</sub>O + O<sub>2</sub>. A student decomposes 85.0 g of H<sub>2</sub>O<sub>2</sub> (34.02 g/mol) and collects 28.0 g of O<sub>2</sub> (32.00 g/mol). What is the percent yield of O<sub>2</sub>?</p>
+      <div class="problem-input-row">
+        <input type="number" id="s5p5" step="0.1" placeholder="% yield" onkeydown="if(event.key==='Enter')checkNum('s5p5',70.0,1.0)">
+        <span class="unit-label">%</span>
+        <button class="btn btn-sm" onclick="checkNum('s5p5',70.0,1.0)">Check</button>
+      </div>
+      <div class="feedback" id="s5p5-fb"></div>
+    </div>
+
+    <div class="problem">
+      <p><strong>Problem 6 -- Reverse Yield.</strong> A reaction with 62% yield produced 45.0 g of product. What was the theoretical yield?</p>
+      <div class="problem-input-row">
+        <input type="number" id="s5p6" step="0.1" placeholder="theor. g" onkeydown="if(event.key==='Enter')checkNum('s5p6',72.6,0.5)">
+        <span class="unit-label">g</span>
+        <button class="btn btn-sm" onclick="checkNum('s5p6',72.6,0.5)">Check</button>
+      </div>
+      <div class="feedback" id="s5p6-fb"></div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Definition</div>
+      <p class="q-text">The limiting reagent is the reactant that:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Is present in the largest amount</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">Is completely consumed first and limits product formed</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Has the largest molar mass</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Is added last to the reaction</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Identification Method</div>
+      <p class="q-text">To identify the limiting reagent, you should:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">Compare the grams of each reactant directly</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">Pick whichever has fewer grams</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">Convert each reactant to moles of product and see which gives less</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">Choose the reactant with the higher molar mass</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Calculation</div>
+      <p class="q-text">N<sub>2</sub> + 3 H<sub>2</sub> &rarr; 2 NH<sub>3</sub>. You have 1.0 mol N<sub>2</sub> and 2.0 mol H<sub>2</sub>. What is the limiting reagent?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">N<sub>2</sub> (it has fewer moles)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">H<sub>2</sub> (it can only make 1.33 mol NH<sub>3</sub> while N<sub>2</sub> can make 2.0 mol)</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">Neither -- they are in perfect ratio</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">Cannot determine without grams</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Excess Reagent</div>
+      <p class="q-text">After a reaction with a limiting reagent, the excess reagent:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Is completely consumed as well</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Disappears from the container</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">Has some amount remaining unreacted</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">Converts into a different element</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Percent Yield Formula</div>
+      <p class="q-text">The correct formula for percent yield is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">(Theoretical / Actual) &times; 100%</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">(Actual / Theoretical) &times; 100%</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">(Actual &minus; Theoretical) &times; 100%</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">Actual + Theoretical</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Theoretical Yield</div>
+      <p class="q-text">Theoretical yield is calculated from:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">The excess reagent</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">The limiting reagent</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">The average of both reactants</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">The product with the highest molar mass</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Real-World Yield</div>
+      <p class="q-text">Why is actual yield almost always less than theoretical yield?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">The balanced equation is always wrong</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">Atoms are destroyed during the reaction</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">Side reactions, incomplete reactions, and losses during collection</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">The molar masses change during the reaction</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Calculation</div>
+      <p class="q-text">A student obtains 35.0 g of product when the theoretical yield is 50.0 g. What is the percent yield?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">70.0%</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">142.9%</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">30.0%</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">85.0%</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Stoichiometry Steps</div>
+      <p class="q-text">The correct order for converting grams of reactant A to grams of product B is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">g A &rarr; g B (multiply by ratio of molar masses)</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">g A &rarr; mol A &rarr; mol B &rarr; g B</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">mol A &rarr; g A &rarr; g B &rarr; mol B</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">g A &rarr; mol B &rarr; mol A &rarr; g B</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Full Problem</div>
+      <p class="q-text">2 Mg + O<sub>2</sub> &rarr; 2 MgO. You burn 24.3 g of Mg (24.31 g/mol) with excess O<sub>2</sub>. The theoretical yield of MgO (40.31 g/mol) is approximately:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">40.3 g</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">80.6 g</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">20.2 g</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">64.6 g</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(1) + ')';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: LIMITING REAGENT INTERACTIVE ==================== */
+function updateLR() {
+  var gAl = +document.getElementById('lrAl').value;
+  var gCl2 = +document.getElementById('lrCl2').value;
+  document.getElementById('lrAlVal').textContent = gAl.toFixed(1) + ' g';
+  document.getElementById('lrCl2Val').textContent = gCl2.toFixed(1) + ' g';
+
+  var molAl = gAl / 26.98;
+  var molCl2 = gCl2 / 70.90;
+  // 2 Al + 3 Cl2 -> 2 AlCl3
+  var prodFromAl = molAl * (2/2); // mol AlCl3 from Al
+  var prodFromCl2 = molCl2 * (2/3); // mol AlCl3 from Cl2
+
+  document.getElementById('lrMolAl').textContent = molAl.toFixed(3);
+  document.getElementById('lrMolCl2').textContent = molCl2.toFixed(3);
+  document.getElementById('lrProdAl').textContent = prodFromAl.toFixed(3);
+  document.getElementById('lrProdCl2').textContent = prodFromCl2.toFixed(3);
+
+  var limiting, molProduct;
+  if (prodFromAl <= prodFromCl2) {
+    limiting = 'Al';
+    molProduct = prodFromAl;
+  } else {
+    limiting = 'Cl<sub>2</sub>';
+    molProduct = prodFromCl2;
+  }
+  document.getElementById('lrResult').innerHTML = limiting;
+  document.getElementById('lrYield').textContent = (molProduct * 133.34).toFixed(1) + ' g';
+}
+
+/* ==================== SECTION 2: EXCESS REAGENT INTERACTIVE ==================== */
+function updateExcess() {
+  var gAl = +document.getElementById('exAl').value;
+  var gCl2 = +document.getElementById('exCl2').value;
+  document.getElementById('exAlVal').textContent = gAl.toFixed(1) + ' g';
+  document.getElementById('exCl2Val').textContent = gCl2.toFixed(1) + ' g';
+
+  var molAl = gAl / 26.98;
+  var molCl2 = gCl2 / 70.90;
+  var prodFromAl = molAl; // 2:2 ratio
+  var prodFromCl2 = molCl2 * (2/3);
+
+  var limitingName, excessName, molUsed, molRemain, mmExcess;
+  if (prodFromAl <= prodFromCl2) {
+    limitingName = 'Al';
+    excessName = 'Cl<sub>2</sub>';
+    // Cl2 consumed: molAl * (3/2)
+    molUsed = molAl * (3/2);
+    molRemain = molCl2 - molUsed;
+    mmExcess = 70.90;
+  } else {
+    limitingName = 'Cl<sub>2</sub>';
+    excessName = 'Al';
+    // Al consumed: molCl2 * (2/3)
+    molUsed = molCl2 * (2/3);
+    molRemain = molAl - molUsed;
+    mmExcess = 26.98;
+  }
+  if (molRemain < 0) molRemain = 0;
+
+  document.getElementById('exLimiting').innerHTML = limitingName;
+  document.getElementById('exExcess').innerHTML = excessName;
+  document.getElementById('exUsed').textContent = molUsed.toFixed(3);
+  document.getElementById('exRemain').textContent = molRemain.toFixed(3);
+  document.getElementById('exGrams').textContent = (molRemain * mmExcess).toFixed(1) + ' g';
+}
+
+/* ==================== SECTION 3: YIELD INTERACTIVE ==================== */
+function updateYield() {
+  var theor = +document.getElementById('yTheor').value;
+  var actual = +document.getElementById('yActual').value;
+  document.getElementById('yTheorVal').textContent = theor + ' g';
+  document.getElementById('yActualVal').textContent = actual + ' g';
+
+  var pct = theor > 0 ? (actual / theor * 100) : 0;
+  var lost = theor - actual;
+  if (lost < 0) lost = 0;
+
+  document.getElementById('yPercent').textContent = pct.toFixed(1) + '%';
+  document.getElementById('yLost').textContent = lost.toFixed(1) + ' g';
+
+  var rating;
+  if (pct >= 90) rating = 'Excellent';
+  else if (pct >= 70) rating = 'Good';
+  else if (pct >= 50) rating = 'Fair';
+  else rating = 'Poor';
+  document.getElementById('yRating').textContent = rating;
+
+  var barW = Math.min(pct, 100);
+  document.getElementById('yBar').style.width = barW + '%';
+  document.getElementById('yBarLabel').textContent = pct.toFixed(0) + '%';
+
+  // Color the bar based on yield quality
+  var barColor = pct >= 90 ? 'var(--green)' : pct >= 70 ? 'var(--indigo)' : pct >= 50 ? 'var(--amber)' : 'var(--pink)';
+  document.getElementById('yBar').style.background = barColor;
+}
+
+/* ==================== SECTION 4: CONVERTER INTERACTIVE ==================== */
+function updateConverter() {
+  var grams = +document.getElementById('cvGrams').value;
+  var mmA = +document.getElementById('cvMMA').value;
+  var coeffA = +document.getElementById('cvCoeffA').value;
+  var coeffB = +document.getElementById('cvCoeffB').value;
+  var mmB = +document.getElementById('cvMMB').value;
+  var yieldPct = +document.getElementById('cvYield').value;
+
+  if (mmA <= 0 || coeffA <= 0 || coeffB <= 0 || mmB <= 0) return;
+
+  var molA = grams / mmA;
+  var molB = molA * (coeffB / coeffA);
+  var gramsB = molB * mmB;
+  var actualB = gramsB * (yieldPct / 100);
+
+  document.getElementById('cvMolA').textContent = molA.toFixed(3);
+  document.getElementById('cvMolB').textContent = molB.toFixed(3);
+  document.getElementById('cvGramsB').textContent = gramsB.toFixed(1);
+  document.getElementById('cvActual').textContent = actualB.toFixed(1) + ' g';
+
+  var label = yieldPct < 100
+    ? actualB.toFixed(1) + ' g of B (at ' + yieldPct + '% yield)'
+    : gramsB.toFixed(1) + ' g of B (theoretical)';
+  document.getElementById('cvResult').textContent = label;
+}
+
+/* ==================== INIT ==================== */
+updateLR();
+updateExcess();
+updateYield();
+updateConverter();
+markComplete(1);
+</script>
+
+</body>
+</html>

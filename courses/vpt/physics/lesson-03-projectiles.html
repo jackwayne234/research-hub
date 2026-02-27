@@ -1,0 +1,2203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 3: 2D Kinematics &mdash; Projectile Motion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --bg-card: #262a33;
+    --bg-card-hover: #2c313c;
+    --bg-input: #1a1d24;
+    --border: #3a3f4b;
+    --text: #e2e4e9;
+    --text-dim: #9ca3af;
+    --text-bright: #ffffff;
+    --indigo: #6366f1;
+    --indigo-dim: rgba(99,102,241,0.15);
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.15);
+    --pink: #ec4899;
+    --pink-dim: rgba(236,72,153,0.15);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.15);
+    --radius: 10px;
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER & PROGRESS */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(30, 33, 40, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+  }
+
+  .top-bar h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .top-bar h1 span { color: var(--indigo); }
+
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--indigo), #818cf8);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  /* CONTENT */
+  .content { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: var(--transition);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--transition);
+  }
+
+  .section-header:hover { background: var(--bg-card-hover); }
+
+  .section-header h2 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--indigo-dim);
+    color: var(--indigo);
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .chevron {
+    width: 20px;
+    height: 20px;
+    color: var(--text-dim);
+    transition: transform var(--transition);
+    flex-shrink: 0;
+  }
+
+  .section-card.open .chevron { transform: rotate(180deg); }
+
+  .section-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .section-card.open .section-body { max-height: 30000px; }
+
+  .section-inner { padding: 0 22px 22px; }
+
+  /* TYPOGRAPHY */
+  .concept-text {
+    font-size: 0.82rem;
+    color: var(--text);
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+
+  .concept-text strong { color: var(--text-bright); }
+
+  .formula-box {
+    background: var(--indigo-dim);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 16px 0;
+    text-align: center;
+    font-size: 1rem;
+    color: var(--indigo);
+    font-weight: 600;
+  }
+
+  .formula-box.large {
+    font-size: 1.15rem;
+    padding: 20px 24px;
+  }
+
+  .formula-box.green {
+    background: var(--green-dim);
+    border-color: rgba(34,197,94,0.3);
+    color: var(--green);
+  }
+
+  .formula-box.pink {
+    background: var(--pink-dim);
+    border-color: rgba(236,72,153,0.3);
+    color: var(--pink);
+  }
+
+  .formula-box.amber {
+    background: var(--amber-dim);
+    border-color: rgba(245,158,11,0.3);
+    color: var(--amber);
+  }
+
+  .formula-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .key-point {
+    background: var(--amber-dim);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 0.78rem;
+    color: var(--amber);
+  }
+
+  /* INTERACTIVE AREAS */
+  .interactive-area {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 16px 0;
+    position: relative;
+  }
+
+  .interactive-label {
+    font-size: 0.7rem;
+    color: var(--indigo);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .readout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .readout-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 0.75rem;
+  }
+
+  .readout-item .label { color: var(--text-dim); font-size: 0.65rem; }
+  .readout-item .value { color: var(--text-bright); font-weight: 600; }
+  .readout-item .value.green { color: var(--green); }
+  .readout-item .value.pink { color: var(--pink); }
+  .readout-item .value.amber { color: var(--amber); }
+  .readout-item .value.indigo { color: var(--indigo); }
+
+  /* SVG */
+  svg text { font-family: 'JetBrains Mono', monospace; }
+
+  /* PRACTICE PROBLEMS */
+  .practice-block {
+    margin-top: 20px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  .practice-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--amber);
+    margin-bottom: 14px;
+  }
+
+  .problem {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+
+  .problem p {
+    font-size: 0.78rem;
+    margin-bottom: 10px;
+    line-height: 1.7;
+  }
+
+  .problem-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .problem input[type="text"],
+  .problem input[type="number"] {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--text-bright);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    width: 120px;
+    outline: none;
+    transition: border-color var(--transition);
+  }
+
+  .problem input:focus { border-color: var(--indigo); }
+
+  .problem .unit-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-card);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: var(--transition);
+    user-select: none;
+  }
+
+  .btn:hover { background: var(--bg-card-hover); border-color: var(--indigo); color: var(--text-bright); }
+
+  .btn-primary {
+    background: var(--indigo);
+    border-color: var(--indigo);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: #5558e6; }
+
+  .btn-green {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+
+  .btn-green:hover { background: #1ea34e; }
+
+  .btn-sm { padding: 6px 12px; font-size: 0.68rem; }
+
+  .feedback {
+    font-size: 0.75rem;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: none;
+  }
+
+  .feedback.correct {
+    display: block;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(34,197,94,0.3);
+  }
+
+  .feedback.incorrect {
+    display: block;
+    background: var(--pink-dim);
+    color: var(--pink);
+    border: 1px solid rgba(236,72,153,0.3);
+  }
+
+  /* SLIDER */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0;
+  }
+
+  .slider-row label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    min-width: 110px;
+    flex-shrink: 0;
+  }
+
+  .slider-row input[type="range"] {
+    flex: 1;
+  }
+
+  .slider-row .slider-val {
+    font-size: 0.75rem;
+    color: var(--text-bright);
+    font-weight: 600;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    outline: none;
+    margin: 10px 0;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--indigo);
+    cursor: pointer;
+    border: 2px solid var(--text-bright);
+  }
+
+  /* CONTROLS ROW */
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin: 12px 0;
+  }
+
+  /* WORKED EXAMPLE */
+  .worked-example {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 14px 0;
+  }
+
+  .worked-example h4 {
+    font-size: 0.78rem;
+    color: var(--amber);
+    margin-bottom: 10px;
+  }
+
+  .step {
+    padding: 8px 12px;
+    margin: 6px 0;
+    border-left: 2px solid var(--border);
+    font-size: 0.76rem;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: all 0.4s ease;
+  }
+
+  .step.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .step .step-label {
+    color: var(--indigo);
+    font-weight: 600;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* QUIZ */
+  .quiz-score {
+    background: var(--indigo-dim);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .quiz-score .score-text {
+    font-size: 0.85rem;
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+
+  .quiz-q {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  .quiz-q .q-num {
+    font-size: 0.65rem;
+    color: var(--indigo);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .quiz-q p {
+    font-size: 0.78rem;
+    margin-bottom: 10px;
+    line-height: 1.7;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .quiz-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.76rem;
+    transition: var(--transition);
+  }
+
+  .quiz-option:hover { border-color: var(--indigo); background: var(--bg-card-hover); }
+
+  .quiz-option.selected { border-color: var(--indigo); background: var(--indigo-dim); }
+  .quiz-option.correct-answer { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .quiz-option.wrong-answer { border-color: var(--pink); background: var(--pink-dim); color: var(--pink); }
+  .quiz-option.disabled { pointer-events: none; }
+
+  .quiz-option .letter {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .quiz-explanation {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+  }
+
+  .quiz-explanation.show { display: block; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .content { padding: 14px; }
+    .section-inner { padding: 0 14px 14px; }
+    .section-header { padding: 14px 16px; }
+    .readout { gap: 8px; }
+    .controls-row { gap: 8px; }
+    .formula-box { font-size: 0.85rem; padding: 12px 14px; }
+    .formula-box.large { font-size: 0.95rem; }
+    .slider-row { flex-wrap: wrap; }
+    .slider-row label { min-width: 80px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <h1><span>Week 3</span> / 2D Kinematics &mdash; Projectile Motion</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 24 problems completed</div>
+</div>
+
+<div class="content">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: Independence of Horizontal & Vertical Motion -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Independence of Horizontal &amp; Vertical Motion</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">
+        The key insight of projectile motion: <strong>horizontal and vertical motions are completely independent</strong>.
+        Gravity only acts vertically. This means a ball dropped from rest and a ball launched horizontally from the same height
+        will <strong>hit the ground at exactly the same time</strong>.
+      </p>
+
+      <div class="key-point">
+        Horizontal velocity has zero effect on vertical free fall. The x-component moves at constant velocity while the y-component accelerates under gravity independently.
+      </div>
+
+      <div class="interactive-area">
+        <div class="interactive-label">Demonstration: Dropped vs. Launched</div>
+        <svg id="indepSvg" width="100%" height="350" viewBox="0 0 800 350"></svg>
+        <div class="controls-row">
+          <button class="btn btn-primary" id="indepStartBtn" onclick="startIndepDemo()">Start</button>
+          <button class="btn btn-sm" onclick="resetIndepDemo()">Reset</button>
+        </div>
+        <div class="readout">
+          <div class="readout-item"><div class="label">Time</div><div class="value" id="indepTime">0.00 s</div></div>
+          <div class="readout-item"><div class="label">Dropped Y</div><div class="value pink" id="indepDropY">80.0 m</div></div>
+          <div class="readout-item"><div class="label">Launched Y</div><div class="value green" id="indepLaunchY">80.0 m</div></div>
+          <div class="readout-item"><div class="label">Launched X</div><div class="value indigo" id="indepLaunchX">0.0 m</div></div>
+        </div>
+      </div>
+
+      <p class="concept-text" style="margin-top:16px;">
+        During flight, we can decompose the velocity into independent components:
+      </p>
+
+      <div class="formula-row">
+        <div class="formula-box green">x-component: v<sub>x</sub> = v<sub>0</sub>cos&theta; (constant &mdash; no horizontal acceleration)</div>
+        <div class="formula-box pink">y-component: v<sub>y</sub> = v<sub>0</sub>sin&theta; &minus; gt (accelerating downward)</div>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+
+        <div class="problem" id="p1_1">
+          <p><strong>1.1</strong> A ball is dropped from 45 m. How long does it take to hit the ground? (g = 9.8 m/s&sup2;)</p>
+          <div class="problem-input-row">
+            <input type="number" id="p1_1_input" step="any" placeholder="answer"> <span class="unit-label">s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p1_1', 3.03, 0.05)">Check</button>
+          </div>
+          <div class="feedback" id="p1_1_fb"></div>
+        </div>
+
+        <div class="problem" id="p1_2">
+          <p><strong>1.2</strong> A ball is launched horizontally at 20 m/s from 45 m high. How long until it hits the ground?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p1_2_input" step="any" placeholder="answer"> <span class="unit-label">s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p1_2', 3.03, 0.05)">Check</button>
+          </div>
+          <div class="feedback" id="p1_2_fb"></div>
+        </div>
+
+        <div class="problem" id="p1_3">
+          <p><strong>1.3</strong> For the launched ball in 1.2, how far horizontally does it travel before hitting the ground?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p1_3_input" step="any" placeholder="answer"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p1_3', 60.6, 0.5)">Check</button>
+          </div>
+          <div class="feedback" id="p1_3_fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: Projectile Motion Simulator -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Projectile Motion Simulator</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">
+        Adjust the launch angle and speed to observe how the trajectory changes. Notice how <strong>45 degrees maximizes range</strong>
+        (on flat ground), and complementary angles (e.g., 30 and 60) give the same range but different max heights.
+      </p>
+
+      <div class="interactive-area">
+        <div class="interactive-label">Projectile Simulator</div>
+        <svg id="projSvg" width="100%" height="400" viewBox="0 0 800 400"></svg>
+        <div class="slider-row">
+          <label>Angle (&theta;):</label>
+          <input type="range" id="projAngle" min="0" max="90" value="45" oninput="updateProjSim()">
+          <span class="slider-val" id="projAngleVal">45&deg;</span>
+        </div>
+        <div class="slider-row">
+          <label>Speed (v<sub>0</sub>):</label>
+          <input type="range" id="projSpeed" min="5" max="50" value="30" oninput="updateProjSim()">
+          <span class="slider-val" id="projSpeedVal">30 m/s</span>
+        </div>
+        <div class="controls-row">
+          <button class="btn btn-primary" id="projLaunchBtn" onclick="launchProjectile()">Launch</button>
+          <button class="btn btn-sm" onclick="resetProjSim()">Clear Trails</button>
+        </div>
+        <div class="readout">
+          <div class="readout-item"><div class="label">Max Height</div><div class="value green" id="projMaxH">--</div></div>
+          <div class="readout-item"><div class="label">Range</div><div class="value indigo" id="projRange">--</div></div>
+          <div class="readout-item"><div class="label">Time of Flight</div><div class="value amber" id="projTof">--</div></div>
+          <div class="readout-item"><div class="label">v<sub>0x</sub></div><div class="value" id="projV0x">--</div></div>
+          <div class="readout-item"><div class="label">v<sub>0y</sub></div><div class="value" id="projV0y">--</div></div>
+        </div>
+      </div>
+
+      <div class="formula-box large">
+        y = x tan&theta; &minus; gx&sup2; / (2v<sub>0</sub>&sup2;cos&sup2;&theta;)
+      </div>
+
+      <div class="key-point">
+        Maximum range on flat ground occurs at &theta; = 45&deg;. At this angle, sin(2&theta;) = sin(90&deg;) = 1, giving R = v&sup2;/g. Complementary angles (&theta; and 90&minus;&theta;) always produce equal range.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: Solving Projectile Problems -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Solving Projectile Problems</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">
+        Every projectile problem follows the same three-step decomposition. Separate the initial velocity into components,
+        then treat horizontal and vertical motion independently.
+      </p>
+
+      <div class="formula-row">
+        <div class="formula-box">Step 1: v<sub>0x</sub> = v<sub>0</sub>cos&theta;, &emsp; v<sub>0y</sub> = v<sub>0</sub>sin&theta;</div>
+        <div class="formula-box green">Step 2 (Horizontal): x = v<sub>0x</sub> &middot; t &emsp; (constant velocity, a<sub>x</sub> = 0)</div>
+        <div class="formula-box pink">Step 3 (Vertical): y = v<sub>0y</sub> &middot; t &minus; &frac12;gt&sup2; &emsp; (free fall, a<sub>y</sub> = &minus;g)</div>
+      </div>
+
+      <div class="worked-example">
+        <h4>Worked Example: A ball is launched at 25 m/s at 53&deg; above horizontal. Find the max height, range, and time of flight.</h4>
+        <div class="step" id="we_step1">
+          <div class="step-label">Step 1: Decompose</div>
+          v<sub>0x</sub> = 25 cos(53&deg;) = 25 &times; 0.6018 = <strong style="color:var(--green)">15.05 m/s</strong><br>
+          v<sub>0y</sub> = 25 sin(53&deg;) = 25 &times; 0.7986 = <strong style="color:var(--pink)">19.97 m/s</strong>
+        </div>
+        <div class="step" id="we_step2">
+          <div class="step-label">Step 2: Time of flight</div>
+          At the top, v<sub>y</sub> = 0: &ensp; 0 = v<sub>0y</sub> &minus; gt<sub>peak</sub><br>
+          t<sub>peak</sub> = 19.97 / 9.8 = <strong style="color:var(--amber)">2.04 s</strong><br>
+          Total time = 2 &times; t<sub>peak</sub> = <strong style="color:var(--amber)">4.08 s</strong>
+        </div>
+        <div class="step" id="we_step3">
+          <div class="step-label">Step 3: Max height</div>
+          y<sub>max</sub> = v<sub>0y</sub>&sup2; / (2g) = (19.97)&sup2; / (2 &times; 9.8) = 398.8 / 19.6 = <strong style="color:var(--green)">20.35 m</strong>
+        </div>
+        <div class="step" id="we_step4">
+          <div class="step-label">Step 4: Range</div>
+          R = v<sub>0x</sub> &times; T = 15.05 &times; 4.08 = <strong style="color:var(--indigo)">61.4 m</strong>
+        </div>
+        <button class="btn btn-sm btn-primary" id="weNextBtn" onclick="nextWorkedStep()" style="margin-top:10px;">Show Next Step</button>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+
+        <div class="problem" id="p3_1">
+          <p><strong>3.1</strong> A projectile is fired at 40 m/s at 30&deg;. What is v<sub>0x</sub>?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p3_1_input" step="any" placeholder="answer"> <span class="unit-label">m/s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p3_1', 34.64, 0.2)">Check</button>
+          </div>
+          <div class="feedback" id="p3_1_fb"></div>
+        </div>
+
+        <div class="problem" id="p3_2">
+          <p><strong>3.2</strong> Same projectile (40 m/s, 30&deg;). What is the maximum height? (g = 9.8 m/s&sup2;)</p>
+          <div class="problem-input-row">
+            <input type="number" id="p3_2_input" step="any" placeholder="answer"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p3_2', 20.41, 0.3)">Check</button>
+          </div>
+          <div class="feedback" id="p3_2_fb"></div>
+        </div>
+
+        <div class="problem" id="p3_3">
+          <p><strong>3.3</strong> Same projectile. What is the total time of flight?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p3_3_input" step="any" placeholder="answer"> <span class="unit-label">s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p3_3', 4.08, 0.05)">Check</button>
+          </div>
+          <div class="feedback" id="p3_3_fb"></div>
+        </div>
+
+        <div class="problem" id="p3_4">
+          <p><strong>3.4</strong> Same projectile. What is the range (horizontal distance)?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p3_4_input" step="any" placeholder="answer"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p3_4', 141.4, 1.0)">Check</button>
+          </div>
+          <div class="feedback" id="p3_4_fb"></div>
+        </div>
+
+        <div class="problem" id="p3_5">
+          <p><strong>3.5</strong> A ball is kicked at 18 m/s at 60&deg;. How far from the kick does it land?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p3_5_input" step="any" placeholder="answer"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p3_5', 28.66, 0.5)">Check</button>
+          </div>
+          <div class="feedback" id="p3_5_fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: Relative Motion -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Relative Motion</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">
+        When objects move in different frames of reference, we add velocity vectors.
+        A boat crossing a river must contend with the current. A plane flying through wind
+        gets pushed off course. The <strong>resultant velocity</strong> is the vector sum.
+      </p>
+
+      <div class="formula-box">v&#x20D7;<sub>resultant</sub> = v&#x20D7;<sub>object/medium</sub> + v&#x20D7;<sub>medium/ground</sub></div>
+
+      <div class="interactive-area">
+        <div class="interactive-label">River Crossing Simulator</div>
+        <svg id="riverSvg" width="100%" height="320" viewBox="0 0 800 320"></svg>
+        <div class="slider-row">
+          <label>Boat speed:</label>
+          <input type="range" id="boatSpeed" min="1" max="20" value="8" step="0.5" oninput="updateRiver()">
+          <span class="slider-val" id="boatSpeedVal">8 m/s</span>
+        </div>
+        <div class="slider-row">
+          <label>River current:</label>
+          <input type="range" id="riverCurrent" min="0" max="15" value="5" step="0.5" oninput="updateRiver()">
+          <span class="slider-val" id="riverCurrentVal">5 m/s</span>
+        </div>
+        <div class="controls-row">
+          <button class="btn btn-primary" onclick="launchBoat()">Cross River</button>
+          <button class="btn btn-sm" onclick="resetRiver()">Reset</button>
+        </div>
+        <div class="readout">
+          <div class="readout-item"><div class="label">Resultant Speed</div><div class="value amber" id="riverResultant">--</div></div>
+          <div class="readout-item"><div class="label">Drift Downstream</div><div class="value pink" id="riverDrift">--</div></div>
+          <div class="readout-item"><div class="label">Crossing Time</div><div class="value" id="riverTime">--</div></div>
+          <div class="readout-item"><div class="label">Actual Angle</div><div class="value" id="riverAngle">--</div></div>
+        </div>
+      </div>
+
+      <div class="interactive-area" style="margin-top:16px;">
+        <div class="interactive-label">Plane in Wind Simulator</div>
+        <svg id="planeSvg" width="100%" height="320" viewBox="0 0 800 320"></svg>
+        <div class="slider-row">
+          <label>Plane airspeed:</label>
+          <input type="range" id="planeSpeed" min="50" max="300" value="150" step="5" oninput="updatePlane()">
+          <span class="slider-val" id="planeSpeedVal">150 km/h</span>
+        </div>
+        <div class="slider-row">
+          <label>Wind speed:</label>
+          <input type="range" id="windSpeed" min="0" max="100" value="40" step="5" oninput="updatePlane()">
+          <span class="slider-val" id="windSpeedVal">40 km/h</span>
+        </div>
+        <div class="slider-row">
+          <label>Wind direction:</label>
+          <input type="range" id="windDir" min="0" max="360" value="270" step="5" oninput="updatePlane()">
+          <span class="slider-val" id="windDirVal">270&deg; (W)</span>
+        </div>
+        <div class="readout">
+          <div class="readout-item"><div class="label">Ground Speed</div><div class="value amber" id="planeGround">--</div></div>
+          <div class="readout-item"><div class="label">Drift Angle</div><div class="value pink" id="planeDrift">--</div></div>
+        </div>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+
+        <div class="problem" id="p4_1">
+          <p><strong>4.1</strong> A boat heads straight across a 100 m wide river at 6 m/s. The current flows at 4 m/s downstream. What is the resultant speed?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p4_1_input" step="any" placeholder="answer"> <span class="unit-label">m/s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p4_1', 7.21, 0.1)">Check</button>
+          </div>
+          <div class="feedback" id="p4_1_fb"></div>
+        </div>
+
+        <div class="problem" id="p4_2">
+          <p><strong>4.2</strong> How far downstream does the boat in 4.1 land? (River is 100 m wide)</p>
+          <div class="problem-input-row">
+            <input type="number" id="p4_2_input" step="any" placeholder="answer"> <span class="unit-label">m</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p4_2', 66.67, 0.5)">Check</button>
+          </div>
+          <div class="feedback" id="p4_2_fb"></div>
+        </div>
+
+        <div class="problem" id="p4_3">
+          <p><strong>4.3</strong> A plane flies north at 200 km/h airspeed. A wind blows east at 50 km/h. What is the ground speed?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p4_3_input" step="any" placeholder="answer"> <span class="unit-label">km/h</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p4_3', 206.16, 0.5)">Check</button>
+          </div>
+          <div class="feedback" id="p4_3_fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: Uniform Circular Motion -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Uniform Circular Motion</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">
+        An object moving in a circle at constant speed is still <strong>accelerating</strong> because its velocity direction
+        is always changing. This acceleration points toward the center and is called <strong>centripetal acceleration</strong>.
+      </p>
+
+      <div class="formula-row">
+        <div class="formula-box">a<sub>c</sub> = v&sup2; / r &emsp; (centripetal acceleration)</div>
+        <div class="formula-box green">T = 2&pi;r / v &emsp; (period &mdash; time for one revolution)</div>
+      </div>
+
+      <div class="key-point">
+        The velocity vector is always tangent to the circle. The acceleration vector always points inward (toward the center). Speed is constant but velocity (a vector) is not &mdash; and that is acceleration.
+      </div>
+
+      <div class="interactive-area">
+        <div class="interactive-label">Uniform Circular Motion Visualizer</div>
+        <svg id="circSvg" width="100%" height="400" viewBox="0 0 800 400"></svg>
+        <div class="slider-row">
+          <label>Radius (r):</label>
+          <input type="range" id="circRadius" min="20" max="200" value="100" step="5" oninput="updateCirc()">
+          <span class="slider-val" id="circRadiusVal">100 m</span>
+        </div>
+        <div class="slider-row">
+          <label>Speed (v):</label>
+          <input type="range" id="circSpeed" min="1" max="50" value="20" step="1" oninput="updateCirc()">
+          <span class="slider-val" id="circSpeedVal">20 m/s</span>
+        </div>
+        <div class="readout">
+          <div class="readout-item"><div class="label">Centripetal Accel.</div><div class="value pink" id="circAc">--</div></div>
+          <div class="readout-item"><div class="label">Period (T)</div><div class="value amber" id="circT">--</div></div>
+          <div class="readout-item"><div class="label">Frequency (f)</div><div class="value" id="circF">--</div></div>
+        </div>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+
+        <div class="problem" id="p5_1">
+          <p><strong>5.1</strong> A car drives around a circular track of radius 50 m at 15 m/s. What is the centripetal acceleration?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p5_1_input" step="any" placeholder="answer"> <span class="unit-label">m/s&sup2;</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p5_1', 4.5, 0.1)">Check</button>
+          </div>
+          <div class="feedback" id="p5_1_fb"></div>
+        </div>
+
+        <div class="problem" id="p5_2">
+          <p><strong>5.2</strong> A satellite orbits Earth at radius 6800 km with a period of 90 min. What is its speed in m/s? (Use T = 2&pi;r/v)</p>
+          <div class="problem-input-row">
+            <input type="number" id="p5_2_input" step="any" placeholder="answer"> <span class="unit-label">m/s</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p5_2', 7917, 50)">Check</button>
+          </div>
+          <div class="feedback" id="p5_2_fb"></div>
+        </div>
+
+        <div class="problem" id="p5_3">
+          <p><strong>5.3</strong> A ball on a 2 m string spins at 5 m/s. What is the centripetal acceleration?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p5_3_input" step="any" placeholder="answer"> <span class="unit-label">m/s&sup2;</span>
+            <button class="btn btn-sm btn-primary" onclick="checkProblem('p5_3', 12.5, 0.2)">Check</button>
+          </div>
+          <div class="feedback" id="p5_3_fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: Quick Quiz -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quick Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <div class="quiz-score">
+        <span class="score-text">Score: <span id="quizScoreNum">0</span> / 10</span>
+        <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+      </div>
+
+      <div id="quizContainer"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+// ============================================================
+// GLOBAL: Progress Tracking
+// ============================================================
+const totalProblems = 24; // 3+5+3+3+10 practice + quiz
+let solvedProblems = new Set();
+
+function updateProgress() {
+  const pct = (solvedProblems.size / totalProblems) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = solvedProblems.size + ' / ' + totalProblems + ' problems completed';
+}
+
+// ============================================================
+// GLOBAL: Section toggle
+// ============================================================
+function toggleSection(header) {
+  const card = header.closest('.section-card');
+  card.classList.toggle('open');
+}
+
+// ============================================================
+// GLOBAL: Problem checking
+// ============================================================
+function checkProblem(id, answer, tolerance) {
+  tolerance = tolerance || 0.01;
+  const input = document.getElementById(id + '_input');
+  const fb = document.getElementById(id + '_fb');
+  const val = parseFloat(input.value);
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Please enter a number.';
+    return;
+  }
+  if (Math.abs(val - answer) <= tolerance + Math.abs(answer) * 0.02) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    solvedProblems.add(id);
+    updateProgress();
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Try again. (Expected ~' + answer.toFixed(2) + ')';
+  }
+}
+
+// ============================================================
+// SECTION 1: Independence Demo
+// ============================================================
+(function() {
+  const svg = document.getElementById('indepSvg');
+  const ns = 'http://www.w3.org/2000/svg';
+  const g = 9.8;
+  const h0 = 80;
+  const vx = 20;
+  let animId = null;
+  let running = false;
+
+  function drawScene() {
+    svg.innerHTML = '';
+    const W = 800, H = 350;
+    const groundY = H - 30;
+    const topY = 40;
+    const scaleH = (groundY - topY) / h0;
+    const dropX = 200;
+    const launchX = 200;
+
+    // Defs for arrowheads
+    const defs = document.createElementNS(ns, 'defs');
+    ['#6366f1','#ec4899','#22c55e','#f59e0b'].forEach((col,i) => {
+      const m = document.createElementNS(ns, 'marker');
+      m.setAttribute('id','arr'+i); m.setAttribute('markerWidth','8'); m.setAttribute('markerHeight','6');
+      m.setAttribute('refX','8'); m.setAttribute('refY','3'); m.setAttribute('orient','auto');
+      const p = document.createElementNS(ns, 'polygon');
+      p.setAttribute('points','0 0, 8 3, 0 6'); p.setAttribute('fill', col);
+      m.appendChild(p); defs.appendChild(m);
+    });
+    svg.appendChild(defs);
+
+    // Ground
+    const gLine = document.createElementNS(ns,'line');
+    Object.entries({x1:30,y1:groundY,x2:W-30,y2:groundY,stroke:'#9ca3af','stroke-width':2}).forEach(([k,v])=>gLine.setAttribute(k,v));
+    svg.appendChild(gLine);
+    for(let x=30;x<W-30;x+=18){
+      const h = document.createElementNS(ns,'line');
+      Object.entries({x1:x,y1:groundY,x2:x+8,y2:groundY+6,stroke:'#3a3f4b','stroke-width':1}).forEach(([k,v])=>h.setAttribute(k,v));
+      svg.appendChild(h);
+    }
+
+    // Platform
+    const plat = document.createElementNS(ns,'rect');
+    Object.entries({x:dropX-50,y:topY,width:100,height:10,fill:'#3a3f4b',rx:3}).forEach(([k,v])=>plat.setAttribute(k,v));
+    svg.appendChild(plat);
+
+    // Labels
+    const lDrop = document.createElementNS(ns,'text');
+    Object.entries({x:dropX-25,y:topY-8,'font-size':'10',fill:'#ec4899','text-anchor':'middle'}).forEach(([k,v])=>lDrop.setAttribute(k,v));
+    lDrop.textContent = 'DROPPED';
+    svg.appendChild(lDrop);
+
+    const lLaunch = document.createElementNS(ns,'text');
+    Object.entries({x:dropX+25,y:topY-8,'font-size':'10',fill:'#22c55e','text-anchor':'middle'}).forEach(([k,v])=>lLaunch.setAttribute(k,v));
+    lLaunch.textContent = 'LAUNCHED';
+    svg.appendChild(lLaunch);
+
+    // Balls
+    const ballDrop = document.createElementNS(ns,'circle');
+    ballDrop.setAttribute('id','ballDrop');
+    Object.entries({cx:dropX-25,cy:topY+15,r:10,fill:'#ec4899',stroke:'#f472b6','stroke-width':2}).forEach(([k,v])=>ballDrop.setAttribute(k,v));
+    svg.appendChild(ballDrop);
+
+    const ballLaunch = document.createElementNS(ns,'circle');
+    ballLaunch.setAttribute('id','ballLaunch');
+    Object.entries({cx:dropX+25,cy:topY+15,r:10,fill:'#22c55e',stroke:'#4ade80','stroke-width':2}).forEach(([k,v])=>ballLaunch.setAttribute(k,v));
+    svg.appendChild(ballLaunch);
+
+    // Velocity arrow for launched ball (horizontal)
+    const vArrow = document.createElementNS(ns,'line');
+    vArrow.setAttribute('id','vxArrow');
+    Object.entries({x1:dropX+35,y1:topY+15,x2:dropX+65,y2:topY+15,stroke:'#6366f1','stroke-width':2.5,'marker-end':'url(#arr0)'}).forEach(([k,v])=>vArrow.setAttribute(k,v));
+    svg.appendChild(vArrow);
+
+    // Vy arrow for launched ball
+    const vyArrow = document.createElementNS(ns,'line');
+    vyArrow.setAttribute('id','vyArrowL');
+    Object.entries({x1:dropX+25,y1:topY+25,x2:dropX+25,y2:topY+25,stroke:'#ec4899','stroke-width':2,'marker-end':'url(#arr1)'}).forEach(([k,v])=>vyArrow.setAttribute(k,v));
+    svg.appendChild(vyArrow);
+
+    // Vy arrow for dropped ball
+    const vyArrowD = document.createElementNS(ns,'line');
+    vyArrowD.setAttribute('id','vyArrowD');
+    Object.entries({x1:dropX-25,y1:topY+25,x2:dropX-25,y2:topY+25,stroke:'#ec4899','stroke-width':2,'marker-end':'url(#arr1)'}).forEach(([k,v])=>vyArrowD.setAttribute(k,v));
+    svg.appendChild(vyArrowD);
+
+    // Trail group
+    const trails = document.createElementNS(ns,'g');
+    trails.setAttribute('id','indepTrails');
+    svg.appendChild(trails);
+
+    // Dashed horizontal reference lines
+    const dashLine = document.createElementNS(ns,'line');
+    dashLine.setAttribute('id','dashRef');
+    Object.entries({x1:dropX-40,y1:topY+15,x2:W-40,y2:topY+15,stroke:'#3a3f4b','stroke-width':1,'stroke-dasharray':'4,4',opacity:0}).forEach(([k,v])=>dashLine.setAttribute(k,v));
+    svg.appendChild(dashLine);
+
+    return { groundY, topY, scaleH, dropX };
+  }
+
+  let scene = drawScene();
+
+  window.resetIndepDemo = function() {
+    if(animId){cancelAnimationFrame(animId);animId=null;}
+    running = false;
+    scene = drawScene();
+    document.getElementById('indepTime').textContent = '0.00 s';
+    document.getElementById('indepDropY').textContent = h0.toFixed(1)+' m';
+    document.getElementById('indepLaunchY').textContent = h0.toFixed(1)+' m';
+    document.getElementById('indepLaunchX').textContent = '0.0 m';
+    document.getElementById('indepStartBtn').textContent = 'Start';
+  };
+
+  window.startIndepDemo = function() {
+    if(running) return;
+    scene = drawScene();
+    running = true;
+    document.getElementById('indepStartBtn').textContent = 'Running...';
+
+    let startTime = null;
+    let lastDot = -1;
+
+    function animate(ts) {
+      if(!startTime) startTime = ts;
+      const simT = (ts-startTime)/1000 * 1.2;
+      const yFall = h0 - 0.5*g*simT*simT;
+
+      if(yFall <= 0) {
+        // Hit ground
+        const tFinal = Math.sqrt(2*h0/g);
+        document.getElementById('indepTime').textContent = tFinal.toFixed(2)+' s';
+        document.getElementById('indepDropY').textContent = '0.0 m';
+        document.getElementById('indepLaunchY').textContent = '0.0 m';
+        document.getElementById('indepLaunchX').textContent = (vx*tFinal).toFixed(1)+' m';
+
+        const bd = document.getElementById('ballDrop');
+        const bl = document.getElementById('ballLaunch');
+        bd.setAttribute('cy', scene.groundY);
+        bl.setAttribute('cy', scene.groundY);
+        bl.setAttribute('cx', scene.dropX+25+vx*tFinal*scene.scaleH*0.6);
+
+        running = false;
+        document.getElementById('indepStartBtn').textContent = 'Start';
+        return;
+      }
+
+      const screenY = scene.topY+15 + (h0-yFall)*scene.scaleH;
+      const screenXlaunch = scene.dropX+25 + vx*simT*scene.scaleH*0.6;
+
+      const bd = document.getElementById('ballDrop');
+      const bl = document.getElementById('ballLaunch');
+      bd.setAttribute('cy', screenY);
+      bl.setAttribute('cy', screenY);
+      bl.setAttribute('cx', screenXlaunch);
+
+      // Velocity arrows
+      const vy = g*simT;
+      const arrowScale = Math.min(50, vy*3);
+
+      const vyD = document.getElementById('vyArrowD');
+      vyD.setAttribute('y1', screenY+12);
+      vyD.setAttribute('y2', screenY+12+arrowScale);
+      vyD.setAttribute('x1', scene.dropX-25);
+      vyD.setAttribute('x2', scene.dropX-25);
+
+      const vyL = document.getElementById('vyArrowL');
+      vyL.setAttribute('y1', screenY+12);
+      vyL.setAttribute('y2', screenY+12+arrowScale);
+      vyL.setAttribute('x1', screenXlaunch);
+      vyL.setAttribute('x2', screenXlaunch);
+
+      const vxA = document.getElementById('vxArrow');
+      vxA.setAttribute('x1', screenXlaunch+12);
+      vxA.setAttribute('x2', screenXlaunch+42);
+      vxA.setAttribute('y1', screenY);
+      vxA.setAttribute('y2', screenY);
+
+      // Horizontal dashed ref
+      const dash = document.getElementById('dashRef');
+      dash.setAttribute('y1', screenY);
+      dash.setAttribute('y2', screenY);
+      dash.setAttribute('opacity','0.5');
+
+      // Trail dots every 0.3s
+      const dotIdx = Math.floor(simT / 0.3);
+      if(dotIdx > lastDot) {
+        lastDot = dotIdx;
+        const trails = document.getElementById('indepTrails');
+        // drop trail
+        const d1 = document.createElementNS(ns,'circle');
+        Object.entries({cx:scene.dropX-25,cy:screenY,r:3,fill:'#ec4899',opacity:0.4}).forEach(([k,v])=>d1.setAttribute(k,v));
+        trails.appendChild(d1);
+        // launch trail
+        const d2 = document.createElementNS(ns,'circle');
+        Object.entries({cx:screenXlaunch,cy:screenY,r:3,fill:'#22c55e',opacity:0.4}).forEach(([k,v])=>d2.setAttribute(k,v));
+        trails.appendChild(d2);
+      }
+
+      document.getElementById('indepTime').textContent = simT.toFixed(2)+' s';
+      document.getElementById('indepDropY').textContent = Math.max(0,yFall).toFixed(1)+' m';
+      document.getElementById('indepLaunchY').textContent = Math.max(0,yFall).toFixed(1)+' m';
+      document.getElementById('indepLaunchX').textContent = (vx*simT).toFixed(1)+' m';
+
+      animId = requestAnimationFrame(animate);
+    }
+    animId = requestAnimationFrame(animate);
+  };
+
+  window.resetIndepDemo();
+})();
+
+// ============================================================
+// SECTION 2: Projectile Simulator
+// ============================================================
+(function() {
+  const svg = document.getElementById('projSvg');
+  const ns = 'http://www.w3.org/2000/svg';
+  const gVal = 9.8;
+  let trails = [];
+  let animId = null;
+
+  function calcStats(v0, angleDeg) {
+    const rad = angleDeg * Math.PI / 180;
+    const v0x = v0 * Math.cos(rad);
+    const v0y = v0 * Math.sin(rad);
+    const tof = 2 * v0y / gVal;
+    const maxH = v0y * v0y / (2 * gVal);
+    const range = v0x * tof;
+    return { v0x, v0y, tof, maxH, range, rad };
+  }
+
+  function drawScene(angleDeg, speed, trailPaths) {
+    svg.innerHTML = '';
+    const W = 800, H = 400;
+    const groundY = H - 40;
+    const launchX = 80;
+    const stats = calcStats(speed, angleDeg);
+
+    // figure out scale
+    let maxRange = Math.max(stats.range, 50);
+    let maxHeight = Math.max(stats.maxH, 20);
+    // Find max from trails too
+    trailPaths.forEach(t => {
+      const s = calcStats(t.speed, t.angle);
+      maxRange = Math.max(maxRange, s.range);
+      maxHeight = Math.max(maxHeight, s.maxH);
+    });
+    const scaleX = (W - launchX - 40) / (maxRange * 1.15);
+    const scaleY = (groundY - 40) / (maxHeight * 1.3);
+
+    // Defs
+    const defs = document.createElementNS(ns, 'defs');
+    ['#6366f1','#ec4899','#22c55e','#f59e0b'].forEach((col,i)=>{
+      const m = document.createElementNS(ns, 'marker');
+      m.setAttribute('id','pa'+i);m.setAttribute('markerWidth','8');m.setAttribute('markerHeight','6');
+      m.setAttribute('refX','7');m.setAttribute('refY','3');m.setAttribute('orient','auto');
+      const p = document.createElementNS(ns,'polygon');
+      p.setAttribute('points','0 0, 8 3, 0 6');p.setAttribute('fill',col);
+      m.appendChild(p);defs.appendChild(m);
+    });
+    svg.appendChild(defs);
+
+    // Ground
+    const gLine = document.createElementNS(ns,'line');
+    Object.entries({x1:30,y1:groundY,x2:W-20,y2:groundY,stroke:'#9ca3af','stroke-width':2}).forEach(([k,v])=>gLine.setAttribute(k,v));
+    svg.appendChild(gLine);
+    for(let x=30;x<W-20;x+=18){
+      const h=document.createElementNS(ns,'line');
+      Object.entries({x1:x,y1:groundY,x2:x+8,y2:groundY+6,stroke:'#3a3f4b','stroke-width':1}).forEach(([k,v])=>h.setAttribute(k,v));
+      svg.appendChild(h);
+    }
+
+    // Launcher (cannon triangle)
+    const cannonLen = 35;
+    const cx = launchX;
+    const cy = groundY;
+    const tipX = cx + cannonLen * Math.cos(stats.rad);
+    const tipY = cy - cannonLen * Math.sin(stats.rad);
+    // cannon barrel
+    const barrel = document.createElementNS(ns,'line');
+    Object.entries({x1:cx,y1:cy,x2:tipX,y2:tipY,stroke:'#9ca3af','stroke-width':5,'stroke-linecap':'round'}).forEach(([k,v])=>barrel.setAttribute(k,v));
+    svg.appendChild(barrel);
+    // cannon base
+    const base = document.createElementNS(ns,'circle');
+    Object.entries({cx:cx,cy:cy,r:8,fill:'#3a3f4b',stroke:'#9ca3af','stroke-width':2}).forEach(([k,v])=>base.setAttribute(k,v));
+    svg.appendChild(base);
+    // angle arc
+    const arcR = 25;
+    const endArcX = cx + arcR * Math.cos(stats.rad);
+    const endArcY = cy - arcR * Math.sin(stats.rad);
+    const largeArc = angleDeg > 180 ? 1 : 0;
+    const arc = document.createElementNS(ns,'path');
+    arc.setAttribute('d',`M ${cx+arcR},${cy} A ${arcR},${arcR} 0 ${largeArc},0 ${endArcX},${endArcY}`);
+    arc.setAttribute('fill','none');arc.setAttribute('stroke','#f59e0b');arc.setAttribute('stroke-width','1.5');
+    svg.appendChild(arc);
+    // angle label
+    const angLbl = document.createElementNS(ns,'text');
+    const angLblX = cx + (arcR+12)*Math.cos(stats.rad/2);
+    const angLblY = cy - (arcR+12)*Math.sin(stats.rad/2);
+    Object.entries({x:angLblX,y:angLblY,'font-size':'10',fill:'#f59e0b','text-anchor':'middle'}).forEach(([k,v])=>angLbl.setAttribute(k,v));
+    angLbl.textContent = angleDeg + '\u00B0';
+    svg.appendChild(angLbl);
+
+    // Scale marks on x-axis
+    const xStep = Math.pow(10, Math.floor(Math.log10(maxRange)));
+    const xStepAdj = maxRange / xStep < 3 ? xStep / 2 : xStep;
+    for(let xm = 0; xm <= maxRange * 1.1; xm += xStepAdj) {
+      const sx = launchX + xm * scaleX;
+      if(sx > W-20) break;
+      const tick = document.createElementNS(ns,'line');
+      Object.entries({x1:sx,y1:groundY,x2:sx,y2:groundY+8,stroke:'#9ca3af','stroke-width':1}).forEach(([k,v])=>tick.setAttribute(k,v));
+      svg.appendChild(tick);
+      const lbl = document.createElementNS(ns,'text');
+      Object.entries({x:sx,y:groundY+20,'font-size':'8',fill:'#9ca3af','text-anchor':'middle'}).forEach(([k,v])=>lbl.setAttribute(k,v));
+      lbl.textContent = xm.toFixed(0)+'m';
+      svg.appendChild(lbl);
+    }
+
+    // Previous trails
+    trailPaths.forEach(t => {
+      const s2 = calcStats(t.speed, t.angle);
+      const path = document.createElementNS(ns,'path');
+      let d = '';
+      const dt = s2.tof / 60;
+      for(let i=0;i<=60;i++){
+        const tt = i*dt;
+        const px = launchX + s2.v0x*tt*scaleX;
+        const py = groundY - (s2.v0y*tt - 0.5*gVal*tt*tt)*scaleY;
+        d += (i===0?'M':'L') + px.toFixed(1)+','+py.toFixed(1);
+      }
+      path.setAttribute('d',d);path.setAttribute('fill','none');
+      path.setAttribute('stroke',t.color||'#3a3f4b');path.setAttribute('stroke-width','1.5');
+      path.setAttribute('opacity','0.4');path.setAttribute('stroke-dasharray','4,3');
+      svg.appendChild(path);
+    });
+
+    // Predicted trajectory (current settings)
+    const predPath = document.createElementNS(ns,'path');
+    let pd = '';
+    const pdt = stats.tof / 80;
+    for(let i=0;i<=80;i++){
+      const tt = i*pdt;
+      const px = launchX + stats.v0x*tt*scaleX;
+      const py = groundY - (stats.v0y*tt - 0.5*gVal*tt*tt)*scaleY;
+      pd += (i===0?'M':'L') + px.toFixed(1)+','+py.toFixed(1);
+    }
+    predPath.setAttribute('d',pd);predPath.setAttribute('fill','none');
+    predPath.setAttribute('stroke','#6366f1');predPath.setAttribute('stroke-width','2');
+    predPath.setAttribute('stroke-dasharray','6,4');predPath.setAttribute('opacity','0.6');
+    svg.appendChild(predPath);
+
+    // Dots at 0.1s intervals
+    const dotInterval = Math.max(0.1, stats.tof / 40);
+    for(let tt=0;tt<=stats.tof;tt+=dotInterval){
+      const px = launchX + stats.v0x*tt*scaleX;
+      const py = groundY - (stats.v0y*tt - 0.5*gVal*tt*tt)*scaleY;
+      const dot = document.createElementNS(ns,'circle');
+      Object.entries({cx:px,cy:py,r:2,fill:'#6366f1',opacity:0.5}).forEach(([k,v])=>dot.setAttribute(k,v));
+      svg.appendChild(dot);
+    }
+
+    // Max height marker
+    const mhX = launchX + stats.v0x*(stats.tof/2)*scaleX;
+    const mhY = groundY - stats.maxH*scaleY;
+    const mhLine = document.createElementNS(ns,'line');
+    Object.entries({x1:mhX,y1:mhY,x2:mhX,y2:groundY,stroke:'#22c55e','stroke-width':1,'stroke-dasharray':'3,3',opacity:0.5}).forEach(([k,v])=>mhLine.setAttribute(k,v));
+    svg.appendChild(mhLine);
+    const mhDot = document.createElementNS(ns,'circle');
+    Object.entries({cx:mhX,cy:mhY,r:5,fill:'none',stroke:'#22c55e','stroke-width':2}).forEach(([k,v])=>mhDot.setAttribute(k,v));
+    svg.appendChild(mhDot);
+    const mhLbl = document.createElementNS(ns,'text');
+    Object.entries({x:mhX,y:mhY-10,'font-size':'9',fill:'#22c55e','text-anchor':'middle'}).forEach(([k,v])=>mhLbl.setAttribute(k,v));
+    mhLbl.textContent = 'H='+stats.maxH.toFixed(1)+'m';
+    svg.appendChild(mhLbl);
+
+    // Range marker
+    const rngX = launchX + stats.range*scaleX;
+    const rngDot = document.createElementNS(ns,'circle');
+    Object.entries({cx:rngX,cy:groundY,r:4,fill:'#6366f1'}).forEach(([k,v])=>rngDot.setAttribute(k,v));
+    svg.appendChild(rngDot);
+    const rngLbl = document.createElementNS(ns,'text');
+    Object.entries({x:rngX,y:groundY-10,'font-size':'9',fill:'#6366f1','text-anchor':'middle'}).forEach(([k,v])=>rngLbl.setAttribute(k,v));
+    rngLbl.textContent = 'R='+stats.range.toFixed(1)+'m';
+    svg.appendChild(rngLbl);
+
+    // 45-degree marker if angle is 45
+    if(angleDeg === 45) {
+      const star = document.createElementNS(ns,'text');
+      Object.entries({x:rngX+5,y:groundY-22,'font-size':'10',fill:'#f59e0b','text-anchor':'start'}).forEach(([k,v])=>star.setAttribute(k,v));
+      star.textContent = 'MAX RANGE';
+      svg.appendChild(star);
+    }
+
+    // Animated ball placeholder
+    const ball = document.createElementNS(ns,'circle');
+    ball.setAttribute('id','projBall');
+    Object.entries({cx:launchX,cy:groundY,r:7,fill:'#f59e0b',stroke:'#fbbf24','stroke-width':2,opacity:0}).forEach(([k,v])=>ball.setAttribute(k,v));
+    svg.appendChild(ball);
+
+    // Animated trail
+    const animTrail = document.createElementNS(ns,'g');
+    animTrail.setAttribute('id','projAnimTrail');
+    svg.appendChild(animTrail);
+
+    return { launchX, groundY, scaleX, scaleY, stats };
+  }
+
+  let currentScene = null;
+
+  window.updateProjSim = function() {
+    const angle = parseInt(document.getElementById('projAngle').value);
+    const speed = parseInt(document.getElementById('projSpeed').value);
+    document.getElementById('projAngleVal').innerHTML = angle + '&deg;';
+    document.getElementById('projSpeedVal').textContent = speed + ' m/s';
+
+    const stats = calcStats(speed, angle);
+    document.getElementById('projMaxH').textContent = stats.maxH.toFixed(2) + ' m';
+    document.getElementById('projRange').textContent = stats.range.toFixed(2) + ' m';
+    document.getElementById('projTof').textContent = stats.tof.toFixed(3) + ' s';
+    document.getElementById('projV0x').textContent = stats.v0x.toFixed(2) + ' m/s';
+    document.getElementById('projV0y').textContent = stats.v0y.toFixed(2) + ' m/s';
+
+    if(animId){cancelAnimationFrame(animId);animId=null;}
+    currentScene = drawScene(angle, speed, trails);
+  };
+
+  window.launchProjectile = function() {
+    if(animId) return;
+    const angle = parseInt(document.getElementById('projAngle').value);
+    const speed = parseInt(document.getElementById('projSpeed').value);
+    currentScene = drawScene(angle, speed, trails);
+    const s = currentScene;
+    const stats = s.stats;
+    const ball = document.getElementById('projBall');
+    ball.setAttribute('opacity','1');
+    let startTime = null;
+
+    function animate(ts) {
+      if(!startTime) startTime = ts;
+      const simT = (ts-startTime)/1000 * 1.5;
+      if(simT > stats.tof) {
+        // landed
+        ball.setAttribute('opacity','0');
+        trails.push({angle, speed, color: '#6366f1'});
+        animId = null;
+        return;
+      }
+      const px = s.launchX + stats.v0x*simT*s.scaleX;
+      const py = s.groundY - (stats.v0y*simT - 0.5*gVal*simT*simT)*s.scaleY;
+      ball.setAttribute('cx', px);
+      ball.setAttribute('cy', py);
+
+      // trail dot
+      const trail = document.getElementById('projAnimTrail');
+      const dot = document.createElementNS(ns,'circle');
+      Object.entries({cx:px,cy:py,r:2,fill:'#f59e0b',opacity:0.6}).forEach(([k,v])=>dot.setAttribute(k,v));
+      trail.appendChild(dot);
+
+      animId = requestAnimationFrame(animate);
+    }
+    animId = requestAnimationFrame(animate);
+  };
+
+  window.resetProjSim = function() {
+    if(animId){cancelAnimationFrame(animId);animId=null;}
+    trails = [];
+    window.updateProjSim();
+  };
+
+  window.updateProjSim();
+})();
+
+// ============================================================
+// SECTION 3: Worked Example Stepper
+// ============================================================
+(function() {
+  let currentStep = 0;
+  const steps = ['we_step1','we_step2','we_step3','we_step4'];
+
+  window.nextWorkedStep = function() {
+    if(currentStep < steps.length) {
+      document.getElementById(steps[currentStep]).classList.add('visible');
+      currentStep++;
+      if(currentStep >= steps.length) {
+        document.getElementById('weNextBtn').textContent = 'All steps shown';
+        document.getElementById('weNextBtn').disabled = true;
+      }
+    }
+  };
+})();
+
+// ============================================================
+// SECTION 4: River Crossing
+// ============================================================
+(function() {
+  const svg = document.getElementById('riverSvg');
+  const ns = 'http://www.w3.org/2000/svg';
+  let animId = null;
+  const riverWidth = 100; // meters
+
+  function drawRiver(boatSpd, riverSpd) {
+    svg.innerHTML = '';
+    const W = 800, H = 320;
+    const bankTop = 60, bankBot = H - 60;
+    const leftX = 120, rightX = W - 80;
+    const riverH = bankBot - bankTop;
+
+    // Defs
+    const defs = document.createElementNS(ns,'defs');
+    [['#22c55e','ra0'],['#6366f1','ra1'],['#f59e0b','ra2'],['#ec4899','ra3']].forEach(([col,id])=>{
+      const m = document.createElementNS(ns,'marker');
+      m.setAttribute('id',id);m.setAttribute('markerWidth','8');m.setAttribute('markerHeight','6');
+      m.setAttribute('refX','7');m.setAttribute('refY','3');m.setAttribute('orient','auto');
+      const p = document.createElementNS(ns,'polygon');
+      p.setAttribute('points','0 0, 8 3, 0 6');p.setAttribute('fill',col);
+      m.appendChild(p);defs.appendChild(m);
+    });
+    svg.appendChild(defs);
+
+    // River body
+    const river = document.createElementNS(ns,'rect');
+    Object.entries({x:leftX,y:bankTop,width:rightX-leftX,height:riverH,fill:'rgba(99,102,241,0.08)',stroke:'none'}).forEach(([k,v])=>river.setAttribute(k,v));
+    svg.appendChild(river);
+
+    // Banks
+    const topBank = document.createElementNS(ns,'rect');
+    Object.entries({x:0,y:0,width:W,height:bankTop,fill:'#2c313c'}).forEach(([k,v])=>topBank.setAttribute(k,v));
+    svg.appendChild(topBank);
+    const botBank = document.createElementNS(ns,'rect');
+    Object.entries({x:0,y:bankBot,width:W,height:H-bankBot,fill:'#2c313c'}).forEach(([k,v])=>botBank.setAttribute(k,v));
+    svg.appendChild(botBank);
+
+    // Bank labels
+    const tlbl = document.createElementNS(ns,'text');
+    Object.entries({x:70,y:bankTop-15,'font-size':'10',fill:'#9ca3af','text-anchor':'middle'}).forEach(([k,v])=>tlbl.setAttribute(k,v));
+    tlbl.textContent = 'FAR BANK';
+    svg.appendChild(tlbl);
+
+    const blbl = document.createElementNS(ns,'text');
+    Object.entries({x:70,y:bankBot+20,'font-size':'10',fill:'#9ca3af','text-anchor':'middle'}).forEach(([k,v])=>blbl.setAttribute(k,v));
+    blbl.textContent = 'NEAR BANK';
+    svg.appendChild(blbl);
+
+    // Current arrows (blue, pointing right)
+    for(let y = bankTop + 30; y < bankBot - 20; y += 40) {
+      for(let x = leftX + 40; x < rightX - 60; x += 100) {
+        const arr = document.createElementNS(ns,'line');
+        Object.entries({x1:x,y1:y,x2:x+30,y2:y,stroke:'#6366f1','stroke-width':1.5,'marker-end':'url(#ra1)',opacity:0.3}).forEach(([k,v])=>arr.setAttribute(k,v));
+        svg.appendChild(arr);
+      }
+    }
+
+    // Current speed label
+    const csLbl = document.createElementNS(ns,'text');
+    Object.entries({x:W/2,y:bankTop+18,'font-size':'9',fill:'#6366f1','text-anchor':'middle'}).forEach(([k,v])=>csLbl.setAttribute(k,v));
+    csLbl.textContent = 'Current: '+riverSpd+' m/s \u2192';
+    svg.appendChild(csLbl);
+
+    // Boat start position
+    const boatStartX = leftX + 20;
+    const boatStartY = bankBot - 5;
+
+    // Boat velocity vector (green, pointing up)
+    const bvScale = riverH * 0.3 * (boatSpd / 20);
+    const bv = document.createElementNS(ns,'line');
+    Object.entries({x1:boatStartX,y1:boatStartY,x2:boatStartX,y2:boatStartY-bvScale,stroke:'#22c55e','stroke-width':2.5,'marker-end':'url(#ra0)'}).forEach(([k,v])=>bv.setAttribute(k,v));
+    svg.appendChild(bv);
+    const bvLbl = document.createElementNS(ns,'text');
+    Object.entries({x:boatStartX-8,y:boatStartY-bvScale-5,'font-size':'9',fill:'#22c55e','text-anchor':'end'}).forEach(([k,v])=>bvLbl.setAttribute(k,v));
+    bvLbl.textContent = 'v_boat='+boatSpd;
+    svg.appendChild(bvLbl);
+
+    // River current vector (blue, pointing right)
+    const rvScale = (rightX-leftX) * 0.15 * (riverSpd / 15);
+    const rv = document.createElementNS(ns,'line');
+    Object.entries({x1:boatStartX,y1:boatStartY,x2:boatStartX+rvScale,y2:boatStartY,stroke:'#6366f1','stroke-width':2.5,'marker-end':'url(#ra1)'}).forEach(([k,v])=>rv.setAttribute(k,v));
+    svg.appendChild(rv);
+
+    // Resultant vector (amber, diagonal)
+    const resultant = Math.sqrt(boatSpd*boatSpd + riverSpd*riverSpd);
+    const resAngle = Math.atan2(boatSpd, riverSpd);
+    const resScale = Math.sqrt(bvScale*bvScale + rvScale*rvScale);
+    const resEndX = boatStartX + rvScale;
+    const resEndY = boatStartY - bvScale;
+    const res = document.createElementNS(ns,'line');
+    Object.entries({x1:boatStartX,y1:boatStartY,x2:resEndX,y2:resEndY,stroke:'#f59e0b','stroke-width':2.5,'marker-end':'url(#ra2)','stroke-dasharray':'5,3'}).forEach(([k,v])=>res.setAttribute(k,v));
+    svg.appendChild(res);
+    const resLbl = document.createElementNS(ns,'text');
+    Object.entries({x:(boatStartX+resEndX)/2+10,y:(boatStartY+resEndY)/2,'font-size':'9',fill:'#f59e0b'}).forEach(([k,v])=>resLbl.setAttribute(k,v));
+    resLbl.textContent = 'v_res='+resultant.toFixed(1);
+    svg.appendChild(resLbl);
+
+    // Boat (triangle)
+    const boat = document.createElementNS(ns,'polygon');
+    boat.setAttribute('id','riverBoat');
+    boat.setAttribute('points', `${boatStartX},${boatStartY-12} ${boatStartX-6},${boatStartY} ${boatStartX+6},${boatStartY}`);
+    boat.setAttribute('fill','#22c55e');boat.setAttribute('stroke','#4ade80');boat.setAttribute('stroke-width','1.5');
+    svg.appendChild(boat);
+
+    // Trail group
+    const trailG = document.createElementNS(ns,'g');
+    trailG.setAttribute('id','riverTrail');
+    svg.appendChild(trailG);
+
+    // Predicted landing spot
+    const crossTime = riverWidth / boatSpd;
+    const drift = riverSpd * crossTime;
+    const driftScale = drift / riverWidth * (rightX - leftX - 40);
+    const landX = boatStartX + driftScale;
+    const landMark = document.createElementNS(ns,'circle');
+    Object.entries({cx:Math.min(landX, rightX-10),cy:bankTop+5,r:5,fill:'none',stroke:'#ec4899','stroke-width':2,'stroke-dasharray':'3,2'}).forEach(([k,v])=>landMark.setAttribute(k,v));
+    svg.appendChild(landMark);
+    const landLbl = document.createElementNS(ns,'text');
+    Object.entries({x:Math.min(landX, rightX-10),y:bankTop-8,'font-size':'8',fill:'#ec4899','text-anchor':'middle'}).forEach(([k,v])=>landLbl.setAttribute(k,v));
+    landLbl.textContent = 'Landing';
+    svg.appendChild(landLbl);
+
+    // Predicted path (dashed line)
+    const predLine = document.createElementNS(ns,'line');
+    Object.entries({x1:boatStartX,y1:boatStartY,x2:Math.min(landX,rightX-10),y2:bankTop+5,stroke:'#ec4899','stroke-width':1,'stroke-dasharray':'4,3',opacity:0.4}).forEach(([k,v])=>predLine.setAttribute(k,v));
+    svg.appendChild(predLine);
+
+    return { boatStartX, boatStartY, bankTop, bankBot, leftX, rightX, riverH };
+  }
+
+  window.updateRiver = function() {
+    const bs = parseFloat(document.getElementById('boatSpeed').value);
+    const rc = parseFloat(document.getElementById('riverCurrent').value);
+    document.getElementById('boatSpeedVal').textContent = bs + ' m/s';
+    document.getElementById('riverCurrentVal').textContent = rc + ' m/s';
+
+    if(animId){cancelAnimationFrame(animId);animId=null;}
+    drawRiver(bs, rc);
+
+    const resultant = Math.sqrt(bs*bs+rc*rc);
+    const crossTime = riverWidth / bs;
+    const drift = rc * crossTime;
+    const angle = Math.atan2(rc, bs) * 180 / Math.PI;
+
+    document.getElementById('riverResultant').textContent = resultant.toFixed(2)+' m/s';
+    document.getElementById('riverDrift').textContent = drift.toFixed(1)+' m';
+    document.getElementById('riverTime').textContent = crossTime.toFixed(2)+' s';
+    document.getElementById('riverAngle').textContent = angle.toFixed(1)+'\u00B0 from straight';
+  };
+
+  window.launchBoat = function() {
+    if(animId) return;
+    const bs = parseFloat(document.getElementById('boatSpeed').value);
+    const rc = parseFloat(document.getElementById('riverCurrent').value);
+    const scene = drawRiver(bs, rc);
+    const crossTime = riverWidth / bs;
+    let startTime = null;
+
+    function animate(ts) {
+      if(!startTime) startTime = ts;
+      const simT = (ts - startTime) / 1000 * 2;
+      if(simT > crossTime) {
+        animId = null;
+        return;
+      }
+      const frac = simT / crossTime;
+      const driftFrac = (rc * simT) / riverWidth;
+
+      const bx = scene.boatStartX + driftFrac * (scene.rightX - scene.leftX - 40);
+      const by = scene.boatStartY - frac * scene.riverH;
+
+      const boat = document.getElementById('riverBoat');
+      if(boat) {
+        boat.setAttribute('points', `${bx},${by-12} ${bx-6},${by} ${bx+6},${by}`);
+      }
+
+      const trail = document.getElementById('riverTrail');
+      if(trail && Math.random() < 0.3) {
+        const dot = document.createElementNS(ns,'circle');
+        Object.entries({cx:bx,cy:by,r:2,fill:'#f59e0b',opacity:0.5}).forEach(([k,v])=>dot.setAttribute(k,v));
+        trail.appendChild(dot);
+      }
+
+      animId = requestAnimationFrame(animate);
+    }
+    animId = requestAnimationFrame(animate);
+  };
+
+  window.resetRiver = function() {
+    if(animId){cancelAnimationFrame(animId);animId=null;}
+    window.updateRiver();
+  };
+
+  window.updateRiver();
+})();
+
+// ============================================================
+// SECTION 4b: Plane in Wind
+// ============================================================
+(function() {
+  const svg = document.getElementById('planeSvg');
+  const ns = 'http://www.w3.org/2000/svg';
+
+  function drawPlane(planeSpd, windSpd, windDirDeg) {
+    svg.innerHTML = '';
+    const W = 800, H = 320;
+    const cx = W/2, cy = H/2;
+
+    // Defs
+    const defs = document.createElementNS(ns,'defs');
+    [['#22c55e','wa0'],['#6366f1','wa1'],['#f59e0b','wa2']].forEach(([col,id])=>{
+      const m = document.createElementNS(ns,'marker');
+      m.setAttribute('id',id);m.setAttribute('markerWidth','10');m.setAttribute('markerHeight','7');
+      m.setAttribute('refX','9');m.setAttribute('refY','3.5');m.setAttribute('orient','auto');
+      const p = document.createElementNS(ns,'polygon');
+      p.setAttribute('points','0 0, 10 3.5, 0 7');p.setAttribute('fill',col);
+      m.appendChild(p);defs.appendChild(m);
+    });
+    svg.appendChild(defs);
+
+    // Compass rose
+    const compassR = 120;
+    const compass = document.createElementNS(ns,'circle');
+    Object.entries({cx,cy,r:compassR,fill:'none',stroke:'#3a3f4b','stroke-width':1}).forEach(([k,v])=>compass.setAttribute(k,v));
+    svg.appendChild(compass);
+
+    // Cardinal labels
+    [['N',0],['E',90],['S',180],['W',270]].forEach(([label,deg])=>{
+      const rad = (deg-90)*Math.PI/180;
+      const lx = cx + (compassR+15)*Math.cos(rad);
+      const ly = cy + (compassR+15)*Math.sin(rad);
+      const t = document.createElementNS(ns,'text');
+      Object.entries({x:lx,y:ly+4,'font-size':'10',fill:'#9ca3af','text-anchor':'middle'}).forEach(([k,v])=>t.setAttribute(k,v));
+      t.textContent = label;
+      svg.appendChild(t);
+    });
+
+    const scale = compassR * 0.7 / Math.max(planeSpd, windSpd, 1);
+
+    // Plane heading (always north = up)
+    const planeEndY = cy - planeSpd * scale;
+    const pLine = document.createElementNS(ns,'line');
+    Object.entries({x1:cx,y1:cy,x2:cx,y2:planeEndY,stroke:'#22c55e','stroke-width':3,'marker-end':'url(#wa0)'}).forEach(([k,v])=>pLine.setAttribute(k,v));
+    svg.appendChild(pLine);
+    const pLbl = document.createElementNS(ns,'text');
+    Object.entries({x:cx-10,y:(cy+planeEndY)/2,'font-size':'9',fill:'#22c55e','text-anchor':'end'}).forEach(([k,v])=>pLbl.setAttribute(k,v));
+    pLbl.textContent = planeSpd+' km/h';
+    svg.appendChild(pLbl);
+
+    // Wind vector from plane tip
+    const windRad = (windDirDeg - 90) * Math.PI / 180;
+    const windEndX = cx + windSpd * scale * Math.cos(windRad);
+    const windEndY = cy + windSpd * scale * Math.sin(windRad);
+    // Draw from the tip of the plane vector
+    const wLine = document.createElementNS(ns,'line');
+    Object.entries({x1:cx,y1:planeEndY,x2:cx + windSpd*scale*Math.cos(windRad),y2:planeEndY + windSpd*scale*Math.sin(windRad),stroke:'#6366f1','stroke-width':3,'marker-end':'url(#wa1)'}).forEach(([k,v])=>wLine.setAttribute(k,v));
+    svg.appendChild(wLine);
+    const wLbl = document.createElementNS(ns,'text');
+    const wMidX = cx + windSpd*scale*Math.cos(windRad)*0.5;
+    const wMidY = planeEndY + windSpd*scale*Math.sin(windRad)*0.5;
+    Object.entries({x:wMidX+15,y:wMidY-8,'font-size':'9',fill:'#6366f1'}).forEach(([k,v])=>wLbl.setAttribute(k,v));
+    wLbl.textContent = 'Wind '+windSpd+' km/h';
+    svg.appendChild(wLbl);
+
+    // Resultant (from origin to wind tip)
+    const resEndX = cx + windSpd*scale*Math.cos(windRad);
+    const resEndY = planeEndY + windSpd*scale*Math.sin(windRad);
+    const rLine = document.createElementNS(ns,'line');
+    Object.entries({x1:cx,y1:cy,x2:resEndX,y2:resEndY,stroke:'#f59e0b','stroke-width':3,'marker-end':'url(#wa2)','stroke-dasharray':'6,3'}).forEach(([k,v])=>rLine.setAttribute(k,v));
+    svg.appendChild(rLine);
+
+    // Ground speed calc
+    const gndVx = windSpd * Math.cos(windRad);
+    const gndVy = -planeSpd + windSpd * Math.sin(windRad);
+    const groundSpeed = Math.sqrt(gndVx*gndVx + gndVy*gndVy);
+    const driftAngle = Math.atan2(gndVx, -gndVy) * 180 / Math.PI;
+
+    const rLbl = document.createElementNS(ns,'text');
+    Object.entries({x:(cx+resEndX)/2+15,y:(cy+resEndY)/2+5,'font-size':'9',fill:'#f59e0b'}).forEach(([k,v])=>rLbl.setAttribute(k,v));
+    rLbl.textContent = groundSpeed.toFixed(1)+' km/h';
+    svg.appendChild(rLbl);
+
+    // Plane icon at center
+    const plane = document.createElementNS(ns,'polygon');
+    plane.setAttribute('points',`${cx},${cy-8} ${cx-5},${cy+5} ${cx+5},${cy+5}`);
+    plane.setAttribute('fill','#22c55e');plane.setAttribute('stroke','#4ade80');plane.setAttribute('stroke-width','1');
+    svg.appendChild(plane);
+
+    // Legend
+    const legend = [['Plane heading','#22c55e'],['Wind','#6366f1'],['Ground track','#f59e0b']];
+    legend.forEach(([txt,col],i)=>{
+      const lx = 40, ly = H - 50 + i*16;
+      const r = document.createElementNS(ns,'rect');
+      Object.entries({x:lx,y:ly-6,width:12,height:4,fill:col,rx:2}).forEach(([k,v])=>r.setAttribute(k,v));
+      svg.appendChild(r);
+      const t = document.createElementNS(ns,'text');
+      Object.entries({x:lx+18,y:ly,'font-size':'8',fill:col}).forEach(([k,v])=>t.setAttribute(k,v));
+      t.textContent = txt;
+      svg.appendChild(t);
+    });
+
+    return { groundSpeed, driftAngle };
+  }
+
+  window.updatePlane = function() {
+    const ps = parseInt(document.getElementById('planeSpeed').value);
+    const ws = parseInt(document.getElementById('windSpeed').value);
+    const wd = parseInt(document.getElementById('windDir').value);
+    document.getElementById('planeSpeedVal').textContent = ps + ' km/h';
+    document.getElementById('windSpeedVal').textContent = ws + ' km/h';
+
+    const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+    const dirIdx = Math.round(wd / 45) % 8;
+    document.getElementById('windDirVal').innerHTML = wd + '&deg; (' + dirs[dirIdx] + ')';
+
+    const result = drawPlane(ps, ws, wd);
+    document.getElementById('planeGround').textContent = result.groundSpeed.toFixed(1) + ' km/h';
+    document.getElementById('planeDrift').textContent = result.driftAngle.toFixed(1) + '\u00B0';
+  };
+
+  window.updatePlane();
+})();
+
+// ============================================================
+// SECTION 5: Uniform Circular Motion
+// ============================================================
+(function() {
+  const svg = document.getElementById('circSvg');
+  const ns = 'http://www.w3.org/2000/svg';
+  let animId = null;
+
+  function drawCirc(radius, speed) {
+    const W = 800, H = 400;
+    const cx = W/2, cy = H/2;
+    const maxR = 160;
+    const scaleR = maxR * (radius / 200);
+    const drawR = Math.max(40, scaleR);
+
+    svg.innerHTML = '';
+
+    // Defs
+    const defs = document.createElementNS(ns,'defs');
+    [['#22c55e','ca0'],['#ec4899','ca1'],['#6366f1','ca2']].forEach(([col,id])=>{
+      const m = document.createElementNS(ns,'marker');
+      m.setAttribute('id',id);m.setAttribute('markerWidth','10');m.setAttribute('markerHeight','7');
+      m.setAttribute('refX','9');m.setAttribute('refY','3.5');m.setAttribute('orient','auto');
+      const p = document.createElementNS(ns,'polygon');
+      p.setAttribute('points','0 0, 10 3.5, 0 7');p.setAttribute('fill',col);
+      m.appendChild(p);defs.appendChild(m);
+    });
+    svg.appendChild(defs);
+
+    // Orbit circle
+    const orbit = document.createElementNS(ns,'circle');
+    Object.entries({cx,cy,r:drawR,fill:'none',stroke:'#3a3f4b','stroke-width':1.5,'stroke-dasharray':'6,4'}).forEach(([k,v])=>orbit.setAttribute(k,v));
+    svg.appendChild(orbit);
+
+    // Center dot
+    const center = document.createElementNS(ns,'circle');
+    Object.entries({cx,cy,r:4,fill:'#3a3f4b',stroke:'#9ca3af','stroke-width':1}).forEach(([k,v])=>center.setAttribute(k,v));
+    svg.appendChild(center);
+
+    // Center label
+    const cLbl = document.createElementNS(ns,'text');
+    Object.entries({x:cx,y:cy+18,'font-size':'9',fill:'#9ca3af','text-anchor':'middle'}).forEach(([k,v])=>cLbl.setAttribute(k,v));
+    cLbl.textContent = 'Center';
+    svg.appendChild(cLbl);
+
+    // Radius label
+    const rLbl = document.createElementNS(ns,'text');
+    Object.entries({x:cx+drawR/2,y:cy-8,'font-size':'9',fill:'#9ca3af','text-anchor':'middle'}).forEach(([k,v])=>rLbl.setAttribute(k,v));
+    rLbl.textContent = 'r = '+radius+' m';
+    svg.appendChild(rLbl);
+
+    // Moving object
+    const obj = document.createElementNS(ns,'circle');
+    obj.setAttribute('id','circObj');
+    Object.entries({cx:cx+drawR,cy:cy,r:8,fill:'#6366f1',stroke:'#818cf8','stroke-width':2}).forEach(([k,v])=>obj.setAttribute(k,v));
+    svg.appendChild(obj);
+
+    // Velocity arrow (tangent)
+    const vArr = document.createElementNS(ns,'line');
+    vArr.setAttribute('id','circVel');
+    Object.entries({x1:cx+drawR,y1:cy,x2:cx+drawR,y2:cy-40,stroke:'#22c55e','stroke-width':2.5,'marker-end':'url(#ca0)'}).forEach(([k,v])=>vArr.setAttribute(k,v));
+    svg.appendChild(vArr);
+
+    // Acceleration arrow (centripetal, inward)
+    const aArr = document.createElementNS(ns,'line');
+    aArr.setAttribute('id','circAcc');
+    Object.entries({x1:cx+drawR,y1:cy,x2:cx+drawR-30,y2:cy,stroke:'#ec4899','stroke-width':2.5,'marker-end':'url(#ca1)'}).forEach(([k,v])=>aArr.setAttribute(k,v));
+    svg.appendChild(aArr);
+
+    // Radius line
+    const rLine = document.createElementNS(ns,'line');
+    rLine.setAttribute('id','circRLine');
+    Object.entries({x1:cx,y1:cy,x2:cx+drawR,y2:cy,stroke:'#9ca3af','stroke-width':1,'stroke-dasharray':'3,3',opacity:0.5}).forEach(([k,v])=>rLine.setAttribute(k,v));
+    svg.appendChild(rLine);
+
+    // Previous position ghosts group
+    const ghosts = document.createElementNS(ns,'g');
+    ghosts.setAttribute('id','circGhosts');
+    svg.appendChild(ghosts);
+
+    // Legend
+    const legend = [['Velocity (tangent)','#22c55e'],['Centripetal accel.','#ec4899']];
+    legend.forEach(([txt,col],i)=>{
+      const lx = 40, ly = H - 40 + i*16;
+      const r = document.createElementNS(ns,'rect');
+      Object.entries({x:lx,y:ly-6,width:12,height:4,fill:col,rx:2}).forEach(([k,v])=>r.setAttribute(k,v));
+      svg.appendChild(r);
+      const t = document.createElementNS(ns,'text');
+      Object.entries({x:lx+18,y:ly,'font-size':'8',fill:col}).forEach(([k,v])=>t.setAttribute(k,v));
+      t.textContent = txt;
+      svg.appendChild(t);
+    });
+
+    // Info panel
+    const ac = speed * speed / radius;
+    const T = 2 * Math.PI * radius / speed;
+    const info = document.createElementNS(ns,'text');
+    Object.entries({x:W-40,y:50,'font-size':'10',fill:'#9ca3af','text-anchor':'end'}).forEach(([k,v])=>info.setAttribute(k,v));
+    info.textContent = 'v = '+speed+' m/s | a_c = '+(ac).toFixed(2)+' m/s\u00B2';
+    svg.appendChild(info);
+
+    return { cx, cy, drawR, speed, radius };
+  }
+
+  let scene = null;
+  let angle = 0;
+
+  function animateCirc() {
+    if(!scene) return;
+    const s = scene;
+    const omega = s.speed / s.radius;
+    angle += omega * 0.016;
+
+    const ox = s.cx + s.drawR * Math.cos(angle);
+    const oy = s.cy + s.drawR * Math.sin(angle);
+
+    const obj = document.getElementById('circObj');
+    if(obj) { obj.setAttribute('cx',ox); obj.setAttribute('cy',oy); }
+
+    // Velocity arrow (tangent direction)
+    const vLen = Math.min(50, s.speed * 2);
+    const vx = -Math.sin(angle) * vLen;
+    const vy = Math.cos(angle) * vLen;
+    const vel = document.getElementById('circVel');
+    if(vel) {
+      vel.setAttribute('x1',ox); vel.setAttribute('y1',oy);
+      vel.setAttribute('x2',ox+vx); vel.setAttribute('y2',oy+vy);
+    }
+
+    // Acceleration arrow (toward center)
+    const aLen = Math.min(40, (s.speed*s.speed/s.radius)*1.5);
+    const ax = (s.cx - ox);
+    const ay = (s.cy - oy);
+    const aMag = Math.sqrt(ax*ax+ay*ay);
+    const acc = document.getElementById('circAcc');
+    if(acc && aMag > 0) {
+      acc.setAttribute('x1',ox); acc.setAttribute('y1',oy);
+      acc.setAttribute('x2',ox+ax/aMag*aLen); acc.setAttribute('y2',oy+ay/aMag*aLen);
+    }
+
+    // Radius line
+    const rLine = document.getElementById('circRLine');
+    if(rLine) {
+      rLine.setAttribute('x2',ox); rLine.setAttribute('y2',oy);
+    }
+
+    // Ghost trail
+    const ghosts = document.getElementById('circGhosts');
+    if(ghosts && Math.random() < 0.15) {
+      const g = document.createElementNS(ns,'circle');
+      Object.entries({cx:ox,cy:oy,r:3,fill:'#6366f1',opacity:0.2}).forEach(([k,v])=>g.setAttribute(k,v));
+      ghosts.appendChild(g);
+      if(ghosts.children.length > 60) ghosts.removeChild(ghosts.children[0]);
+    }
+
+    animId = requestAnimationFrame(animateCirc);
+  }
+
+  window.updateCirc = function() {
+    const r = parseInt(document.getElementById('circRadius').value);
+    const v = parseInt(document.getElementById('circSpeed').value);
+    document.getElementById('circRadiusVal').textContent = r + ' m';
+    document.getElementById('circSpeedVal').textContent = v + ' m/s';
+
+    const ac = v*v/r;
+    const T = 2*Math.PI*r/v;
+    const f = 1/T;
+
+    document.getElementById('circAc').textContent = ac.toFixed(2)+' m/s\u00B2';
+    document.getElementById('circT').textContent = T.toFixed(3)+' s';
+    document.getElementById('circF').textContent = f.toFixed(4)+' Hz';
+
+    if(animId){cancelAnimationFrame(animId);animId=null;}
+    angle = 0;
+    scene = drawCirc(r, v);
+    animId = requestAnimationFrame(animateCirc);
+  };
+
+  window.updateCirc();
+})();
+
+// ============================================================
+// SECTION 6: Quick Quiz
+// ============================================================
+(function() {
+  const quizData = [
+    {
+      q: 'A projectile is launched at 45 degrees. At the top of its arc, what is the vertical component of velocity?',
+      opts: ['v_0 sin(45)', '0 m/s', 'v_0 cos(45)', '9.8 m/s'],
+      ans: 1,
+      expl: 'At the peak, all vertical velocity has been used up by gravity. v_y = 0 at maximum height.'
+    },
+    {
+      q: 'Two balls are released from the same height at the same time: one dropped, one thrown horizontally. Which hits the ground first?',
+      opts: ['The dropped ball', 'The thrown ball', 'They hit at the same time', 'Depends on the horizontal speed'],
+      ans: 2,
+      expl: 'Horizontal and vertical motions are independent. Both experience the same vertical free fall.'
+    },
+    {
+      q: 'What angle gives maximum range for a projectile on flat ground (no air resistance)?',
+      opts: ['30 degrees', '45 degrees', '60 degrees', '90 degrees'],
+      ans: 1,
+      expl: 'Range R = v^2 sin(2 theta) / g is maximized when sin(2 theta) = 1, which means theta = 45 degrees.'
+    },
+    {
+      q: 'A ball is launched at 20 m/s at 30 degrees. What is v_0x?',
+      opts: ['10 m/s', '17.3 m/s', '20 m/s', '14.1 m/s'],
+      ans: 1,
+      expl: 'v_0x = v_0 cos(30) = 20 * 0.866 = 17.3 m/s.'
+    },
+    {
+      q: 'In uniform circular motion, the acceleration vector points:',
+      opts: ['Tangent to the circle', 'Toward the center', 'Away from the center', 'In the direction of motion'],
+      ans: 1,
+      expl: 'Centripetal acceleration always points toward the center of the circular path.'
+    },
+    {
+      q: 'A boat crosses a 200 m river at 10 m/s (perpendicular to current). Current is 5 m/s. How far downstream does it land?',
+      opts: ['50 m', '100 m', '200 m', '150 m'],
+      ans: 1,
+      expl: 'Crossing time = 200/10 = 20 s. Drift = 5 * 20 = 100 m downstream.'
+    },
+    {
+      q: 'If you double the speed of an object in circular motion (same radius), the centripetal acceleration:',
+      opts: ['Doubles', 'Quadruples', 'Halves', 'Stays the same'],
+      ans: 1,
+      expl: 'a_c = v^2/r. Doubling v makes v^2 four times larger, so a_c quadruples.'
+    },
+    {
+      q: 'A projectile is launched at 60 degrees with speed v. Its complementary angle is 30 degrees. Compared to 45 degrees, the range at 60 degrees is:',
+      opts: ['Greater', 'Less', 'Equal', 'Cannot determine'],
+      ans: 1,
+      expl: 'sin(2*60) = sin(120) = 0.866. sin(2*45) = sin(90) = 1. So range at 60 is less than at 45.'
+    },
+    {
+      q: 'During projectile flight (no air resistance), the horizontal acceleration is:',
+      opts: ['9.8 m/s^2', '-9.8 m/s^2', '0', 'Depends on angle'],
+      ans: 2,
+      expl: 'There is no horizontal force (ignoring air resistance), so horizontal acceleration is zero. Horizontal velocity is constant.'
+    },
+    {
+      q: 'A ball thrown at 30 m/s at 45 degrees. What is the speed at the highest point?',
+      opts: ['0 m/s', '30 m/s', '21.2 m/s', '15 m/s'],
+      ans: 2,
+      expl: 'At the peak v_y = 0, but v_x = v_0 cos(45) = 30 * 0.707 = 21.2 m/s. Speed = v_x at the top.'
+    }
+  ];
+
+  let quizScore = 0;
+  let answered = new Set();
+
+  function renderQuiz() {
+    const container = document.getElementById('quizContainer');
+    container.innerHTML = '';
+    quizData.forEach((q, qi) => {
+      const div = document.createElement('div');
+      div.className = 'quiz-q';
+      div.id = 'quiz_q' + qi;
+
+      let html = '<div class="q-num">Question ' + (qi+1) + '</div>';
+      html += '<p>' + q.q + '</p>';
+      html += '<div class="quiz-options">';
+      q.opts.forEach((opt, oi) => {
+        html += '<div class="quiz-option" data-q="'+qi+'" data-o="'+oi+'" onclick="selectQuizOption(this)">';
+        html += '<span class="letter">' + String.fromCharCode(65+oi) + '</span>';
+        html += '<span>' + opt + '</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+      html += '<div class="quiz-explanation" id="quiz_expl_'+qi+'">' + q.expl + '</div>';
+
+      div.innerHTML = html;
+      container.appendChild(div);
+    });
+  }
+
+  window.selectQuizOption = function(el) {
+    const qi = parseInt(el.getAttribute('data-q'));
+    const oi = parseInt(el.getAttribute('data-o'));
+    if(answered.has(qi)) return;
+    answered.add(qi);
+
+    const q = quizData[qi];
+    const qDiv = document.getElementById('quiz_q'+qi);
+    const options = qDiv.querySelectorAll('.quiz-option');
+
+    options.forEach((opt, idx) => {
+      opt.classList.add('disabled');
+      if(idx === q.ans) opt.classList.add('correct-answer');
+      if(idx === oi && oi !== q.ans) opt.classList.add('wrong-answer');
+    });
+
+    if(oi === q.ans) {
+      quizScore++;
+      solvedProblems.add('quiz_'+qi);
+    }
+
+    document.getElementById('quizScoreNum').textContent = quizScore;
+    document.getElementById('quiz_expl_'+qi).classList.add('show');
+    updateProgress();
+  };
+
+  window.resetQuiz = function() {
+    quizScore = 0;
+    answered.clear();
+    // Remove quiz problems from solved
+    for(let i=0;i<10;i++) solvedProblems.delete('quiz_'+i);
+    document.getElementById('quizScoreNum').textContent = '0';
+    renderQuiz();
+    updateProgress();
+  };
+
+  renderQuiz();
+})();
+
+// ============================================================
+// INIT
+// ============================================================
+updateProgress();
+</script>
+</body>
+</html>

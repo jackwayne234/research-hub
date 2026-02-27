@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 13: Sound</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.data-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.76rem}
+.data-table th{background:var(--indigo-dim);color:var(--indigo);padding:10px 14px;text-align:left;font-weight:600;border:1px solid rgba(99,102,241,.2)}
+.data-table td{padding:8px 14px;border:1px solid var(--border);color:var(--text)}
+.data-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.db-ref{display:inline-flex;align-items:center;gap:6px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:4px 10px;margin:3px;font-size:.7rem;white-space:nowrap}
+.db-ref .db-val{color:var(--amber);font-weight:600}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.data-table{font-size:.68rem}.data-table th,.data-table td{padding:6px 8px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>13</span> Sound</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: SPEED OF SOUND -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Speed of Sound</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Sound is a <strong>longitudinal mechanical wave</strong> -- particles oscillate parallel to the direction of travel. It requires a medium (no sound in vacuum). The speed of sound depends on the medium's <strong>elasticity and density</strong>. In air at 20&deg;C, v = <strong>343 m/s</strong> (about 767 mph). In general fluids: <strong>v = &radic;(B/&rho;)</strong> where B is the bulk modulus and &rho; is density. In solids, stiffer materials carry sound faster.
+    </p>
+    <div class="formula-box large">v = 343 m/s &nbsp; (air at 20&deg;C)</div>
+    <div class="formula-box green">v = &radic;(B / &rho;) &nbsp; [fluids] &nbsp;&nbsp;&nbsp; v = &radic;(Y / &rho;) &nbsp; [solids, thin rod]</div>
+    <div class="formula-box amber">v_air &asymp; 331 + 0.6T &nbsp; (T in &deg;C)</div>
+
+    <div class="key-point">Sound travels roughly 4.3x faster in water than air, and ~17x faster in steel. The speed increases with stiffness and decreases with density. Temperature raises the speed in gases because molecules move faster.</div>
+
+    <table class="data-table">
+      <thead><tr><th>Medium</th><th>Speed (m/s)</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Air (20&deg;C)</td><td>343</td><td>v &asymp; 331 + 0.6T</td></tr>
+        <tr><td>Helium (20&deg;C)</td><td>1007</td><td>Light gas -- faster</td></tr>
+        <tr><td>Water (25&deg;C)</td><td>1493</td><td>B = 2.2 GPa</td></tr>
+        <tr><td>Seawater (15&deg;C)</td><td>1530</td><td>Salinity increases v</td></tr>
+        <tr><td>Steel</td><td>5960</td><td>Very stiff</td></tr>
+        <tr><td>Aluminum</td><td>6420</td><td>Stiff and light</td></tr>
+      </tbody>
+    </table>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Speed of Sound vs Temperature</div>
+      <div class="slider-row">
+        <label>Temperature</label>
+        <input type="range" id="s1Temp" min="-40" max="60" value="20" step="1" oninput="updateS1()">
+        <span class="slider-val" id="s1TempVal">20 &deg;C</span>
+      </div>
+      <div class="slider-row">
+        <label>Distance (m)</label>
+        <input type="range" id="s1Dist" min="10" max="5000" value="1000" step="10" oninput="updateS1()">
+        <span class="slider-val" id="s1DistVal">1000 m</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">v_air</span><br><span class="value indigo" id="s1Vair">343.0 m/s</span></div>
+        <div class="readout-item"><span class="label">Travel time</span><br><span class="value green" id="s1Time">2.92 s</span></div>
+        <div class="readout-item"><span class="label">Mach 1</span><br><span class="value amber" id="s1Mach">343.0 m/s</span></div>
+      </div>
+      <div class="sub-label">Lightning demo: count seconds between flash and thunder, multiply by v to get distance</div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">5-second rule</span><br><span class="value pink">5s &times; 343 = 1715 m &asymp; 1 mile</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Sonar (SOund NAvigation and Ranging) is the backbone of submarine detection. Sound speed in seawater varies with temperature, salinity, and pressure -- creating the <strong>SOFAR channel</strong> at ~1000 m depth where sound can travel thousands of miles. Submarine crews use bathythermograph data to predict sound propagation paths and find "shadow zones" to hide from active sonar. The speed of sound underwater (~1530 m/s) means a ping reaching a submarine 10 km away returns in about 13 seconds.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: INTENSITY & DECIBELS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Intensity &amp; Decibels</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Sound intensity</strong> (I) is power per unit area: <strong>I = P / (4&pi;r&sup2;)</strong> for a point source radiating uniformly. This is the <strong>inverse square law</strong> -- double the distance, intensity drops to 1/4. The unit is W/m&sup2;. Human hearing spans an enormous range from <strong>I&#8320; = 10&sup_minus;12 W/m&sup2;</strong> (threshold) to about 1 W/m&sup2; (pain threshold) -- a factor of 10&sup1;&sup2;.
+    </p>
+    <div class="formula-box large">I = P / (4&pi;r&sup2;) &nbsp;&nbsp; [W/m&sup2;]</div>
+    <div class="formula-box green">&beta; = 10 log&#8321;&#8320;(I / I&#8320;) &nbsp;&nbsp; [dB] &nbsp;&nbsp; where I&#8320; = 10&#8315;&sup1;&sup2; W/m&sup2;</div>
+    <div class="formula-box pink">I&#8322; / I&#8321; = (r&#8321; / r&#8322;)&sup2; &nbsp;&nbsp; (inverse square law)</div>
+
+    <div class="key-point">Every factor of 10 in intensity adds 10 dB. Every factor of 2 in intensity adds ~3 dB. Doubling the distance reduces the level by 6 dB. A 10 dB increase sounds roughly "twice as loud" to human perception.</div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin:14px 0">
+      <div class="db-ref">Breathing <span class="db-val">10 dB</span></div>
+      <div class="db-ref">Whisper <span class="db-val">20 dB</span></div>
+      <div class="db-ref">Library <span class="db-val">40 dB</span></div>
+      <div class="db-ref">Conversation <span class="db-val">60 dB</span></div>
+      <div class="db-ref">Vacuum cleaner <span class="db-val">70 dB</span></div>
+      <div class="db-ref">City traffic <span class="db-val">80 dB</span></div>
+      <div class="db-ref">Lawn mower <span class="db-val">90 dB</span></div>
+      <div class="db-ref">Rock concert <span class="db-val">110 dB</span></div>
+      <div class="db-ref">Jet engine (30m) <span class="db-val">130 dB</span></div>
+      <div class="db-ref">Gunshot <span class="db-val">140 dB</span></div>
+      <div class="db-ref">Rocket launch <span class="db-val">180 dB</span></div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Decibel Calculator</div>
+      <div class="slider-row">
+        <label>Source power (W)</label>
+        <input type="range" id="s2Power" min="-3" max="6" value="0" step="0.1" oninput="updateS2()">
+        <span class="slider-val" id="s2PowerVal">1.0 W</span>
+      </div>
+      <div class="slider-row">
+        <label>Distance (m)</label>
+        <input type="range" id="s2Dist" min="0.5" max="200" value="10" step="0.5" oninput="updateS2()">
+        <span class="slider-val" id="s2DistVal">10.0 m</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Intensity I</span><br><span class="value indigo" id="s2Intensity">--</span></div>
+        <div class="readout-item"><span class="label">Level &beta;</span><br><span class="value green" id="s2dB">--</span></div>
+        <div class="readout-item"><span class="label">Comparable to</span><br><span class="value amber" id="s2Ref">--</span></div>
+      </div>
+      <div class="sub-label">Distance comparison</div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">At 2x distance</span><br><span class="value pink" id="s2dB2x">--</span></div>
+        <div class="readout-item"><span class="label">At 10x distance</span><br><span class="value pink" id="s2dB10x">--</span></div>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Convert Between dB and Intensity</div>
+      <div class="slider-row">
+        <label>Decibel level</label>
+        <input type="range" id="s2dBslider" min="0" max="160" value="60" step="1" oninput="updateS2conv()">
+        <span class="slider-val" id="s2dBsliderVal">60 dB</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Intensity</span><br><span class="value indigo" id="s2convI">--</span></div>
+        <div class="readout-item"><span class="label">Ratio to I&#8320;</span><br><span class="value green" id="s2convRatio">--</span></div>
+        <div class="readout-item"><span class="label">x louder than</span><br><span class="value amber" id="s2convRef">--</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Hearing protection is mandatory on the flight deck (~140 dB from jet engines). The Navy uses the 85 dB TWA (time-weighted average) standard -- above 85 dB, exposure time must be limited. Active sonar pings can reach 235 dB underwater (re 1 &mu;Pa), powerful enough to be lethal to nearby marine life. Submarine crews train extensively on managing acoustic signatures to stay below detection thresholds.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: DOPPLER EFFECT -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Doppler Effect</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>Doppler effect</strong> is the change in observed frequency when source and observer move relative to each other. When they approach, wavefronts are compressed and the frequency <strong>increases</strong> (higher pitch). When they recede, wavefronts are stretched and frequency <strong>decreases</strong> (lower pitch). The general formula uses sign conventions based on direction of approach.
+    </p>
+    <div class="formula-box large">f' = f &middot; (v &plusmn; v<sub>obs</sub>) / (v &mp; v<sub>src</sub>)</div>
+    <div class="formula-box green">Approaching: f' = f(v + v<sub>obs</sub>) / (v - v<sub>src</sub>) &nbsp;&nbsp; [higher]</div>
+    <div class="formula-box pink">Receding: f' = f(v - v<sub>obs</sub>) / (v + v<sub>src</sub>) &nbsp;&nbsp; [lower]</div>
+
+    <div class="key-point">Memory aid: "Top = observer, Bottom = source." Observer approaching adds to numerator (hears more waves). Source approaching subtracts from denominator (compresses waves). Think: TObserverP / BottomSource.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Doppler Simulator</div>
+      <svg id="dopplerSvg" width="100%" viewBox="0 0 700 280" style="display:block;margin:8px 0"></svg>
+      <div class="slider-row">
+        <label>Source freq (Hz)</label>
+        <input type="range" id="s3Freq" min="100" max="2000" value="440" step="10" oninput="updateDoppler()">
+        <span class="slider-val" id="s3FreqVal">440 Hz</span>
+      </div>
+      <div class="slider-row">
+        <label>Source speed</label>
+        <input type="range" id="s3Vsrc" min="-100" max="100" value="30" step="1" oninput="updateDoppler()">
+        <span class="slider-val" id="s3VsrcVal">30 m/s &rarr;</span>
+      </div>
+      <div class="slider-row">
+        <label>Observer speed</label>
+        <input type="range" id="s3Vobs" min="-100" max="100" value="0" step="1" oninput="updateDoppler()">
+        <span class="slider-val" id="s3VobsVal">0 m/s</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Source frequency</span><br><span class="value indigo" id="s3fSrc">440 Hz</span></div>
+        <div class="readout-item"><span class="label">Observed (front)</span><br><span class="value green" id="s3fFront">--</span></div>
+        <div class="readout-item"><span class="label">Observed (behind)</span><br><span class="value pink" id="s3fBehind">--</span></div>
+        <div class="readout-item"><span class="label">Shift ratio</span><br><span class="value amber" id="s3Ratio">--</span></div>
+      </div>
+      <div class="sub-label">Preset scenarios</div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setDopplerPreset('ambulance',this)">Ambulance</button>
+        <button class="scenario-tab" onclick="setDopplerPreset('train',this)">Train horn</button>
+        <button class="scenario-tab" onclick="setDopplerPreset('jet',this)">Jet flyby</button>
+        <button class="scenario-tab" onclick="setDopplerPreset('both',this)">Both moving</button>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> The Doppler effect is critical in submarine warfare. Active sonar uses the frequency shift of the returned ping to determine whether a contact is approaching or receding -- and at what speed. A 1500 Hz sonar ping reflecting off a submarine closing at 10 m/s returns at ~1520 Hz (doubled because the sub acts as both moving reflector and re-emitter). Doppler sonar also measures a ship's speed over the seabed.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: RESONANCE & PIPES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Resonance &amp; Standing Waves in Pipes</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Resonance</strong> occurs when a driving frequency matches a natural frequency of a system, producing maximum amplitude. In pipes, standing sound waves form at specific resonant frequencies. An <strong>open pipe</strong> (open both ends) has antinodes at each end and supports <strong>all harmonics</strong>. A <strong>closed pipe</strong> (closed one end) has a node at the closed end and an antinode at the open end, supporting <strong>only odd harmonics</strong>.
+    </p>
+    <div class="formula-box large">Open pipe: f<sub>n</sub> = nv / 2L &nbsp;&nbsp; (n = 1, 2, 3, ...)</div>
+    <div class="formula-box pink">Closed pipe: f<sub>n</sub> = nv / 4L &nbsp;&nbsp; (n = 1, 3, 5, ... odd only)</div>
+    <div class="formula-box amber">Beats: f<sub>beat</sub> = |f&#8321; - f&#8322;|</div>
+
+    <div class="key-point">Open pipe fundamental wavelength = 2L (half wave fits). Closed pipe fundamental wavelength = 4L (quarter wave fits). Closed pipes sound an octave lower than open pipes of the same length because f1_closed = v/4L = (1/2) &times; f1_open.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Pipe Harmonic Visualizer</div>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="setPipeType('open',this)">Open Pipe</button>
+        <button class="scenario-tab" onclick="setPipeType('closed',this)">Closed Pipe</button>
+      </div>
+      <svg id="pipeSvg" width="100%" viewBox="0 0 700 320" style="display:block;margin:8px 0"></svg>
+      <div class="slider-row">
+        <label>Pipe length (m)</label>
+        <input type="range" id="s4Length" min="0.1" max="3" value="1.0" step="0.05" oninput="updatePipe()">
+        <span class="slider-val" id="s4LengthVal">1.00 m</span>
+      </div>
+      <div class="slider-row">
+        <label>Harmonic n</label>
+        <input type="range" id="s4Harmonic" min="1" max="7" value="1" step="1" oninput="updatePipe()">
+        <span class="slider-val" id="s4HarmonicVal">n = 1</span>
+      </div>
+      <div class="slider-row">
+        <label>Temperature (&deg;C)</label>
+        <input type="range" id="s4Temp" min="-10" max="40" value="20" step="1" oninput="updatePipe()">
+        <span class="slider-val" id="s4TempVal">20 &deg;C</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">v_sound</span><br><span class="value indigo" id="s4Vsound">343 m/s</span></div>
+        <div class="readout-item"><span class="label">Frequency</span><br><span class="value green" id="s4Freq">171.5 Hz</span></div>
+        <div class="readout-item"><span class="label">Wavelength</span><br><span class="value pink" id="s4Wave">2.00 m</span></div>
+        <div class="readout-item"><span class="label">Harmonic</span><br><span class="value amber" id="s4HarmLabel">1st (fundamental)</span></div>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Beat Frequency</div>
+      <div class="slider-row">
+        <label>Frequency 1 (Hz)</label>
+        <input type="range" id="s4F1" min="200" max="600" value="440" step="1" oninput="updateBeats()">
+        <span class="slider-val" id="s4F1Val">440 Hz</span>
+      </div>
+      <div class="slider-row">
+        <label>Frequency 2 (Hz)</label>
+        <input type="range" id="s4F2" min="200" max="600" value="444" step="1" oninput="updateBeats()">
+        <span class="slider-val" id="s4F2Val">444 Hz</span>
+      </div>
+      <svg id="beatsSvg" width="100%" viewBox="0 0 700 180" style="display:block;margin:8px 0"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">f&#8321;</span><br><span class="value indigo" id="s4BF1">440 Hz</span></div>
+        <div class="readout-item"><span class="label">f&#8322;</span><br><span class="value green" id="s4BF2">444 Hz</span></div>
+        <div class="readout-item"><span class="label">Beat freq</span><br><span class="value pink" id="s4BeatF">4 Hz</span></div>
+        <div class="readout-item"><span class="label">Beat period</span><br><span class="value amber" id="s4BeatT">0.250 s</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Resonance is why submarines have specific "acoustic signatures" -- the hull and internal structures resonate at characteristic frequencies. Intelligence services catalog these signatures for identification. Pipe organ acoustics (resonance in tubes) directly parallel how sonar transducers are tuned to specific frequencies for optimal performance in different ocean conditions.</div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: PRACTICE PROBLEMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Practice Problems</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="practice-block">
+      <div class="practice-title">Numerical Practice</div>
+
+      <div class="problem">
+        <p><strong>1.</strong> A ship's sonar ping takes 4.0 seconds to return from the ocean floor. If the speed of sound in seawater is 1530 m/s, what is the depth? (Remember: the ping travels down AND back.)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1" step="1" placeholder="depth = ?" onkeydown="if(event.key==='Enter')checkNum('p1',3060,30)">
+          <span class="unit-label">m</span>
+          <button class="btn btn-sm" onclick="checkNum('p1',3060,30)">Check</button>
+        </div>
+        <div class="feedback" id="p1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>2.</strong> A speaker outputs 0.5 W of acoustic power. What is the sound intensity at 4.0 m from the speaker? (I = P / 4&pi;r&sup2;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2" step="0.0001" placeholder="I = ?" onkeydown="if(event.key==='Enter')checkNum('p2',0.00249,0.0005)">
+          <span class="unit-label">W/m&sup2;</span>
+          <button class="btn btn-sm" onclick="checkNum('p2',0.00249,0.0005)">Check</button>
+        </div>
+        <div class="feedback" id="p2-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>3.</strong> A sound has intensity I = 10&sup_minus;5 W/m&sup2;. What is the decibel level? (&beta; = 10 log(I/I&#8320;), I&#8320; = 10&sup_minus;12 W/m&sup2;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p3" step="1" placeholder="&beta; = ?" onkeydown="if(event.key==='Enter')checkNum('p3',70,1)">
+          <span class="unit-label">dB</span>
+          <button class="btn btn-sm" onclick="checkNum('p3',70,1)">Check</button>
+        </div>
+        <div class="feedback" id="p3-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>4.</strong> An ambulance with a 700 Hz siren approaches you at 35 m/s. You are stationary. What frequency do you hear? (v_sound = 343 m/s, use f' = f &middot; v / (v - v_src))</p>
+        <div class="problem-input-row">
+          <input type="number" id="p4" step="1" placeholder="f' = ?" onkeydown="if(event.key==='Enter')checkNum('p4',795,10)">
+          <span class="unit-label">Hz</span>
+          <button class="btn btn-sm" onclick="checkNum('p4',795,10)">Check</button>
+        </div>
+        <div class="feedback" id="p4-fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>5.</strong> An open pipe is 0.85 m long. What is its fundamental frequency at 20&deg;C? (f&#8321; = v / 2L, v = 343 m/s)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p5" step="1" placeholder="f1 = ?" onkeydown="if(event.key==='Enter')checkNum('p5',201.8,5)">
+          <span class="unit-label">Hz</span>
+          <button class="btn btn-sm" onclick="checkNum('p5',201.8,5)">Check</button>
+        </div>
+        <div class="feedback" id="p5-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUICK QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Quick Quiz &mdash; Sound</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <button class="btn btn-sm" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-q" data-quiz="q1">
+      <div class="q-num">Question 1 -- Speed of sound</div>
+      <p class="q-text">Sound travels fastest in which medium?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Air at 20&deg;C</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Water at 25&deg;C</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,true)">Steel</button>
+        <button class="choice-btn" onclick="quizAnswer('q1',this,false)">Vacuum</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q2">
+      <div class="q-num">Question 2 -- Temperature dependence</div>
+      <p class="q-text">The speed of sound in air at 35&deg;C is approximately:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">331 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">343 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,true)">352 m/s</button>
+        <button class="choice-btn" onclick="quizAnswer('q2',this,false)">380 m/s</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q3">
+      <div class="q-num">Question 3 -- Inverse square law</div>
+      <p class="q-text">If you triple your distance from a point sound source, the intensity becomes:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">1/3 of original</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,true)">1/9 of original</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">1/6 of original</button>
+        <button class="choice-btn" onclick="quizAnswer('q3',this,false)">1/27 of original</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q4">
+      <div class="q-num">Question 4 -- Decibels</div>
+      <p class="q-text">A sound at 80 dB has an intensity how many times greater than a sound at 60 dB?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">2 times</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">20 times</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,true)">100 times</button>
+        <button class="choice-btn" onclick="quizAnswer('q4',this,false)">1000 times</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q5">
+      <div class="q-num">Question 5 -- Doppler approaching</div>
+      <p class="q-text">A fire truck with a 500 Hz siren approaches you. You hear the frequency as:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">Exactly 500 Hz</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,true)">Higher than 500 Hz</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">Lower than 500 Hz</button>
+        <button class="choice-btn" onclick="quizAnswer('q5',this,false)">Depends on the weather</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q6">
+      <div class="q-num">Question 6 -- Doppler calculation</div>
+      <p class="q-text">A source emits 600 Hz and moves toward a stationary observer at 68.6 m/s (v_sound = 343 m/s). The observed frequency is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">450 Hz</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">600 Hz</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,true)">750 Hz</button>
+        <button class="choice-btn" onclick="quizAnswer('q6',this,false)">1200 Hz</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q7">
+      <div class="q-num">Question 7 -- Open pipe harmonics</div>
+      <p class="q-text">An open pipe of length L has a fundamental frequency f. Its third harmonic frequency is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">f</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">2f</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,true)">3f</button>
+        <button class="choice-btn" onclick="quizAnswer('q7',this,false)">4f</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q8">
+      <div class="q-num">Question 8 -- Closed pipe</div>
+      <p class="q-text">A pipe closed at one end supports which harmonics?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">All harmonics (1, 2, 3, 4, ...)</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,true)">Only odd harmonics (1, 3, 5, 7, ...)</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Only even harmonics (2, 4, 6, ...)</button>
+        <button class="choice-btn" onclick="quizAnswer('q8',this,false)">Only the fundamental</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q9">
+      <div class="q-num">Question 9 -- Beats</div>
+      <p class="q-text">Two tuning forks produce frequencies of 256 Hz and 260 Hz. The beat frequency is:</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q9',this,true)">4 Hz</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">516 Hz</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">258 Hz</button>
+        <button class="choice-btn" onclick="quizAnswer('q9',this,false)">8 Hz</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" data-quiz="q10">
+      <div class="q-num">Question 10 -- Sound in vacuum</div>
+      <p class="q-text">An astronaut in space sets off an explosion 100 m away. What does another astronaut hear?</p>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">A loud bang after 0.29 seconds</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">A faint sound due to inverse square law</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,true)">Nothing -- sound cannot travel through vacuum</button>
+        <button class="choice-btn" onclick="quizAnswer('q10',this,false)">An ultrasonic vibration through their suit</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end content -->
+
+<script>
+/* ==================== PROGRESS & SECTIONS ==================== */
+var completedSections = new Set();
+
+function updateProgress() {
+  var cards = document.querySelectorAll('.section-card');
+  var total = cards.length;
+  var pct = (completedSections.size / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + total + ' sections';
+}
+
+function markComplete(n) {
+  if (completedSections.has(n)) return;
+  completedSections.add(n);
+  var card = document.querySelector('.section-card[data-section="'+n+'"]');
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function toggleSection(header) {
+  var card = header.parentElement;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    var s = +card.getAttribute('data-section');
+    markComplete(s);
+  }
+  updateProgress();
+}
+
+/* ==================== PROBLEM CHECKING ==================== */
+function checkNum(id, answer, tol) {
+  var inp = document.getElementById(id);
+  var fb = document.getElementById(id + '-fb');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number.'; inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400); return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className = 'feedback correct'; fb.textContent = 'Correct! The answer is ' + answer + '.';
+    inp.parentElement.parentElement.classList.add('pop'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('pop')},350);
+  } else {
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Try again. (Hint: near ' + answer.toFixed(1) + ')';
+    inp.parentElement.parentElement.classList.add('shake'); setTimeout(function(){inp.parentElement.parentElement.classList.remove('shake')},400);
+  }
+}
+
+function checkMC(btn, id, result) {
+  var fb = document.getElementById(id + '-fb');
+  var btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.textContent = 'Correct!';
+    btn.closest('.problem').classList.add('pop'); setTimeout(function(){btn.closest('.problem').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect'; fb.textContent = 'Not quite. Review the concept above.';
+    btn.closest('.problem').classList.add('shake'); setTimeout(function(){btn.closest('.problem').classList.remove('shake')},400);
+  }
+}
+
+/* ==================== QUIZ ==================== */
+var quizScoreVal = 0, quizAnswered = new Set();
+
+function quizAnswer(qn, btn, correct) {
+  if (quizAnswered.has(qn)) return;
+  quizAnswered.add(qn);
+  var btns = btn.parentElement.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) { b.classList.add('disabled'); });
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    btn.closest('.quiz-q').classList.add('pop'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('pop')},350);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(function(b) {
+      var oc = b.getAttribute('onclick');
+      if (oc && oc.indexOf('true') !== -1) b.classList.add('reveal-correct');
+    });
+    btn.closest('.quiz-q').classList.add('shake'); setTimeout(function(){btn.closest('.quiz-q').classList.remove('shake')},400);
+  }
+  document.getElementById('quizScore').textContent = quizScoreVal;
+}
+
+function resetQuiz() {
+  quizScoreVal = 0; quizAnswered.clear();
+  document.getElementById('quizScore').textContent = '0';
+  document.querySelectorAll('.quiz-q .choice-btn').forEach(function(b) { b.className = 'choice-btn'; });
+}
+
+/* ==================== SECTION 1: SPEED OF SOUND ==================== */
+function updateS1() {
+  var T = +document.getElementById('s1Temp').value;
+  var d = +document.getElementById('s1Dist').value;
+  var v = 331 + 0.6 * T;
+  var t = d / v;
+  document.getElementById('s1TempVal').innerHTML = T + ' &deg;C';
+  document.getElementById('s1DistVal').textContent = d + ' m';
+  document.getElementById('s1Vair').textContent = v.toFixed(1) + ' m/s';
+  document.getElementById('s1Time').textContent = t.toFixed(3) + ' s';
+  document.getElementById('s1Mach').textContent = v.toFixed(1) + ' m/s';
+}
+
+/* ==================== SECTION 2: INTENSITY & DECIBELS ==================== */
+function updateS2() {
+  var logP = +document.getElementById('s2Power').value;
+  var P = Math.pow(10, logP);
+  var r = +document.getElementById('s2Dist').value;
+  var I = P / (4 * Math.PI * r * r);
+  var dB = 10 * Math.log10(I / 1e-12);
+
+  document.getElementById('s2PowerVal').textContent = P < 0.01 ? P.toExponential(1) + ' W' : P.toFixed(2) + ' W';
+  document.getElementById('s2DistVal').textContent = r.toFixed(1) + ' m';
+  document.getElementById('s2Intensity').textContent = I < 0.001 ? I.toExponential(2) + ' W/m\u00B2' : I.toFixed(4) + ' W/m\u00B2';
+  document.getElementById('s2dB').textContent = dB.toFixed(1) + ' dB';
+  document.getElementById('s2Ref').textContent = getDbRef(dB);
+
+  var r2 = r * 2;
+  var I2 = P / (4 * Math.PI * r2 * r2);
+  var dB2 = 10 * Math.log10(I2 / 1e-12);
+  document.getElementById('s2dB2x').textContent = dB2.toFixed(1) + ' dB (-6 dB)';
+
+  var r10 = r * 10;
+  var I10 = P / (4 * Math.PI * r10 * r10);
+  var dB10 = 10 * Math.log10(I10 / 1e-12);
+  document.getElementById('s2dB10x').textContent = dB10.toFixed(1) + ' dB (-20 dB)';
+}
+
+function getDbRef(dB) {
+  if (dB < 15) return 'Near silence';
+  if (dB < 30) return 'Whisper';
+  if (dB < 50) return 'Library';
+  if (dB < 65) return 'Conversation';
+  if (dB < 75) return 'Vacuum cleaner';
+  if (dB < 85) return 'City traffic';
+  if (dB < 95) return 'Lawn mower';
+  if (dB < 105) return 'Power tools';
+  if (dB < 115) return 'Rock concert';
+  if (dB < 125) return 'Threshold of pain';
+  if (dB < 135) return 'Jet engine';
+  return 'Extremely dangerous';
+}
+
+function updateS2conv() {
+  var dB = +document.getElementById('s2dBslider').value;
+  var I = 1e-12 * Math.pow(10, dB / 10);
+  var ratio = Math.pow(10, dB / 10);
+  document.getElementById('s2dBsliderVal').textContent = dB + ' dB';
+  document.getElementById('s2convI').textContent = I < 0.001 ? I.toExponential(2) + ' W/m\u00B2' : I.toFixed(4) + ' W/m\u00B2';
+  document.getElementById('s2convRatio').textContent = ratio < 1e6 ? ratio.toLocaleString() + 'x' : ratio.toExponential(1) + 'x';
+  document.getElementById('s2convRef').textContent = getDbRef(dB);
+}
+
+/* ==================== SECTION 3: DOPPLER EFFECT ==================== */
+function updateDoppler() {
+  var f = +document.getElementById('s3Freq').value;
+  var vs = +document.getElementById('s3Vsrc').value;
+  var vo = +document.getElementById('s3Vobs').value;
+  var v = 343;
+
+  document.getElementById('s3FreqVal').textContent = f + ' Hz';
+  document.getElementById('s3VsrcVal').innerHTML = vs + ' m/s ' + (vs > 0 ? '&rarr;' : vs < 0 ? '&larr;' : '(still)');
+  document.getElementById('s3VobsVal').innerHTML = vo + ' m/s ' + (vo > 0 ? '&rarr;' : vo < 0 ? '&larr;' : '(still)');
+
+  // Source moving right (+), observer is to the right (front) and left (behind)
+  // Front: observer approached by source => f' = f(v + vo)/(v - vs) when both move right
+  var denomFront = v - vs;
+  var denomBehind = v + vs;
+  var numFront = v + vo;
+  var numBehind = v - vo;
+
+  var fFront = denomFront > 0 ? f * numFront / denomFront : Infinity;
+  var fBehind = denomBehind > 0 ? f * numBehind / denomBehind : 0;
+
+  document.getElementById('s3fSrc').textContent = f + ' Hz';
+  document.getElementById('s3fFront').textContent = isFinite(fFront) ? fFront.toFixed(1) + ' Hz' : 'Sonic boom!';
+  document.getElementById('s3fBehind').textContent = fBehind.toFixed(1) + ' Hz';
+  var ratio = isFinite(fFront) && fBehind > 0 ? (fFront / fBehind).toFixed(2) : '--';
+  document.getElementById('s3Ratio').textContent = ratio + ' front/behind';
+
+  drawDoppler(f, vs, vo, v, fFront, fBehind);
+}
+
+function drawDoppler(f, vs, vo, v, fFront, fBehind) {
+  var svg = document.getElementById('dopplerSvg');
+  var w = 700, h = 280;
+  var cx = 350, cy = 140;
+  var html = '';
+
+  html += '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="#1a1d24" rx="6"/>';
+
+  // Draw wavefronts (circles) emanating from source position
+  var numCircles = 8;
+  for (var i = 1; i <= numCircles; i++) {
+    var baseR = i * 28;
+    // Source moving right shifts the center of older wavefronts to the left
+    var offset = vs * i * 0.08;
+    var ccx = cx - offset;
+    var r = baseR;
+    if (r > 0 && ccx - r < w && ccx + r > 0) {
+      html += '<circle cx="'+ccx.toFixed(1)+'" cy="'+cy+'" r="'+r.toFixed(1)+'" fill="none" stroke="rgba(99,102,241,0.3)" stroke-width="1.5"/>';
+    }
+  }
+
+  // Source icon
+  html += '<circle cx="'+cx+'" cy="'+cy+'" r="12" fill="var(--indigo)" stroke="var(--text-bright)" stroke-width="2"/>';
+  html += '<text x="'+cx+'" y="'+(cy+4)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">S</text>';
+
+  // Observer in front (right)
+  var obsX = 620;
+  html += '<circle cx="'+obsX+'" cy="'+cy+'" r="10" fill="var(--green)" stroke="var(--text-bright)" stroke-width="2"/>';
+  html += '<text x="'+obsX+'" y="'+(cy+4)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">O</text>';
+
+  // Observer behind (left)
+  var obs2X = 80;
+  html += '<circle cx="'+obs2X+'" cy="'+cy+'" r="10" fill="var(--pink)" stroke="var(--text-bright)" stroke-width="2"/>';
+  html += '<text x="'+obs2X+'" y="'+(cy+4)+'" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">O</text>';
+
+  // Arrows showing motion
+  if (vs !== 0) {
+    var arrowX = vs > 0 ? cx + 20 : cx - 20;
+    var arrowEnd = vs > 0 ? cx + 50 : cx - 50;
+    html += '<line x1="'+arrowX+'" y1="'+(cy-25)+'" x2="'+arrowEnd+'" y2="'+(cy-25)+'" stroke="var(--indigo)" stroke-width="2" marker-end="url(#dArr)"/>';
+    html += '<text x="'+((arrowX+arrowEnd)/2)+'" y="'+(cy-32)+'" text-anchor="middle" fill="var(--indigo)" font-size="9">v_s='+Math.abs(vs)+'</text>';
+  }
+
+  // Labels
+  var fFrontStr = isFinite(fFront) ? fFront.toFixed(0) + ' Hz' : 'BOOM';
+  html += '<text x="'+obsX+'" y="'+(cy+30)+'" text-anchor="middle" fill="var(--green)" font-size="11" font-weight="600">'+fFrontStr+'</text>';
+  html += '<text x="'+obs2X+'" y="'+(cy+30)+'" text-anchor="middle" fill="var(--pink)" font-size="11" font-weight="600">'+fBehind.toFixed(0)+' Hz</text>';
+
+  // Compressed/stretched wave hint
+  html += '<text x="'+(cx+80)+'" y="'+(h-15)+'" text-anchor="middle" fill="rgba(34,197,94,0.6)" font-size="9">compressed (higher f)</text>';
+  html += '<text x="'+(cx-80)+'" y="'+(h-15)+'" text-anchor="middle" fill="rgba(236,72,153,0.6)" font-size="9">stretched (lower f)</text>';
+
+  // Arrow marker
+  html += '<defs><marker id="dArr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="var(--indigo)"/></marker></defs>';
+
+  svg.innerHTML = html;
+}
+
+function setDopplerPreset(preset, btn) {
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  switch(preset) {
+    case 'ambulance':
+      document.getElementById('s3Freq').value = 700;
+      document.getElementById('s3Vsrc').value = 30;
+      document.getElementById('s3Vobs').value = 0;
+      break;
+    case 'train':
+      document.getElementById('s3Freq').value = 400;
+      document.getElementById('s3Vsrc').value = 50;
+      document.getElementById('s3Vobs').value = 0;
+      break;
+    case 'jet':
+      document.getElementById('s3Freq').value = 300;
+      document.getElementById('s3Vsrc').value = 95;
+      document.getElementById('s3Vobs').value = 0;
+      break;
+    case 'both':
+      document.getElementById('s3Freq').value = 440;
+      document.getElementById('s3Vsrc').value = 20;
+      document.getElementById('s3Vobs').value = -15;
+      break;
+  }
+  updateDoppler();
+}
+
+/* ==================== SECTION 4: PIPES & RESONANCE ==================== */
+var pipeType = 'open';
+
+function setPipeType(type, btn) {
+  pipeType = type;
+  btn.parentElement.querySelectorAll('.scenario-tab').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  // Adjust harmonic slider for closed pipe (odd only)
+  updatePipe();
+}
+
+function updatePipe() {
+  var L = +document.getElementById('s4Length').value;
+  var n = +document.getElementById('s4Harmonic').value;
+  var T = +document.getElementById('s4Temp').value;
+  var v = 331 + 0.6 * T;
+
+  // For closed pipe, only odd harmonics
+  var effectiveN = n;
+  if (pipeType === 'closed') {
+    effectiveN = 2 * n - 1; // maps 1->1, 2->3, 3->5, 4->7...
+  }
+
+  var freq, wavelength;
+  if (pipeType === 'open') {
+    freq = n * v / (2 * L);
+    wavelength = 2 * L / n;
+  } else {
+    freq = effectiveN * v / (4 * L);
+    wavelength = 4 * L / effectiveN;
+  }
+
+  document.getElementById('s4LengthVal').textContent = L.toFixed(2) + ' m';
+  document.getElementById('s4HarmonicVal').textContent = pipeType === 'closed' ? 'n = ' + effectiveN + ' (odd)' : 'n = ' + n;
+  document.getElementById('s4TempVal').innerHTML = T + ' &deg;C';
+  document.getElementById('s4Vsound').textContent = v.toFixed(1) + ' m/s';
+  document.getElementById('s4Freq').textContent = freq.toFixed(1) + ' Hz';
+  document.getElementById('s4Wave').textContent = wavelength.toFixed(3) + ' m';
+
+  var ordinals = ['1st (fundamental)','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th','13th'];
+  var idx = (pipeType === 'closed' ? effectiveN : n) - 1;
+  document.getElementById('s4HarmLabel').textContent = (idx < ordinals.length ? ordinals[idx] : effectiveN+'th') + ' harmonic';
+
+  drawPipe(L, n, effectiveN, v, pipeType);
+}
+
+function drawPipe(L, nSlider, nEff, v, type) {
+  var svg = document.getElementById('pipeSvg');
+  var w = 700, h = 320;
+  var pipeX = 80, pipeW = 540, pipeY = 40, pipeH = 60;
+  var waveY = 160, waveH = 120;
+
+  var html = '';
+  html += '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="#1a1d24" rx="6"/>';
+
+  // Draw pipe body
+  html += '<rect x="'+pipeX+'" y="'+pipeY+'" width="'+pipeW+'" height="'+pipeH+'" fill="none" stroke="var(--text-dim)" stroke-width="2" rx="3"/>';
+
+  // Closed end indicator
+  if (type === 'closed') {
+    html += '<line x1="'+pipeX+'" y1="'+pipeY+'" x2="'+pipeX+'" y2="'+(pipeY+pipeH)+'" stroke="var(--text-bright)" stroke-width="4"/>';
+    html += '<text x="'+(pipeX-5)+'" y="'+(pipeY+pipeH/2+4)+'" text-anchor="end" fill="var(--text-dim)" font-size="9">closed</text>';
+    html += '<text x="'+(pipeX+pipeW+5)+'" y="'+(pipeY+pipeH/2+4)+'" text-anchor="start" fill="var(--text-dim)" font-size="9">open</text>';
+  } else {
+    html += '<text x="'+(pipeX-5)+'" y="'+(pipeY+pipeH/2+4)+'" text-anchor="end" fill="var(--text-dim)" font-size="9">open</text>';
+    html += '<text x="'+(pipeX+pipeW+5)+'" y="'+(pipeY+pipeH/2+4)+'" text-anchor="start" fill="var(--text-dim)" font-size="9">open</text>';
+  }
+
+  // Draw standing wave displacement pattern inside pipe
+  var numHalfWaves;
+  if (type === 'open') {
+    numHalfWaves = nSlider; // n half-wavelengths fit in open pipe
+  } else {
+    numHalfWaves = nEff / 2; // odd*quarter wavelengths
+  }
+
+  var pts = 200;
+  var pathUp = 'M';
+  var pathDown = 'M';
+  for (var i = 0; i <= pts; i++) {
+    var x = pipeX + (i / pts) * pipeW;
+    var frac = i / pts;
+    var amp;
+    if (type === 'open') {
+      // Open pipe: antinodes at both ends, sin(n*pi*x/L)
+      amp = Math.sin(nSlider * Math.PI * frac);
+    } else {
+      // Closed pipe: node at x=0, antinode at x=L, cos would give antinode at 0...
+      // Actually for closed at left: displacement node at x=0, so sin pattern
+      // f_n = nv/4L with n odd, pattern: sin(n*pi*x/(2L)) where x goes 0..L
+      amp = Math.sin(nEff * Math.PI * frac / 2);
+    }
+    var yMid = pipeY + pipeH / 2;
+    var dy = amp * (pipeH / 2 - 4);
+    pathUp += (i === 0 ? '' : ' L') + x.toFixed(1) + ',' + (yMid - dy).toFixed(1);
+    pathDown += (i === 0 ? '' : ' L') + x.toFixed(1) + ',' + (yMid + dy).toFixed(1);
+  }
+  html += '<path d="'+pathUp+'" fill="none" stroke="var(--indigo)" stroke-width="2" opacity="0.8"/>';
+  html += '<path d="'+pathDown+'" fill="none" stroke="var(--indigo)" stroke-width="2" opacity="0.4" stroke-dasharray="4,3"/>';
+
+  // Mark nodes (N) and antinodes (A) below pipe
+  var markerY = pipeY + pipeH + 18;
+  if (type === 'open') {
+    // Nodes at k/(2n) * pipeW for k = 1,3,5... and at boundaries for even, etc.
+    // For open pipe with harmonic n: antinodes at x = k*L/(2n) for k=0,2,4,...2n; nodes at k*L/(2n) for k=1,3,5,...
+    for (var k = 0; k <= 2 * nSlider; k++) {
+      var mx = pipeX + (k / (2 * nSlider)) * pipeW;
+      if (k % 2 === 0) {
+        html += '<text x="'+mx.toFixed(1)+'" y="'+markerY+'" text-anchor="middle" fill="var(--green)" font-size="9" font-weight="600">A</text>';
+      } else {
+        html += '<text x="'+mx.toFixed(1)+'" y="'+markerY+'" text-anchor="middle" fill="var(--pink)" font-size="9" font-weight="600">N</text>';
+      }
+    }
+  } else {
+    // Closed pipe: node at x=0, then alternating every quarter wavelength
+    // For harmonic nEff (odd): nEff quarter wavelengths fit in L
+    var numQuarters = nEff;
+    for (var k = 0; k <= numQuarters; k++) {
+      var mx = pipeX + (k / numQuarters) * pipeW;
+      if (k % 2 === 0) {
+        html += '<text x="'+mx.toFixed(1)+'" y="'+markerY+'" text-anchor="middle" fill="var(--pink)" font-size="9" font-weight="600">N</text>';
+      } else {
+        html += '<text x="'+mx.toFixed(1)+'" y="'+markerY+'" text-anchor="middle" fill="var(--green)" font-size="9" font-weight="600">A</text>';
+      }
+    }
+  }
+
+  // Labels
+  html += '<text x="'+(w/2)+'" y="'+(markerY+18)+'" text-anchor="middle" fill="var(--text-dim)" font-size="9">';
+  html += '<tspan fill="var(--green)">A</tspan> = antinode (max displacement) &nbsp;&nbsp; <tspan fill="var(--pink)">N</tspan> = node (zero displacement)</text>';
+
+  // Length arrow
+  html += '<line x1="'+pipeX+'" y1="'+(h-20)+'" x2="'+(pipeX+pipeW)+'" y2="'+(h-20)+'" stroke="var(--amber)" stroke-width="1.5" marker-start="url(#pArr)" marker-end="url(#pArr2)"/>';
+  html += '<text x="'+(pipeX+pipeW/2)+'" y="'+(h-6)+'" text-anchor="middle" fill="var(--amber)" font-size="10">L = '+document.getElementById('s4Length').value+' m</text>';
+
+  html += '<defs>';
+  html += '<marker id="pArr" markerWidth="6" markerHeight="6" refX="0" refY="3" orient="auto"><path d="M6,0 L0,3 L6,6Z" fill="var(--amber)"/></marker>';
+  html += '<marker id="pArr2" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6Z" fill="var(--amber)"/></marker>';
+  html += '</defs>';
+
+  svg.innerHTML = html;
+}
+
+/* ==================== BEATS ==================== */
+function updateBeats() {
+  var f1 = +document.getElementById('s4F1').value;
+  var f2 = +document.getElementById('s4F2').value;
+  var fb = Math.abs(f1 - f2);
+
+  document.getElementById('s4F1Val').textContent = f1 + ' Hz';
+  document.getElementById('s4F2Val').textContent = f2 + ' Hz';
+  document.getElementById('s4BF1').textContent = f1 + ' Hz';
+  document.getElementById('s4BF2').textContent = f2 + ' Hz';
+  document.getElementById('s4BeatF').textContent = fb + ' Hz';
+  document.getElementById('s4BeatT').textContent = fb > 0 ? (1/fb).toFixed(3) + ' s' : '--';
+
+  drawBeats(f1, f2, fb);
+}
+
+function drawBeats(f1, f2, fb) {
+  var svg = document.getElementById('beatsSvg');
+  var w = 700, h = 180;
+  var ox = 40, oy = 10, gw = 620, gh = 150;
+
+  var html = '';
+  html += '<rect x="0" y="0" width="'+w+'" height="'+h+'" fill="#1a1d24" rx="6"/>';
+
+  // Time axis
+  var dur = fb > 0 ? Math.min(3 / fb, 0.1) : 0.02;
+  if (dur < 0.005) dur = 0.005;
+  var scX = gw / dur;
+
+  // Draw combined waveform
+  var midY = oy + gh / 2;
+  var amp = gh / 2 - 10;
+  var pts = 500;
+  var path1 = 'M', path2 = 'M', pathSum = 'M';
+
+  for (var i = 0; i <= pts; i++) {
+    var t = (i / pts) * dur;
+    var x = ox + (i / pts) * gw;
+    var y1 = Math.sin(2 * Math.PI * f1 * t);
+    var y2 = Math.sin(2 * Math.PI * f2 * t);
+    var ySum = (y1 + y2) / 2;
+
+    path1 += (i === 0 ? '' : ' L') + x.toFixed(1) + ',' + (midY - y1 * amp * 0.3).toFixed(1);
+    path2 += (i === 0 ? '' : ' L') + x.toFixed(1) + ',' + (midY - y2 * amp * 0.3).toFixed(1);
+    pathSum += (i === 0 ? '' : ' L') + x.toFixed(1) + ',' + (midY - ySum * amp).toFixed(1);
+  }
+
+  // Envelope
+  if (fb > 0) {
+    var envPath = 'M';
+    var envPathN = 'M';
+    for (var i = 0; i <= pts; i++) {
+      var t = (i / pts) * dur;
+      var x = ox + (i / pts) * gw;
+      var env = Math.abs(Math.cos(Math.PI * fb * t));
+      envPath += (i === 0 ? '' : ' L') + x.toFixed(1) + ',' + (midY - env * amp).toFixed(1);
+      envPathN += (i === 0 ? '' : ' L') + x.toFixed(1) + ',' + (midY + env * amp).toFixed(1);
+    }
+    html += '<path d="'+envPath+'" fill="none" stroke="var(--amber)" stroke-width="1.5" opacity="0.5" stroke-dasharray="4,3"/>';
+    html += '<path d="'+envPathN+'" fill="none" stroke="var(--amber)" stroke-width="1.5" opacity="0.5" stroke-dasharray="4,3"/>';
+  }
+
+  html += '<path d="'+path1+'" fill="none" stroke="var(--indigo)" stroke-width="1" opacity="0.3"/>';
+  html += '<path d="'+path2+'" fill="none" stroke="var(--green)" stroke-width="1" opacity="0.3"/>';
+  html += '<path d="'+pathSum+'" fill="none" stroke="var(--text-bright)" stroke-width="2" opacity="0.9"/>';
+
+  // Center line
+  html += '<line x1="'+ox+'" y1="'+midY+'" x2="'+(ox+gw)+'" y2="'+midY+'" stroke="var(--border)" stroke-width="1" stroke-dasharray="2,4"/>';
+
+  // Legend
+  html += '<text x="'+(ox+5)+'" y="'+(oy+12)+'" fill="var(--text-dim)" font-size="9">';
+  html += '<tspan fill="var(--indigo)">--- f1</tspan> <tspan fill="var(--green)">--- f2</tspan> <tspan fill="var(--text-bright)">--- combined</tspan> <tspan fill="var(--amber)">... envelope</tspan></text>';
+
+  svg.innerHTML = html;
+}
+
+/* ==================== INIT ==================== */
+updateS1();
+updateS2();
+updateS2conv();
+updateDoppler();
+updatePipe();
+updateBeats();
+markComplete(1);
+</script>
+</body>
+</html>

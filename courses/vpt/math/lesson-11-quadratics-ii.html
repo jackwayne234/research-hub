@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 11 -- Quadratics II: Completing the Square &amp; Quadratic Formula</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --card: #262a33;
+    --border: #363b47;
+    --text: #d4cfc4;
+    --text-dim: #8a8578;
+    --accent: #6366f1;
+    --green: #22c55e;
+    --pink: #ec4899;
+    --orange: #f59e0b;
+    --radius: 8px;
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* -- Progress Bar -- */
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar .seg {
+    flex: 1;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.4s ease;
+  }
+  .progress-bar .seg.done { background: var(--accent); }
+
+  /* -- Header -- */
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* -- Collapsible Cards -- */
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  details.completed { border-color: var(--green); }
+  details[open] { border-color: var(--accent); }
+  details.completed[open] { border-color: var(--green); }
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+    transition: transform 0.25s var(--spring);
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(45deg); }
+
+  .card-body { padding: 1.25rem; }
+  .card-body p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+  .card-body h3 {
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  /* -- SVG Graphs -- */
+  .graph-wrap {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .graph-wrap svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* -- Sliders -- */
+  .slider-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0.75rem 0;
+    align-items: center;
+  }
+  .slider-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 200px;
+  }
+  .slider-group label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    min-width: 15px;
+  }
+  .slider-group input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    outline: none;
+  }
+  .slider-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+  .slider-group input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+  }
+  .slider-val {
+    font-size: 0.8rem;
+    color: var(--orange);
+    min-width: 35px;
+    text-align: right;
+    font-weight: 600;
+  }
+
+  /* -- Info boxes -- */
+  .info-box {
+    background: rgba(99,102,241,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+  }
+  .info-box.green {
+    background: rgba(34,197,94,0.08);
+    border-color: var(--green);
+  }
+  .info-box.pink {
+    background: rgba(236,72,153,0.08);
+    border-color: var(--pink);
+  }
+  .info-box.amber {
+    background: rgba(245,158,11,0.08);
+    border-color: var(--orange);
+  }
+
+  /* -- Equation display -- */
+  .eq {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--orange);
+    text-align: center;
+    margin: 0.75rem 0;
+    padding: 0.5rem;
+    background: rgba(245,158,11,0.06);
+    border-radius: var(--radius);
+  }
+
+  /* -- Buttons -- */
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn.green { background: var(--green); }
+  .btn.pink { background: var(--pink); }
+  .btn.orange { background: var(--orange); color: #1e2128; }
+  .btn.outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0.75rem 0;
+  }
+
+  /* -- Practice Problems -- */
+  .problem-set {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .problem {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    transition: border-color 0.3s, transform 0.3s var(--spring);
+  }
+  .problem.correct { border-color: var(--green); }
+  .problem.incorrect { border-color: var(--pink); }
+  .problem .prompt {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--orange);
+    min-width: 180px;
+  }
+  .problem input[type="text"] {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.4rem 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .problem input:focus { border-color: var(--accent); }
+  .problem .feedback {
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 60px;
+  }
+  .problem .feedback.correct { color: var(--green); }
+  .problem .feedback.incorrect { color: var(--pink); }
+
+  /* -- Step-through -- */
+  .step-container { margin: 1rem 0; }
+  .step {
+    display: none;
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    animation: stepIn 0.3s var(--spring);
+  }
+  .step.active { display: block; }
+  .step .step-label {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+  .step .math {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--orange);
+    margin: 0.4rem 0;
+  }
+
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* -- Completing the Square Visual -- */
+  .cts-visual {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    align-items: flex-end;
+    margin: 1.25rem 0;
+    min-height: 140px;
+  }
+  .cts-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    transition: all 0.4s var(--spring);
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  .cts-block.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .cts-block.x2 {
+    width: 100px; height: 100px;
+    background: rgba(99,102,241,0.2);
+    border: 2px solid var(--accent);
+    color: var(--accent);
+  }
+  .cts-block.bx {
+    width: 50px; height: 100px;
+    background: rgba(245,158,11,0.2);
+    border: 2px solid var(--orange);
+    color: var(--orange);
+  }
+  .cts-block.complete-sq {
+    width: 50px; height: 50px;
+    background: rgba(34,197,94,0.2);
+    border: 2px dashed var(--green);
+    color: var(--green);
+  }
+  .cts-block.const-block {
+    width: 60px; height: 40px;
+    background: rgba(236,72,153,0.15);
+    border: 2px solid var(--pink);
+    color: var(--pink);
+  }
+
+  /* -- Feature tags -- */
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+  }
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .tag.indigo { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .tag.green { background: rgba(34,197,94,0.15); color: var(--green); }
+  .tag.pink { background: rgba(236,72,153,0.15); color: var(--pink); }
+  .tag.amber { background: rgba(245,158,11,0.15); color: var(--orange); }
+
+  /* -- Input groups -- */
+  .input-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0.75rem 0;
+    align-items: center;
+  }
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .input-group label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .input-group input[type="number"], .input-group input[type="text"] {
+    width: 70px;
+    padding: 0.4rem 0.5rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    text-align: center;
+  }
+  .input-group input:focus { border-color: var(--accent); }
+
+  /* -- Quiz -- */
+  .quiz-score {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    background: rgba(99,102,241,0.08);
+    border-radius: var(--radius);
+  }
+  .quiz-score span { color: var(--green); }
+
+  /* -- Table of values -- */
+  .val-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0;
+    font-size: 0.8rem;
+  }
+  .val-table th, .val-table td {
+    padding: 0.4rem 0.6rem;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .val-table th {
+    background: rgba(99,102,241,0.12);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .val-table td { color: var(--text); }
+
+  /* -- Discriminant cases -- */
+  .disc-cases {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  .disc-case {
+    background: #1a1d24;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    text-align: center;
+    transition: border-color 0.3s;
+  }
+  .disc-case.active { border-color: var(--accent); }
+  .disc-case .case-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+  }
+  .disc-case .case-value {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .disc-case .case-desc {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  /* -- Animations -- */
+  @keyframes springPop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  .spring-pop { animation: springPop 0.35s var(--spring); }
+  .shake { animation: shake 0.4s ease; }
+
+  /* -- Responsive -- */
+  @media (max-width: 600px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.2rem; }
+    summary { font-size: 0.9rem; padding: 0.75rem 1rem; }
+    .card-body { padding: 1rem; }
+    .slider-group { min-width: 100%; }
+    .problem { flex-direction: column; align-items: stretch; }
+    .problem .prompt { min-width: unset; }
+    .input-group input[type="number"] { width: 55px; }
+    .disc-cases { grid-template-columns: 1fr; }
+    .cts-visual { gap: 4px; }
+    .cts-block.x2 { width: 70px; height: 70px; font-size: 0.75rem; }
+    .cts-block.bx { width: 35px; height: 70px; font-size: 0.7rem; }
+    .cts-block.complete-sq { width: 35px; height: 35px; font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar">
+  <div class="seg" data-section="0"></div>
+  <div class="seg" data-section="1"></div>
+  <div class="seg" data-section="2"></div>
+  <div class="seg" data-section="3"></div>
+  <div class="seg" data-section="4"></div>
+  <div class="seg" data-section="5"></div>
+</div>
+
+<h1>Week 8: Quadratics II</h1>
+<p class="subtitle">Completing the Square &amp; Quadratic Formula // Lesson 11 of VPT Prep</p>
+
+<!-- ===================== SECTION 1: Completing the Square ===================== -->
+<details id="sec0" open>
+  <summary>1. Completing the Square</summary>
+  <div class="card-body">
+    <p><strong>Completing the square</strong> transforms any quadratic into a perfect square plus a constant. This technique lets you solve equations that don't factor neatly, and it's the engine behind the quadratic formula itself.</p>
+
+    <div class="info-box">
+      <strong>Key idea:</strong> We want to turn x<sup>2</sup> + bx into (x + b/2)<sup>2</sup> by adding the "missing" piece: (b/2)<sup>2</sup>.
+    </div>
+
+    <h3>Visual Walkthrough: x<sup>2</sup> + 6x + 5 = 0</h3>
+    <p>Click through the steps to see how geometric shapes complete the square.</p>
+
+    <div class="cts-visual" id="ctsVisual">
+      <div class="cts-block x2" id="ctsX2">x<sup>2</sup></div>
+      <div class="cts-block bx" id="ctsBx1">3x</div>
+      <div class="cts-block bx" id="ctsBx2">3x</div>
+      <div class="cts-block complete-sq" id="ctsSq">+9</div>
+    </div>
+
+    <div class="step-container" id="ctsSteps">
+      <div class="step" id="ctsStep0">
+        <div class="step-label">Step 1 -- Start</div>
+        <div class="math">x<sup>2</sup> + 6x + 5 = 0</div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Move the constant to the right side.</p>
+      </div>
+      <div class="step" id="ctsStep1">
+        <div class="step-label">Step 2 -- Isolate</div>
+        <div class="math">x<sup>2</sup> + 6x = -5</div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Now we have room to complete the square on the left.</p>
+      </div>
+      <div class="step" id="ctsStep2">
+        <div class="step-label">Step 3 -- Half the coefficient</div>
+        <div class="math">b = 6, so b/2 = 3, and (b/2)<sup>2</sup> = 9</div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Split 6x into two equal pieces: 3x + 3x. The completing square is 3 x 3 = 9.</p>
+      </div>
+      <div class="step" id="ctsStep3">
+        <div class="step-label">Step 4 -- Add to both sides</div>
+        <div class="math">x<sup>2</sup> + 6x + 9 = -5 + 9</div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Add 9 to both sides to keep the equation balanced. The green square completes the picture.</p>
+      </div>
+      <div class="step" id="ctsStep4">
+        <div class="step-label">Step 5 -- Factor the perfect square</div>
+        <div class="math">(x + 3)<sup>2</sup> = 4</div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">The left side is now a perfect square trinomial!</p>
+      </div>
+      <div class="step" id="ctsStep5">
+        <div class="step-label">Step 6 -- Solve</div>
+        <div class="math">x + 3 = +/-2 --> x = -1 or x = -5</div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Take the square root of both sides, then solve for x.</p>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="ctsNextBtn" onclick="ctsNextStep()">Next Step</button>
+      <button class="btn outline" onclick="ctsReset()">Reset</button>
+    </div>
+
+    <h3>Practice: Complete the Square</h3>
+    <p>Solve each equation by completing the square. Enter both solutions separated by a comma (e.g., <code>-1,-5</code>).</p>
+
+    <div class="problem-set" id="ctsProblems"></div>
+
+    <div class="btn-row">
+      <button class="btn green" onclick="checkCTS()">Check Answers</button>
+      <button class="btn outline" onclick="showCTSAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 2: Deriving the Quadratic Formula ===================== -->
+<details id="sec1">
+  <summary>2. Deriving the Quadratic Formula</summary>
+  <div class="card-body">
+    <p>The quadratic formula is just completing the square on the <em>general</em> equation. Watch it emerge step by step.</p>
+
+    <h3>Derivation: ax<sup>2</sup> + bx + c = 0</h3>
+
+    <div class="step-container" id="derivSteps">
+      <div class="step" id="derivStep0">
+        <div class="step-label">Start</div>
+        <div class="math">ax<sup>2</sup> + bx + c = 0</div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Begin with the standard form.</p>
+      </div>
+      <div class="step" id="derivStep1">
+        <div class="step-label">Step 1 -- Divide by a</div>
+        <div class="math">x<sup>2</sup> + (b/a)x + c/a = 0</div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Make the leading coefficient 1.</p>
+      </div>
+      <div class="step" id="derivStep2">
+        <div class="step-label">Step 2 -- Move constant</div>
+        <div class="math">x<sup>2</sup> + (b/a)x = -c/a</div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Isolate the variable terms.</p>
+      </div>
+      <div class="step" id="derivStep3">
+        <div class="step-label">Step 3 -- Complete the square</div>
+        <div class="math">x<sup>2</sup> + (b/a)x + (b/2a)<sup>2</sup> = -c/a + (b/2a)<sup>2</sup></div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Add (b/2a)<sup>2</sup> = b<sup>2</sup>/4a<sup>2</sup> to both sides.</p>
+      </div>
+      <div class="step" id="derivStep4">
+        <div class="step-label">Step 4 -- Factor left side</div>
+        <div class="math">(x + b/2a)<sup>2</sup> = b<sup>2</sup>/4a<sup>2</sup> - c/a</div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Left side becomes a perfect square.</p>
+      </div>
+      <div class="step" id="derivStep5">
+        <div class="step-label">Step 5 -- Common denominator</div>
+        <div class="math">(x + b/2a)<sup>2</sup> = (b<sup>2</sup> - 4ac) / 4a<sup>2</sup></div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Combine fractions on the right.</p>
+      </div>
+      <div class="step" id="derivStep6">
+        <div class="step-label">Step 6 -- Take square root</div>
+        <div class="math">x + b/2a = +/- sqrt(b<sup>2</sup> - 4ac) / 2a</div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Square root both sides.</p>
+      </div>
+      <div class="step" id="derivStep7">
+        <div class="step-label">The Quadratic Formula</div>
+        <div class="math" style="font-size:1.2rem; color:var(--green);">x = (-b +/- sqrt(b<sup>2</sup> - 4ac)) / 2a</div>
+        <p style="font-size:0.85rem;color:var(--text-dim);">Subtract b/2a from both sides. This is it -- the formula works for ANY quadratic.</p>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="derivNextBtn" onclick="derivNextStep()">Next Step</button>
+      <button class="btn outline" onclick="derivReset()">Reset</button>
+    </div>
+
+    <h3>Interactive Quadratic Calculator</h3>
+    <p>Enter coefficients to see the discriminant, roots, and a graph of the parabola.</p>
+
+    <div class="input-row">
+      <div class="input-group">
+        <label>a:</label>
+        <input type="number" id="qfA" value="1" step="0.5">
+      </div>
+      <div class="input-group">
+        <label>b:</label>
+        <input type="number" id="qfB" value="-3" step="0.5">
+      </div>
+      <div class="input-group">
+        <label>c:</label>
+        <input type="number" id="qfC" value="2" step="0.5">
+      </div>
+      <button class="btn" onclick="calcQuadratic()">Calculate</button>
+    </div>
+
+    <div id="qfResult" class="info-box green" style="display:none;"></div>
+
+    <div class="graph-wrap">
+      <svg id="svgQF" viewBox="0 0 500 400" width="500" height="400"></svg>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 3: The Discriminant ===================== -->
+<details id="sec2">
+  <summary>3. The Discriminant</summary>
+  <div class="card-body">
+    <p>The expression <strong>b<sup>2</sup> - 4ac</strong> under the radical is the <strong>discriminant</strong>. It tells you the nature of the roots without solving.</p>
+
+    <div class="disc-cases" id="discCases">
+      <div class="disc-case" id="discPos">
+        <div class="case-label">Positive</div>
+        <div class="case-value" style="color:var(--green);">b<sup>2</sup>-4ac &gt; 0</div>
+        <div class="case-desc">Two distinct real roots</div>
+        <div style="font-size:0.7rem;color:var(--text-dim);margin-top:0.3rem;">Parabola crosses x-axis twice</div>
+      </div>
+      <div class="disc-case" id="discZero">
+        <div class="case-label">Zero</div>
+        <div class="case-value" style="color:var(--orange);">b<sup>2</sup>-4ac = 0</div>
+        <div class="case-desc">One repeated real root</div>
+        <div style="font-size:0.7rem;color:var(--text-dim);margin-top:0.3rem;">Parabola touches x-axis once</div>
+      </div>
+      <div class="disc-case" id="discNeg">
+        <div class="case-label">Negative</div>
+        <div class="case-value" style="color:var(--pink);">b<sup>2</sup>-4ac &lt; 0</div>
+        <div class="case-desc">No real roots</div>
+        <div style="font-size:0.7rem;color:var(--text-dim);margin-top:0.3rem;">Parabola never crosses x-axis</div>
+      </div>
+    </div>
+
+    <h3>Interactive Explorer</h3>
+    <p>Enter a, b, c to see which case applies and visualize the parabola.</p>
+
+    <div class="input-row">
+      <div class="input-group">
+        <label>a:</label>
+        <input type="number" id="discA" value="1" step="0.5">
+      </div>
+      <div class="input-group">
+        <label>b:</label>
+        <input type="number" id="discB" value="2" step="0.5">
+      </div>
+      <div class="input-group">
+        <label>c:</label>
+        <input type="number" id="discC" value="-3" step="0.5">
+      </div>
+      <button class="btn" onclick="analyzeDiscriminant()">Analyze</button>
+    </div>
+
+    <div id="discResult" class="info-box" style="display:none;"></div>
+
+    <div class="graph-wrap">
+      <svg id="svgDisc" viewBox="0 0 500 400" width="500" height="400"></svg>
+    </div>
+
+    <h3>Practice: Classify Without Solving</h3>
+    <p>For each equation, compute the discriminant and type: <code>two</code>, <code>one</code>, or <code>none</code>.</p>
+
+    <div class="problem-set" id="discProblems"></div>
+
+    <div class="btn-row">
+      <button class="btn green" onclick="checkDisc()">Check Answers</button>
+      <button class="btn outline" onclick="showDiscAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 4: Vertex Form ===================== -->
+<details id="sec3">
+  <summary>4. Vertex Form</summary>
+  <div class="card-body">
+    <p>Every quadratic can be written in <strong>vertex form</strong>:</p>
+    <div class="eq">y = a(x - h)<sup>2</sup> + k</div>
+
+    <div class="info-box">
+      <strong>Vertex:</strong> (h, k) -- the peak or valley of the parabola<br>
+      <strong>Axis of symmetry:</strong> x = h<br>
+      <strong>Direction:</strong> a &gt; 0 opens up, a &lt; 0 opens down<br>
+      <strong>Stretch:</strong> |a| &gt; 1 is narrow, |a| &lt; 1 is wide
+    </div>
+
+    <h3>Interactive Transformer</h3>
+    <p>Drag the sliders to see how a, h, and k change the parabola in real time.</p>
+
+    <div class="slider-row">
+      <div class="slider-group">
+        <label>a</label>
+        <input type="range" id="vfA" min="-3" max="3" step="0.25" value="1">
+        <span class="slider-val" id="vfAVal">1.00</span>
+      </div>
+      <div class="slider-group">
+        <label>h</label>
+        <input type="range" id="vfH" min="-6" max="6" step="0.5" value="0">
+        <span class="slider-val" id="vfHVal">0.00</span>
+      </div>
+      <div class="slider-group">
+        <label>k</label>
+        <input type="range" id="vfK" min="-6" max="6" step="0.5" value="0">
+        <span class="slider-val" id="vfKVal">0.00</span>
+      </div>
+    </div>
+
+    <div class="features" id="vfFeatures">
+      <span class="tag indigo" id="vfDir">Opens UP</span>
+      <span class="tag amber" id="vfVertex">Vertex: (0, 0)</span>
+      <span class="tag green" id="vfAxisTag">Axis: x = 0</span>
+    </div>
+
+    <div class="graph-wrap">
+      <svg id="svgVF" viewBox="0 0 500 400" width="500" height="400"></svg>
+    </div>
+
+    <div class="eq" id="vfEqVertex">y = (x)<sup>2</sup></div>
+    <div class="eq" id="vfEqStandard" style="color:var(--accent);background:rgba(99,102,241,0.06);">Standard: y = x<sup>2</sup></div>
+
+    <h3>Practice: Convert Between Forms</h3>
+    <p>Convert to the requested form. For vertex form, write as <code>a(x-h)^2+k</code>. For standard form, write as <code>ax^2+bx+c</code>.</p>
+
+    <div class="problem-set" id="vfProblems"></div>
+
+    <div class="btn-row">
+      <button class="btn green" onclick="checkVF()">Check Answers</button>
+      <button class="btn outline" onclick="showVFAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 5: Physics Connection ===================== -->
+<details id="sec4">
+  <summary>5. Physics Connection -- Projectile Motion</summary>
+  <div class="card-body">
+    <p>The height of a projectile follows a quadratic in time:</p>
+    <div class="eq">y(t) = -1/2 g t<sup>2</sup> + v<sub>0</sub>t + y<sub>0</sub></div>
+
+    <div class="info-box amber">
+      <strong>Navy context:</strong> The Mk 45 5-inch/54 caliber gun on an Arleigh Burke-class destroyer fires rounds at ~820 m/s. Each shell traces a parabolic arc. Finding when it hits the target means solving a quadratic -- and now you know the formula that does it.
+    </div>
+
+    <h3>Step-by-Step Projectile Solver</h3>
+    <p>Set initial velocity and height, then walk through solving for when the projectile hits the ground (y = 0) using the quadratic formula.</p>
+
+    <div class="input-row">
+      <div class="input-group">
+        <label>v<sub>0</sub> (m/s):</label>
+        <input type="number" id="projV" value="30" min="1" max="200" step="1">
+      </div>
+      <div class="input-group">
+        <label>y<sub>0</sub> (m):</label>
+        <input type="number" id="projY" value="20" min="0" max="100" step="1">
+      </div>
+      <button class="btn orange" onclick="solveProjectile()">Solve</button>
+    </div>
+
+    <div id="projStepsContainer" class="step-container"></div>
+
+    <div class="graph-wrap">
+      <svg id="svgProj" viewBox="0 0 500 350" width="500" height="350"></svg>
+    </div>
+
+    <h3>Practice: Projectile Problems</h3>
+    <p>Use the quadratic formula. Give time in seconds, rounded to 2 decimal places.</p>
+
+    <div class="problem-set" id="projProblems"></div>
+
+    <div class="btn-row">
+      <button class="btn green" onclick="checkProj()">Check Answers</button>
+      <button class="btn outline" onclick="showProjAnswers()">Show Answers</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================== SECTION 6: Quick Quiz ===================== -->
+<details id="sec5">
+  <summary>6. Quick Quiz</summary>
+  <div class="card-body">
+    <p>10 mixed problems covering completing the square, quadratic formula, discriminant, vertex form, and projectile motion.</p>
+
+    <div class="quiz-score" id="quizScore">Score: <span>0</span> / 10</div>
+
+    <div class="problem-set" id="quizProblems"></div>
+
+    <div class="btn-row">
+      <button class="btn green" onclick="gradeQuiz()">Submit Quiz</button>
+      <button class="btn outline" onclick="resetQuiz()">Reset</button>
+    </div>
+  </div>
+</details>
+
+<!-- ========================== JAVASCRIPT ========================== -->
+<script>
+// ====== UTILITY ======
+const $ = id => document.getElementById(id);
+const round = (n, d=2) => Math.round(n * 10**d) / 10**d;
+const NS = 'http://www.w3.org/2000/svg';
+
+function makeSVGEl(tag, attrs) {
+  const el = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+
+function springPop(el) {
+  el.classList.remove('spring-pop');
+  void el.offsetWidth;
+  el.classList.add('spring-pop');
+}
+
+function shake(el) {
+  el.classList.remove('shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+}
+
+// Normalize answer strings for comparison
+function norm(s) {
+  return s.replace(/\s+/g, '').replace(/\u2212/g, '-').toLowerCase();
+}
+
+// ====== PROGRESS BAR ======
+const sections = document.querySelectorAll('details[id^="sec"]');
+const segs = document.querySelectorAll('.progress-bar .seg');
+const completedSections = new Set();
+
+function updateProgress() {
+  sections.forEach((s, i) => {
+    if (s.hasAttribute('open')) completedSections.add(i);
+    if (completedSections.has(i)) {
+      segs[i].classList.add('done');
+      s.classList.add('completed');
+    }
+  });
+}
+
+sections.forEach(s => {
+  s.addEventListener('toggle', updateProgress);
+});
+updateProgress();
+
+// ====== SHARED: Draw Coordinate Plane with Parabola ======
+function drawCoordPlane(svg, w, h, a, b, c, opts = {}) {
+  svg.innerHTML = '';
+  const pad = 50;
+  const gw = w - 2 * pad;
+  const gh = h - 2 * pad;
+
+  let xMin = -8, xMax = 8, yMin = -8, yMax = 8;
+
+  if (a !== 0) {
+    const vx = -b / (2 * a);
+    const vy = a * vx * vx + b * vx + c;
+    xMin = Math.min(-8, vx - 6);
+    xMax = Math.max(8, vx + 6);
+    yMin = Math.min(-8, vy - 4);
+    yMax = Math.max(8, vy + 4);
+  }
+
+  xMin = Math.max(xMin, -15); xMax = Math.min(xMax, 15);
+  yMin = Math.max(yMin, -15); yMax = Math.min(yMax, 15);
+
+  const scaleX = gw / (xMax - xMin);
+  const scaleY = gh / (yMax - yMin);
+  const toSvgX = x => pad + (x - xMin) * scaleX;
+  const toSvgY = y => pad + (yMax - y) * scaleY;
+
+  // Grid
+  for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
+    const sx = toSvgX(x);
+    svg.appendChild(makeSVGEl('line', { x1: sx, y1: pad, x2: sx, y2: h - pad, stroke: x === 0 ? '#555' : '#2a2e37', 'stroke-width': x === 0 ? 1.5 : 0.5 }));
+    if (x !== 0 && x % 2 === 0) {
+      const t = makeSVGEl('text', { x: sx, y: toSvgY(0) + 14, fill: '#666', 'font-size': '10', 'text-anchor': 'middle', 'font-family': 'JetBrains Mono' });
+      t.textContent = x;
+      svg.appendChild(t);
+    }
+  }
+  for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y++) {
+    const sy = toSvgY(y);
+    svg.appendChild(makeSVGEl('line', { x1: pad, y1: sy, x2: w - pad, y2: sy, stroke: y === 0 ? '#555' : '#2a2e37', 'stroke-width': y === 0 ? 1.5 : 0.5 }));
+    if (y !== 0 && y % 2 === 0) {
+      const t = makeSVGEl('text', { x: toSvgX(0) - 8, y: sy + 3, fill: '#666', 'font-size': '10', 'text-anchor': 'end', 'font-family': 'JetBrains Mono' });
+      t.textContent = y;
+      svg.appendChild(t);
+    }
+  }
+
+  // Axis labels
+  const xLabel = makeSVGEl('text', { x: w - pad + 5, y: toSvgY(0) + 4, fill: '#888', 'font-size': '12', 'font-family': 'JetBrains Mono' });
+  xLabel.textContent = 'x';
+  svg.appendChild(xLabel);
+  const yLabel = makeSVGEl('text', { x: toSvgX(0) + 5, y: pad - 5, fill: '#888', 'font-size': '12', 'font-family': 'JetBrains Mono' });
+  yLabel.textContent = 'y';
+  svg.appendChild(yLabel);
+
+  // Draw parabola
+  if (a === 0 && b === 0) {
+    const sy = toSvgY(c);
+    if (sy >= pad && sy <= h - pad) {
+      svg.appendChild(makeSVGEl('line', { x1: pad, y1: sy, x2: w - pad, y2: sy, stroke: '#6366f1', 'stroke-width': 2.5 }));
+    }
+    return;
+  }
+
+  let pathD = '';
+  const step = (xMax - xMin) / 300;
+  for (let x = xMin; x <= xMax; x += step) {
+    const y = a * x * x + b * x + c;
+    const sx = toSvgX(x);
+    const sy = toSvgY(y);
+    if (sy < pad - 50 || sy > h - pad + 50) continue;
+    pathD += (pathD === '' ? 'M' : 'L') + round(sx, 1) + ',' + round(sy, 1);
+  }
+  if (pathD) {
+    svg.appendChild(makeSVGEl('path', { d: pathD, fill: 'none', stroke: '#6366f1', 'stroke-width': 2.5, 'stroke-linecap': 'round' }));
+  }
+
+  // Vertex
+  if (opts.showVertex && a !== 0) {
+    const vx = -b / (2 * a);
+    const vy = a * vx * vx + b * vx + c;
+    const svx = toSvgX(vx);
+    const svy = toSvgY(vy);
+    if (svy >= pad - 20 && svy <= h - pad + 20) {
+      svg.appendChild(makeSVGEl('circle', { cx: svx, cy: svy, r: 5, fill: '#f59e0b', stroke: '#1e2128', 'stroke-width': 2 }));
+      const lab = makeSVGEl('text', { x: svx + 8, y: svy - 8, fill: '#f59e0b', 'font-size': '11', 'font-family': 'JetBrains Mono', 'font-weight': '600' });
+      lab.textContent = `(${round(vx)}, ${round(vy)})`;
+      svg.appendChild(lab);
+    }
+  }
+
+  // Axis of symmetry
+  if (opts.showAxis && a !== 0) {
+    const vx = -b / (2 * a);
+    const svx = toSvgX(vx);
+    svg.appendChild(makeSVGEl('line', { x1: svx, y1: pad, x2: svx, y2: h - pad, stroke: '#22c55e', 'stroke-width': 1, 'stroke-dasharray': '4,4', opacity: 0.7 }));
+  }
+
+  // X-intercepts
+  if (opts.showIntercepts && a !== 0) {
+    const disc = b * b - 4 * a * c;
+    if (disc >= 0) {
+      const roots = [];
+      const r1 = (-b + Math.sqrt(disc)) / (2 * a);
+      const r2 = (-b - Math.sqrt(disc)) / (2 * a);
+      roots.push(r1);
+      if (Math.abs(r1 - r2) > 0.001) roots.push(r2);
+      roots.forEach(r => {
+        const sx = toSvgX(r);
+        const sy = toSvgY(0);
+        svg.appendChild(makeSVGEl('circle', { cx: sx, cy: sy, r: 5, fill: '#ec4899', stroke: '#1e2128', 'stroke-width': 2 }));
+        const lab = makeSVGEl('text', { x: sx, y: sy - 10, fill: '#ec4899', 'font-size': '10', 'text-anchor': 'middle', 'font-family': 'JetBrains Mono', 'font-weight': '600' });
+        lab.textContent = round(r);
+        svg.appendChild(lab);
+      });
+    }
+  }
+
+  // Y-intercept
+  if (opts.showYIntercept) {
+    const sx = toSvgX(0);
+    const sy = toSvgY(c);
+    if (sy >= pad && sy <= h - pad) {
+      svg.appendChild(makeSVGEl('circle', { cx: sx, cy: sy, r: 5, fill: '#22c55e', stroke: '#1e2128', 'stroke-width': 2 }));
+      const lab = makeSVGEl('text', { x: sx + 10, y: sy + 4, fill: '#22c55e', 'font-size': '10', 'font-family': 'JetBrains Mono', 'font-weight': '600' });
+      lab.textContent = `(0, ${round(c)})`;
+      svg.appendChild(lab);
+    }
+  }
+}
+
+// ====== SECTION 1: Completing the Square ======
+let ctsStep = -1;
+
+function ctsNextStep() {
+  ctsStep++;
+  if (ctsStep > 5) ctsStep = 5;
+
+  // Show steps
+  for (let i = 0; i <= 5; i++) {
+    const el = $('ctsStep' + i);
+    if (i <= ctsStep) el.classList.add('active');
+    else el.classList.remove('active');
+  }
+
+  // Animate visual blocks
+  const x2 = $('ctsX2');
+  const bx1 = $('ctsBx1');
+  const bx2 = $('ctsBx2');
+  const sq = $('ctsSq');
+
+  if (ctsStep >= 0) { x2.classList.add('visible'); }
+  if (ctsStep >= 1) { bx1.classList.add('visible'); bx2.classList.add('visible'); }
+  if (ctsStep >= 3) { sq.classList.add('visible'); }
+
+  if (ctsStep >= 5) $('ctsNextBtn').disabled = true;
+}
+
+function ctsReset() {
+  ctsStep = -1;
+  for (let i = 0; i <= 5; i++) {
+    $('ctsStep' + i).classList.remove('active');
+  }
+  ['ctsX2', 'ctsBx1', 'ctsBx2', 'ctsSq'].forEach(id => $(id).classList.remove('visible'));
+  $('ctsNextBtn').disabled = false;
+}
+
+// CTS Practice Problems
+const ctsProblemsData = [
+  { display: 'x<sup>2</sup> + 4x - 5 = 0', answers: ['-5,1', '1,-5'], explain: 'x^2+4x=5, add 4: (x+2)^2=9, x+2=+/-3, x=1 or x=-5' },
+  { display: 'x<sup>2</sup> - 2x - 8 = 0', answers: ['-2,4', '4,-2'], explain: 'x^2-2x=8, add 1: (x-1)^2=9, x-1=+/-3, x=4 or x=-2' },
+  { display: 'x<sup>2</sup> + 8x + 12 = 0', answers: ['-2,-6', '-6,-2'], explain: 'x^2+8x=-12, add 16: (x+4)^2=4, x+4=+/-2, x=-2 or x=-6' },
+  { display: 'x<sup>2</sup> - 6x + 5 = 0', answers: ['1,5', '5,1'], explain: 'x^2-6x=-5, add 9: (x-3)^2=4, x-3=+/-2, x=5 or x=1' }
+];
+
+function buildCTSProblems() {
+  const container = $('ctsProblems');
+  container.innerHTML = '';
+  ctsProblemsData.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = 'ctsP' + i;
+    div.innerHTML = `
+      <span class="prompt">${p.display}</span>
+      <input type="text" id="ctsA${i}" placeholder="e.g. -1,-5">
+      <span class="feedback" id="ctsF${i}"></span>
+    `;
+    container.appendChild(div);
+  });
+  // Enter key
+  ctsProblemsData.forEach((_, i) => {
+    $('ctsA' + i).addEventListener('keydown', e => { if (e.key === 'Enter') checkCTS(); });
+  });
+}
+
+function checkCTS() {
+  ctsProblemsData.forEach((p, i) => {
+    const input = $('ctsA' + i);
+    const fb = $('ctsF' + i);
+    const prob = $('ctsP' + i);
+    const val = norm(input.value);
+    prob.classList.remove('correct', 'incorrect');
+    if (!val) { fb.textContent = ''; return; }
+
+    const isCorrect = p.answers.some(a => norm(a) === val);
+    if (isCorrect) {
+      prob.classList.add('correct');
+      fb.className = 'feedback correct';
+      fb.textContent = 'Correct!';
+      springPop(prob);
+    } else {
+      prob.classList.add('incorrect');
+      fb.className = 'feedback incorrect';
+      fb.textContent = 'Try again';
+      shake(prob);
+    }
+  });
+}
+
+function showCTSAnswers() {
+  ctsProblemsData.forEach((p, i) => {
+    const fb = $('ctsF' + i);
+    fb.className = 'feedback correct';
+    fb.textContent = p.answers[0];
+    const prob = $('ctsP' + i);
+    prob.classList.remove('incorrect');
+    prob.classList.add('correct');
+  });
+}
+
+buildCTSProblems();
+
+// ====== SECTION 2: Derivation Step-through ======
+let derivStep = -1;
+const derivTotalSteps = 8;
+
+function derivNextStep() {
+  derivStep++;
+  if (derivStep >= derivTotalSteps) derivStep = derivTotalSteps - 1;
+
+  for (let i = 0; i < derivTotalSteps; i++) {
+    const el = $('derivStep' + i);
+    if (el) {
+      if (i <= derivStep) el.classList.add('active');
+      else el.classList.remove('active');
+    }
+  }
+
+  if (derivStep >= derivTotalSteps - 1) $('derivNextBtn').disabled = true;
+}
+
+function derivReset() {
+  derivStep = -1;
+  for (let i = 0; i < derivTotalSteps; i++) {
+    const el = $('derivStep' + i);
+    if (el) el.classList.remove('active');
+  }
+  $('derivNextBtn').disabled = false;
+}
+
+// Quadratic Calculator
+function calcQuadratic() {
+  const a = parseFloat($('qfA').value) || 0;
+  const b = parseFloat($('qfB').value) || 0;
+  const c = parseFloat($('qfC').value) || 0;
+
+  if (a === 0) {
+    $('qfResult').style.display = 'block';
+    $('qfResult').className = 'info-box pink';
+    $('qfResult').innerHTML = '<strong>Not a quadratic!</strong> Coefficient a cannot be zero.';
+    return;
+  }
+
+  const disc = b * b - 4 * a * c;
+  let html = `<strong>Equation:</strong> ${a}x<sup>2</sup> + ${b}x + ${c} = 0<br>`;
+  html += `<strong>Discriminant:</strong> b<sup>2</sup> - 4ac = ${round(disc)}<br>`;
+
+  if (disc > 0) {
+    const r1 = (-b + Math.sqrt(disc)) / (2 * a);
+    const r2 = (-b - Math.sqrt(disc)) / (2 * a);
+    html += `<strong>Two real roots:</strong> x = ${round(r1)} and x = ${round(r2)}`;
+    $('qfResult').className = 'info-box green';
+  } else if (disc === 0) {
+    const r = -b / (2 * a);
+    html += `<strong>One repeated root:</strong> x = ${round(r)}`;
+    $('qfResult').className = 'info-box amber';
+  } else {
+    const realPart = round(-b / (2 * a));
+    const imagPart = round(Math.sqrt(-disc) / (2 * a));
+    html += `<strong>No real roots.</strong> Complex: x = ${realPart} +/- ${imagPart}i`;
+    $('qfResult').className = 'info-box pink';
+  }
+
+  $('qfResult').innerHTML = html;
+  $('qfResult').style.display = 'block';
+
+  drawCoordPlane($('svgQF'), 500, 400, a, b, c, { showVertex: true, showIntercepts: true, showAxis: true, showYIntercept: true });
+}
+
+calcQuadratic();
+
+// ====== SECTION 3: Discriminant ======
+function analyzeDiscriminant() {
+  const a = parseFloat($('discA').value) || 0;
+  const b = parseFloat($('discB').value) || 0;
+  const c = parseFloat($('discC').value) || 0;
+
+  if (a === 0) {
+    $('discResult').style.display = 'block';
+    $('discResult').className = 'info-box pink';
+    $('discResult').innerHTML = 'Coefficient a cannot be zero for a quadratic.';
+    return;
+  }
+
+  const disc = b * b - 4 * a * c;
+  let html = `<strong>Discriminant:</strong> (${b})<sup>2</sup> - 4(${a})(${c}) = ${round(disc)}<br>`;
+
+  // Reset active states
+  $('discPos').classList.remove('active');
+  $('discZero').classList.remove('active');
+  $('discNeg').classList.remove('active');
+
+  if (disc > 0) {
+    const r1 = (-b + Math.sqrt(disc)) / (2 * a);
+    const r2 = (-b - Math.sqrt(disc)) / (2 * a);
+    html += `<strong style="color:var(--green);">Two distinct real roots:</strong> x = ${round(r1)} and x = ${round(r2)}`;
+    $('discResult').className = 'info-box green';
+    $('discPos').classList.add('active');
+  } else if (Math.abs(disc) < 0.0001) {
+    const r = -b / (2 * a);
+    html += `<strong style="color:var(--orange);">One repeated real root:</strong> x = ${round(r)}`;
+    $('discResult').className = 'info-box amber';
+    $('discZero').classList.add('active');
+  } else {
+    html += `<strong style="color:var(--pink);">No real roots.</strong> The parabola does not cross the x-axis.`;
+    $('discResult').className = 'info-box pink';
+    $('discNeg').classList.add('active');
+  }
+
+  $('discResult').innerHTML = html;
+  $('discResult').style.display = 'block';
+
+  drawCoordPlane($('svgDisc'), 500, 400, a, b, c, { showVertex: true, showIntercepts: true, showAxis: true });
+}
+
+analyzeDiscriminant();
+
+// Discriminant Practice Problems
+const discProblemsData = [
+  { display: 'x<sup>2</sup> + 4x + 4 = 0', a: 1, b: 4, c: 4, answer: 'one', explain: 'D = 16 - 16 = 0, one repeated root' },
+  { display: '2x<sup>2</sup> + 3x - 5 = 0', a: 2, b: 3, c: -5, answer: 'two', explain: 'D = 9 + 40 = 49 > 0, two real roots' },
+  { display: 'x<sup>2</sup> - x + 1 = 0', a: 1, b: -1, c: 1, answer: 'none', explain: 'D = 1 - 4 = -3 < 0, no real roots' },
+  { display: '3x<sup>2</sup> - 6x + 3 = 0', a: 3, b: -6, c: 3, answer: 'one', explain: 'D = 36 - 36 = 0, one repeated root' },
+  { display: 'x<sup>2</sup> + 2x + 5 = 0', a: 1, b: 2, c: 5, answer: 'none', explain: 'D = 4 - 20 = -16 < 0, no real roots' }
+];
+
+function buildDiscProblems() {
+  const container = $('discProblems');
+  container.innerHTML = '';
+  discProblemsData.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = 'discP' + i;
+    div.innerHTML = `
+      <span class="prompt">${p.display}</span>
+      <input type="text" id="discAns${i}" placeholder="two / one / none">
+      <span class="feedback" id="discFb${i}"></span>
+    `;
+    container.appendChild(div);
+  });
+  discProblemsData.forEach((_, i) => {
+    $('discAns' + i).addEventListener('keydown', e => { if (e.key === 'Enter') checkDisc(); });
+  });
+}
+
+function checkDisc() {
+  discProblemsData.forEach((p, i) => {
+    const input = $('discAns' + i);
+    const fb = $('discFb' + i);
+    const prob = $('discP' + i);
+    const val = norm(input.value);
+    prob.classList.remove('correct', 'incorrect');
+    if (!val) { fb.textContent = ''; return; }
+
+    if (val === p.answer) {
+      prob.classList.add('correct');
+      fb.className = 'feedback correct';
+      fb.textContent = 'Correct!';
+      springPop(prob);
+    } else {
+      prob.classList.add('incorrect');
+      fb.className = 'feedback incorrect';
+      fb.textContent = p.answer;
+      shake(prob);
+    }
+  });
+}
+
+function showDiscAnswers() {
+  discProblemsData.forEach((p, i) => {
+    const fb = $('discFb' + i);
+    fb.className = 'feedback correct';
+    fb.textContent = p.answer + ' -- ' + p.explain;
+    $('discP' + i).classList.remove('incorrect');
+    $('discP' + i).classList.add('correct');
+  });
+}
+
+buildDiscProblems();
+
+// ====== SECTION 4: Vertex Form ======
+function drawVertexForm() {
+  const a = parseFloat($('vfA').value);
+  const h = parseFloat($('vfH').value);
+  const k = parseFloat($('vfK').value);
+  $('vfAVal').textContent = a.toFixed(2);
+  $('vfHVal').textContent = h.toFixed(2);
+  $('vfKVal').textContent = k.toFixed(2);
+
+  // Features
+  $('vfDir').textContent = a === 0 ? 'Linear (a=0)' : a > 0 ? 'Opens UP' : 'Opens DOWN';
+  $('vfDir').className = 'tag ' + (a === 0 ? 'amber' : a > 0 ? 'indigo' : 'pink');
+  $('vfVertex').textContent = `Vertex: (${round(h)}, ${round(k)})`;
+  $('vfAxisTag').textContent = `Axis: x = ${round(h)}`;
+
+  // Convert to standard form for graphing: y = a(x-h)^2 + k = ax^2 - 2ahx + ah^2 + k
+  const stdA = a;
+  const stdB = -2 * a * h;
+  const stdC = a * h * h + k;
+
+  // Vertex form equation display
+  let vfStr = 'y = ';
+  if (a === 1) vfStr += '';
+  else if (a === -1) vfStr += '-';
+  else vfStr += a;
+  const hSign = h >= 0 ? '-' : '+';
+  const hAbs = Math.abs(h);
+  vfStr += `(x ${hSign} ${hAbs === 0 ? '0' : round(hAbs)})`;
+  vfStr += '<sup>2</sup>';
+  if (k !== 0) vfStr += (k > 0 ? ' + ' : ' - ') + round(Math.abs(k));
+  $('vfEqVertex').innerHTML = vfStr;
+
+  // Standard form equation display
+  let stdStr = 'Standard: y = ';
+  if (stdA !== 0) stdStr += (stdA === 1 ? '' : stdA === -1 ? '-' : round(stdA)) + 'x<sup>2</sup>';
+  if (round(stdB) !== 0) stdStr += (stdB > 0 && stdA !== 0 ? ' + ' : (stdB < 0 ? ' - ' : '')) + (Math.abs(round(stdB)) === 1 ? '' : round(Math.abs(stdB))) + 'x';
+  if (round(stdC) !== 0) stdStr += (stdC > 0 ? ' + ' : ' - ') + round(Math.abs(stdC));
+  $('vfEqStandard').innerHTML = stdStr;
+
+  drawCoordPlane($('svgVF'), 500, 400, stdA, stdB, stdC, { showVertex: true, showAxis: true, showIntercepts: true });
+}
+
+['vfA', 'vfH', 'vfK'].forEach(id => {
+  $(id).addEventListener('input', drawVertexForm);
+});
+drawVertexForm();
+
+// Vertex Form Practice Problems
+const vfProblemsData = [
+  { display: 'To vertex form: x<sup>2</sup> + 6x + 5', answer: '(x+3)^2-4', alts: ['1(x+3)^2-4', '1(x+3)^2+(-4)'], explain: 'h = -3, k = 5 - 9 = -4' },
+  { display: 'To vertex form: x<sup>2</sup> - 4x + 7', answer: '(x-2)^2+3', alts: ['1(x-2)^2+3'], explain: 'h = 2, k = 7 - 4 = 3' },
+  { display: 'To standard form: 2(x - 1)<sup>2</sup> + 3', answer: '2x^2-4x+5', alts: ['2x^2+-4x+5'], explain: '2(x^2-2x+1)+3 = 2x^2-4x+2+3 = 2x^2-4x+5' },
+  { display: 'To standard form: -(x + 2)<sup>2</sup> + 4', answer: '-x^2-4x', alts: ['-1x^2-4x+0', '-x^2-4x+0', '-1x^2+-4x+0'], explain: '-(x^2+4x+4)+4 = -x^2-4x-4+4 = -x^2-4x' }
+];
+
+function buildVFProblems() {
+  const container = $('vfProblems');
+  container.innerHTML = '';
+  vfProblemsData.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = 'vfP' + i;
+    div.innerHTML = `
+      <span class="prompt">${p.display}</span>
+      <input type="text" id="vfAns${i}" placeholder="e.g. (x+3)^2-4">
+      <span class="feedback" id="vfFb${i}"></span>
+    `;
+    container.appendChild(div);
+  });
+  vfProblemsData.forEach((_, i) => {
+    $('vfAns' + i).addEventListener('keydown', e => { if (e.key === 'Enter') checkVF(); });
+  });
+}
+
+function checkVF() {
+  vfProblemsData.forEach((p, i) => {
+    const input = $('vfAns' + i);
+    const fb = $('vfFb' + i);
+    const prob = $('vfP' + i);
+    const val = norm(input.value);
+    prob.classList.remove('correct', 'incorrect');
+    if (!val) { fb.textContent = ''; return; }
+
+    const allAnswers = [p.answer, ...(p.alts || [])];
+    const isCorrect = allAnswers.some(a => norm(a) === val);
+    if (isCorrect) {
+      prob.classList.add('correct');
+      fb.className = 'feedback correct';
+      fb.textContent = 'Correct!';
+      springPop(prob);
+    } else {
+      prob.classList.add('incorrect');
+      fb.className = 'feedback incorrect';
+      fb.textContent = 'Try again';
+      shake(prob);
+    }
+  });
+}
+
+function showVFAnswers() {
+  vfProblemsData.forEach((p, i) => {
+    const fb = $('vfFb' + i);
+    fb.className = 'feedback correct';
+    fb.textContent = p.answer;
+    $('vfP' + i).classList.remove('incorrect');
+    $('vfP' + i).classList.add('correct');
+  });
+}
+
+buildVFProblems();
+
+// ====== SECTION 5: Projectile Motion ======
+function solveProjectile() {
+  const v0 = parseFloat($('projV').value) || 30;
+  const y0 = parseFloat($('projY').value) || 20;
+  const g = 9.8;
+
+  // y(t) = -1/2 g t^2 + v0 t + y0 = 0
+  // -4.9t^2 + v0 t + y0 = 0
+  const a = -g / 2;
+  const b = v0;
+  const c = y0;
+
+  const disc = b * b - 4 * a * c;
+  const t1 = (-b + Math.sqrt(disc)) / (2 * a);
+  const t2 = (-b - Math.sqrt(disc)) / (2 * a);
+  const tLand = Math.max(t1, t2); // positive time
+  const tPeak = -b / (2 * a);
+  const yPeak = a * tPeak * tPeak + b * tPeak + c;
+
+  const container = $('projStepsContainer');
+  container.innerHTML = '';
+
+  const steps = [
+    { label: 'Setup', math: `y(t) = -4.9t<sup>2</sup> + ${v0}t + ${y0}`, desc: 'Height equation with g = 9.8 m/s^2.' },
+    { label: 'Set y = 0', math: `-4.9t<sup>2</sup> + ${v0}t + ${y0} = 0`, desc: 'We want to find when it hits the ground.' },
+    { label: 'Identify a, b, c', math: `a = -4.9, b = ${v0}, c = ${y0}`, desc: 'Map to the standard form coefficients.' },
+    { label: 'Discriminant', math: `D = (${v0})<sup>2</sup> - 4(-4.9)(${y0}) = ${round(disc)}`, desc: `D > 0, so there are two solutions.` },
+    { label: 'Apply formula', math: `t = (-${v0} +/- sqrt(${round(disc)})) / (2 x -4.9)`, desc: 'Plug into the quadratic formula.' },
+    { label: 'Solutions', math: `t = ${round(t1)} s or t = ${round(t2)} s`, desc: `We discard the negative time. The projectile lands at t = ${round(tLand)} s.` },
+    { label: 'Peak', math: `t<sub>peak</sub> = ${round(tPeak)} s, y<sub>max</sub> = ${round(yPeak)} m`, desc: 'Maximum height occurs at the vertex of the parabola.' }
+  ];
+
+  steps.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'step active';
+    div.innerHTML = `
+      <div class="step-label">${s.label}</div>
+      <div class="math">${s.math}</div>
+      <p style="font-size:0.85rem;color:var(--text-dim);">${s.desc}</p>
+    `;
+    container.appendChild(div);
+  });
+
+  // Draw trajectory
+  drawProjectileGraph(a, b, c, tLand, tPeak, yPeak);
+}
+
+function drawProjectileGraph(a, b, c, tLand, tPeak, yPeak) {
+  const svg = $('svgProj');
+  svg.innerHTML = '';
+  const w = 500, h = 350, pad = 50;
+  const gw = w - 2 * pad;
+  const gh = h - 2 * pad;
+
+  const tMax = tLand * 1.1;
+  const yMax = yPeak * 1.2;
+
+  const scaleX = gw / tMax;
+  const scaleY = gh / yMax;
+  const toSvgX = t => pad + t * scaleX;
+  const toSvgY = y => h - pad - y * scaleY;
+
+  // Ground line
+  svg.appendChild(makeSVGEl('line', { x1: pad, y1: h - pad, x2: w - pad, y2: h - pad, stroke: '#555', 'stroke-width': 1.5 }));
+  // Left axis
+  svg.appendChild(makeSVGEl('line', { x1: pad, y1: pad, x2: pad, y2: h - pad, stroke: '#555', 'stroke-width': 1.5 }));
+
+  // Time ticks
+  const tStep = Math.ceil(tMax / 8);
+  for (let t = 0; t <= tMax; t += tStep || 1) {
+    const sx = toSvgX(t);
+    svg.appendChild(makeSVGEl('line', { x1: sx, y1: h - pad, x2: sx, y2: h - pad + 6, stroke: '#666', 'stroke-width': 1 }));
+    const label = makeSVGEl('text', { x: sx, y: h - pad + 18, fill: '#666', 'font-size': '10', 'text-anchor': 'middle', 'font-family': 'JetBrains Mono' });
+    label.textContent = round(t, 0) + 's';
+    svg.appendChild(label);
+  }
+
+  // Y ticks
+  const yStep = Math.ceil(yMax / 6);
+  for (let y = 0; y <= yMax; y += yStep || 1) {
+    const sy = toSvgY(y);
+    if (sy < pad) continue;
+    svg.appendChild(makeSVGEl('line', { x1: pad - 6, y1: sy, x2: pad, y2: sy, stroke: '#666', 'stroke-width': 1 }));
+    const label = makeSVGEl('text', { x: pad - 10, y: sy + 3, fill: '#666', 'font-size': '10', 'text-anchor': 'end', 'font-family': 'JetBrains Mono' });
+    label.textContent = round(y, 0) + 'm';
+    svg.appendChild(label);
+  }
+
+  // Trajectory
+  let pathD = '';
+  const dt = tLand / 200;
+  for (let t = 0; t <= tLand; t += dt) {
+    const y = a * t * t + b * t + c;
+    if (y < 0) continue;
+    const sx = toSvgX(t);
+    const sy = toSvgY(y);
+    pathD += (pathD === '' ? 'M' : 'L') + round(sx, 1) + ',' + round(sy, 1);
+  }
+  // End at ground
+  pathD += 'L' + round(toSvgX(tLand), 1) + ',' + round(toSvgY(0), 1);
+  svg.appendChild(makeSVGEl('path', { d: pathD, fill: 'none', stroke: '#6366f1', 'stroke-width': 2.5, 'stroke-linecap': 'round' }));
+
+  // Peak point
+  const tP = -b / (2 * a);
+  const yP = a * tP * tP + b * tP + c;
+  svg.appendChild(makeSVGEl('circle', { cx: toSvgX(tP), cy: toSvgY(yP), r: 5, fill: '#f59e0b', stroke: '#1e2128', 'stroke-width': 2 }));
+  const peakLabel = makeSVGEl('text', { x: toSvgX(tP), y: toSvgY(yP) - 10, fill: '#f59e0b', 'font-size': '10', 'text-anchor': 'middle', 'font-family': 'JetBrains Mono', 'font-weight': '600' });
+  peakLabel.textContent = `Peak: ${round(yP)}m`;
+  svg.appendChild(peakLabel);
+
+  // Landing point
+  svg.appendChild(makeSVGEl('circle', { cx: toSvgX(tLand), cy: toSvgY(0), r: 5, fill: '#ec4899', stroke: '#1e2128', 'stroke-width': 2 }));
+  const landLabel = makeSVGEl('text', { x: toSvgX(tLand), y: toSvgY(0) - 10, fill: '#ec4899', 'font-size': '10', 'text-anchor': 'middle', 'font-family': 'JetBrains Mono', 'font-weight': '600' });
+  landLabel.textContent = `t = ${round(tLand)}s`;
+  svg.appendChild(landLabel);
+
+  // Start point
+  svg.appendChild(makeSVGEl('circle', { cx: toSvgX(0), cy: toSvgY(c), r: 5, fill: '#22c55e', stroke: '#1e2128', 'stroke-width': 2 }));
+  const startLabel = makeSVGEl('text', { x: toSvgX(0) + 10, y: toSvgY(c) + 4, fill: '#22c55e', 'font-size': '10', 'font-family': 'JetBrains Mono', 'font-weight': '600' });
+  startLabel.textContent = `y0 = ${round(c)}m`;
+  svg.appendChild(startLabel);
+
+  // Axis labels
+  const tAxisLabel = makeSVGEl('text', { x: w - pad + 5, y: h - pad + 4, fill: '#888', 'font-size': '12', 'font-family': 'JetBrains Mono' });
+  tAxisLabel.textContent = 't';
+  svg.appendChild(tAxisLabel);
+  const yAxisLabel = makeSVGEl('text', { x: pad + 5, y: pad - 5, fill: '#888', 'font-size': '12', 'font-family': 'JetBrains Mono' });
+  yAxisLabel.textContent = 'y';
+  svg.appendChild(yAxisLabel);
+}
+
+solveProjectile();
+
+// Projectile Practice Problems
+const projProblemsData = [
+  {
+    display: 'A shell is fired vertically at 50 m/s from a deck 15 m above sea level. When does it hit the water?',
+    a: -4.9, b: 50, c: 15,
+    getAnswer: function() {
+      const d = this.b*this.b - 4*this.a*this.c;
+      return round((-this.b - Math.sqrt(d)) / (2*this.a));
+    },
+    explain: 'a=-4.9, b=50, c=15. D=50^2-4(-4.9)(15)=2794. t=(-50-sqrt(2794))/(-9.8)'
+  },
+  {
+    display: 'A round is launched at 40 m/s from 10 m height. When does it land?',
+    a: -4.9, b: 40, c: 10,
+    getAnswer: function() {
+      const d = this.b*this.b - 4*this.a*this.c;
+      return round((-this.b - Math.sqrt(d)) / (2*this.a));
+    },
+    explain: 'a=-4.9, b=40, c=10. Use quadratic formula for positive t.'
+  },
+  {
+    display: 'A projectile is fired at 25 m/s from ground level (y0=0). How long until it returns?',
+    a: -4.9, b: 25, c: 0,
+    getAnswer: function() {
+      return round(-this.b / this.a);  // since c=0, t = -b/a (or 0)
+    },
+    explain: 'a=-4.9, b=25, c=0. Factor: t(-4.9t+25)=0. t=25/4.9'
+  }
+];
+
+function buildProjProblems() {
+  const container = $('projProblems');
+  container.innerHTML = '';
+  projProblemsData.forEach((p, i) => {
+    const ans = p.getAnswer();
+    p.computedAnswer = ans;
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = 'projP' + i;
+    div.innerHTML = `
+      <span class="prompt" style="min-width:100%;">${p.display}</span>
+      <input type="text" id="projAns${i}" placeholder="seconds" style="margin-top:0.3rem;">
+      <span class="feedback" id="projFb${i}"></span>
+    `;
+    container.appendChild(div);
+  });
+  projProblemsData.forEach((_, i) => {
+    $('projAns' + i).addEventListener('keydown', e => { if (e.key === 'Enter') checkProj(); });
+  });
+}
+
+function checkProj() {
+  projProblemsData.forEach((p, i) => {
+    const input = $('projAns' + i);
+    const fb = $('projFb' + i);
+    const prob = $('projP' + i);
+    const val = parseFloat(input.value);
+    prob.classList.remove('correct', 'incorrect');
+    if (isNaN(val)) { fb.textContent = ''; return; }
+
+    if (Math.abs(val - p.computedAnswer) < 0.05) {
+      prob.classList.add('correct');
+      fb.className = 'feedback correct';
+      fb.textContent = 'Correct!';
+      springPop(prob);
+    } else {
+      prob.classList.add('incorrect');
+      fb.className = 'feedback incorrect';
+      fb.textContent = `${p.computedAnswer} s`;
+      shake(prob);
+    }
+  });
+}
+
+function showProjAnswers() {
+  projProblemsData.forEach((p, i) => {
+    const fb = $('projFb' + i);
+    fb.className = 'feedback correct';
+    fb.textContent = p.computedAnswer + ' s';
+    $('projP' + i).classList.remove('incorrect');
+    $('projP' + i).classList.add('correct');
+  });
+}
+
+buildProjProblems();
+
+// ====== SECTION 6: Quick Quiz ======
+const quizData = [
+  {
+    q: 'Complete the square: x<sup>2</sup> + 10x + ___ makes a perfect square. What fills the blank?',
+    answer: '25',
+    explain: '(10/2)^2 = 25. The perfect square is (x+5)^2.'
+  },
+  {
+    q: 'Solve x<sup>2</sup> - 2x - 3 = 0 using the quadratic formula. Give both roots separated by comma.',
+    answer: '-1,3',
+    alts: ['3,-1'],
+    explain: 'D = 4+12 = 16. x = (2+/-4)/2, so x = 3 or x = -1.'
+  },
+  {
+    q: 'What is the discriminant of 2x<sup>2</sup> + 4x + 2 = 0?',
+    answer: '0',
+    explain: 'D = 16 - 16 = 0. One repeated root.'
+  },
+  {
+    q: 'How many real roots does x<sup>2</sup> + x + 1 = 0 have? (0, 1, or 2)',
+    answer: '0',
+    explain: 'D = 1 - 4 = -3 < 0. No real roots.'
+  },
+  {
+    q: 'Convert y = x<sup>2</sup> - 8x + 12 to vertex form. What is h?',
+    answer: '4',
+    explain: 'h = -b/2a = 8/2 = 4. Vertex form: (x-4)^2 - 4.'
+  },
+  {
+    q: 'In vertex form y = 3(x - 2)<sup>2</sup> + 5, what is the vertex? Give as (h,k).',
+    answer: '(2,5)',
+    explain: 'h = 2, k = 5. Vertex is (2, 5).'
+  },
+  {
+    q: 'Solve by completing the square: x<sup>2</sup> + 2x - 15 = 0. Positive root?',
+    answer: '3',
+    explain: 'x^2+2x=15, add 1: (x+1)^2=16, x+1=+/-4, x=3 or x=-5.'
+  },
+  {
+    q: 'A projectile with y(t)=-4.9t<sup>2</sup>+20t hits ground at t=? Round to 2 decimals.',
+    answer: '4.08',
+    explain: 't(-4.9t+20)=0, t=0 or t=20/4.9=4.08 s.'
+  },
+  {
+    q: 'Does y = 2(x+1)<sup>2</sup> - 3 open upward or downward? (up/down)',
+    answer: 'up',
+    explain: 'a = 2 > 0, so it opens upward.'
+  },
+  {
+    q: 'What is the axis of symmetry for y = x<sup>2</sup> - 6x + 2? Give x value.',
+    answer: '3',
+    explain: 'x = -b/2a = 6/2 = 3.'
+  }
+];
+
+function buildQuiz() {
+  const container = $('quizProblems');
+  container.innerHTML = '';
+  quizData.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'problem';
+    div.id = 'quizP' + i;
+    div.innerHTML = `
+      <span class="prompt" style="min-width:100%;color:var(--text);">${i + 1}. ${q.q}</span>
+      <input type="text" id="quizAns${i}" placeholder="Answer" style="margin-top:0.3rem;">
+      <span class="feedback" id="quizFb${i}"></span>
+    `;
+    container.appendChild(div);
+  });
+  quizData.forEach((_, i) => {
+    $('quizAns' + i).addEventListener('keydown', e => { if (e.key === 'Enter') gradeQuiz(); });
+  });
+}
+
+function gradeQuiz() {
+  let score = 0;
+  quizData.forEach((q, i) => {
+    const input = $('quizAns' + i);
+    const fb = $('quizFb' + i);
+    const prob = $('quizP' + i);
+    const val = norm(input.value);
+    prob.classList.remove('correct', 'incorrect');
+
+    if (!val) {
+      fb.className = 'feedback incorrect';
+      fb.textContent = q.answer;
+      prob.classList.add('incorrect');
+      shake(prob);
+      return;
+    }
+
+    const allAnswers = [q.answer, ...(q.alts || [])];
+    const isCorrect = allAnswers.some(a => norm(a) === val);
+
+    if (isCorrect) {
+      score++;
+      prob.classList.add('correct');
+      fb.className = 'feedback correct';
+      fb.textContent = 'Correct!';
+      springPop(prob);
+    } else {
+      prob.classList.add('incorrect');
+      fb.className = 'feedback incorrect';
+      fb.textContent = q.answer + ' -- ' + q.explain;
+      shake(prob);
+    }
+  });
+
+  const scoreEl = $('quizScore');
+  scoreEl.innerHTML = `Score: <span>${score}</span> / 10`;
+  if (score === 10) {
+    scoreEl.style.background = 'rgba(34,197,94,0.15)';
+  } else if (score >= 7) {
+    scoreEl.style.background = 'rgba(245,158,11,0.12)';
+  } else {
+    scoreEl.style.background = 'rgba(236,72,153,0.1)';
+  }
+}
+
+function resetQuiz() {
+  quizData.forEach((_, i) => {
+    $('quizAns' + i).value = '';
+    $('quizFb' + i).textContent = '';
+    $('quizFb' + i).className = 'feedback';
+    $('quizP' + i).classList.remove('correct', 'incorrect');
+  });
+  const scoreEl = $('quizScore');
+  scoreEl.innerHTML = 'Score: <span>0</span> / 10';
+  scoreEl.style.background = 'rgba(99,102,241,0.08)';
+}
+
+buildQuiz();
+
+</script>
+</body>
+</html>

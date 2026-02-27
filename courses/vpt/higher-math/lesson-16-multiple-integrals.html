@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 16: Multiple Integrals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.step-box{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:12px 0}
+.step-box .step-label{font-size:.68rem;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.step-box .step-content{font-size:.78rem;line-height:1.8}
+.step-box .step-content strong{color:var(--text-bright)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.coord-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.74rem}
+.coord-table th{background:var(--bg-input);color:var(--indigo);padding:10px 12px;text-align:left;border:1px solid var(--border);font-weight:600}
+.coord-table td{padding:10px 12px;border:1px solid var(--border);color:var(--text)}
+.coord-table tr:nth-child(even) td{background:rgba(99,102,241,.04)}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.coord-table{font-size:.65rem}.coord-table th,.coord-table td{padding:6px 8px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>16</span> Multiple Integrals</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: DOUBLE INTEGRALS -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Double Integrals</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>double integral</strong> &#8748;&#8748;<sub>R</sub> f(x,y) dA extends the single-variable integral to functions of two variables. Geometrically, when f(x,y) &ge; 0, the double integral gives the <strong>volume under the surface z = f(x,y)</strong> above the region R in the xy-plane. Think of stacking infinitesimally thin columns of height f(x,y) and base area dA = dx dy, then summing them all.
+    </p>
+
+    <div class="formula-box large">&#8748;&#8748;<sub>R</sub> f(x,y) dA = Volume under z = f(x,y) above R</div>
+
+    <p class="concept-text">
+      For a <strong>rectangular region</strong> R = [a,b] x [c,d], the double integral becomes an <strong>iterated integral</strong> -- we integrate one variable at a time, treating the other as a constant:
+    </p>
+
+    <div class="formula-box green large">&#8748;<sub>a</sub><sup>b</sup> &#8748;<sub>c</sub><sup>d</sup> f(x,y) dy dx = &#8748;<sub>c</sub><sup>d</sup> &#8748;<sub>a</sub><sup>b</sup> f(x,y) dx dy</div>
+
+    <p class="concept-text">
+      <strong>Fubini's Theorem</strong> guarantees that for continuous f on a closed rectangle, we can switch the order of integration freely -- compute the inner integral first (treating the outer variable as constant), then the outer. The result is the same either way.
+    </p>
+
+    <div class="key-point"><strong>Fubini's Theorem:</strong> If f(x,y) is continuous on R = [a,b] x [c,d], then integrating dy dx gives the same value as dx dy. This lets you choose whichever order makes the algebra easier.</div>
+
+    <div class="step-box">
+      <div class="step-label">Example: &#8748;&#8748;<sub>R</sub> (x + 2y) dA over [0,2] x [0,1]</div>
+      <div class="step-content">
+        Inner (dy): &#8748;<sub>0</sub><sup>1</sup> (x + 2y) dy = [xy + y&sup2;]<sub>0</sub><sup>1</sup> = x + 1<br>
+        Outer (dx): &#8748;<sub>0</sub><sup>2</sup> (x + 1) dx = [x&sup2;/2 + x]<sub>0</sub><sup>2</sup> = 2 + 2 = <strong>4</strong>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Rectangular Region Heat Map</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:12px">Adjust the region [0,a] x [0,b] and see the heat map of f(x,y) = xy + 1 with the integral value updated live.</p>
+      <div class="slider-row">
+        <label>Region x: [0, a]</label>
+        <input type="range" id="hm_a" min="0.5" max="3" step="0.1" value="2" oninput="updateHeatmap()">
+        <span class="slider-val" id="hm_a_val">2.0</span>
+      </div>
+      <div class="slider-row">
+        <label>Region y: [0, b]</label>
+        <input type="range" id="hm_b" min="0.5" max="3" step="0.1" value="1" oninput="updateHeatmap()">
+        <span class="slider-val" id="hm_b_val">1.0</span>
+      </div>
+      <svg id="hmSvg" width="100%" viewBox="0 0 380 220" style="display:block;margin:12px auto;border-radius:6px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">f(x,y)</span><br><span class="value amber">xy + 1</span></div>
+        <div class="readout-item"><span class="label">Region</span><br><span class="value indigo" id="hm_region">[0,2] x [0,1]</span></div>
+        <div class="readout-item"><span class="label">&#8748;&#8748; dA (exact)</span><br><span class="value green" id="hm_integral">3.00</span></div>
+        <div class="readout-item"><span class="label">Area of R</span><br><span class="value" id="hm_area">2.00</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Double integrals over cross-sections compute <strong>hull waterplane area</strong> -- the area of a horizontal slice of a ship at the waterline. The waterplane area governs initial stability: a wider waterplane means more resistance to rolling. Naval architects integrate f(x,y) = 1 over the hull cross-section shape to get area, then use weighted integrals for stability metrics.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> Evaluate &#8748;<sub>0</sub><sup>1</sup> &#8748;<sub>0</sub><sup>2</sup> 6x&sup2;y dy dx. Enter your answer:</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1_in" placeholder="answer">
+          <button class="btn btn-sm" onclick="checkNum('s1p1_in','s1p1_fb',4,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s1p1_fb"></div>
+      </div>
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> By Fubini's theorem, &#8748;<sub>0</sub><sup>3</sup> &#8748;<sub>1</sub><sup>2</sup> x&sup2;y dx dy equals which of the following?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">&#8748;<sub>1</sub><sup>2</sup> &#8748;<sub>0</sub><sup>3</sup> x&sup2;y dy dx but only if f is separable</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','correct')">&#8748;<sub>1</sub><sup>2</sup> &#8748;<sub>0</sub><sup>3</sup> x&sup2;y dy dx -- always equal for continuous f</button>
+          <button class="mc-btn" onclick="checkMC(this,'s1p2','wrong')">They differ because the limits change meaning</button>
+        </div>
+        <div class="feedback" id="s1p2-fb"></div>
+      </div>
+      <div class="problem" id="s1p3">
+        <p><strong>3.</strong> Compute &#8748;<sub>0</sub><sup>2</sup> &#8748;<sub>0</sub><sup>1</sup> e<sup>x</sup> dy dx. Enter your answer (round to 2 decimal places):</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p3_in" placeholder="answer" step="0.01">
+          <button class="btn btn-sm" onclick="checkNum('s1p3_in','s1p3_fb',6.389,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s1p3_fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: NON-RECTANGULAR REGIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Non-Rectangular Regions</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Most real regions of integration are not rectangles. We classify them as <strong>Type I</strong> or <strong>Type II</strong> depending on which variable has fixed limits and which has variable limits.
+    </p>
+
+    <div class="formula-box large">Type I: &#8748;<sub>a</sub><sup>b</sup> &#8748;<sub>g&#8321;(x)</sub><sup>g&#8322;(x)</sup> f(x,y) dy dx</div>
+    <div class="formula-box green large">Type II: &#8748;<sub>c</sub><sup>d</sup> &#8748;<sub>h&#8321;(y)</sub><sup>h&#8322;(y)</sup> f(x,y) dx dy</div>
+
+    <p class="concept-text">
+      <strong>Type I</strong>: x runs from constant a to b. For each fixed x, y runs from curve g&#8321;(x) to g&#8322;(x). Think of vertical slices sweeping left-to-right across the region.<br><br>
+      <strong>Type II</strong>: y runs from constant c to d. For each fixed y, x runs from curve h&#8321;(y) to h&#8322;(y). Think of horizontal slices sweeping bottom-to-top.
+    </p>
+
+    <div class="key-point">The same region can be described as Type I or Type II -- sometimes one setup gives an integral you can actually evaluate and the other gives something intractable. Switching order of integration is often the key to solving a problem.</div>
+
+    <div class="step-box">
+      <div class="step-label">Example: Region bounded by y = x and y = x&sup2;</div>
+      <div class="step-content">
+        Intersections: x&sup2; = x &rarr; x = 0, 1. Region is between y = x (top) and y = x&sup2; (bottom).<br>
+        <strong>Type I:</strong> &#8748;<sub>0</sub><sup>1</sup> &#8748;<sub>x&sup2;</sub><sup>x</sup> f(x,y) dy dx<br>
+        <strong>Type II:</strong> &#8748;<sub>0</sub><sup>1</sup> &#8748;<sub>y</sub><sup>&#8730;y</sup> f(x,y) dx dy
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Type I vs Type II Region Sketch</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Select a region to see how it looks as Type I (vertical slices) vs Type II (horizontal slices).</p>
+      <div class="scenario-tabs">
+        <button class="scenario-tab active" onclick="showRegion('triangle',this)">Triangle</button>
+        <button class="scenario-tab" onclick="showRegion('parabola',this)">Parabolic strip</button>
+        <button class="scenario-tab" onclick="showRegion('mixed',this)">y=x vs y=x&sup2;</button>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <div style="flex:1;min-width:160px">
+          <div style="font-size:.65rem;color:var(--indigo);margin-bottom:6px;font-weight:600">TYPE I (vertical slices)</div>
+          <svg id="regionSvg1" viewBox="0 0 160 140" width="100%" style="display:block;background:var(--bg);border-radius:6px;border:1px solid var(--border)"></svg>
+          <div style="font-size:.65rem;color:var(--text-dim);margin-top:6px" id="type1_label"></div>
+        </div>
+        <div style="flex:1;min-width:160px">
+          <div style="font-size:.65rem;color:var(--green);margin-bottom:6px;font-weight:600">TYPE II (horizontal slices)</div>
+          <svg id="regionSvg2" viewBox="0 0 160 140" width="100%" style="display:block;background:var(--bg);border-radius:6px;border:1px solid var(--border)"></svg>
+          <div style="font-size:.65rem;color:var(--text-dim);margin-top:6px" id="type2_label"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Hull cross-sections are non-rectangular regions. When computing the <strong>second moment of area</strong> (needed for bending stress in a ship's keel), engineers integrate over the actual hull profile -- a curved boundary. Setting up the correct Type I or II limits from the hull curve equations is essential for accurate structural analysis.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s2p1">
+        <p><strong>1.</strong> The region R is bounded by x = 0, y = 0, and x + y = 1. As a Type I integral: &#8748;<sub>0</sub><sup>1</sup> &#8748;<sub>?</sub><sup>?</sup> f dy dx. What are the y limits?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','wrong')">y from 0 to 1</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','correct')">y from 0 to 1-x</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p1','wrong')">y from x to 1</button>
+        </div>
+        <div class="feedback" id="s2p1-fb"></div>
+      </div>
+      <div class="problem" id="s2p2">
+        <p><strong>2.</strong> &#8748;<sub>0</sub><sup>1</sup> &#8748;<sub>x</sub><sup>1</sup> e<sup>y&sup2;</sup> dy dx cannot be evaluated in this order (no closed form for &#8748;e<sup>y&sup2;</sup> dy). Switch to Type II and compute the result. Enter your answer (round to 3 decimal places):</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p2_in" placeholder="answer" step="0.001">
+          <button class="btn btn-sm" onclick="checkNum('s2p2_in','s2p2_fb',0.859,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s2p2_fb"></div>
+      </div>
+      <div class="problem" id="s2p3">
+        <p><strong>3.</strong> For R bounded by y = &#8730;x and y = x, which statement about switching integration order is correct?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">You can only switch if f(x,y) is separable as g(x)h(y)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','correct')">Fubini allows switching provided f is continuous; the new limits describe the same region differently</button>
+          <button class="mc-btn" onclick="checkMC(this,'s2p3','wrong')">Switching order always requires computing both and averaging</button>
+        </div>
+        <div class="feedback" id="s2p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: DOUBLE INTEGRALS IN POLAR -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Double Integrals in Polar Coordinates</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When the region R is circular or the integrand contains x&sup2; + y&sup2;, switching to <strong>polar coordinates</strong> (r, &theta;) dramatically simplifies the computation. The substitution is x = r cos&theta;, y = r sin&theta;, and the critical fact is that the area element changes:
+    </p>
+
+    <div class="formula-box large">dA = dx dy &nbsp; &rarr; &nbsp; dA = r dr d&theta;</div>
+
+    <p class="concept-text">
+      The extra factor of <strong>r</strong> is the Jacobian of the polar transformation (covered in Section 5). A "wedge slice" in polar has area &frac12;r&sup2; d&theta; -- differentially, a thin annular wedge at radius r, angular width d&theta;, and radial thickness dr has area r dr d&theta;.
+    </p>
+
+    <div class="formula-box green">&#8748;&#8748;<sub>R</sub> f(x,y) dA = &#8748;<sub>&alpha;</sub><sup>&beta;</sup> &#8748;<sub>r&#8321;</sub><sup>r&#8322;</sup> f(r cos&theta;, r sin&theta;) r dr d&theta;</div>
+
+    <p class="concept-text">
+      <strong>Standard limits for a full disk</strong> of radius R centered at origin: r from 0 to R, &theta; from 0 to 2&pi;. For a half-disk above x-axis: &theta; from 0 to &pi;. For a quarter-disk: &theta; from 0 to &pi;/2.
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Example: &#8748;&#8748;<sub>R</sub> (x&sup2; + y&sup2;) dA over disk r &le; 2</div>
+      <div class="step-content">
+        In polar: x&sup2; + y&sup2; = r&sup2;. Limits: r &isin; [0,2], &theta; &isin; [0,2&pi;]<br>
+        &#8748;<sub>0</sub><sup>2&pi;</sup> &#8748;<sub>0</sub><sup>2</sup> r&sup2; &sdot; r dr d&theta; = &#8748;<sub>0</sub><sup>2&pi;</sup> d&theta; &sdot; &#8748;<sub>0</sub><sup>2</sup> r&sup3; dr<br>
+        = 2&pi; &sdot; [r&#8308;/4]<sub>0</sub><sup>2</sup> = 2&pi; &sdot; 4 = <strong>8&pi;</strong>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Polar Grid with Adjustable Region</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust R and the angular sweep to see the polar region and its wedge slices.</p>
+      <div class="slider-row">
+        <label>Radius R</label>
+        <input type="range" id="pol_R" min="0.5" max="2.5" step="0.1" value="1.5" oninput="updatePolar()">
+        <span class="slider-val" id="pol_R_val">1.5</span>
+      </div>
+      <div class="slider-row">
+        <label>Angle sweep (&deg;)</label>
+        <input type="range" id="pol_theta" min="30" max="360" step="15" value="270" oninput="updatePolar()">
+        <span class="slider-val" id="pol_theta_val">270</span>
+      </div>
+      <svg id="polarSvg" viewBox="0 0 380 240" width="100%" style="display:block;margin:0 auto;border-radius:6px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Region</span><br><span class="value indigo" id="pol_region">0 &le; r &le; 1.5, 0 &le; &theta; &le; 270&deg;</span></div>
+        <div class="readout-item"><span class="label">&#8748;&#8748; r dr d&theta;</span><br><span class="value green" id="pol_area">5.30</span></div>
+        <div class="readout-item"><span class="label">&#8748;&#8748; r&sup2; dr d&theta;</span><br><span class="value amber" id="pol_r2">4.24</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Radar cross-section (RCS) integration over circular antenna apertures uses polar coordinates. The received power from a circular dish antenna of radius R is proportional to &#8748;&#8748; r dr d&theta; over the aperture -- directly giving &pi;R&sup2;. Sonar transducers are circular; their sensitivity patterns integrate in polar naturally.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s3p1">
+        <p><strong>1.</strong> Evaluate &#8748;&#8748;<sub>R</sub> &#8730;(x&sup2;+y&sup2;) dA over the disk x&sup2;+y&sup2; &le; 9. Enter your answer (exact value as a decimal, round to 2 places):</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1_in" placeholder="answer" step="0.01">
+          <button class="btn btn-sm" onclick="checkNum('s3p1_in','s3p1_fb',56.549,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s3p1_fb"></div>
+      </div>
+      <div class="problem" id="s3p2">
+        <p><strong>2.</strong> Converting &#8748;<sub>-2</sub><sup>2</sup> &#8748;<sub>0</sub><sup>&#8730;(4-x&sup2;)</sup> (x&sup2;+y&sup2;) dy dx to polar gives:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">&#8748;<sub>0</sub><sup>2&pi;</sup> &#8748;<sub>0</sub><sup>2</sup> r&sup2; dr d&theta; (full disk)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','correct')">&#8748;<sub>0</sub><sup>&pi;</sup> &#8748;<sub>0</sub><sup>2</sup> r&sup3; dr d&theta; (upper half-disk, with Jacobian r)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s3p2','wrong')">&#8748;<sub>0</sub><sup>&pi;</sup> &#8748;<sub>0</sub><sup>2</sup> r&sup2; dr d&theta; (forgot the Jacobian factor r)</button>
+        </div>
+        <div class="feedback" id="s3p2-fb"></div>
+      </div>
+      <div class="problem" id="s3p3">
+        <p><strong>3.</strong> What is the area enclosed by the curve r = 3 (a circle of radius 3)? Use &#8748;&#8748; r dr d&theta;. Enter the exact value:</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p3_in" placeholder="answer" step="0.01">
+          <button class="btn btn-sm" onclick="checkNum('s3p3_in','s3p3_fb',28.274,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s3p3_fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: TRIPLE INTEGRALS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Triple Integrals & 3D Coordinates</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>triple integral</strong> &#8749;<sub>E</sub> f(x,y,z) dV sums the function f over a three-dimensional solid region E. When f = 1, the triple integral gives the volume of E. When f = &rho;(x,y,z) (density), it gives total mass. Triple integrals are iterated three times: innermost limits may depend on both remaining variables, middle limits depend on the outermost variable, outer limits are constants.
+    </p>
+
+    <div class="formula-box large">&#8749;<sub>E</sub> f(x,y,z) dV = &#8748;<sub>a</sub><sup>b</sup> &#8748;<sub>g&#8321;(x)</sub><sup>g&#8322;(x)</sup> &#8748;<sub>u&#8321;(x,y)</sub><sup>u&#8322;(x,y)</sup> f dz dy dx</div>
+
+    <p class="concept-text">
+      <strong>Cylindrical coordinates</strong> (r, &theta;, z) extend polar to 3D by keeping the z-axis. Useful for cylinders, cones, and any region with circular cross-sections in the xy-plane.
+    </p>
+
+    <div class="formula-box green">Cylindrical: x = r cos&theta;, y = r sin&theta;, z = z &nbsp;&nbsp; dV = r dr d&theta; dz</div>
+
+    <p class="concept-text">
+      <strong>Spherical coordinates</strong> (&rho;, &phi;, &theta;) use radial distance &rho; from the origin, polar angle &phi; from the positive z-axis (0 to &pi;), and azimuthal angle &theta; in the xy-plane (0 to 2&pi;). Perfect for spheres and cones.
+    </p>
+
+    <div class="formula-box pink">Spherical: x = &rho;sin&phi;cos&theta;, y = &rho;sin&phi;sin&theta;, z = &rho;cos&phi; &nbsp;&nbsp; dV = &rho;&sup2;sin&phi; d&rho; d&phi; d&theta;</div>
+
+    <table class="coord-table">
+      <thead><tr><th>Coordinate System</th><th>Best for</th><th>Volume element dV</th><th>Key limits (full sphere)</th></tr></thead>
+      <tbody>
+        <tr><td>Rectangular (x,y,z)</td><td>Boxes, any general shape</td><td>dx dy dz</td><td>Constant bounds</td></tr>
+        <tr><td>Cylindrical (r,&theta;,z)</td><td>Cylinders, cones, circular pipes</td><td>r dr d&theta; dz</td><td>0&le;r, 0&le;&theta;&le;2&pi;, -h&le;z&le;h</td></tr>
+        <tr><td>Spherical (&rho;,&phi;,&theta;)</td><td>Spheres, half-spheres, cones</td><td>&rho;&sup2;sin&phi; d&rho; d&phi; d&theta;</td><td>0&le;&rho;&le;R, 0&le;&phi;&le;&pi;, 0&le;&theta;&le;2&pi;</td></tr>
+      </tbody>
+    </table>
+
+    <div class="step-box">
+      <div class="step-label">Volume of a Sphere of Radius R (spherical coordinates)</div>
+      <div class="step-content">
+        &#8749; dV = &#8748;<sub>0</sub><sup>2&pi;</sup> &#8748;<sub>0</sub><sup>&pi;</sup> &#8748;<sub>0</sub><sup>R</sup> &rho;&sup2;sin&phi; d&rho; d&phi; d&theta;<br>
+        = [&#8748;<sub>0</sub><sup>2&pi;</sup> d&theta;] &sdot; [&#8748;<sub>0</sub><sup>&pi;</sup> sin&phi; d&phi;] &sdot; [&#8748;<sub>0</sub><sup>R</sup> &rho;&sup2; d&rho;]<br>
+        = 2&pi; &sdot; 2 &sdot; R&sup3;/3 = <strong>(4/3)&pi;R&sup3;</strong>
+      </div>
+    </div>
+
+    <div class="key-point">The volume elements r (cylindrical) and &rho;&sup2;sin&phi; (spherical) come from the Jacobian -- they account for the fact that grid cells in curvilinear coordinates are not unit cubes.</div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> The volume of a submerged hull section (needed for buoyancy calculations via Archimedes) is a triple integral over the hull geometry. For spherical sonar domes or torpedo nose cones, spherical coordinates give closed-form volume answers directly. Fuel tank volume in oddly-shaped spaces uses numerical triple integration.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s4p1">
+        <p><strong>1.</strong> In cylindrical coordinates, which volume element is correct?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p1','wrong')">dV = dr d&theta; dz (no extra factor)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p1','correct')">dV = r dr d&theta; dz (Jacobian factor r)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p1','wrong')">dV = r&sup2; dr d&theta; dz</button>
+        </div>
+        <div class="feedback" id="s4p1-fb"></div>
+      </div>
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> Evaluate &#8749;<sub>E</sub> z dV where E is the region inside the cylinder r = 2, between z = 0 and z = 3. Enter your answer:</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2_in" placeholder="answer" step="0.01">
+          <button class="btn btn-sm" onclick="checkNum('s4p2_in','s4p2_fb',56.549,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s4p2_fb"></div>
+      </div>
+      <div class="problem" id="s4p3">
+        <p><strong>3.</strong> For a sphere of radius 3 centered at origin, the correct spherical coordinate limits are:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">0 &le; &rho; &le; 3, 0 &le; &phi; &le; 2&pi;, 0 &le; &theta; &le; &pi;</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','correct')">0 &le; &rho; &le; 3, 0 &le; &phi; &le; &pi;, 0 &le; &theta; &le; 2&pi;</button>
+          <button class="mc-btn" onclick="checkMC(this,'s4p3','wrong')">0 &le; &rho; &le; 3, 0 &le; &phi; &le; &pi;/2, 0 &le; &theta; &le; 2&pi;</button>
+        </div>
+        <div class="feedback" id="s4p3-fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: CHANGE OF VARIABLES / JACOBIAN -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Change of Variables & the Jacobian</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Just as substitution transforms single integrals (u-sub introduces a factor du/dx), a change of variables in multiple integrals requires a scaling factor called the <strong>Jacobian</strong>. It measures how much the transformation stretches or compresses area elements.
+    </p>
+
+    <p class="concept-text">
+      For a transformation (u,v) &rarr; (x,y) defined by x = x(u,v), y = y(u,v), the Jacobian is the determinant of the matrix of partial derivatives:
+    </p>
+
+    <div class="formula-box large">J = &part;(x,y)/&part;(u,v) = det | &part;x/&part;u &nbsp; &part;x/&part;v |<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| &part;y/&part;u &nbsp; &part;y/&part;v |</div>
+
+    <div class="formula-box green">&#8748;&#8748;<sub>R</sub> f(x,y) dA = &#8748;&#8748;<sub>S</sub> f(x(u,v), y(u,v)) |J| du dv</div>
+
+    <p class="concept-text">
+      The substitution formula replaces dA = dx dy with |J| du dv. You must take the <strong>absolute value</strong> of J (areas are positive). The key examples you must know:
+    </p>
+
+    <table class="coord-table">
+      <thead><tr><th>Transformation</th><th>Jacobian J</th><th>Area/Volume element</th></tr></thead>
+      <tbody>
+        <tr><td>Polar (r,&theta;) &rarr; (x,y)</td><td>r</td><td>dA = r dr d&theta;</td></tr>
+        <tr><td>Cylindrical (r,&theta;,z) &rarr; (x,y,z)</td><td>r</td><td>dV = r dr d&theta; dz</td></tr>
+        <tr><td>Spherical (&rho;,&phi;,&theta;) &rarr; (x,y,z)</td><td>&rho;&sup2;sin&phi;</td><td>dV = &rho;&sup2;sin&phi; d&rho; d&phi; d&theta;</td></tr>
+        <tr><td>Linear: x = au, y = bv</td><td>ab</td><td>dA = ab du dv</td></tr>
+      </tbody>
+    </table>
+
+    <div class="step-box">
+      <div class="step-label">Derivation: Polar Jacobian</div>
+      <div class="step-content">
+        x = r cos&theta;, &nbsp; y = r sin&theta;<br>
+        &part;x/&part;r = cos&theta;, &nbsp; &part;x/&part;&theta; = -r sin&theta;<br>
+        &part;y/&part;r = sin&theta;, &nbsp; &part;y/&part;&theta; = r cos&theta;<br>
+        J = det[cos&theta;, -r sin&theta;; sin&theta;, r cos&theta;] = r cos&sup2;&theta; + r sin&sup2;&theta; = <strong>r</strong>
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Example: Ellipse substitution</div>
+      <div class="step-content">
+        Evaluate &#8748;&#8748;<sub>R</sub> 1 dA over ellipse x&sup2;/4 + y&sup2;/9 &le; 1.<br>
+        Let x = 2u, y = 3v. Then u&sup2; + v&sup2; &le; 1 (unit disk). |J| = 6.<br>
+        &#8748;&#8748;<sub>unit disk</sub> 6 du dv = 6 &sdot; &pi;(1)&sup2; = <strong>6&pi;</strong>
+        (Which is &pi;ab = &pi; &sdot; 2 &sdot; 3 -- the ellipse area formula.)
+      </div>
+    </div>
+
+    <div class="key-point">The Jacobian physically represents the ratio of areas: a small rectangle in (u,v)-space with area du dv maps to a parallelogram in (x,y)-space with area |J| du dv. It is the local stretching factor of the transformation.</div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Coordinate transformations appear when converting sonar return data from sensor-frame coordinates to geographic coordinates. The Jacobian tracks how area elements in the sensor sweep get mapped to actual ocean-floor patches -- critical for accurate bathymetric mapping. GPS and inertial navigation systems compose coordinate transforms; each step introduces a Jacobian.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s5p1">
+        <p><strong>1.</strong> For the transformation x = 2u, y = 3v, what is |J|?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1_in" placeholder="|J|">
+          <button class="btn btn-sm" onclick="checkNum('s5p1_in','s5p1_fb',6,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s5p1_fb"></div>
+      </div>
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> The spherical Jacobian &rho;&sup2;sin&phi; comes from which determinant?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">The 2x2 Jacobian of the polar transformation in the &rho;&theta; plane</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','correct')">The 3x3 determinant of &part;(x,y,z)/&part;(&rho;,&phi;,&theta;)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s5p2','wrong')">The dot product of gradient vectors of &rho;, &phi;, &theta;</button>
+        </div>
+        <div class="feedback" id="s5p2-fb"></div>
+      </div>
+      <div class="problem" id="s5p3">
+        <p><strong>3.</strong> Using the substitution x = u + v, y = u - v transforms a region. If |J| = 2, and &#8748;&#8748;<sub>S</sub> 1 du dv = 5, what is the area of the original region R?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p3_in" placeholder="area of R">
+          <button class="btn btn-sm" onclick="checkNum('s5p3_in','s5p3_fb',10,0.01)">Check</button>
+        </div>
+        <div class="feedback" id="s5p3_fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: APPLICATIONS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Applications: Mass, Moments, Charge</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Multiple integrals are the mathematical engine behind computing physical quantities distributed over regions. Given a density function &rho;(x,y), here are the key formulas for a 2D lamina (thin plate):
+    </p>
+
+    <div class="formula-box large">Mass: M = &#8748;&#8748;<sub>R</sub> &rho;(x,y) dA</div>
+    <div class="formula-box green">Center of mass: x&#772; = (1/M)&#8748;&#8748; x&rho; dA, &nbsp; y&#772; = (1/M)&#8748;&#8748; y&rho; dA</div>
+    <div class="formula-box pink">Moment of inertia: I<sub>O</sub> = &#8748;&#8748; (x&sup2;+y&sup2;)&rho; dA = &#8748;&#8748; r&sup2;&rho; dA</div>
+    <div class="formula-box amber">Electric charge: Q = &#8749;<sub>V</sub> &rho;<sub>e</sub>(x,y,z) dV</div>
+
+    <p class="concept-text">
+      For a <strong>joint probability density function</strong> f(x,y) (used in statistics and quantum mechanics), the normalization condition is &#8748;&#8748; f(x,y) dA = 1. Expected values E[X] = &#8748;&#8748; x f(x,y) dA, exactly analogous to center of mass with &rho; replaced by the PDF.
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Example: Center of mass of disk &rho;(r,&theta;) = r</div>
+      <div class="step-content">
+        Full disk of radius 1. By symmetry x&#772; = y&#772; = 0 ... but let's verify mass.<br>
+        M = &#8748;<sub>0</sub><sup>2&pi;</sup> &#8748;<sub>0</sub><sup>1</sup> r &sdot; r dr d&theta; = 2&pi; &sdot; [r&sup3;/3]<sub>0</sub><sup>1</sup> = 2&pi;/3
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Density on a Disk -- Mass & Center of Mass</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Adjust the density function &rho;(r,&theta;) = r<sup>n</sup> on a disk of radius R. Total mass and center of mass computed in real time.</p>
+      <div class="slider-row">
+        <label>Disk radius R</label>
+        <input type="range" id="app_R" min="0.5" max="3" step="0.1" value="1.5" oninput="updateApp()">
+        <span class="slider-val" id="app_R_val">1.5</span>
+      </div>
+      <div class="slider-row">
+        <label>Density power n (&rho; = r<sup>n</sup>)</label>
+        <input type="range" id="app_n" min="0" max="3" step="0.5" value="1" oninput="updateApp()">
+        <span class="slider-val" id="app_n_val">1</span>
+      </div>
+      <div class="slider-row">
+        <label>Offset center (a)</label>
+        <input type="range" id="app_a" min="0" max="1" step="0.1" value="0" oninput="updateApp()">
+        <span class="slider-val" id="app_a_val">0.0</span>
+      </div>
+      <svg id="appSvg" viewBox="0 0 380 200" width="100%" style="display:block;margin:12px auto;border-radius:6px"></svg>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Density &rho;</span><br><span class="value amber" id="app_rho_label">r^1</span></div>
+        <div class="readout-item"><span class="label">Total Mass M</span><br><span class="value green" id="app_mass">---</span></div>
+        <div class="readout-item"><span class="label">x&#772; (CoM x)</span><br><span class="value indigo" id="app_cx">---</span></div>
+        <div class="readout-item"><span class="label">y&#772; (CoM y)</span><br><span class="value pink" id="app_cy">---</span></div>
+        <div class="readout-item"><span class="label">I<sub>O</sub> (Moment)</span><br><span class="value" id="app_inertia">---</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> The ship's <strong>center of gravity (CG)</strong> is computed as a triple integral of weight density over the entire hull structure: x&#772; = (1/W) &#8749; x &rho;g dV. Naval architects must know the CG precisely for stability calculations -- if CG is above the metacenter, the ship will capsize. The <strong>metacentric height GM</strong> involves the second moment of the waterplane area (&#8748;&#8748; y&sup2; dA), a direct application of moment-of-inertia integration.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+      <div class="problem" id="s6p1">
+        <p><strong>1.</strong> A lamina occupies the rectangle [0,2] x [0,3] with density &rho;(x,y) = x. Find the total mass M. Enter your answer:</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p1_in" placeholder="M">
+          <button class="btn btn-sm" onclick="checkNum('s6p1_in','s6p1_fb',6,0.05)">Check</button>
+        </div>
+        <div class="feedback" id="s6p1_fb"></div>
+      </div>
+      <div class="problem" id="s6p2">
+        <p><strong>2.</strong> For the lamina above (M=6), what is x&#772; (the x-coordinate of center of mass)?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','wrong')">x&#772; = 1 (midpoint of [0,2])</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','correct')">x&#772; = 4/3 &approx; 1.333 (heavier toward x=2 since &rho;=x)</button>
+          <button class="mc-btn" onclick="checkMC(this,'s6p2','wrong')">x&#772; = 2 (maximum x)</button>
+        </div>
+        <div class="feedback" id="s6p2-fb"></div>
+      </div>
+      <div class="problem" id="s6p3">
+        <p><strong>3.</strong> A uniform disk of radius R and surface density &rho;<sub>0</sub> has moment of inertia I<sub>O</sub> = &#8748;&#8748; r&sup2;&rho;<sub>0</sub> dA. Evaluate for R=2, &rho;<sub>0</sub>=1. Enter exact decimal:</p>
+        <div class="problem-input-row">
+          <input type="number" id="s6p3_in" placeholder="I_O" step="0.01">
+          <button class="btn btn-sm" onclick="checkNum('s6p3_in','s6p3_fb',25.133,0.1)">Check</button>
+        </div>
+        <div class="feedback" id="s6p3_fb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="7">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">&#9733;</span> Week 16 Quiz -- 10 Questions</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / <span id="quizTotal">10</span></span>
+      <span style="font-size:.72rem;color:var(--text-dim)" id="quizStatus">Answer all questions</span>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-q" id="qq1">
+      <div class="q-num">Question 1 of 10</div>
+      <div class="q-text">Fubini's Theorem states that for continuous f on a rectangle R = [a,b] x [c,d]:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">&#8748;<sub>a</sub><sup>b</sup> &#8748;<sub>c</sub><sup>d</sup> f dy dx = 2 &#8748;<sub>c</sub><sup>d</sup> &#8748;<sub>a</sub><sup>b</sup> f dx dy (double when reversed)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',true)">&#8748;<sub>a</sub><sup>b</sup> &#8748;<sub>c</sub><sup>d</sup> f dy dx = &#8748;<sub>c</sub><sup>d</sup> &#8748;<sub>a</sub><sup>b</sup> f dx dy (equal, order doesn't matter)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">The integrals are equal only if f is separable: f(x,y) = g(x)h(y)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">The inner integral must always be with respect to y first</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q" id="qq2">
+      <div class="q-num">Question 2 of 10</div>
+      <div class="q-text">The region R bounded by y = x and y = x&sup2; (0 &le; x &le; 1) as a Type I integral has y limits:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">y from 0 to x&sup2;</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">y from x&sup2; to 1</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',true)">y from x&sup2; to x (parabola is bottom, line is top)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">y from x to x&sup2; (line is bottom, parabola is top)</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q" id="qq3">
+      <div class="q-num">Question 3 of 10</div>
+      <div class="q-text">Why does changing to polar coordinates require the factor r in dA = r dr d&theta;?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">It is an arbitrary convention from textbooks</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">Because r is always positive, unlike signed x and y</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',true)">It is the Jacobian of the polar transformation -- it accounts for how area elements stretch at larger r</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">Because the angular element d&theta; has units of radians, not area</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q" id="qq4">
+      <div class="q-num">Question 4 of 10</div>
+      <div class="q-text">Evaluate &#8748;&#8748;<sub>R</sub> e<sup>-(x&sup2;+y&sup2;)</sup> dA over the entire plane (all r, all &theta;). The answer involves &pi;.</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">1</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',true)">&pi; (from &#8748;<sub>0</sub><sup>2&pi;</sup> d&theta; &sdot; &#8748;<sub>0</sub><sup>&infin;</sup> re<sup>-r&sup2;</sup> dr = 2&pi; &sdot; 1/2)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">2&pi;</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">&#8730;&pi;</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q" id="qq5">
+      <div class="q-num">Question 5 of 10</div>
+      <div class="q-text">In spherical coordinates (&rho;, &phi;, &theta;), the angle &phi; is measured:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">From the positive x-axis in the xy-plane (0 to 2&pi;)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',true)">From the positive z-axis (0 to &pi;), also called the polar angle</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">From the equatorial plane (−&pi;/2 to &pi;/2)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">It is the same as the polar angle in cylindrical coordinates</button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q" id="qq6">
+      <div class="q-num">Question 6 of 10</div>
+      <div class="q-text">The Jacobian for the transformation x = u&sup2; - v, y = 2uv is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">J = 4uv (product of diagonal partials)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',true)">J = 4u&sup2; + 2v, computed as det[2u, -1; 2v, 2u] = 4u&sup2; + 2v</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">J = 2u (only the diagonal terms of the Jacobian matrix)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">J = -1 (only the off-diagonal cross-partial)</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q" id="qq7">
+      <div class="q-num">Question 7 of 10</div>
+      <div class="q-text">A thin plate occupies 0 &le; x &le; 1, 0 &le; y &le; 1 with density &rho;(x,y) = y. The total mass M equals:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">M = 1 (unit square, unit density)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',true)">M = 1/2 (&#8748;<sub>0</sub><sup>1</sup> &#8748;<sub>0</sub><sup>1</sup> y dy dx = &#8748;<sub>0</sub><sup>1</sup> 1/2 dx = 1/2)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">M = 2 (integrating y over unit square gives 2)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">M = 1/4</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q" id="qq8">
+      <div class="q-num">Question 8 of 10</div>
+      <div class="q-text">Switching the order of integration in &#8748;<sub>0</sub><sup>1</sup> &#8748;<sub>x</sub><sup>1</sup> f(x,y) dy dx gives which new integral?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">&#8748;<sub>0</sub><sup>1</sup> &#8748;<sub>y</sub><sup>1</sup> f(x,y) dx dy</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',true)">&#8748;<sub>0</sub><sup>1</sup> &#8748;<sub>0</sub><sup>y</sup> f(x,y) dx dy (x goes from 0 to y for each fixed y)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">&#8748;<sub>0</sub><sup>1</sup> &#8748;<sub>0</sub><sup>1</sup> f(x,y) dx dy (just swap variables)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">&#8748;<sub>1</sub><sup>0</sup> &#8748;<sub>y</sub><sup>0</sup> f(x,y) dx dy (reverse all limits)</button>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-q" id="qq9">
+      <div class="q-num">Question 9 of 10</div>
+      <div class="q-text">The moment of inertia formula I = &#8748;&#8748; r&sup2;&rho; dA uses r as the distance from which point?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">Distance from the center of mass</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">Distance from the x-axis only</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',true)">Distance from the axis of rotation (here the origin/z-axis): r&sup2; = x&sup2; + y&sup2;</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">The polar radius used in the integration, which must be polar coordinates</button>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="quiz-q" id="qq10">
+      <div class="q-num">Question 10 of 10</div>
+      <div class="q-text">For a joint PDF f(x,y) = ce<sup>-(x+y)</sup> on x &ge; 0, y &ge; 0, what value of c makes &#8748;&#8748; f dA = 1?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">c = 2 (both exponentials contribute)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',true)">c = 1 (&#8748;<sub>0</sub><sup>&infin;</sup> e<sup>-x</sup> dx &sdot; &#8748;<sub>0</sub><sup>&infin;</sup> e<sup>-y</sup> dy = 1 &sdot; 1 = 1)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">c = 1/2</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">c = &pi; (needed for normalization of Gaussian-like functions)</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ── PROGRESS TRACKING ────────────────────────────────────────────
+const TOTAL_SECTIONS = 6;
+const completedSections = new Set();
+
+function updateProgress() {
+  const pct = (completedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    completedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+// ── TOGGLE SECTIONS ──────────────────────────────────────────────
+function toggleSection(hdr) {
+  const card = hdr.closest('.section-card');
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open');
+  const secNum = parseInt(card.dataset.section);
+  if (!wasOpen && secNum >= 1 && secNum <= TOTAL_SECTIONS) {
+    if (!completedSections.has(secNum)) {
+      completedSections.add(secNum);
+      card.classList.add('completed');
+      updateProgress();
+    }
+  }
+}
+
+// ── PRACTICE HELPERS ─────────────────────────────────────────────
+function checkNum(inputId, fbId, answer, tol) {
+  const val = parseFloat(document.getElementById(inputId).value);
+  const fb = document.getElementById(fbId);
+  const el = document.getElementById(inputId);
+  if (isNaN(val)) { fb.className='feedback incorrect'; fb.style.display='block'; fb.textContent='Enter a number.'; return; }
+  if (Math.abs(val - answer) <= tol) {
+    fb.className='feedback correct'; fb.style.display='block';
+    fb.textContent='Correct! Answer: ' + answer;
+    el.style.borderColor='var(--green)';
+    el.closest('.problem').classList.add('pop');
+    setTimeout(()=>el.closest('.problem').classList.remove('pop'),400);
+  } else {
+    fb.className='feedback incorrect'; fb.style.display='block';
+    fb.textContent='Not quite. Expected ~' + answer + '. Try again.';
+    el.style.borderColor='var(--pink)';
+    el.closest('.problem').classList.add('shake');
+    setTimeout(()=>el.closest('.problem').classList.remove('shake'),450);
+  }
+}
+
+function checkMC(btn, blockId, result) {
+  const block = document.getElementById(blockId);
+  const allBtns = block.querySelectorAll('.mc-btn');
+  allBtns.forEach(b => { if (b !== btn) b.classList.add('disabled'); });
+  const fbId = blockId + '-fb';
+  const fb = document.getElementById(fbId);
+  if (result === 'correct') {
+    btn.classList.add('correct');
+    fb.className='feedback correct'; fb.style.display='block';
+    fb.textContent='Correct!';
+    btn.closest('.problem').classList.add('pop');
+    setTimeout(()=>btn.closest('.problem').classList.remove('pop'),400);
+  } else {
+    btn.classList.add('wrong');
+    fb.className='feedback incorrect'; fb.style.display='block';
+    fb.textContent='Incorrect -- try reviewing the concept above.';
+    btn.closest('.problem').classList.add('shake');
+    setTimeout(()=>btn.closest('.problem').classList.remove('shake'),450);
+  }
+}
+
+// ── QUIZ ─────────────────────────────────────────────────────────
+let quizScore = 0;
+let quizAnswered = 0;
+const QUIZ_TOTAL = 10;
+
+function quizAnswer(btn, qId, correct) {
+  const qEl = document.getElementById(qId);
+  if (qEl.querySelector('.selected-correct') || qEl.querySelector('.selected-wrong')) return;
+  const allBtns = qEl.querySelectorAll('.choice-btn');
+  if (correct) {
+    btn.classList.add('selected-correct');
+    quizScore++;
+    document.getElementById('quizScore').textContent = quizScore;
+    qEl.classList.add('pop');
+    setTimeout(()=>qEl.classList.remove('pop'),400);
+  } else {
+    btn.classList.add('selected-wrong');
+    allBtns.forEach(b => {
+      const ev = b.getAttribute('onclick');
+      if (ev && ev.includes('true')) b.classList.add('reveal-correct');
+    });
+    qEl.classList.add('shake');
+    setTimeout(()=>qEl.classList.remove('shake'),450);
+  }
+  allBtns.forEach(b => b.classList.add('disabled'));
+  quizAnswered++;
+  if (quizAnswered === QUIZ_TOTAL) {
+    const statusEl = document.getElementById('quizStatus');
+    statusEl.textContent = 'Complete! ' + quizScore + '/' + QUIZ_TOTAL +
+      (quizScore === QUIZ_TOTAL ? ' -- Perfect!' : quizScore >= 7 ? ' -- Great job!' : ' -- Keep reviewing!');
+    statusEl.style.color = quizScore >= 7 ? 'var(--green)' : 'var(--amber)';
+  }
+}
+
+// ── HEAT MAP (SECTION 1) ─────────────────────────────────────────
+function updateHeatmap() {
+  const a = parseFloat(document.getElementById('hm_a').value);
+  const b = parseFloat(document.getElementById('hm_b').value);
+  document.getElementById('hm_a_val').textContent = a.toFixed(1);
+  document.getElementById('hm_b_val').textContent = b.toFixed(1);
+  document.getElementById('hm_region').textContent = '[0,' + a.toFixed(1) + '] x [0,' + b.toFixed(1) + ']';
+
+  // Exact integral of xy+1 over [0,a]x[0,b] = a^2*b^2/4 + a*b
+  const integral = (a * a * b * b / 4) + a * b;
+  document.getElementById('hm_integral').textContent = integral.toFixed(4);
+  document.getElementById('hm_area').textContent = (a * b).toFixed(4);
+
+  const svg = document.getElementById('hmSvg');
+  const W = 380, H = 220, PAD = 36;
+  const PW = W - PAD - 10, PH = H - PAD - 10;
+
+  let cells = '';
+  const NX = 20, NY = 16;
+  const maxF = a * b + 1;
+  for (let i = 0; i < NX; i++) {
+    for (let j = 0; j < NY; j++) {
+      const cx = (i + 0.5) / NX * a;
+      const cy = (j + 0.5) / NY * b;
+      const f = cx * cy + 1;
+      const t = Math.min(1, (f - 1) / Math.max(0.01, maxF - 1));
+      const r = Math.round(99 + t * 156);
+      const g = Math.round(102 + t * (30 - 102));
+      const gb = Math.round(241 + t * (72 - 241));
+      const px = PAD + (i / NX) * PW;
+      const py = PAD + (1 - (j + 1) / NY) * PH;
+      const pw = PW / NX + 1;
+      const ph = PH / NY + 1;
+      cells += `<rect x="${px.toFixed(1)}" y="${py.toFixed(1)}" width="${pw.toFixed(1)}" height="${ph.toFixed(1)}" fill="rgb(${r},${g},${gb})" opacity="0.85"/>`;
+    }
+  }
+
+  const xAxis = PAD + PW;
+  const yAxis = PAD + PH;
+  let xTicks = '', yTicks = '';
+  for (let t = 0; t <= 4; t++) {
+    const xv = (t / 4 * a).toFixed(1);
+    const px = PAD + (t / 4) * PW;
+    xTicks += `<line x1="${px}" y1="${yAxis}" x2="${px}" y2="${yAxis + 4}" stroke="#363b47" stroke-width="1"/>
+               <text x="${px}" y="${yAxis + 14}" text-anchor="middle" font-size="8" fill="#9ca3af">${xv}</text>`;
+    const yv = (t / 4 * b).toFixed(1);
+    const py = PAD + (1 - t / 4) * PH;
+    yTicks += `<line x1="${PAD - 4}" y1="${py}" x2="${PAD}" y2="${py}" stroke="#363b47" stroke-width="1"/>
+               <text x="${PAD - 6}" y="${py + 3}" text-anchor="end" font-size="8" fill="#9ca3af">${yv}</text>`;
+  }
+
+  svg.innerHTML = `
+    ${cells}
+    <line x1="${PAD}" y1="${PAD}" x2="${PAD}" y2="${yAxis}" stroke="#363b47" stroke-width="1.5"/>
+    <line x1="${PAD}" y1="${yAxis}" x2="${xAxis}" y2="${yAxis}" stroke="#363b47" stroke-width="1.5"/>
+    ${xTicks}${yTicks}
+    <text x="${PAD + PW/2}" y="${H - 2}" text-anchor="middle" font-size="9" fill="#9ca3af">x</text>
+    <text x="10" y="${PAD + PH/2}" text-anchor="middle" font-size="9" fill="#9ca3af" transform="rotate(-90,10,${PAD+PH/2})">y</text>
+    <text x="${PAD + PW - 2}" y="${PAD + 12}" text-anchor="end" font-size="8" fill="#6366f1">f(x,y) = xy+1</text>
+    <text x="${W - 8}" y="${PAD}" text-anchor="end" font-size="8" fill="#6366f1">low</text>
+    <text x="${W - 8}" y="${yAxis}" text-anchor="end" font-size="8" fill="#ec4899">high</text>
+  `;
+}
+
+// ── REGION SKETCH (SECTION 2) ────────────────────────────────────
+function showRegion(type, tab) {
+  document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+
+  const S1 = document.getElementById('regionSvg1');
+  const S2 = document.getElementById('regionSvg2');
+  const L1 = document.getElementById('type1_label');
+  const L2 = document.getElementById('type2_label');
+
+  const W = 160, H = 140, P = 24;
+  const IW = W - P * 2, IH = H - P * 2;
+
+  function axes(svg) {
+    return `<line x1="${P}" y1="${P}" x2="${P}" y2="${P + IH}" stroke="#363b47" stroke-width="1.5"/>
+            <line x1="${P}" y1="${P + IH}" x2="${P + IW}" y2="${P + IH}" stroke="#363b47" stroke-width="1.5"/>
+            <text x="${P + IW - 2}" y="${P + IH + 12}" font-size="8" fill="#9ca3af">x</text>
+            <text x="${P - 8}" y="${P + 6}" font-size="8" fill="#9ca3af">y</text>`;
+  }
+
+  if (type === 'triangle') {
+    // Triangle: (0,0),(1,0),(0,1). Scale by IW and IH
+    const pts = (x, y) => (P + x * IW) + ',' + (P + IH - y * IH);
+    const regPath = `M ${pts(0,0)} L ${pts(1,0)} L ${pts(0,1)} Z`;
+
+    // Type I: vertical slices
+    let slices1 = '';
+    for (let xi = 1; xi < 8; xi++) {
+      const xv = xi / 8;
+      const ytop = 1 - xv;
+      const sx = P + xv * IW;
+      slices1 += `<line x1="${sx}" y1="${P + IH}" x2="${sx}" y2="${P + IH - ytop * IH}" stroke="#6366f1" stroke-width="1" opacity="0.6"/>`;
+    }
+    S1.innerHTML = axes(S1) + `<path d="${regPath}" fill="rgba(99,102,241,.2)" stroke="var(--indigo)" stroke-width="1.5"/>` + slices1;
+    L1.textContent = '∫₀¹ ∫₀^(1-x) f dy dx';
+
+    // Type II: horizontal slices
+    let slices2 = '';
+    for (let yi = 1; yi < 8; yi++) {
+      const yv = yi / 8;
+      const xright = 1 - yv;
+      const sy = P + IH - yv * IH;
+      slices2 += `<line x1="${P}" y1="${sy}" x2="${P + xright * IW}" y2="${sy}" stroke="var(--green)" stroke-width="1" opacity="0.6"/>`;
+    }
+    S2.innerHTML = axes(S2) + `<path d="${regPath}" fill="rgba(34,197,94,.15)" stroke="var(--green)" stroke-width="1.5"/>` + slices2;
+    L2.textContent = '∫₀¹ ∫₀^(1-y) f dx dy';
+
+  } else if (type === 'parabola') {
+    // Region between y=0 and y=x^2 for x in [0,1]
+    let topPath = `M ${P},${P + IH}`;
+    for (let i = 0; i <= 30; i++) {
+      const xv = i / 30;
+      const yv = xv * xv;
+      topPath += ` L ${P + xv * IW},${P + IH - yv * IH}`;
+    }
+    topPath += ` L ${P + IW},${P + IH} Z`;
+
+    let slices1 = '';
+    for (let xi = 1; xi < 9; xi++) {
+      const xv = xi / 9;
+      const ytop = xv * xv;
+      const sx = P + xv * IW;
+      slices1 += `<line x1="${sx}" y1="${P + IH}" x2="${sx}" y2="${P + IH - ytop * IH}" stroke="#6366f1" stroke-width="1" opacity="0.6"/>`;
+    }
+    S1.innerHTML = axes(S1) + `<path d="${topPath}" fill="rgba(99,102,241,.2)" stroke="var(--indigo)" stroke-width="1.5"/>` + slices1;
+    L1.textContent = '∫₀¹ ∫₀^(x²) f dy dx';
+
+    let slices2 = '';
+    for (let yi = 1; yi < 9; yi++) {
+      const yv = yi / 9;
+      const xleft = Math.sqrt(yv);
+      const sy = P + IH - yv * IH;
+      slices2 += `<line x1="${P + xleft * IW}" y1="${sy}" x2="${P + IW}" y2="${sy}" stroke="var(--green)" stroke-width="1" opacity="0.6"/>`;
+    }
+    S2.innerHTML = axes(S2) + `<path d="${topPath}" fill="rgba(34,197,94,.15)" stroke="var(--green)" stroke-width="1.5"/>` + slices2;
+    L2.textContent = '∫₀¹ ∫_(√y)^1 f dx dy';
+
+  } else {
+    // Between y=x^2 (bottom) and y=x (top), x in [0,1]
+    let areaPath = `M ${P},${P + IH}`;
+    for (let i = 0; i <= 30; i++) {
+      const xv = i / 30;
+      areaPath += ` L ${P + xv * IW},${P + IH - xv * IH}`;
+    }
+    for (let i = 30; i >= 0; i--) {
+      const xv = i / 30;
+      areaPath += ` L ${P + xv * IW},${P + IH - xv * xv * IH}`;
+    }
+    areaPath += ' Z';
+
+    let slices1 = '';
+    for (let xi = 1; xi < 9; xi++) {
+      const xv = xi / 9;
+      const ybottom = xv * xv;
+      const ytop = xv;
+      const sx = P + xv * IW;
+      slices1 += `<line x1="${sx}" y1="${P + IH - ybottom * IH}" x2="${sx}" y2="${P + IH - ytop * IH}" stroke="#6366f1" stroke-width="1" opacity="0.7"/>`;
+    }
+    S1.innerHTML = axes(S1) + `<path d="${areaPath}" fill="rgba(99,102,241,.2)" stroke="var(--indigo)" stroke-width="1.5"/>` + slices1 +
+      `<text x="${P + IW * 0.7}" y="${P + IH * 0.25}" font-size="7" fill="var(--indigo)">y=x</text>
+       <text x="${P + IW * 0.55}" y="${P + IH * 0.55}" font-size="7" fill="var(--amber)">y=x²</text>`;
+    L1.textContent = '∫₀¹ ∫_(x²)^x f dy dx';
+
+    let slices2 = '';
+    for (let yi = 1; yi < 9; yi++) {
+      const yv = yi / 9;
+      const xleft = yv;
+      const xright = Math.sqrt(yv);
+      const sy = P + IH - yv * IH;
+      slices2 += `<line x1="${P + xleft * IW}" y1="${sy}" x2="${P + xright * IW}" y2="${sy}" stroke="var(--green)" stroke-width="1" opacity="0.7"/>`;
+    }
+    S2.innerHTML = axes(S2) + `<path d="${areaPath}" fill="rgba(34,197,94,.15)" stroke="var(--green)" stroke-width="1.5"/>` + slices2;
+    L2.textContent = '∫₀¹ ∫_y^(√y) f dx dy';
+  }
+}
+
+// ── POLAR INTERACTIVE (SECTION 3) ────────────────────────────────
+function updatePolar() {
+  const R = parseFloat(document.getElementById('pol_R').value);
+  const thetaDeg = parseFloat(document.getElementById('pol_theta').value);
+  const thetaRad = thetaDeg * Math.PI / 180;
+  document.getElementById('pol_R_val').textContent = R.toFixed(1);
+  document.getElementById('pol_theta_val').textContent = thetaDeg;
+  document.getElementById('pol_region').textContent = '0 \u2264 r \u2264 ' + R.toFixed(1) + ', 0 \u2264 \u03B8 \u2264 ' + thetaDeg + '\u00B0';
+
+  // Area = (1/2) R^2 * theta
+  const area = 0.5 * R * R * thetaRad;
+  // int of r^2 dr dtheta = theta * R^3/3
+  const r2integral = thetaRad * R * R * R / 3;
+  document.getElementById('pol_area').textContent = area.toFixed(4);
+  document.getElementById('pol_r2').textContent = r2integral.toFixed(4);
+
+  const svg = document.getElementById('polarSvg');
+  const W = 380, H = 240, CX = 190, CY = 130;
+  const SCALE = Math.min(80, 200 / (R + 0.1));
+
+  // Grid circles
+  let grid = '';
+  for (let ri = 1; ri <= 4; ri++) {
+    const pr = ri * SCALE * 0.5;
+    grid += `<circle cx="${CX}" cy="${CY}" r="${pr}" fill="none" stroke="#363b47" stroke-width="0.8" stroke-dasharray="3,3"/>`;
+    grid += `<text x="${CX + pr + 2}" y="${CY - 3}" font-size="7" fill="#363b47">${(ri * 0.5).toFixed(1)}</text>`;
+  }
+  // Grid radials
+  for (let a = 0; a < 360; a += 30) {
+    const rad = a * Math.PI / 180;
+    grid += `<line x1="${CX}" y1="${CY}" x2="${CX + Math.cos(rad) * SCALE * 2}" y2="${CY - Math.sin(rad) * SCALE * 2}" stroke="#363b47" stroke-width="0.8" stroke-dasharray="3,3"/>`;
+  }
+
+  // Wedge slices (8 of them)
+  const N_SLICES = 8;
+  let slices = '';
+  for (let i = 0; i < N_SLICES; i++) {
+    const a0 = (i / N_SLICES) * thetaRad;
+    const a1 = ((i + 0.85) / N_SLICES) * thetaRad;
+    const rOuter = R * SCALE;
+    const x1 = CX + Math.cos(a0) * rOuter;
+    const y1 = CY - Math.sin(a0) * rOuter;
+    const x2 = CX + Math.cos(a1) * rOuter;
+    const y2 = CY - Math.sin(a1) * rOuter;
+    const large = (a1 - a0) > Math.PI ? 1 : 0;
+    slices += `<path d="M ${CX} ${CY} L ${x1} ${y1} A ${rOuter} ${rOuter} 0 ${large} 0 ${x2} ${y2} Z" fill="rgba(99,102,241,0.18)" stroke="var(--indigo)" stroke-width="0.8"/>`;
+  }
+
+  // Filled sector outline
+  const nPts = 60;
+  let arcPath = `M ${CX} ${CY}`;
+  for (let i = 0; i <= nPts; i++) {
+    const ang = (i / nPts) * thetaRad;
+    arcPath += ` L ${CX + Math.cos(ang) * R * SCALE} ${CY - Math.sin(ang) * R * SCALE}`;
+  }
+  arcPath += ' Z';
+
+  // Axes
+  const axes = `<line x1="${CX - SCALE * 2.2}" y1="${CY}" x2="${CX + SCALE * 2.2}" y2="${CY}" stroke="#363b47" stroke-width="1"/>
+                <line x1="${CX}" y1="${CY + SCALE * 2.2}" x2="${CX}" y2="${CY - SCALE * 2.2}" stroke="#363b47" stroke-width="1"/>
+                <text x="${CX + SCALE * 2.2}" y="${CY + 12}" font-size="9" fill="#9ca3af">x</text>
+                <text x="${CX + 4}" y="${CY - SCALE * 2.2}" font-size="9" fill="#9ca3af">y</text>`;
+
+  svg.innerHTML = grid + axes + slices +
+    `<path d="${arcPath}" fill="rgba(99,102,241,0.08)" stroke="var(--indigo)" stroke-width="1.5"/>
+     <text x="${CX + R * SCALE * 0.5 + 4}" y="${CY - R * SCALE * 0.3}" font-size="9" fill="var(--indigo)">R=${R.toFixed(1)}</text>
+     <text x="8" y="14" font-size="9" fill="#9ca3af">dA = r dr d\u03B8</text>`;
+}
+
+// ── APPLICATIONS INTERACTIVE (SECTION 6) ─────────────────────────
+function updateApp() {
+  const R = parseFloat(document.getElementById('app_R').value);
+  const n = parseFloat(document.getElementById('app_n').value);
+  const a = parseFloat(document.getElementById('app_a').value); // offset for CoM demo
+
+  document.getElementById('app_R_val').textContent = R.toFixed(1);
+  document.getElementById('app_n_val').textContent = n.toFixed(1);
+  document.getElementById('app_a_val').textContent = a.toFixed(1);
+  document.getElementById('app_rho_label').textContent = 'r^' + n.toFixed(1) + (a > 0 ? ' (offset)' : '');
+
+  // rho(r,theta) = r^n (radially symmetric)
+  // Mass = int_0^2pi int_0^R r^n * r dr dtheta = 2pi * R^(n+2)/(n+2)
+  const mass = 2 * Math.PI * Math.pow(R, n + 2) / (n + 2);
+  document.getElementById('app_mass').textContent = mass.toFixed(4);
+
+  // For radially symmetric rho with no offset, CoM is at origin
+  // If we add an offset factor: rho_eff = r^n * (1 + a*cos(theta))
+  // M_eff = 2pi R^(n+2)/(n+2) (a terms integrate to 0 over full circle)
+  // x-bar = (1/M) int int x * rho_eff dA
+  //       = (1/M) int_0^2pi int_0^R r*cos(t) * r^n*(1+a*cos(t)) * r dr dt
+  //       = (1/M) * int_0^R r^(n+2) dr * int_0^2pi cos(t)*(1+a*cos(t)) dt
+  //       = (1/M) * R^(n+3)/(n+3) * a*pi
+  const Meff = mass; // symmetric part dominates
+  const xbar = (Math.pow(R, n + 3) / (n + 3)) * (a * Math.PI) / Meff;
+  const ybar = 0; // cos symmetry makes y-bar zero
+
+  document.getElementById('app_cx').textContent = xbar.toFixed(4);
+  document.getElementById('app_cy').textContent = ybar.toFixed(4);
+
+  // Moment of inertia about z: I = int_0^2pi int_0^R r^2 * r^n * r dr dtheta = 2pi * R^(n+4)/(n+4)
+  const inertia = 2 * Math.PI * Math.pow(R, n + 4) / (n + 4);
+  document.getElementById('app_inertia').textContent = inertia.toFixed(4);
+
+  // Draw disk with density heat map
+  const svg = document.getElementById('appSvg');
+  const W = 380, H = 200, CX = 190, CY = 100;
+  const SCALE = Math.min(75, 170 / (R * 2 + 0.2));
+
+  let cells = '';
+  const N = 36, NR = 12;
+  for (let ri = 0; ri < NR; ri++) {
+    for (let ti = 0; ti < N; ti++) {
+      const r0 = (ri / NR) * R;
+      const r1 = ((ri + 1) / NR) * R;
+      const rm = (r0 + r1) / 2;
+      const t0 = (ti / N) * 2 * Math.PI;
+      const t1 = ((ti + 1) / N) * 2 * Math.PI;
+      const rho = Math.pow(rm, n) * (1 + a * Math.cos((t0 + t1) / 2));
+      const maxRho = Math.pow(R, n) * (1 + Math.abs(a));
+      const intensity = Math.min(1, rho / Math.max(0.001, maxRho));
+
+      // green low -> amber high
+      const rv = Math.round(34 + intensity * (245 - 34));
+      const gv = Math.round(197 + intensity * (158 - 197));
+      const bv = Math.round(94 + intensity * (11 - 94));
+
+      const x0 = CX + Math.cos(t0) * r0 * SCALE;
+      const y0 = CY - Math.sin(t0) * r0 * SCALE;
+      const x1 = CX + Math.cos(t0) * r1 * SCALE;
+      const y1 = CY - Math.sin(t0) * r1 * SCALE;
+      const x2 = CX + Math.cos(t1) * r1 * SCALE;
+      const y2 = CY - Math.sin(t1) * r1 * SCALE;
+      const x3 = CX + Math.cos(t1) * r0 * SCALE;
+      const y3 = CY - Math.sin(t1) * r0 * SCALE;
+
+      cells += `<polygon points="${x0},${y0} ${x1},${y1} ${x2},${y2} ${x3},${y3}" fill="rgb(${rv},${gv},${bv})" opacity="0.9"/>`;
+    }
+  }
+
+  // Outer circle outline
+  const circR = R * SCALE;
+  const comX = CX + xbar * SCALE;
+  const comY = CY;
+
+  svg.innerHTML = cells +
+    `<circle cx="${CX}" cy="${CY}" r="${circR}" fill="none" stroke="var(--indigo)" stroke-width="1.5"/>
+     <line x1="${CX - circR - 10}" y1="${CY}" x2="${CX + circR + 10}" y2="${CY}" stroke="#363b47" stroke-width="1"/>
+     <line x1="${CX}" y1="${CY - circR - 10}" x2="${CX}" y2="${CY + circR + 10}" stroke="#363b47" stroke-width="1"/>
+     <circle cx="${comX}" cy="${comY}" r="5" fill="var(--pink)" stroke="#fff" stroke-width="1.5"/>
+     <text x="${comX + 8}" y="${comY - 6}" font-size="9" fill="var(--pink)">CoM</text>
+     <text x="${CX + circR - 20}" y="${CY - circR + 14}" font-size="9" fill="var(--indigo)">R=${R.toFixed(1)}</text>
+     <text x="8" y="14" font-size="9" fill="#9ca3af">\u03C1 = r^${n.toFixed(1)}${a > 0 ? '(1+' + a.toFixed(1) + 'cos\u03B8)' : ''}</text>`;
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+updateHeatmap();
+showRegion('triangle', document.querySelector('.scenario-tab.active'));
+updatePolar();
+updateApp();
+</script>
+</body>
+</html>
