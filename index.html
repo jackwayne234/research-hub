@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Riner Research Hub — Prime Gravity</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -25,24 +27,17 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'JetBrains Mono',mo
   background-color: var(--board);
 }
 
+/* Leaflet Map Background */
+#map-bg{position:fixed;inset:0;z-index:0;display:none}
+#map-bg .leaflet-control-zoom{display:none}
+#map-bg .leaflet-control-attribution{font-size:9px;opacity:.3}
+@keyframes locPulse{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.6)}50%{box-shadow:0 0 0 12px rgba(59,130,246,0)}}
+.user-loc{width:14px;height:14px;background:#3b82f6;border:2px solid #fff;border-radius:50%;animation:locPulse 2s ease-in-out infinite}
+.iss-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--chalk);background:rgba(30,33,40,.8);padding:2px 6px;border-radius:3px;border:1px solid rgba(212,207,196,.2);white-space:nowrap}
+
 /* YouTube Background */
 #yt-bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:transparent}
 #yt-bg iframe{position:absolute;top:50%;left:50%;min-width:200vh;min-height:60vw;width:200vh;height:120vh;transform:translate(-50%,-50%);pointer-events:none}
-
-/* ── Chalk Formulas ── */
-#chalk-formulas{
-  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
-}
-.chalk-eq{
-  position:absolute;
-  font-family:'JetBrains Mono',monospace;
-  color:var(--chalk);
-  white-space:nowrap;
-  user-select:none;
-  pointer-events:none;
-  text-shadow:0 0 4px rgba(212,207,196,.15);
-  line-height:1;
-}
 
 /* Overlays */
 #scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;
@@ -239,7 +234,6 @@ border-radius:6px;padding:6px 0;display:none;min-width:220px;backdrop-filter:blu
   .nav-item .nav-icon{font-size:18px}
   #status-bar{font-size:10px;padding:6px 10px}
   #status-bar .right span:not(:last-child){display:none}
-  .chalk-eq{display:none}
 }
 </style>
 </head>
@@ -257,8 +251,8 @@ border-radius:6px;padding:6px 0;display:none;min-width:220px;backdrop-filter:blu
 <!-- Chalkboard Background -->
 <div id="chalkboard"></div>
 
-<!-- Chalk Physics Formulas -->
-<div id="chalk-formulas"></div>
+<!-- Leaflet Map Background -->
+<div id="map-bg"></div>
 
 <!-- YouTube Background (hidden, JS still functional) -->
 <div id="yt-bg"><div id="yt-player"></div></div>
@@ -326,54 +320,8 @@ border-radius:6px;padding:6px 0;display:none;min-width:220px;backdrop-filter:blu
 <audio id="radio-player" crossorigin="anonymous"></audio>
 
 <script>
-// ── CHALK FORMULAS ──
-// Physics equations scattered across the chalkboard background
-(function(){
-const formulas = [
-  // CJ's research
-  { eq:'ζ(s) × 1/ζ(s) = 1', x:8, y:12, size:18, angle:-2, opacity:.18 },
-  { eq:'g_tt · g_rr = −1', x:72, y:8, size:16, angle:1.5, opacity:.14 },
-  { eq:'s(r) = 1 + (r/r_s)³', x:35, y:85, size:14, angle:-1, opacity:.12 },
-  { eq:'π(x) ~ x / ln(x)', x:78, y:88, size:13, angle:2, opacity:.1 },
-  { eq:'Σ p⁻ˢ = ln ζ(s)', x:15, y:55, size:15, angle:-1.5, opacity:.13 },
-  // Classical GR & QFT
-  { eq:'R_μν − ½g_μν R = 8πGT_μν', x:55, y:18, size:15, angle:0.8, opacity:.12 },
-  { eq:'ds² = −c²dt² + dr² + r²dΩ²', x:20, y:30, size:14, angle:-0.5, opacity:.1 },
-  { eq:'∂_μ F^μν = J^ν', x:82, y:42, size:16, angle:1.2, opacity:.14 },
-  { eq:'S = ∫ L d⁴x', x:65, y:72, size:17, angle:-1.8, opacity:.15 },
-  { eq:'∇²ψ + k²ψ = 0', x:10, y:75, size:13, angle:0.5, opacity:.11 },
-  // Quantum mechanics
-  { eq:'iℏ ∂ψ/∂t = Ĥψ', x:45, y:60, size:16, angle:-1, opacity:.13 },
-  { eq:'⟨x|p⟩ = e^(ipx/ℏ)', x:88, y:25, size:12, angle:1, opacity:.09 },
-  { eq:'[x̂, p̂] = iℏ', x:30, y:45, size:14, angle:2.5, opacity:.11 },
-  // Thermodynamics & statistical
-  { eq:'S = k_B ln Ω', x:68, y:55, size:15, angle:-0.8, opacity:.12 },
-  { eq:'E = mc²', x:50, y:92, size:20, angle:0.3, opacity:.08 },
-  // More number theory / zeta
-  { eq:'ζ(s) = Σ n⁻ˢ', x:5, y:92, size:12, angle:1.2, opacity:.1 },
-  { eq:'∮ A·dl = Φ_B', x:90, y:70, size:13, angle:-2, opacity:.1 },
-  { eq:'det(g_μν) ≠ 0', x:42, y:38, size:12, angle:0.6, opacity:.09 },
-  { eq:'Γ^λ_μν = ½g^λσ(∂_μ g_νσ + ∂_ν g_μσ − ∂_σ g_μν)', x:15, y:68, size:11, angle:-0.3, opacity:.08 },
-  { eq:'α = 3', x:58, y:82, size:22, angle:-1.5, opacity:.1 },
-];
-
-const container = document.getElementById('chalk-formulas');
-formulas.forEach(f => {
-  const el = document.createElement('div');
-  el.className = 'chalk-eq';
-  el.textContent = f.eq;
-  el.style.cssText = `
-    left:${f.x}%;top:${f.y}%;
-    font-size:${f.size}px;
-    opacity:${f.opacity};
-    transform:rotate(${f.angle}deg);
-    font-weight:${f.size > 16 ? 400 : 300};
-  `;
-  container.appendChild(el);
-});
-})();
-
 const SCENES=[
+{id:'map',name:'World Map',type:'map'},
 {id:'jTCf8eZyZFg',name:'Chalkboard Ambience'},
 {id:'Dvwaq1rwioQ',name:'Enceladus Outpost'},
 {id:'WjY0s0ALnRU',name:'Space Ambience I'},
@@ -393,19 +341,91 @@ const NAV=[
 {icon:'🌀',label:'Big Picture',href:'pages/big-picture.html'},
 {icon:'📡',label:'Research Feed',href:'pages/research-feed.html'},
 {icon:'🎨',label:'Visualizations',href:'pages/visualizations.html'},
+{icon:'📈',label:'Function Explorer',href:'simulators/jsxgraph-explorer.html'},
 {divider:true},
 {icon:'🔧',label:'Projects',href:'pages/projects.html'},
 {icon:'🧮',label:'Daily Practice',href:'pages/daily-practice.html'},
 {icon:'📊',label:'Math Journey',href:'pages/math-journey.html'},
+{icon:'📊',label:'Data Plotter',href:'tools/data-plotter.html'},
+{icon:'📉',label:'Desmos',href:'tools/desmos.html'},
 {divider:true},
+{icon:'📚',label:'VPT Courses',href:'pages/vpt-courses.html'},
+{icon:'🏛️',label:'Formula Palace',href:'pages/formula-palace.html'},
 {icon:'💡',label:'Speculative',href:'pages/speculative.html'},
 {icon:'🗺️',label:'Log & Roadmap',href:'pages/log-roadmap.html'},
 {icon:'📝',label:'Paper Editor',href:'tools/editor.html'},
 {icon:'🪐',label:'Expedition',href:'simulators/expedition.html'},
 ];
 
-let player,currentScene=0,isMuted=true;
+let player,currentScene=1,isMuted=true;
 let winZ=200,winCount=0,winOffset=0;
+
+// ── LEAFLET MAP ──
+let leafletMap=null,issMarker=null,issInterval=null,userLocMarker=null;
+
+function initMap(){
+  if(leafletMap)return;
+  leafletMap=L.map('map-bg',{
+    zoomControl:false,
+    attributionControl:true,
+    scrollWheelZoom:true,
+    doubleClickZoom:true,
+    dragging:true
+  }).setView([30,0],3);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+    attribution:'&copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains:'abcd',maxZoom:19
+  }).addTo(leafletMap);
+
+  // Geolocate user
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const ll=[pos.coords.latitude,pos.coords.longitude];
+      leafletMap.setView(ll,6);
+      userLocMarker=L.marker(ll,{
+        icon:L.divIcon({className:'user-loc',iconSize:[14,14],iconAnchor:[7,7]})
+      }).addTo(leafletMap).bindTooltip('You',{direction:'top',offset:[0,-10],className:'iss-label'});
+    },()=>{/* denied — keep default world view */});
+  }
+
+  // ISS tracker
+  const issIcon=L.divIcon({
+    html:'<span style="font-size:22px">🛰️</span>',
+    className:'',iconSize:[22,22],iconAnchor:[11,11]
+  });
+  issMarker=L.marker([0,0],{icon:issIcon}).addTo(leafletMap)
+    .bindTooltip('ISS',{permanent:true,direction:'right',offset:[14,0],className:'iss-label'});
+
+  function fetchISS(){
+    fetch('https://api.open-notify.org/iss-now.json')
+      .then(r=>r.json())
+      .then(d=>{
+        const lat=parseFloat(d.iss_position.latitude);
+        const lng=parseFloat(d.iss_position.longitude);
+        issMarker.setLatLng([lat,lng]);
+      }).catch(()=>{});
+  }
+  fetchISS();
+  issInterval=setInterval(fetchISS,10000);
+
+  // Force Leaflet to recalculate after display:none→block transition
+  setTimeout(()=>leafletMap.invalidateSize(),100);
+}
+
+function showMap(){
+  document.getElementById('map-bg').style.display='block';
+  document.getElementById('yt-bg').style.display='none';
+  initMap();
+  setTimeout(()=>leafletMap.invalidateSize(),50);
+  // Pause YouTube when map is active
+  if(player&&player.pauseVideo)try{player.pauseVideo()}catch(e){}
+}
+
+function hideMap(){
+  document.getElementById('map-bg').style.display='none';
+  document.getElementById('yt-bg').style.display='block';
+}
 
 // YouTube API
 const tag=document.createElement('script');
@@ -414,31 +434,37 @@ document.head.appendChild(tag);
 
 window.onYouTubeIframeAPIReady=function(){
 player=new YT.Player('yt-player',{
-videoId:SCENES[0].id,
+videoId:SCENES[1].id,
 playerVars:{autoplay:1,mute:1,controls:0,showinfo:0,modestbranding:1,rel:0,
-loop:1,playlist:SCENES[0].id,playsinline:1,disablekb:1,fs:0,iv_load_policy:3,
+loop:1,playlist:SCENES[1].id,playsinline:1,disablekb:1,fs:0,iv_load_policy:3,
 origin:window.location.origin},
 events:{onReady:function(e){e.target.playVideo()},
 onStateChange:function(e){
 // If video pauses unexpectedly (e.g. from iframe focus), resume it
-if(e.data===YT.PlayerState.PAUSED){
+if(e.data===YT.PlayerState.PAUSED&&SCENES[currentScene].type!=='map'){
 setTimeout(()=>{try{e.target.playVideo()}catch(ex){}},200);
 }
 }}
 });
 };
-// Keep video playing even when iframes steal focus
+// Keep video playing even when iframes steal focus (but not during map scene)
 setInterval(()=>{
-if(player&&player.getPlayerState&&player.getPlayerState()===YT.PlayerState.PAUSED){
+if(player&&player.getPlayerState&&player.getPlayerState()===YT.PlayerState.PAUSED&&SCENES[currentScene].type!=='map'){
 try{player.playVideo()}catch(e){}
 }
 },2000);
 
 function switchScene(i){
 currentScene=i;
-if(player&&player.loadVideoById){
-player.loadVideoById({videoId:SCENES[i].id,suggestedQuality:'hd1080'});
-setTimeout(()=>{try{player.setLoop(true)}catch(e){}},1000);
+const scene=SCENES[i];
+if(scene.type==='map'){
+  showMap();
+}else{
+  hideMap();
+  if(player&&player.loadVideoById){
+    player.loadVideoById({videoId:scene.id,suggestedQuality:'hd1080'});
+    setTimeout(()=>{try{player.setLoop(true)}catch(e){}},1000);
+  }
 }
 document.querySelectorAll('.scene-item').forEach((el,j)=>el.classList.toggle('active',j===i));
 }
@@ -456,7 +482,7 @@ function toggleSceneList(){document.getElementById('scene-list').classList.toggl
 const sl=document.getElementById('scene-list');
 SCENES.forEach((s,i)=>{
 const d=document.createElement('div');
-d.className='scene-item'+(i===0?' active':'');
+d.className='scene-item'+(i===currentScene?' active':'');
 d.textContent=s.name;
 d.onclick=()=>{switchScene(i);toggleSceneList()};
 sl.appendChild(d);

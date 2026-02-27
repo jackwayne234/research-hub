@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formula Memory Palace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#1e2128;
+  --card:#252932;
+  --border:#2d3139;
+  --indigo:#6366f1;
+  --green:#22c55e;
+  --pink:#ec4899;
+  --amber:#f59e0b;
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+  --red:#ef4444;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'JetBrains Mono',monospace;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.6;
+}
+a{color:var(--indigo);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.container{max-width:1100px;margin:0 auto;padding:0 1rem 3rem}
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.8rem;padding:.75rem 0;transition:color .2s}
+.back-link:hover{color:var(--text);text-decoration:none}
+
+header{padding:1.5rem 0 1rem}
+.header-title{font-size:1.6rem;font-weight:700;letter-spacing:-.02em}
+.header-sub{color:var(--muted);font-size:.85rem;margin-top:.3rem}
+.stat-badges{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem}
+.stat-badge{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:.25rem .6rem;font-size:.75rem;color:var(--muted)}
+
+/* Palace Tabs */
+.palace-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-top:1.2rem;overflow-x:auto;scrollbar-width:none}
+.palace-tabs::-webkit-scrollbar{display:none}
+.palace-tab{background:none;border:none;color:var(--muted);font-family:inherit;font-size:.85rem;padding:.8rem 1.1rem;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;flex-shrink:0}
+.palace-tab.active{color:#fff;border-bottom-color:var(--indigo)}
+.palace-tab:hover:not(.active){color:var(--text)}
+
+/* Mode Buttons */
+.mode-row{display:flex;gap:.6rem;padding:1rem 0;flex-wrap:wrap}
+.mode-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);font-family:inherit;font-size:.82rem;padding:.5rem 1.1rem;border-radius:8px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.mode-btn.active{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.mode-btn:hover:not(.active){border-color:var(--indigo);color:var(--text)}
+
+/* Progress Bar */
+.progress-wrap{margin-bottom:1rem}
+.progress-label{font-size:.78rem;color:var(--muted);margin-bottom:.4rem}
+.progress-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--indigo);border-radius:3px;transition:width .5s cubic-bezier(.34,1.56,.64,1)}
+
+/* Walk Mode */
+.room-card{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:.75rem;overflow:hidden}
+.room-header{display:flex;align-items:center;gap:.75rem;padding:.9rem 1rem;cursor:pointer;user-select:none;transition:background .15s}
+.room-header:hover{background:#2d3240}
+.room-icon{font-size:1.1rem;flex-shrink:0}
+.room-name{font-weight:600;font-size:.9rem;flex:1}
+.room-count{color:var(--muted);font-size:.75rem;flex-shrink:0}
+.room-walked-badge{background:var(--green);color:#000;font-size:.68rem;font-weight:700;padding:.15rem .45rem;border-radius:4px;flex-shrink:0}
+.room-chevron{color:var(--muted);font-size:.8rem;transition:transform .35s cubic-bezier(.34,1.56,.64,1);flex-shrink:0;line-height:1}
+.room-card.open .room-chevron{transform:rotate(180deg)}
+.room-body{display:none;border-top:1px solid var(--border)}
+.room-card.open .room-body{display:block}
+.formula-table{width:100%;border-collapse:collapse}
+.formula-table th{text-align:left;font-size:.7rem;color:var(--muted);font-weight:500;padding:.5rem .75rem;background:#1a1d24;border-bottom:1px solid var(--border);white-space:nowrap}
+.formula-table td{padding:.55rem .75rem;font-size:.78rem;vertical-align:top;border-bottom:1px solid var(--border)}
+.formula-table tr:last-child td{border-bottom:none}
+.formula-table td:first-child{color:var(--pink);font-size:.72rem;white-space:nowrap;width:1%}
+.formula-table td:nth-child(2){color:var(--amber);font-weight:600}
+.formula-table td:nth-child(3){color:var(--muted);font-style:italic;font-size:.73rem}
+.walk-btn{display:block;margin:.75rem;padding:.5rem 1rem;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:inherit;font-size:.78rem;border-radius:7px;cursor:pointer;transition:all .2s;width:calc(100% - 1.5rem);text-align:center}
+.walk-btn:hover{border-color:var(--green);color:var(--green)}
+.walk-btn.walked{background:#14532d22;border-color:var(--green);color:var(--green)}
+
+/* Flashcard Mode */
+.flashcard-wrap{display:flex;flex-direction:column;align-items:center;padding:1rem 0}
+.flashcard-scene{width:100%;max-width:580px;height:290px;perspective:1200px;cursor:pointer}
+.flashcard-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.34,1.56,.64,1)}
+.flashcard-scene.flipped .flashcard-inner{transform:rotateY(180deg)}
+.flashcard-face{position:absolute;inset:0;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.75rem;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.flashcard-front{background:var(--card);border:2px solid var(--border)}
+.flashcard-back{background:#1a1d26;border:2px solid var(--indigo);transform:rotateY(180deg)}
+.card-formula{font-size:1rem;font-weight:700;color:var(--amber);text-align:center;line-height:1.6}
+.card-hint{font-size:.7rem;color:var(--muted);margin-top:1rem;opacity:.7}
+.card-palace-badge{font-size:.7rem;font-weight:700;padding:.2rem .55rem;border-radius:5px;margin-bottom:.8rem}
+.card-location{font-size:.78rem;color:var(--indigo);font-weight:600;margin-bottom:.35rem}
+.card-room{font-size:.82rem;color:var(--text);font-weight:500;margin-bottom:.6rem;text-align:center}
+.card-image{font-size:.76rem;color:var(--muted);font-style:italic;text-align:center;line-height:1.6}
+.fc-controls{display:flex;align-items:center;gap:.75rem;margin-top:1.25rem;flex-wrap:wrap;justify-content:center}
+.fc-btn{background:var(--card);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:.82rem;padding:.5rem 1.1rem;border-radius:8px;cursor:pointer;transition:all .2s}
+.fc-btn:hover:not(:disabled){border-color:var(--indigo);color:var(--indigo)}
+.fc-btn:disabled{opacity:.3;cursor:not-allowed}
+.fc-counter{color:var(--muted);font-size:.8rem;min-width:80px;text-align:center}
+.shuffle-btn{background:var(--indigo);border-color:var(--indigo);color:#fff !important}
+.shuffle-btn:hover{background:#4f52d0 !important;border-color:#4f52d0 !important}
+
+/* Drill Mode */
+.drill-wrap{padding:.25rem 0}
+.drill-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.drill-score{font-size:.82rem;color:var(--muted)}
+.drill-score span{color:var(--green);font-weight:700}
+.drill-question{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1rem;text-align:center}
+.drill-q-label{font-size:.7rem;color:var(--muted);margin-bottom:.75rem;letter-spacing:.02em}
+.drill-formula{font-size:.95rem;font-weight:700;color:var(--amber);line-height:1.6}
+.drill-choices{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom.75rem}
+.drill-choice{background:var(--card);border:2px solid var(--border);color:var(--text);font-family:inherit;font-size:.79rem;padding:.7rem 1rem;border-radius:9px;cursor:pointer;transition:border-color .15s,background .15s,color .15s;text-align:left;line-height:1.5}
+.drill-choice:hover:not(:disabled){border-color:var(--indigo);background:#2a2d3a}
+.drill-choice.correct{border-color:var(--green) !important;background:#14532d33 !important;color:var(--green) !important}
+.drill-choice.wrong{border-color:var(--red) !important;background:#7f1d1d22 !important;color:var(--red) !important}
+.drill-choice.reveal{border-color:var(--green) !important;background:#14532d33 !important;color:var(--green) !important}
+.drill-choice:disabled{cursor:default}
+.drill-feedback{text-align:center;font-size:.8rem;min-height:1.4rem;margin:.75rem 0}
+.drill-feedback.correct-fb{color:var(--green)}
+.drill-feedback.wrong-fb{color:var(--red)}
+.drill-next-btn{display:block;margin:0 auto;background:var(--indigo);border:none;color:#fff;font-family:inherit;font-size:.85rem;padding:.6rem 1.6rem;border-radius:8px;cursor:pointer;transition:background .2s}
+.drill-next-btn:hover{background:#4f52d0}
+.drill-done{text-align:center;padding:3rem 1rem}
+.drill-done-score{font-size:2.5rem;font-weight:700;color:var(--green)}
+.drill-done-label{color:var(--muted);font-size:.85rem;margin-top:.5rem}
+.drill-done-msg{color:var(--text);font-size:.9rem;margin-top:.4rem}
+.drill-restart{margin-top:1.25rem;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:.85rem;padding:.6rem 1.6rem;border-radius:8px;cursor:pointer;transition:all .2s}
+.drill-restart:hover{border-color:var(--indigo);color:var(--indigo)}
+
+/* Badge colors */
+.badge-house{background:#3f2d6b;color:#a78bfa}
+.badge-destroyer{background:#1e3a5f;color:#60a5fa}
+.badge-submarine{background:#14532d;color:#4ade80}
+.badge-station{background:#78350f;color:#fbbf24}
+
+@media(max-width:640px){
+  .header-title{font-size:1.25rem}
+  .drill-choices{grid-template-columns:1fr}
+  .flashcard-scene{height:250px}
+  .card-formula{font-size:.88rem}
+  .palace-tab{font-size:.75rem;padding:.65rem .7rem}
+  .formula-table td,.formula-table th{padding:.4rem .5rem;font-size:.7rem}
+  .room-name{font-size:.82rem}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="../index.html" class="back-link">&#8592; Back to Hub</a>
+  <header>
+    <div class="header-title">Formula Memory Palace</div>
+    <div class="header-sub">Method of Loci &mdash; 271 formulas across 4 Navy-themed palaces</div>
+    <div class="stat-badges">
+      <span class="stat-badge">&#127968; 76 formulas</span>
+      <span class="stat-badge">&#9875; 82 formulas</span>
+      <span class="stat-badge">&#127754; 67 formulas</span>
+      <span class="stat-badge">&#128760; 46 formulas</span>
+    </div>
+  </header>
+
+  <div class="palace-tabs" id="palaceTabs"></div>
+  <div class="mode-row" id="modeRow">
+    <button class="mode-btn active" data-mode="walk">&#128694; Walk</button>
+    <button class="mode-btn" data-mode="flashcard">&#127183; Flashcard</button>
+    <button class="mode-btn" data-mode="drill">&#127919; Drill</button>
+  </div>
+  <div id="mainContent"></div>
+</div>
+
+<script>
+const PALACES = [
+  {
+    id:"house",name:"House",emoji:"🏠",label:"Math",badgeClass:"badge-house",roomLabel:"Room",
+    rooms:[
+      {name:"The Front Porch",sub:"Number Properties",icon:"🚪",formulas:[
+        {loc:"Welcome mat",formula:"a + b = b + a (commutative +)",image:"Two people swap places on the mat — same total weight"},
+        {loc:"Doorbell",formula:"a × b = b × a (commutative ×)",image:"Press the bell with left or right hand — same ring"},
+        {loc:"Left pillar",formula:"(a + b) + c = a + (b + c) (associative +)",image:"Three boxes stacked — regroup any two, same tower height"},
+        {loc:"Right pillar",formula:"(a × b) × c = a × (b × c) (associative ×)",image:"Three gears chained — regroup any two, same rotation"},
+        {loc:"Door knocker",formula:"a(b + c) = ab + ac (distributive)",image:"The knocker splits into two strikes — one hit distributes to both sides"},
+        {loc:"House number",formula:"a + 0 = a, a × 1 = a (identity)",image:"The house number never changes — adding nothing or multiplying by one"},
+        {loc:"Doorframe",formula:"a + (−a) = 0, a × (1/a) = 1 (inverse)",image:"The door opens and closes back to where it started"},
+      ]},
+      {name:"The Kitchen",sub:"Fractions & Order of Operations",icon:"🍳",formulas:[
+        {loc:"Oven dial",formula:"PEMDAS: Parentheses → Exponents → Mult/Div → Add/Sub",image:"The oven has 4 temperature zones — cook in order or the recipe fails"},
+        {loc:"Measuring cups",formula:"a/b + c/d = (ad + bc) / bd",image:"Two different-sized cups — pour into a common cup (common denominator)"},
+        {loc:"Cutting board",formula:"a/b × c/d = ac / bd",image:"Straight across — cut top × top, bottom × bottom"},
+        {loc:"Knife rack",formula:"a/b ÷ c/d = a/b × d/c (keep-change-flip)",image:"Flip the second fraction like flipping a knife"},
+        {loc:"Mixing bowl",formula:"a/b = c/d → ad = bc (cross multiply)",image:"Cross the spoons in the bowl — an X shape"},
+        {loc:"Spice rack",formula:"a% = a/100",image:"100 spice jars — 'percent' literally means 'per hundred'"},
+        {loc:"Fridge",formula:"|a| = distance from 0 (absolute value)",image:"The fridge temperature display — always shows a positive number"},
+      ]},
+      {name:"The Living Room",sub:"Exponent Rules",icon:"📺",formulas:[
+        {loc:"Top shelf",formula:"x^a × x^b = x^(a+b)",image:"Stack books on the same shelf — heights ADD"},
+        {loc:"Middle shelf",formula:"x^a ÷ x^b = x^(a−b)",image:"Remove books from the shelf — heights SUBTRACT"},
+        {loc:"Bottom shelf",formula:"(x^a)^b = x^(ab)",image:"A book inside a box inside a crate — layers MULTIPLY"},
+        {loc:"Left speaker",formula:"x^0 = 1",image:"The speaker at zero volume — still exists (= 1), just silent"},
+        {loc:"Right speaker",formula:"x^(−n) = 1/x^n",image:"Flip the speaker upside down — negative exponent flips to denominator"},
+        {loc:"Coffee table",formula:"(xy)^n = x^n × y^n",image:"Two coasters on the table — the power hits both equally"},
+        {loc:"Lamp",formula:"x^(1/2) = √x",image:"The lamp's pull chain — pull halfway = square root"},
+        {loc:"Rug",formula:"x^(m/n) = ⁿ√(x^m)",image:"The rug's pattern: numerator is the power, denominator is the root"},
+      ]},
+      {name:"The Hallway",sub:"Linear Equations & Slope",icon:"🚶",formulas:[
+        {loc:"Floor tiles",formula:"y = mx + b (slope-intercept)",image:"Walk the hallway — m is how steep (rise/run), b is where you start (y-intercept)"},
+        {loc:"Left wall",formula:"m = (y₂ − y₁) / (x₂ − x₁)",image:"Two picture frames on the wall — slope = rise between them ÷ run between them"},
+        {loc:"Right wall",formula:"y − y₁ = m(x − x₁) (point-slope)",image:"A coat hook on the wall at a known point — the line hangs from it"},
+        {loc:"Light switch",formula:"Ax + By = C (standard form)",image:"The switch plate — everything on one side, constant on the other"},
+        {loc:"Ceiling light",formula:"Parallel lines: same slope (m₁ = m₂)",image:"Parallel light tracks on the ceiling — never cross, same angle"},
+        {loc:"Floor crack",formula:"Perpendicular lines: m₁ × m₂ = −1",image:"The crack meets the baseboard at a right angle — slopes are negative reciprocals"},
+        {loc:"Mirror at end",formula:"Midpoint: ((x₁+x₂)/2, (y₁+y₂)/2)",image:"Your reflection splits the hallway exactly in half"},
+        {loc:"Hallway runner rug",formula:"Distance: d = √((x₂−x₁)² + (y₂−y₁)²)",image:"The rug's diagonal length — Pythagorean theorem in disguise"},
+      ]},
+      {name:"The Bedroom",sub:"Quadratics",icon:"🛏️",formulas:[
+        {loc:"Headboard",formula:"y = ax² + bx + c (standard form)",image:"The curved headboard IS a parabola — a controls width, c is height off floor"},
+        {loc:"Left nightstand",formula:"x = (−b ± √(b²−4ac)) / 2a (quadratic formula)",image:"The nightstand drawer — the master key that opens ANY quadratic"},
+        {loc:"Right nightstand",formula:"b² − 4ac (discriminant)",image:"A lamp with a dimmer: >0 = two solutions (bright), =0 = one (dim), <0 = none (off)"},
+        {loc:"Pillow",formula:"y = a(x − h)² + k (vertex form)",image:"The pillow sits at the vertex (h, k) — the turning point of the parabola"},
+        {loc:"Bedframe",formula:"x = −b/2a (axis of symmetry)",image:"The bedframe's center rail — the parabola is symmetric around it"},
+        {loc:"Left curtain",formula:"(a + b)² = a² + 2ab + b²",image:"Pull the left curtain — it FOIL-expands into three panels"},
+        {loc:"Right curtain",formula:"(a − b)² = a² − 2ab + b²",image:"Pull the right curtain — same three panels, middle one negative"},
+        {loc:"Closet",formula:"a² − b² = (a + b)(a − b) (difference of squares)",image:"Two closet doors — they factor apart symmetrically"},
+        {loc:"Bed sheets",formula:"x₁ + x₂ = −b/a and x₁ × x₂ = c/a (Vieta's formulas)",image:"The two sides of the sheet — roots add to −b/a, multiply to c/a"},
+      ]},
+      {name:"The Bathroom",sub:"Geometry",icon:"🚿",formulas:[
+        {loc:"Floor tiles",formula:"a² + b² = c² (Pythagorean theorem)",image:"The square tiles in the corner — two small squares combine to equal the big one"},
+        {loc:"Round mirror",formula:"C = 2πr (circumference)",image:"Trace your finger around the circular mirror — 2πr all the way around"},
+        {loc:"Sink basin",formula:"A = πr² (area of circle)",image:"The water filling the round sink basin — π times radius squared"},
+        {loc:"Bathtub",formula:"V = lwh (rectangular volume)",image:"Fill the rectangular tub — length × width × height"},
+        {loc:"Showerhead",formula:"V = 4/3 πr³ (sphere volume)",image:"The round showerhead — a sphere of water"},
+        {loc:"Soap bar",formula:"A = ½bh (triangle area)",image:"The triangular soap bar — half of a rectangle"},
+        {loc:"Towel rack",formula:"V = πr²h (cylinder volume)",image:"The rolled-up towel — a cylinder"},
+        {loc:"Toilet paper",formula:"SA = 2πr² + 2πrh (cylinder surface area)",image:"Unroll the toilet paper — two circles + the rectangular wrap"},
+        {loc:"Corner shelf",formula:"Sum of angles in triangle = 180°",image:"Three items on the triangular shelf — always add to 180°"},
+      ]},
+      {name:"The Garage",sub:"Trigonometry",icon:"🔧",formulas:[
+        {loc:"The wheel",formula:"Unit circle: x = cos θ, y = sin θ",image:"The wheel turns — x-coordinate = cosine, y-coordinate = sine"},
+        {loc:"Toolbox",formula:"SOH-CAH-TOA: sin=opp/hyp, cos=adj/hyp, tan=opp/adj",image:"Three tool drawers — each one a ratio of triangle sides"},
+        {loc:"Workbench",formula:"sin²θ + cos²θ = 1 (Pythagorean identity)",image:"The bench has exactly 1 square meter of surface — sin² and cos² fill it completely"},
+        {loc:"Vise grip",formula:"tan θ = sin θ / cos θ",image:"The vise squeezes sin over cos together"},
+        {loc:"Left wall hooks",formula:"sin(0°)=0, sin(30°)=1/2, sin(45°)=√2/2, sin(60°)=√3/2, sin(90°)=1",image:"Five hooks going UP the wall: 0, ½, √2/2, √3/2, 1"},
+        {loc:"Right wall hooks",formula:"cos(0°)=1, cos(30°)=√3/2, cos(45°)=√2/2, cos(60°)=1/2, cos(90°)=0",image:"Five hooks going DOWN the wall: 1, √3/2, √2/2, ½, 0 (reverse of sine!)"},
+        {loc:"Ceiling fan",formula:"Period of sin/cos = 2π",image:"The fan completes one full rotation in 2π"},
+        {loc:"Garage door",formula:"c² = a² + b² − 2ab cos C (Law of Cosines)",image:"The door is a triangle — Pythagorean theorem with a cosine correction term"},
+        {loc:"Oil stain",formula:"a/sin A = b/sin B = c/sin C (Law of Sines)",image:"Three oil drips in proportion — each side over its opposite sine"},
+      ]},
+      {name:"The Attic",sub:"Logarithms & Exponentials",icon:"📦",formulas:[
+        {loc:"Log stack",formula:"log_b(x) = y means b^y = x",image:"The stack of logs — 'what power do I raise the base to?'"},
+        {loc:"Skylight",formula:"ln(x) = log_e(x) (natural log, base e)",image:"Natural light through the skylight — 'ln' is nature's logarithm"},
+        {loc:"Dust motes",formula:"e ≈ 2.71828...",image:"The dust particles multiply naturally — e is the base of natural growth"},
+        {loc:"Old trunk",formula:"log(ab) = log a + log b",image:"Open the trunk — multiplied items inside ADD their logs"},
+        {loc:"Rocking chair",formula:"log(a/b) = log a − log b",image:"The chair rocks between two positions — division becomes subtraction"},
+        {loc:"Ceiling beam",formula:"log(a^n) = n log a",image:"The beam's height is n times the base log — exponent comes down as multiplier"},
+        {loc:"Cobweb",formula:"log_b(1) = 0",image:"Nothing caught in the web — log of 1 is always 0"},
+        {loc:"Attic ladder",formula:"log_b(b) = 1",image:"One rung to reach the base — log of the base is always 1"},
+        {loc:"Old clock",formula:"A = Pe^(rt) (continuous growth)",image:"The clock still ticks — principal P grows at rate r over time t"},
+        {loc:"Moth-eaten quilt",formula:"A = P(1 + r/n)^(nt) (compound growth)",image:"The quilt has layers — n compoundings per period"},
+      ]},
+      {name:"The Rooftop",sub:"Pre-Calculus & Limits",icon:"🌅",formulas:[
+        {loc:"Horizon",formula:"lim(x→a) f(x) = L",image:"You walk toward the horizon — you approach L but the journey defines the destination"},
+        {loc:"Left railing",formula:"lim(x→0) sin(x)/x = 1",image:"Lean over the left rail — sin(x)/x approaches exactly 1 as x shrinks"},
+        {loc:"Right railing",formula:"lim(x→∞) (1 + 1/n)^n = e",image:"Lean over the right rail — compound interest at infinite frequency = e"},
+        {loc:"Antenna",formula:"f'(x) = lim(h→0) [f(x+h) − f(x)] / h (derivative definition)",image:"The antenna measures instantaneous rate of change — slope at a single point"},
+        {loc:"Weather vane",formula:"d/dx(x^n) = nx^(n−1) (power rule)",image:"The vane spins — bring the power down, reduce by one"},
+        {loc:"Rain gutter",formula:"∫ x^n dx = x^(n+1)/(n+1) + C (integration power rule)",image:"The gutter collects water — raise the power by one, divide, add the constant drip C"},
+        {loc:"Chimney",formula:"d/dx(sin x) = cos x, d/dx(cos x) = −sin x",image:"Smoke from the chimney — sin becomes cos, cos becomes negative sin (they cycle)"},
+        {loc:"Satellite dish",formula:"d/dx[f(g(x))] = f'(g(x)) × g'(x) (chain rule)",image:"The dish receives a nested signal — differentiate outside, multiply by inside derivative"},
+        {loc:"Flagpole",formula:"∫_a^b f(x)dx = F(b) − F(a) (fundamental theorem)",image:"The flag rises from a to b — area under the curve = antiderivative at endpoints"},
+      ]},
+    ]
+  },
+  {
+    id:"destroyer",name:"Destroyer",emoji:"⚓",label:"Physics",badgeClass:"badge-destroyer",roomLabel:"Deck",
+    rooms:[
+      {name:"The Bridge",sub:"Units, Measurement & Vectors",icon:"🧭",formulas:[
+        {loc:"Helm wheel",formula:"v = d/t (speed = distance / time)",image:"The helm readout shows speed — miles traveled over hours elapsed"},
+        {loc:"Compass",formula:"R = A + B (vector addition, tip-to-tail)",image:"Plot two compass headings end-to-end — the resultant is where you actually end up"},
+        {loc:"Radar screen",formula:"Ax = A cos θ, Ay = A sin θ (vector components)",image:"The radar paints a blip — its x-distance is cosine, y-distance is sine"},
+        {loc:"Chart table",formula:"|A| = √(Ax² + Ay²) (vector magnitude)",image:"Measure the straight-line distance on the chart — Pythagorean theorem"},
+        {loc:"Ship's log",formula:"Dimensional analysis: units must match on both sides",image:"The log entries — port and starboard columns must balance"},
+        {loc:"Barometer",formula:"1 atm = 101,325 Pa = 14.7 psi",image:"The barometer reads atmospheric pressure — memorize the sea-level value"},
+        {loc:"Binoculars",formula:"Significant figures: measurement precision",image:"Look through the binos — you can only resolve so many digits of detail"},
+      ]},
+      {name:"Weapons Deck",sub:"Kinematics",icon:"🎯",formulas:[
+        {loc:"Gun barrel",formula:"v = v₀ + at",image:"The shell accelerates down the barrel — initial velocity + acceleration × time"},
+        {loc:"Missile tube",formula:"x = v₀t + ½at²",image:"The missile's position after launch — starts at v₀, accelerates over time"},
+        {loc:"Fire control computer",formula:"v² = v₀² + 2a(x − x₀)",image:"The computer solves for final velocity — no time variable needed"},
+        {loc:"CIWS turret",formula:"R = v₀²sin(2θ) / g (projectile range)",image:"The Phalanx tracks projectile range — max at 45° launch angle"},
+        {loc:"Shell rack",formula:"y = v₀sinθ · t − ½gt² (projectile height)",image:"Shells stacked vertically — height follows the parabolic arc"},
+        {loc:"Targeting scope",formula:"x = v₀cosθ · t (projectile horizontal)",image:"The horizontal crosshair — constant velocity, no acceleration"},
+        {loc:"Stopwatch",formula:"v̄ = Δx/Δt (average velocity)",image:"The stopwatch on the bulkhead — displacement over time interval"},
+        {loc:"Speedometer",formula:"v = dx/dt (instantaneous velocity)",image:"The real-time speed readout — the derivative of position"},
+      ]},
+      {name:"Main Engineering",sub:"Forces & Newton's Laws",icon:"⚙️",formulas:[
+        {loc:"Main throttle",formula:"F = ma (Newton's 2nd Law)",image:"Push the throttle — force = mass × acceleration"},
+        {loc:"Shaft bearing",formula:"Newton's 3rd: F₁₂ = −F₂₁",image:"The shaft pushes the water aft, the water pushes the ship forward"},
+        {loc:"Anchor chain",formula:"W = mg (weight)",image:"The anchor's weight — mass × gravity pulling it down"},
+        {loc:"Deck plates",formula:"N = mg cos θ (normal force on incline)",image:"Stand on a tilted deck plate — the normal force is the perpendicular component"},
+        {loc:"Oil drum",formula:"f = μN (friction force)",image:"Push an oil drum across the deck — friction = coefficient × normal force"},
+        {loc:"Crane cable",formula:"Tension: same throughout an ideal rope",image:"The crane lifts a load — tension is the same at every point in the cable"},
+        {loc:"Centrifuge",formula:"F = mv²/r (centripetal force)",image:"The centrifuge spins — the force points inward, v²/r"},
+        {loc:"Spring mount",formula:"F = −kx (Hooke's Law)",image:"The engine mount springs — force proportional to displacement, opposite direction"},
+        {loc:"Propeller",formula:"p = mv (momentum)",image:"The spinning propeller — mass × velocity"},
+        {loc:"Collision bulkhead",formula:"J = FΔt = Δp (impulse)",image:"The bulkhead absorbs a collision — force × time = change in momentum"},
+      ]},
+      {name:"Navigation Center",sub:"Energy, Work & Power",icon:"🔋",formulas:[
+        {loc:"GPS receiver",formula:"W = Fd cos θ (work)",image:"The GPS tracks your displacement — work = force along the direction of motion"},
+        {loc:"Battery bank",formula:"KE = ½mv² (kinetic energy)",image:"The batteries store energy of motion — half mass times velocity squared"},
+        {loc:"Fuel tank",formula:"PE = mgh (gravitational potential energy)",image:"The fuel stored high up — mass × gravity × height = stored potential"},
+        {loc:"Generator",formula:"P = W/t = Fv (power)",image:"The generator's output — work per unit time, or force × velocity"},
+        {loc:"Efficiency meter",formula:"KE₁ + PE₁ = KE₂ + PE₂ (conservation of energy)",image:"The meter balances — total mechanical energy stays constant"},
+        {loc:"Spring coil",formula:"PE = ½kx² (elastic potential energy)",image:"The coiled spring stores energy — half k times displacement squared"},
+        {loc:"Winch",formula:"W_net = ΔKE (work-energy theorem)",image:"The winch does net work — equals the change in kinetic energy"},
+      ]},
+      {name:"Communications",sub:"Waves & Sound",icon:"📡",formulas:[
+        {loc:"Radio antenna",formula:"v = fλ (wave speed)",image:"The antenna broadcasts — speed = frequency × wavelength"},
+        {loc:"Sonar dome",formula:"f' = f(v ± v_obs)/(v ∓ v_source) (Doppler effect)",image:"The sonar ping shifts pitch — approaching = higher, receding = lower"},
+        {loc:"Speaker",formula:"T = 1/f (period = 1/frequency)",image:"One full speaker vibration — period is the inverse of frequency"},
+        {loc:"Oscilloscope",formula:"y = A sin(2πft + φ) (wave equation)",image:"The green wave on the scope — amplitude A, frequency f, phase shift φ"},
+        {loc:"Tuning fork",formula:"f_n = n(v/2L) (standing wave harmonics)",image:"The fork vibrates at its natural frequency — harmonics are integer multiples"},
+        {loc:"Sound tube",formula:"v ≈ 343 m/s (speed of sound in air at 20°C)",image:"Sound travels down the comm tube — ~343 meters per second"},
+        {loc:"Headphones",formula:"I = P/A (wave intensity)",image:"The volume in the headphones — power spread over area"},
+        {loc:"Decibel meter",formula:"β = 10 log₁₀(I/I₀) dB",image:"The meter reads in decibels — logarithmic scale, I₀ = 10⁻¹² W/m²"},
+      ]},
+      {name:"Medical Bay",sub:"Thermodynamics",icon:"🌡️",formulas:[
+        {loc:"Thermometer",formula:"°F = (9/5)°C + 32, K = °C + 273.15",image:"The thermometer has three scales — convert between them"},
+        {loc:"Heat lamp",formula:"Q = mcΔT (heat transfer)",image:"The heat lamp warms a patient — mass × specific heat × temperature change"},
+        {loc:"Ice pack",formula:"Q = mL (latent heat)",image:"The ice pack melts — mass × latent heat, no temp change during phase transition"},
+        {loc:"Blood pressure cuff",formula:"PV = nRT (ideal gas law)",image:"Inflate the cuff — pressure × volume = moles × gas constant × temperature"},
+        {loc:"Autoclave",formula:"1st Law: ΔU = Q − W",image:"The autoclave sterilizes — internal energy = heat in minus work out"},
+        {loc:"Body",formula:"2nd Law: ΔS ≥ 0 (entropy increases)",image:"The body ages — disorder always increases in an isolated system"},
+        {loc:"Defibrillator",formula:"e = W/Q_H = 1 − Q_C/Q_H (efficiency)",image:"The defib converts stored energy to work — never 100% efficient"},
+        {loc:"Carnot diagram",formula:"e_Carnot = 1 − T_C/T_H (max efficiency)",image:"The ideal engine — efficiency depends only on temperature ratio"},
+      ]},
+      {name:"Combat Information Center",sub:"Electricity & Magnetism",icon:"⚡",formulas:[
+        {loc:"Main display",formula:"F = kq₁q₂/r² (Coulomb's law)",image:"Two blips on the screen — force between charges, inverse square"},
+        {loc:"Power conduit",formula:"E = F/q = kQ/r² (electric field)",image:"The conduit radiates an E-field — force per unit charge"},
+        {loc:"Capacitor bank",formula:"V = kQ/r (electric potential)",image:"The capacitors store voltage — energy per unit charge"},
+        {loc:"Circuit breaker",formula:"V = IR (Ohm's law)",image:"The breaker trips — voltage = current × resistance"},
+        {loc:"Fuse box",formula:"P = IV = I²R = V²/R (electrical power)",image:"The fuse rates — power dissipated in the circuit"},
+        {loc:"Battery rack",formula:"Series: R_total = R₁ + R₂ + ...",image:"Batteries in series — resistances ADD"},
+        {loc:"Parallel bus",formula:"Parallel: 1/R_total = 1/R₁ + 1/R₂ + ...",image:"Parallel power buses — reciprocals add"},
+        {loc:"Electromagnet",formula:"F = qv × B (magnetic force on charge)",image:"The electromagnet grabs — force = charge × velocity cross magnetic field"},
+        {loc:"Solenoid coil",formula:"F = BIL sin θ (force on current-carrying wire)",image:"Current through the coil in a B-field — force on the wire"},
+        {loc:"Transformer",formula:"Φ = BA cos θ (magnetic flux)",image:"The transformer core — flux = field × area × cos of angle"},
+        {loc:"Generator",formula:"ε = −dΦ/dt (Faraday's law)",image:"The generator spins — changing flux induces voltage"},
+        {loc:"Capacitor",formula:"C = Q/V, E = ½CV² (capacitance & energy)",image:"The capacitor stores charge and energy"},
+      ]},
+      {name:"Reactor Compartment",sub:"Nuclear & Modern Physics",icon:"☢️",formulas:[
+        {loc:"Reactor core",formula:"E = mc² (mass-energy equivalence)",image:"The reactor converts mass to energy — a tiny amount = enormous energy"},
+        {loc:"Fuel rod",formula:"E = hf (photon energy)",image:"Each fuel rod emits photons — energy = Planck's constant × frequency"},
+        {loc:"Control rod",formula:"λ = h/p (de Broglie wavelength)",image:"The control rod's quantum nature — everything has a wavelength = h/momentum"},
+        {loc:"Shielding",formula:"N = N₀(½)^(t/t½) (radioactive decay)",image:"The shielding blocks radiation that decays — half gone every half-life"},
+        {loc:"Dosimeter",formula:"KE_max = hf − φ (photoelectric effect)",image:"The dosimeter detects photons kicking electrons — energy minus work function"},
+        {loc:"Neutron counter",formula:"ΔE · Δt ≥ ℏ/2 (energy-time uncertainty)",image:"The counter can't measure both energy and time precisely"},
+        {loc:"Coolant pipe",formula:"ΔxΔp ≥ ℏ/2 (Heisenberg uncertainty principle)",image:"The coolant particles — can't know exact position AND momentum simultaneously"},
+      ]},
+      {name:"Flight Deck",sub:"Optics & Light",icon:"✈️",formulas:[
+        {loc:"Signal lamp",formula:"c = 3 × 10⁸ m/s (speed of light)",image:"The signal lamp flashes — light travels 300 million meters per second"},
+        {loc:"Landing mirror",formula:"θ_i = θ_r (law of reflection)",image:"The landing mirror — angle in = angle out"},
+        {loc:"Periscope lens",formula:"n₁ sin θ₁ = n₂ sin θ₂ (Snell's law)",image:"Light bends entering the periscope lens — index × sin angle stays constant"},
+        {loc:"Binocular lens",formula:"1/f = 1/d_o + 1/d_i (thin lens equation)",image:"Focus the binoculars — focal length relates object and image distances"},
+        {loc:"Magnification dial",formula:"m = −d_i/d_o = h_i/h_o (magnification)",image:"Turn the magnification dial — image distance over object distance"},
+        {loc:"Rainbow in spray",formula:"n = c/v (index of refraction)",image:"Rainbows in the deck spray — light slows down in water, n = c/v"},
+        {loc:"Aircraft lights",formula:"E = hc/λ (photon energy from wavelength)",image:"The colored aircraft lights — shorter wavelength = higher energy"},
+        {loc:"Slit in bulkhead",formula:"d sin θ = mλ (double-slit interference)",image:"Light through a narrow slit — constructive interference at integer multiples"},
+      ]},
+      {name:"Captain's Quarters",sub:"Relativity & Gravity",icon:"🌌",formulas:[
+        {loc:"Captain's clock",formula:"t' = t/√(1 − v²/c²) (time dilation)",image:"The captain's clock runs differently — time slows at high speed"},
+        {loc:"Porthole",formula:"L' = L√(1 − v²/c²) (length contraction)",image:"Looking through the porthole — it appears shorter at high speed"},
+        {loc:"Star chart",formula:"F = Gm₁m₂/r² (Newton's gravitation)",image:"Two stars on the chart — gravitational pull, inverse square"},
+        {loc:"Orbit plot",formula:"g = GM/r² (gravitational field strength)",image:"The orbit computer — gravitational acceleration depends on mass and distance"},
+        {loc:"GPS display",formula:"T² = (4π²/GM)r³ (Kepler's 3rd law)",image:"The satellite orbits on the GPS — period squared proportional to radius cubed"},
+        {loc:"Einstein portrait",formula:"G_μν = 8πG/c⁴ · T_μν (Einstein field equations)",image:"The portrait — geometry = energy content"},
+        {loc:"Ship's motto plaque",formula:"ds² = −c²dt² + dr² + r²dΩ² (Schwarzschild metric)",image:"Engraved on the plaque — the metric that started it all"},
+      ]},
+    ]
+  },
+  {
+    id:"submarine",name:"Submarine",emoji:"🌊",label:"Chemistry",badgeClass:"badge-submarine",roomLabel:"Compartment",
+    rooms:[
+      {name:"Forward Torpedo Room",sub:"Atomic Structure",icon:"🐟",formulas:[
+        {loc:"Torpedo tube 1",formula:"Atomic number Z = number of protons",image:"The tube is labeled with a number — that's how many warheads (protons) fit inside"},
+        {loc:"Torpedo tube 2",formula:"Mass number A = protons + neutrons",image:"The total weight of the torpedo — warheads + ballast combined"},
+        {loc:"Loading tray",formula:"Isotopes: same Z, different A",image:"Same torpedo model, different weights — extra ballast changes mass but not identity"},
+        {loc:"Warhead",formula:"E = hf (photon energy)",image:"The warhead's energy — Planck's constant × frequency of detonation"},
+        {loc:"Guidance system",formula:"λ = h/mv (de Broglie wavelength)",image:"The guidance wave — everything has a wavelength = h over momentum"},
+        {loc:"Fire control panel",formula:"Electron config: 1s² 2s² 2p⁶ 3s²... (Aufbau principle)",image:"The firing sequence — fill lowest energy levels first"},
+        {loc:"Torpedo rack",formula:"Hund's rule: fill orbitals singly before pairing",image:"Torpedoes spread across tubes one each before doubling up"},
+      ]},
+      {name:"Sonar Room",sub:"Periodic Table & Trends",icon:"🔊",formulas:[
+        {loc:"Sonar display",formula:"Periods = rows, Groups = columns",image:"The display grid — horizontal sweeps (periods), vertical channels (groups)"},
+        {loc:"Headphones",formula:"Electronegativity increases → and ↑",image:"Louder signals to the upper right — fluorine screams the loudest"},
+        {loc:"Frequency dial",formula:"Ionization energy increases → and ↑",image:"Turn the dial right and up — harder to knock electrons loose"},
+        {loc:"Range finder",formula:"Atomic radius increases ← and ↓",image:"Farther contacts are lower-left — bigger atoms, more shells"},
+        {loc:"Depth gauge",formula:"Electron affinity increases → (generally)",image:"Deeper readings toward the right — atoms want electrons more"},
+        {loc:"Signal log",formula:"Valence electrons = group number (main group)",image:"The log tracks signals by channel — group number tells you the outer electron count"},
+      ]},
+      {name:"Control Room",sub:"Chemical Bonding",icon:"🕹️",formulas:[
+        {loc:"Helm",formula:"Ionic bond: metal + nonmetal (electron transfer)",image:"The helm transfers orders — one side gives, the other receives"},
+        {loc:"Periscope",formula:"Covalent bond: nonmetal + nonmetal (electron sharing)",image:"Two lookouts share the periscope — they share electrons equally"},
+        {loc:"Ballast controls",formula:"Polar covalent: unequal sharing (ΔEN = 0.4–1.7)",image:"The ballast is unevenly distributed — one side pulls harder"},
+        {loc:"Navigation chart",formula:"Lewis structures: show all valence electrons",image:"The chart maps every connection — dots and lines for each electron"},
+        {loc:"Depth controls",formula:"VSEPR: electron groups determine molecular shape",image:"The depth planes arrange around center — linear, trigonal, tetrahedral"},
+        {loc:"Trim tank",formula:"Formal charge = valence e⁻ − (lone e⁻ + ½ bonding e⁻)",image:"The trim calculation — balance the charge distribution"},
+        {loc:"Compass",formula:"Bond order = (bonding e⁻ − antibonding e⁻) / 2",image:"The compass needle — higher order = stronger, shorter bond"},
+      ]},
+      {name:"Galley",sub:"Stoichiometry",icon:"🍽️",formulas:[
+        {loc:"Recipe card",formula:"Balanced equation: reactants → products (atoms conserve)",image:"The recipe — ingredients on the left, dish on the right, nothing lost"},
+        {loc:"Scale",formula:"Molar mass: grams per mole (g/mol)",image:"Weigh the ingredients — each element has its own mass from the periodic table"},
+        {loc:"Measuring cup",formula:"n = m/M (moles = mass ÷ molar mass)",image:"Pour into the cup — grams divided by grams-per-mole = moles"},
+        {loc:"Avogadro's salt shaker",formula:"1 mol = 6.022 × 10²³ particles (Avogadro's number)",image:"The salt shaker holds Avogadro's number of grains — one mole"},
+        {loc:"Mixing bowl",formula:"Limiting reagent: runs out first, controls yield",image:"The bowl only holds so much — the smallest ingredient limits the dish"},
+        {loc:"Yield meter",formula:"% yield = (actual/theoretical) × 100",image:"The meter on the oven — how much you actually got vs what you should have"},
+        {loc:"Dilution pitcher",formula:"M₁V₁ = M₂V₂ (dilution equation)",image:"Add water to the pitcher — concentration × volume stays constant"},
+        {loc:"Molarity label",formula:"M = mol solute / L solution (molarity)",image:"The label reads moles per liter — that's molarity"},
+      ]},
+      {name:"Air Purification",sub:"Gas Laws",icon:"💨",formulas:[
+        {loc:"Main vent",formula:"PV = nRT (ideal gas law)",image:"The master equation on the vent cover — pressure × volume = moles × R × temperature"},
+        {loc:"Pressure gauge",formula:"P₁V₁ = P₂V₂ (Boyle's law)",image:"Squeeze the gauge — pressure up, volume down"},
+        {loc:"Thermostat",formula:"V₁/T₁ = V₂/T₂ (Charles's law)",image:"Turn up the heat — gas expands proportionally"},
+        {loc:"CO₂ scrubber",formula:"P₁/T₁ = P₂/T₂ (Gay-Lussac's law)",image:"The sealed scrubber — heat it up, pressure rises"},
+        {loc:"Oxygen generator",formula:"P_total = P₁ + P₂ + P₃ (Dalton's law of partial pressures)",image:"Three gas lines feed the room — total pressure is the sum of each"},
+        {loc:"Diffusion filter",formula:"Rate₁/Rate₂ = √(M₂/M₁) (Graham's law)",image:"Lighter gases pass through faster — rate inversely proportional to √mass"},
+        {loc:"R constant plaque",formula:"R = 0.0821 L·atm/mol·K = 8.314 J/mol·K",image:"The plaque on the wall — memorize both values of R"},
+        {loc:"Depth pressure",formula:"STP: 0°C (273.15 K), 1 atm",image:"Standard conditions — the baseline everyone agrees on"},
+      ]},
+      {name:"Reactor Compartment",sub:"Thermochemistry",icon:"🔥",formulas:[
+        {loc:"Reactor core",formula:"ΔH = q_p (enthalpy = heat at constant pressure)",image:"The core releases heat — enthalpy change IS the heat flow"},
+        {loc:"Heat exchanger",formula:"q = mcΔT (heat = mass × specific heat × temp change)",image:"The exchanger transfers heat — same formula as physics"},
+        {loc:"Coolant loop",formula:"ΔH_rxn = ΣΔH_f(products) − ΣΔH_f(reactants) (Hess's law)",image:"The loop: add up product formation heats, subtract reactant heats"},
+        {loc:"Steam generator",formula:"Exothermic: ΔH < 0 (releases heat)",image:"The generator puts out steam — energy leaves the system (negative)"},
+        {loc:"Condenser",formula:"Endothermic: ΔH > 0 (absorbs heat)",image:"The condenser absorbs heat — energy enters the system (positive)"},
+        {loc:"Entropy meter",formula:"ΔG = ΔH − TΔS (Gibbs free energy)",image:"The master meter — free energy tells you if a reaction is spontaneous"},
+        {loc:"Spontaneity light",formula:"ΔG < 0 → spontaneous, ΔG > 0 → non-spontaneous",image:"Green light = go (spontaneous), red light = stop"},
+        {loc:"Calorimeter",formula:"q_system = −q_surroundings (energy conservation)",image:"The calorimeter box — energy is conserved, just transferred"},
+      ]},
+      {name:"Ballast Tanks",sub:"Equilibrium & Kinetics",icon:"⚖️",formulas:[
+        {loc:"Flood valve",formula:"Rate = k[A]^m[B]^n (rate law)",image:"The flood rate depends on how far you open the valve — concentration powers"},
+        {loc:"Blow valve",formula:"At equilibrium: rate_forward = rate_reverse",image:"Both valves balanced — water in = water out, no net change"},
+        {loc:"Depth gauge",formula:"K_eq = [products]^n / [reactants]^m",image:"The gauge reads the ratio — products over reactants at equilibrium"},
+        {loc:"Trim indicator",formula:"K > 1 → products favored; K < 1 → reactants favored",image:"Indicator leans right (products) or left (reactants)"},
+        {loc:"Le Chatelier alarm",formula:"Stress → system shifts to oppose the change (Le Chatelier's principle)",image:"The alarm goes off — the sub adjusts to counteract whatever disturbed it"},
+        {loc:"Half-life timer",formula:"t₁/₂ = 0.693/k (first-order half-life)",image:"The timer counts down — half the reactant gone every half-life"},
+        {loc:"Activation energy dial",formula:"k = Ae^(−Ea/RT) (Arrhenius equation)",image:"The dial controls how much energy you need to start the reaction"},
+      ]},
+      {name:"Battery Room",sub:"Acids, Bases & Solutions",icon:"🔋",formulas:[
+        {loc:"Battery acid",formula:"pH = −log[H⁺]",image:"The acid level — pH is the negative log of hydrogen ion concentration"},
+        {loc:"pH strip",formula:"pH + pOH = 14 (at 25°C)",image:"The strip has two ends that add to 14 — acid side + base side"},
+        {loc:"Anode",formula:"Acid: donates H⁺ (Brønsted-Lowry definition)",image:"The anode gives away — acids give away protons"},
+        {loc:"Cathode",formula:"Base: accepts H⁺ (Brønsted-Lowry definition)",image:"The cathode receives — bases accept protons"},
+        {loc:"Electrolyte tank",formula:"K_w = [H⁺][OH⁻] = 1.0 × 10⁻¹⁴",image:"The tank holds pure water's balance — always 10⁻¹⁴ at 25°C"},
+        {loc:"Buffer solution",formula:"pH = pK_a + log([A⁻]/[HA]) (Henderson-Hasselbalch)",image:"The buffer resists change — pH depends on the conjugate ratio"},
+        {loc:"Titration burette",formula:"At equivalence point: moles acid = moles base",image:"The burette drips until equal — neutralization is complete"},
+        {loc:"Ksp shelf",formula:"K_sp = [cation]^m[anion]^n (solubility product)",image:"The shelf of precipitates — each salt has its solubility limit"},
+      ]},
+      {name:"Engine Room",sub:"Electrochemistry & Nuclear",icon:"⚙️",formulas:[
+        {loc:"Motor",formula:"Oxidation = loss of electrons (OIL)",image:"The motor spins by giving up electrons — Oxidation Is Loss"},
+        {loc:"Generator",formula:"Reduction = gain of electrons (RIG)",image:"The generator receives electrons — Reduction Is Gain"},
+        {loc:"Voltage meter",formula:"E°_cell = E°_cathode − E°_anode",image:"The meter reads cell voltage — cathode minus anode"},
+        {loc:"Faraday's panel",formula:"ΔG° = −nFE° (free energy from cell potential)",image:"The panel converts voltage to energy — n moles × Faraday's constant × voltage"},
+        {loc:"Nernst gauge",formula:"E = E° − (RT/nF)ln(Q) (Nernst equation)",image:"The gauge adjusts voltage for non-standard conditions"},
+        {loc:"Nuclear reactor",formula:"²³⁵U + ¹n → fission products + 3¹n",image:"The reactor splits uranium — mass converts to energy"},
+        {loc:"Decay clock",formula:"N = N₀(½)^(t/t½) (radioactive decay)",image:"Same as physics — half gone every half-life"},
+        {loc:"Mass-energy plaque",formula:"E = mc² (mass-energy equivalence)",image:"The plaque by the reactor — a tiny mass = enormous energy"},
+      ]},
+    ]
+  },
+  {
+    id:"station",name:"Space Station",emoji:"🛸",label:"Higher Math",badgeClass:"badge-station",roomLabel:"Module",
+    rooms:[
+      {name:"Command Module",sub:"Linear Algebra",icon:"🖥️",formulas:[
+        {loc:"Main screen",formula:"Ax = b (matrix equation)",image:"The screen displays the master system — matrix A transforms vector x into vector b"},
+        {loc:"Keyboard",formula:"det(A) = ad − bc (2×2 determinant)",image:"The two keys you cross-multiply — diagonal products minus each other"},
+        {loc:"Joystick",formula:"A⁻¹ = (1/det A) × adj(A) (matrix inverse)",image:"The joystick reverses the transformation — inverse exists only if det ≠ 0"},
+        {loc:"Status lights",formula:"Eigenvalue: Av = λv",image:"The lights pulse at their natural frequency — λ is the eigenvalue, v is the eigenvector"},
+        {loc:"Crew roster",formula:"det(A − λI) = 0 (characteristic equation)",image:"The roster determines who stays — solve for λ to find eigenvalues"},
+        {loc:"Docking clamps",formula:"(AB)ᵀ = BᵀAᵀ (transpose reverses order)",image:"The clamps reverse — transpose of a product = product of transposes in reverse"},
+        {loc:"Life support panel",formula:"rank(A) + nullity(A) = n (rank-nullity theorem)",image:"The panel balances — what the matrix maps + what it kills = total dimension"},
+        {loc:"Navigation vectors",formula:"u · v = |u||v|cos θ (dot product)",image:"Two navigation vectors — dot product gives the projection, cosine of angle between"},
+        {loc:"Cross-product display",formula:"u × v = |u||v|sin θ n̂ (cross product)",image:"The display shows the perpendicular — magnitude is the parallelogram area"},
+        {loc:"Gram-Schmidt unit",formula:"Orthonormalization: turn any basis into orthonormal vectors",image:"The unit straightens and normalizes — perpendicular unit vectors"},
+      ]},
+      {name:"Propulsion Module",sub:"Differential Equations",icon:"🚀",formulas:[
+        {loc:"Throttle",formula:"dy/dx + P(x)y = Q(x) (first-order linear ODE)",image:"The throttle controls the rate — y changes based on its current value plus a forcing function"},
+        {loc:"Integrating factor dial",formula:"μ(x) = e^(∫P(x)dx) (integrating factor)",image:"Turn the dial — the integrating factor makes the left side a perfect derivative"},
+        {loc:"Fuel gauge",formula:"y = Ce^(kx) (exponential growth/decay solution)",image:"The fuel drains exponentially — C is initial amount, k is the rate"},
+        {loc:"Thrust vectoring",formula:"ay'' + by' + cy = 0 (2nd-order homogeneous ODE)",image:"The vectoring system oscillates — characteristic equation ar² + br + c = 0"},
+        {loc:"Oscillation damper",formula:"y = e^(αt)(C₁cos βt + C₂sin βt) (underdamped solution)",image:"The damper lets the engine oscillate while decaying — exponential × trig"},
+        {loc:"Resonance alarm",formula:"Particular solution: guess matches forcing function form",image:"The alarm rings at resonance — when force matches natural frequency, amplitude blows up"},
+        {loc:"Laplace console",formula:"L{f(t)} = ∫₀^∞ e^(−st)f(t)dt (Laplace transform)",image:"The console transforms time-domain to s-domain"},
+        {loc:"Inverse button",formula:"L⁻¹{F(s)} = f(t) (inverse Laplace transform)",image:"Press the button — transform back from frequency to time"},
+        {loc:"Separation valve",formula:"Separable ODE: dy/dx = f(x)g(y) → ∫dy/g(y) = ∫f(x)dx",image:"The valve separates variables — x stuff on one side, y stuff on the other"},
+      ]},
+      {name:"Observation Deck",sub:"Multivariable Calculus",icon:"🔭",formulas:[
+        {loc:"Left window",formula:"∂f/∂x (partial derivative: hold y constant)",image:"Look left — the view changes only in the x-direction"},
+        {loc:"Right window",formula:"∂f/∂y (partial derivative: hold x constant)",image:"Look right — the view changes only in the y-direction"},
+        {loc:"Floor viewport",formula:"∇f = (∂f/∂x, ∂f/∂y, ∂f/∂z) (gradient)",image:"Look down — the gradient points in the direction of steepest ascent"},
+        {loc:"Telescope",formula:"∇ · F = ∂F₁/∂x + ∂F₂/∂y + ∂F₃/∂z (divergence)",image:"The telescope measures how much flows outward — sources vs sinks"},
+        {loc:"Compass rose",formula:"∇ × F (curl — measures rotation in a vector field)",image:"The compass spins — curl measures rotation in a vector field"},
+        {loc:"Star map",formula:"∬_R f(x,y) dA (double integral)",image:"The star map covers an area — integrate over a 2D region"},
+        {loc:"Holographic globe",formula:"∭_V f(x,y,z) dV (triple integral)",image:"The globe fills a volume — integrate over a 3D region"},
+        {loc:"Green's theorem plaque",formula:"∮_C F·dr = ∬_R (∂Q/∂x − ∂P/∂y) dA (Green's theorem)",image:"Line integral around = double integral inside"},
+        {loc:"Stokes' theorem plaque",formula:"∮_C F·dr = ∬_S (∇×F)·dS (Stokes' theorem)",image:"The 3D generalization — line integral = surface integral of curl"},
+        {loc:"Divergence theorem plaque",formula:"∯_S F·dS = ∭_V (∇·F) dV (Divergence theorem)",image:"Surface flux out = volume integral of divergence"},
+      ]},
+      {name:"Communications Array",sub:"Complex Analysis & Fourier",icon:"📻",formulas:[
+        {loc:"Antenna dish",formula:"e^(iθ) = cos θ + i sin θ (Euler's formula)",image:"The dish rotates — complex exponential traces a circle"},
+        {loc:"Transmitter",formula:"e^(iπ) + 1 = 0 (Euler's identity)",image:"The most beautiful equation — five fundamental constants"},
+        {loc:"Signal analyzer",formula:"z = a + bi (complex number)",image:"Every signal has two parts — real (a) and imaginary (bi)"},
+        {loc:"Modulus meter",formula:"|z| = √(a² + b²) (complex modulus)",image:"The meter reads the distance from origin — Pythagorean theorem in the complex plane"},
+        {loc:"Frequency spectrum",formula:"f(x) = Σ(aₙcos nx + bₙsin nx) (Fourier series)",image:"The spectrum breaks any signal into sine and cosine frequencies"},
+        {loc:"FFT processor",formula:"F(ω) = ∫_{−∞}^{∞} f(t)e^(−iωt)dt (Fourier transform)",image:"The processor converts time to frequency — the continuous version"},
+        {loc:"Phase display",formula:"arg(z) = arctan(b/a) (complex argument/phase)",image:"The display shows the angle — phase of the complex number"},
+      ]},
+      {name:"Mission Control",sub:"Probability & Statistics",icon:"🎲",formulas:[
+        {loc:"Mission clock",formula:"P(A) = favorable outcomes / total outcomes",image:"The clock ticks through possibilities — probability is the fraction that works"},
+        {loc:"Risk display",formula:"P(A∩B) = P(A)P(B|A) (conditional probability)",image:"The display shows overlapping risks — joint = first × second given first"},
+        {loc:"Bayes panel",formula:"P(A|B) = P(B|A)P(A) / P(B) (Bayes' theorem)",image:"The panel updates beliefs — flip the conditional using prior knowledge"},
+        {loc:"Bell curve monitor",formula:"f(x) = (1/σ√2π)e^(−(x−μ)²/2σ²) (normal distribution)",image:"The monitor shows the bell curve — μ is center, σ is spread"},
+        {loc:"Mean indicator",formula:"μ = Σxᵢ/n (population mean)",image:"The indicator averages all readings — sum divided by count"},
+        {loc:"Variance dial",formula:"σ² = Σ(xᵢ − μ)²/n (variance)",image:"The dial measures spread — average of squared deviations from mean"},
+        {loc:"Standard deviation",formula:"σ = √(σ²) (standard deviation)",image:"The square root of variance — same units as the data"},
+        {loc:"Confidence interval",formula:"x̄ ± z*(σ/√n) (confidence interval)",image:"The interval brackets the truth — sample mean ± margin of error"},
+        {loc:"Poisson counter",formula:"P(X=k) = (λᵏe^(−λ))/k! (Poisson distribution)",image:"The counter tracks rare events — λ is the average rate"},
+        {loc:"Binomial display",formula:"P(X=k) = C(n,k)p^k(1−p)^(n−k) (binomial distribution)",image:"The display shows k successes in n trials"},
+      ]},
+    ]
+  }
+];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function getAllCards(palace) {
+  const cards = [];
+  palace.rooms.forEach((room, ri) => {
+    room.formulas.forEach(f => {
+      cards.push({
+        palaceId: palace.id,
+        palaceName: palace.name,
+        palaceEmoji: palace.emoji,
+        badgeClass: palace.badgeClass,
+        roomIndex: ri,
+        roomName: room.name,
+        roomSub: room.sub,
+        loc: f.loc,
+        formula: f.formula,
+        image: f.image
+      });
+    });
+  });
+  return cards;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function springPop(el) {
+  el.animate([
+    {transform:'scale(1)'},
+    {transform:'scale(1.15)'},
+    {transform:'scale(0.95)'},
+    {transform:'scale(1.04)'},
+    {transform:'scale(1)'}
+  ], {duration:400, easing:'cubic-bezier(.34,1.56,.64,1)'});
+}
+
+function shake(el) {
+  el.animate([
+    {transform:'translateX(0)'},
+    {transform:'translateX(-8px)'},
+    {transform:'translateX(8px)'},
+    {transform:'translateX(-6px)'},
+    {transform:'translateX(6px)'},
+    {transform:'translateX(0)'}
+  ], {duration:350});
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let activePalace = 0;
+let activeMode = 'walk';
+let fcCards = [], fcIndex = 0, fcFlipped = false;
+let drillCards = [], drillIndex = 0, drillScore = 0, drillAnswered = false;
+
+// ── localStorage ──────────────────────────────────────────────────────────────
+function walkedKey(pi, ri) { return `palace_walked_${pi}_${ri}`; }
+function isWalked(pi, ri) { return localStorage.getItem(walkedKey(pi, ri)) === 'true'; }
+function setWalked(pi, ri) { localStorage.setItem(walkedKey(pi, ri), 'true'); }
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function renderTabs() {
+  const el = document.getElementById('palaceTabs');
+  el.innerHTML = PALACES.map((p, i) => `
+    <button class="palace-tab${i === activePalace ? ' active' : ''}" data-i="${i}">
+      ${p.emoji} ${p.name}
+      <span style="color:var(--muted);font-size:.7rem;margin-left:.2rem">(${p.label})</span>
+    </button>
+  `).join('');
+  el.querySelectorAll('.palace-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activePalace = +btn.dataset.i;
+      renderTabs();
+      renderContent();
+    });
+  });
+}
+
+// ── Mode row ──────────────────────────────────────────────────────────────────
+function initModeRow() {
+  document.getElementById('modeRow').querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeMode = btn.dataset.mode;
+      document.getElementById('modeRow').querySelectorAll('.mode-btn')
+        .forEach(b => b.classList.toggle('active', b.dataset.mode === activeMode));
+      renderContent();
+    });
+  });
+}
+
+// ── Walk ──────────────────────────────────────────────────────────────────────
+function renderWalk(palace) {
+  const pi = activePalace;
+  const walkedCount = palace.rooms.filter((_, ri) => isWalked(pi, ri)).length;
+  const total = palace.rooms.length;
+  const pct = total ? Math.round(walkedCount / total * 100) : 0;
+
+  let html = `
+    <div class="progress-wrap">
+      <div class="progress-label">${walkedCount} / ${total} ${palace.roomLabel.toLowerCase()}s walked &mdash; ${pct}%</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+  `;
+
+  palace.rooms.forEach((room, ri) => {
+    const w = isWalked(pi, ri);
+    html += `
+      <div class="room-card" id="room-card-${ri}">
+        <div class="room-header" data-ri="${ri}">
+          <span class="room-icon">${room.icon}</span>
+          <span class="room-name">${palace.roomLabel} ${ri + 1}: ${room.name}
+            <span style="display:block;font-size:.72rem;color:var(--muted);font-weight:400">${room.sub}</span>
+          </span>
+          <span class="room-count">${room.formulas.length} formulas</span>
+          ${w ? '<span class="room-walked-badge">WALKED</span>' : ''}
+          <span class="room-chevron">&#9660;</span>
+        </div>
+        <div class="room-body">
+          <table class="formula-table">
+            <thead>
+              <tr><th>Location</th><th>Formula</th><th>Memory Image</th></tr>
+            </thead>
+            <tbody>
+              ${room.formulas.map(f => `
+                <tr>
+                  <td>${f.loc}</td>
+                  <td>${f.formula}</td>
+                  <td>${f.image}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <button class="walk-btn${w ? ' walked' : ''}" data-ri="${ri}">
+            ${w ? '&#10003; Walked' : 'Mark as Walked'}
+          </button>
+        </div>
+      </div>
+    `;
+  });
+
+  document.getElementById('mainContent').innerHTML = html;
+
+  document.querySelectorAll('.room-header').forEach(hdr => {
+    hdr.addEventListener('click', () => {
+      hdr.closest('.room-card').classList.toggle('open');
+    });
+  });
+
+  document.querySelectorAll('.walk-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const ri = +btn.dataset.ri;
+      setWalked(pi, ri);
+      springPop(btn);
+      setTimeout(() => renderWalk(palace), 450);
+    });
+  });
+}
+
+// ── Flashcard ─────────────────────────────────────────────────────────────────
+function renderFlashcard(palace) {
+  fcCards = getAllCards(palace);
+  fcIndex = 0;
+  fcFlipped = false;
+  buildFlashcardUI();
+}
+
+function buildFlashcardUI() {
+  document.getElementById('mainContent').innerHTML = `
+    <div class="flashcard-wrap">
+      <div class="flashcard-scene" id="fcScene">
+        <div class="flashcard-inner" id="fcInner">
+          <div class="flashcard-face flashcard-front" id="fcFront"></div>
+          <div class="flashcard-face flashcard-back" id="fcBack"></div>
+        </div>
+      </div>
+      <div class="fc-controls">
+        <button class="fc-btn" id="fcPrev">&#8592; Prev</button>
+        <span class="fc-counter" id="fcCounter"></span>
+        <button class="fc-btn" id="fcNext">Next &#8594;</button>
+        <button class="fc-btn shuffle-btn" id="fcShuffle">&#128256; Shuffle</button>
+      </div>
+      <div style="text-align:center;margin-top:.75rem;font-size:.7rem;color:var(--muted)">Click card to flip</div>
+    </div>
+  `;
+
+  updateFlashcard();
+
+  document.getElementById('fcScene').addEventListener('click', () => {
+    fcFlipped = !fcFlipped;
+    document.getElementById('fcScene').classList.toggle('flipped', fcFlipped);
+  });
+
+  document.getElementById('fcPrev').addEventListener('click', () => {
+    if (fcIndex > 0) { fcIndex--; resetFlip(); updateFlashcard(); }
+  });
+
+  document.getElementById('fcNext').addEventListener('click', () => {
+    if (fcIndex < fcCards.length - 1) { fcIndex++; resetFlip(); updateFlashcard(); }
+  });
+
+  document.getElementById('fcShuffle').addEventListener('click', () => {
+    fcCards = shuffle(fcCards);
+    fcIndex = 0;
+    resetFlip();
+    springPop(document.getElementById('fcShuffle'));
+    updateFlashcard();
+  });
+}
+
+function resetFlip() {
+  fcFlipped = false;
+  const scene = document.getElementById('fcScene');
+  if (scene) scene.classList.remove('flipped');
+}
+
+function updateFlashcard() {
+  if (!fcCards.length) return;
+  const c = fcCards[fcIndex];
+  document.getElementById('fcCounter').textContent = `${fcIndex + 1} of ${fcCards.length}`;
+  document.getElementById('fcPrev').disabled = fcIndex === 0;
+  document.getElementById('fcNext').disabled = fcIndex === fcCards.length - 1;
+
+  document.getElementById('fcFront').innerHTML = `
+    <div style="font-size:.68rem;color:var(--muted);margin-bottom:.8rem">${c.palaceEmoji} ${c.palaceName} &mdash; ${c.roomName}</div>
+    <div class="card-formula">${c.formula}</div>
+    <div class="card-hint">Click to reveal location &amp; memory image</div>
+  `;
+
+  document.getElementById('fcBack').innerHTML = `
+    <span class="card-palace-badge ${c.badgeClass}">${c.palaceEmoji} ${c.palaceName}</span>
+    <div class="card-location">${c.loc}</div>
+    <div class="card-room">${c.roomName}</div>
+    <div class="card-image">${c.image}</div>
+  `;
+}
+
+// ── Drill ─────────────────────────────────────────────────────────────────────
+function renderDrill(palace) {
+  drillCards = shuffle(getAllCards(palace));
+  drillIndex = 0;
+  drillScore = 0;
+  drillAnswered = false;
+  renderDrillQuestion(palace);
+}
+
+function renderDrillQuestion(palace) {
+  const wrap = document.getElementById('mainContent');
+
+  if (drillIndex >= drillCards.length) {
+    const pct = Math.round(drillScore / drillCards.length * 100);
+    let msg = pct >= 90 ? 'Outstanding, sailor. Shipshape performance.' :
+              pct >= 75 ? 'Good work. Keep drilling those weaker spots.' :
+              pct >= 60 ? 'Decent effort. More reps needed.' :
+              'Hit the books again. You can do this.';
+    wrap.innerHTML = `
+      <div class="drill-done">
+        <div class="drill-done-score">${drillScore} / ${drillCards.length}</div>
+        <div style="font-size:1.5rem;margin:.3rem 0">${pct}%</div>
+        <div class="drill-done-msg">${msg}</div>
+        <button class="drill-restart" id="drillRestart">&#9654; Drill Again</button>
+      </div>
+    `;
+    document.getElementById('drillRestart').addEventListener('click', () => renderDrill(palace));
+    return;
+  }
+
+  const card = drillCards[drillIndex];
+  const allRooms = palace.rooms.map((r, i) => ({name: r.name, index: i}));
+  const correct = allRooms[card.roomIndex];
+  const others = shuffle(allRooms.filter(r => r.index !== card.roomIndex)).slice(0, 3);
+  const choices = shuffle([correct, ...others]);
+  const pct = Math.round(drillIndex / drillCards.length * 100);
+
+  wrap.innerHTML = `
+    <div class="drill-wrap">
+      <div class="drill-header">
+        <div class="drill-score">Score: <span>${drillScore}</span> / ${drillIndex}</div>
+        <div style="color:var(--muted);font-size:.78rem">${drillIndex + 1} of ${drillCards.length}</div>
+      </div>
+      <div class="progress-wrap" style="margin-bottom:.75rem">
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="drill-question">
+        <div class="drill-q-label">${palace.emoji} Which ${palace.roomLabel.toLowerCase()} does this formula belong to?</div>
+        <div class="drill-formula">${card.formula}</div>
+      </div>
+      <div class="drill-choices" id="drillChoices">
+        ${choices.map(ch => `
+          <button class="drill-choice" data-room="${ch.index}">
+            ${palace.roomLabel} ${ch.index + 1}: ${ch.name}
+          </button>
+        `).join('')}
+      </div>
+      <div class="drill-feedback" id="drillFeedback"></div>
+      <button class="drill-next-btn" id="drillNext" style="display:none">
+        ${drillIndex + 1 < drillCards.length ? 'Next Formula &#8594;' : 'See Results'}
+      </button>
+    </div>
+  `;
+
+  document.querySelectorAll('.drill-choice').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (drillAnswered) return;
+      drillAnswered = true;
+
+      const chosen = +btn.dataset.room;
+      const isCorrect = chosen === card.roomIndex;
+      const feedback = document.getElementById('drillFeedback');
+      document.querySelectorAll('.drill-choice').forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        drillScore++;
+        btn.classList.add('correct');
+        feedback.textContent = 'Correct! Well done, sailor.';
+        feedback.className = 'drill-feedback correct-fb';
+        springPop(btn);
+      } else {
+        btn.classList.add('wrong');
+        shake(btn);
+        feedback.textContent = `Wrong. Correct answer: ${palace.roomLabel} ${card.roomIndex + 1}: ${card.roomName}`;
+        feedback.className = 'drill-feedback wrong-fb';
+        document.querySelectorAll('.drill-choice').forEach(b => {
+          if (+b.dataset.room === card.roomIndex) b.classList.add('reveal');
+        });
+      }
+
+      document.getElementById('drillNext').style.display = 'block';
+      document.getElementById('drillNext').addEventListener('click', () => {
+        drillIndex++;
+        drillAnswered = false;
+        renderDrillQuestion(palace);
+      });
+    });
+  });
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+function renderContent() {
+  const palace = PALACES[activePalace];
+  if (activeMode === 'walk') renderWalk(palace);
+  else if (activeMode === 'flashcard') renderFlashcard(palace);
+  else renderDrill(palace);
+}
+
+renderTabs();
+initModeRow();
+renderContent();
+</script>
+</body>
+</html>
