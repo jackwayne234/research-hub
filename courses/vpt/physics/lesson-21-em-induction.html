@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 21: Electromagnetic Induction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e2128;
+    --bg-card: #262a33;
+    --bg-card-hover: #2c313c;
+    --bg-input: #1a1d24;
+    --border: #363b47;
+    --text: #e2e4e9;
+    --text-dim: #9ca3af;
+    --text-bright: #ffffff;
+    --indigo: #6366f1;
+    --indigo-dim: rgba(99,102,241,0.15);
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.15);
+    --pink: #ec4899;
+    --pink-dim: rgba(236,72,153,0.15);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.15);
+    --radius: 10px;
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* TOP BAR */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(30,33,40,0.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+  }
+
+  .top-bar h1 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .top-bar h1 span { color: var(--indigo); }
+
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--indigo), #818cf8);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+    text-align: right;
+  }
+
+  /* CONTENT */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color var(--transition);
+  }
+
+  .section-card.completed { border-color: var(--green); }
+  .section-card.active { border-color: var(--indigo); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--transition);
+  }
+
+  .section-header:hover { background: var(--bg-card-hover); }
+
+  .section-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--indigo-dim);
+    color: var(--indigo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all var(--transition);
+  }
+
+  .section-card.completed .section-number {
+    background: var(--green-dim);
+    color: var(--green);
+  }
+
+  .section-title {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  .section-chevron {
+    width: 20px;
+    height: 20px;
+    color: var(--text-dim);
+    transition: transform var(--transition);
+    flex-shrink: 0;
+  }
+
+  .section-card.open .section-chevron { transform: rotate(180deg); }
+
+  .section-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .section-body-inner {
+    padding: 0 20px 24px;
+  }
+
+  /* TYPOGRAPHY */
+  .subtitle {
+    font-size: 0.79rem;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    line-height: 1.65;
+  }
+
+  .label {
+    font-size: 0.71rem;
+    font-weight: 600;
+    color: var(--indigo);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    margin-top: 18px;
+  }
+
+  /* FORMULA BOXES */
+  .formula-box {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 0.85rem;
+    color: var(--text-bright);
+    line-height: 2;
+  }
+
+  .formula-box.indigo {
+    background: var(--indigo-dim);
+    border: 1px solid rgba(99,102,241,0.3);
+  }
+
+  .formula-box.green {
+    background: var(--green-dim);
+    border: 1px solid rgba(34,197,94,0.3);
+  }
+
+  .formula-box.pink {
+    background: var(--pink-dim);
+    border: 1px solid rgba(236,72,153,0.3);
+  }
+
+  .formula-box.amber {
+    background: var(--amber-dim);
+    border: 1px solid rgba(245,158,11,0.3);
+  }
+
+  .formula-box .f-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    margin-bottom: 6px;
+    opacity: 0.7;
+  }
+
+  .formula-box.indigo .f-title { color: var(--indigo); }
+  .formula-box.green .f-title { color: var(--green); }
+  .formula-box.pink .f-title { color: var(--pink); }
+  .formula-box.amber .f-title { color: var(--amber); }
+
+  /* KEY POINT */
+  .key-point {
+    border-left: 3px solid var(--amber);
+    background: var(--amber-dim);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 16px;
+    margin: 12px 0;
+    font-size: 0.8rem;
+    color: var(--text);
+  }
+
+  .key-point strong { color: var(--amber); }
+
+  /* INPUTS & CONTROLS */
+  input[type="number"], input[type="text"], select {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-bright);
+    padding: 8px 12px;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color var(--transition);
+  }
+
+  input:focus, select:focus { border-color: var(--indigo); }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all var(--transition);
+    color: #fff;
+  }
+
+  .btn-primary { background: var(--indigo); }
+  .btn-primary:hover { background: #5558e6; }
+  .btn-green { background: var(--green); color: #000; }
+  .btn-green:hover { background: #1ea94e; }
+  .btn-amber { background: var(--amber); color: #000; }
+  .btn-amber:hover { background: #d97706; }
+
+  /* SLIDER */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .slider-row label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    min-width: 130px;
+  }
+
+  .slider-row input[type="range"] {
+    flex: 1;
+    accent-color: var(--indigo);
+    height: 4px;
+    cursor: pointer;
+  }
+
+  .slider-val {
+    font-size: 0.78rem;
+    color: var(--text-bright);
+    min-width: 65px;
+    text-align: right;
+    font-weight: 600;
+  }
+
+  /* CANVAS AREA */
+  .canvas-wrap {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 14px 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .canvas-wrap canvas {
+    display: block;
+    width: 100%;
+  }
+
+  /* PRACTICE PROBLEMS */
+  .problem-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  .problem-block .problem-text {
+    font-size: 0.82rem;
+    margin-bottom: 10px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .answer-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .problem-block input[type="number"] { max-width: 180px; }
+
+  .feedback {
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: none;
+  }
+
+  .feedback.correct { display: inline-block; background: var(--green-dim); color: var(--green); }
+  .feedback.incorrect { display: inline-block; background: var(--pink-dim); color: var(--pink); }
+
+  /* MC PROBLEM */
+  .mc-options { display: flex; flex-direction: column; gap: 7px; margin-top: 8px; }
+
+  .mc-opt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.79rem;
+    padding: 9px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: all var(--transition);
+  }
+
+  .mc-opt:hover:not(.disabled) { border-color: var(--indigo); background: var(--bg-card-hover); }
+  .mc-opt.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); pointer-events: none; }
+  .mc-opt.wrong { border-color: var(--pink); background: var(--pink-dim); color: var(--pink); pointer-events: none; }
+  .mc-opt.reveal { border-color: var(--green); background: var(--green-dim); color: var(--green); pointer-events: none; }
+  .mc-opt.disabled { pointer-events: none; opacity: 0.65; }
+
+  /* QUIZ */
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  .quiz-score {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .quiz-question {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .q-num {
+    font-size: 0.68rem;
+    color: var(--indigo);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+
+  .q-text {
+    font-size: 0.84rem;
+    margin-bottom: 14px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+  .quiz-opt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.79rem;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: all var(--transition);
+  }
+
+  .quiz-opt:hover:not(.disabled) { border-color: var(--indigo); background: var(--bg-card-hover); }
+  .quiz-opt.sel-correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .quiz-opt.sel-wrong { border-color: var(--pink); background: var(--pink-dim); color: var(--pink); }
+  .quiz-opt.reveal-correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .quiz-opt.disabled { pointer-events: none; }
+
+  .quiz-explanation {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--amber);
+    display: none;
+    line-height: 1.5;
+  }
+
+  .quiz-final {
+    text-align: center;
+    padding: 32px 20px;
+  }
+
+  .quiz-final .big-score {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 6px;
+  }
+
+  .quiz-final .big-label {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  /* DATA TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+    font-size: 0.78rem;
+  }
+
+  .data-table th {
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--bg);
+    color: var(--indigo);
+    font-weight: 600;
+    font-size: 0.69rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .data-table tr:hover td { background: var(--bg-card-hover); }
+
+  /* CALCULATOR */
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .calc-field label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  .calc-field input { width: 100%; }
+
+  .calc-result {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 12px;
+  }
+
+  .calc-result-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 0.82rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .calc-result-row:last-child { border-bottom: none; }
+  .calc-result-row .val { color: var(--green); font-weight: 600; }
+
+  /* ANIMATIONS */
+  @keyframes springPop {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.12); }
+    60% { transform: scale(0.94); }
+    80% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  .spring-pop { animation: springPop 0.45s cubic-bezier(0.4,0,0.2,1); }
+  .shake { animation: shake 0.4s ease; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .top-bar { padding: 12px 14px; }
+    .top-bar h1 { font-size: 0.88rem; }
+    .content { padding: 14px 10px 60px; }
+    .section-header { padding: 12px 14px; }
+    .section-body-inner { padding: 0 12px 18px; }
+    .calc-grid { grid-template-columns: 1fr; }
+    .slider-row label { min-width: 80px; font-size: 0.7rem; }
+    .data-table { font-size: 0.72rem; }
+    .data-table th, .data-table td { padding: 6px 8px; }
+    .formula-box { font-size: 0.79rem; padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <h1><span>Lesson 21</span> // Electromagnetic Induction</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 5 sections</div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 1 — MAGNETIC FLUX
+═══════════════════════════════════════════════════ -->
+<div class="section-card" data-section="1">
+  <div class="section-header" onclick="toggleSection(1)">
+    <div class="section-number">1</div>
+    <div class="section-title">Magnetic Flux</div>
+    <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/>
+    </svg>
+  </div>
+  <div class="section-body" id="body-1">
+    <div class="section-body-inner">
+
+      <p class="subtitle">Magnetic flux measures how much magnetic field passes through a surface. A change in flux is what drives induced EMF — the fundamental insight behind all electromagnetic induction.</p>
+
+      <div class="formula-box indigo">
+        <div class="f-title">Magnetic Flux</div>
+        <div><strong>&#934;<sub>B</sub> = B A cos&#952;</strong></div>
+        <div style="font-size:0.75rem;opacity:0.75;margin-top:6px">
+          B = magnetic field (T) &nbsp;|&nbsp; A = area (m&#178;) &nbsp;|&nbsp; &#952; = angle between B and normal to surface<br>
+          Unit: Weber (Wb) = T&#183;m&#178;
+        </div>
+      </div>
+
+      <div class="label">Factors Affecting Flux</div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Factor</th><th>Effect</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Field strength B</td><td>Flux proportional to B</td><td>Stronger magnet &rarr; more flux</td></tr>
+          <tr><td>Loop area A</td><td>Flux proportional to A</td><td>Larger coil &rarr; more flux</td></tr>
+          <tr><td>Angle &#952;</td><td>&#934; = 0 when &#952; = 90&deg; (B parallel to surface)</td><td>Edge-on loop: no flux</td></tr>
+          <tr><td>Perpendicular (&#952; = 0&deg;)</td><td>&#934; = BA (maximum)</td><td>B normal to surface</td></tr>
+        </tbody>
+      </table>
+
+      <div class="key-point">
+        <strong>Key insight:</strong> Flux by itself does not induce EMF. It is the <em>rate of change</em> of flux that drives a current. A constant flux, no matter how large, produces zero EMF.
+      </div>
+
+      <div class="label">Interactive: Flux vs Angle</div>
+      <p class="subtitle">Adjust the field and angle to see how flux changes.</p>
+
+      <div class="slider-row">
+        <label>B field (T)</label>
+        <input type="range" min="0.1" max="5" step="0.1" value="2" id="fluxB" oninput="updateFluxDemo()">
+        <span class="slider-val" id="fluxBVal">2.0 T</span>
+      </div>
+      <div class="slider-row">
+        <label>Area (m&#178;)</label>
+        <input type="range" min="0.01" max="1" step="0.01" value="0.2" id="fluxA" oninput="updateFluxDemo()">
+        <span class="slider-val" id="fluxAVal">0.20 m&#178;</span>
+      </div>
+      <div class="slider-row">
+        <label>Angle &#952; (deg)</label>
+        <input type="range" min="0" max="180" step="1" value="0" id="fluxTheta" oninput="updateFluxDemo()">
+        <span class="slider-val" id="fluxThetaVal">0&deg;</span>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="fluxCanvas" height="160"></canvas>
+      </div>
+
+      <div class="label">Practice Problems</div>
+
+      <div class="problem-block">
+        <div class="problem-text">1. A circular loop of radius 0.15 m is placed perpendicular to a uniform magnetic field of 0.8 T. Calculate the magnetic flux through the loop (Wb). [&#952; = 0&deg;, A = &#960;r&#178;]</div>
+        <div class="answer-row">
+          <input type="number" id="s1p1" placeholder="Answer (Wb)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s1p1','fb-s1p1', 0.0565, 0.003, 'Wb')">Check</button>
+          <span class="feedback" id="fb-s1p1"></span>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">2. A rectangular coil 0.3 m &times; 0.4 m sits in a 1.5 T field at an angle &#952; = 60&deg; from the field direction (so angle with normal = 60&deg;). What is the flux (Wb)?</div>
+        <div class="answer-row">
+          <input type="number" id="s1p2" placeholder="Answer (Wb)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s1p2','fb-s1p2', 0.09, 0.005, 'Wb')">Check</button>
+          <span class="feedback" id="fb-s1p2"></span>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">3. If the area of a loop doubles while B stays constant and &#952; = 0&deg;, by what factor does the flux change?</div>
+        <div class="mc-options" id="mc-s1p3">
+          <button class="mc-opt" onclick="checkMC('mc-s1p3',0,1)">A) Stays the same</button>
+          <button class="mc-opt" onclick="checkMC('mc-s1p3',1,1)">B) Doubles</button>
+          <button class="mc-opt" onclick="checkMC('mc-s1p3',2,1)">C) Halves</button>
+          <button class="mc-opt" onclick="checkMC('mc-s1p3',3,1)">D) Quadruples</button>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">4. A loop of area 0.05 m&#178; is in a field of 2 T. The field direction is parallel to the plane of the loop (&#952; = 90&deg; from normal). What is the flux?</div>
+        <div class="answer-row">
+          <input type="number" id="s1p4" placeholder="Answer (Wb)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s1p4','fb-s1p4', 0, 0.001, 'Wb')">Check</button>
+          <span class="feedback" id="fb-s1p4"></span>
+        </div>
+      </div>
+
+      <button class="btn btn-green" onclick="markComplete(1)" style="margin-top:16px">Mark Section Complete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 2 — FARADAY'S LAW
+═══════════════════════════════════════════════════ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(2)">
+    <div class="section-number">2</div>
+    <div class="section-title">Faraday's Law</div>
+    <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/>
+    </svg>
+  </div>
+  <div class="section-body" id="body-2">
+    <div class="section-body-inner">
+
+      <p class="subtitle">Faraday's law quantifies the induced EMF from a changing magnetic flux. The negative sign is Lenz's law in disguise — the induced EMF always opposes the change that creates it.</p>
+
+      <div class="formula-box indigo">
+        <div class="f-title">Faraday's Law</div>
+        <div><strong>&#949; = &minus;N &Delta;&#934;<sub>B</sub> / &Delta;t</strong></div>
+        <div style="font-size:0.75rem;opacity:0.75;margin-top:6px">
+          N = number of turns &nbsp;|&nbsp; &Delta;&#934;<sub>B</sub> = change in flux (Wb) &nbsp;|&nbsp; &Delta;t = time interval (s)<br>
+          Unit of EMF: Volt (V)
+        </div>
+      </div>
+
+      <div class="formula-box green">
+        <div class="f-title">Motional EMF</div>
+        <div><strong>&#949; = BLv</strong></div>
+        <div style="font-size:0.75rem;opacity:0.75;margin-top:6px">
+          B = field (T) &nbsp;|&nbsp; L = conductor length (m) &nbsp;|&nbsp; v = velocity (m/s)<br>
+          Applies to a straight conductor moving perpendicular to B
+        </div>
+      </div>
+
+      <div class="key-point">
+        <strong>Applications:</strong> Electric generators convert mechanical energy to electrical energy via changing flux. Transformers use flux linkage between coils. Induction cooktops induce eddy currents directly in the cookware.
+      </div>
+
+      <div class="label">Interactive: Faraday Loop Demo</div>
+      <p class="subtitle">Watch the loop move through the field region. Graphs show flux and induced EMF in real time. Use the sliders to change conditions.</p>
+
+      <div class="slider-row">
+        <label>B field (T)</label>
+        <input type="range" min="0.2" max="3" step="0.1" value="1" id="faradayB" oninput="updateFaradaySliders()">
+        <span class="slider-val" id="faradayBVal">1.0 T</span>
+      </div>
+      <div class="slider-row">
+        <label>Loop speed</label>
+        <input type="range" min="0.5" max="4" step="0.1" value="1.5" id="faradayV" oninput="updateFaradaySliders()">
+        <span class="slider-val" id="faradayVVal">1.5 u/s</span>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="faradayCanvas" height="200"></canvas>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:12px">
+        <button class="btn btn-primary" onclick="startFaraday()">Play</button>
+        <button class="btn btn-amber" onclick="resetFaraday()">Reset</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="canvas-wrap"><canvas id="fluxGraph" height="120"></canvas></div>
+        <div class="canvas-wrap"><canvas id="emfGraph" height="120"></canvas></div>
+      </div>
+
+      <div class="label" style="margin-top:20px">Practice Problems</div>
+
+      <div class="problem-block">
+        <div class="problem-text">1. A 200-turn coil experiences a flux change from 0.05 Wb to 0.02 Wb in 0.01 s. Calculate the magnitude of the induced EMF (V).</div>
+        <div class="answer-row">
+          <input type="number" id="s2p1" placeholder="Answer (V)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s2p1','fb-s2p1', 600, 2, 'V')">Check</button>
+          <span class="feedback" id="fb-s2p1"></span>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">2. A straight conductor 0.4 m long moves at 5 m/s perpendicular to a 1.2 T field. What is the motional EMF (V)?</div>
+        <div class="answer-row">
+          <input type="number" id="s2p2" placeholder="Answer (V)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s2p2','fb-s2p2', 2.4, 0.05, 'V')">Check</button>
+          <span class="feedback" id="fb-s2p2"></span>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">3. A single-turn loop sees flux change at 0.5 Wb/s. What is the induced EMF?</div>
+        <div class="mc-options" id="mc-s2p3">
+          <button class="mc-opt" onclick="checkMC('mc-s2p3',0,0)">A) 0 V</button>
+          <button class="mc-opt" onclick="checkMC('mc-s2p3',1,0)">B) 0.5 V</button>
+          <button class="mc-opt" onclick="checkMC('mc-s2p3',2,0)">C) 2 V</button>
+          <button class="mc-opt" onclick="checkMC('mc-s2p3',3,0)">D) 5 V</button>
+        </div>
+        <!-- correct is index 1 => 0.5 V -->
+        <script>document.querySelector('#mc-s2p3').dataset.correct = 1;</script>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">4. A rod 0.6 m long moves at v m/s perpendicular to B = 0.8 T, producing a motional EMF of 3.6 V. What is v (m/s)?</div>
+        <div class="answer-row">
+          <input type="number" id="s2p4" placeholder="Answer (m/s)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s2p4','fb-s2p4', 7.5, 0.1, 'm/s')">Check</button>
+          <span class="feedback" id="fb-s2p4"></span>
+        </div>
+      </div>
+
+      <button class="btn btn-green" onclick="markComplete(2)" style="margin-top:16px">Mark Section Complete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 3 — LENZ'S LAW
+═══════════════════════════════════════════════════ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(3)">
+    <div class="section-number">3</div>
+    <div class="section-title">Lenz's Law</div>
+    <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/>
+    </svg>
+  </div>
+  <div class="section-body" id="body-3">
+    <div class="section-body-inner">
+
+      <p class="subtitle">Lenz's law states that the induced current always flows in a direction that opposes the change in flux that produced it. This is nature's electromagnetic version of Newton's third law.</p>
+
+      <div class="formula-box pink">
+        <div class="f-title">Lenz's Law Statement</div>
+        <div>The induced EMF drives a current whose magnetic effect <strong>opposes the change</strong> in flux.</div>
+        <div style="font-size:0.75rem;opacity:0.75;margin-top:8px">
+          &bull; Flux increasing &rarr; induced B opposes original B (into page if original is into page increasing)<br>
+          &bull; Flux decreasing &rarr; induced B reinforces original B<br>
+          &bull; Use right-hand rule to find induced current direction
+        </div>
+      </div>
+
+      <div class="key-point">
+        <strong>Energy conservation argument:</strong> If Lenz's law were reversed, the induced current would reinforce the change, creating ever-increasing flux with no energy input — violating conservation of energy. The opposing force is what makes you do work when moving a conductor.
+      </div>
+
+      <div class="label">Right-Hand Rule for Induced Current</div>
+      <p class="subtitle">Curl the fingers of your right hand in the direction you want the magnetic field to point. Your thumb points in the direction of current flow around the loop.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Scenario</th><th>Flux Change</th><th>Induced Current Direction</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Magnet N-pole approaching loop (B into loop)</td><td>Increasing &#8679;</td><td>Counterclockwise (viewed from N-pole) — repels magnet</td></tr>
+          <tr><td>Magnet N-pole receding from loop</td><td>Decreasing &#8681;</td><td>Clockwise — attracts magnet</td></tr>
+          <tr><td>Loop moving into uniform B field</td><td>Increasing &#8679;</td><td>Opposes field growth</td></tr>
+          <tr><td>Loop moving out of uniform B field</td><td>Decreasing &#8681;</td><td>Maintains field</td></tr>
+        </tbody>
+      </table>
+
+      <div class="label">Interactive: Lenz's Law Visualizer</div>
+      <p class="subtitle">Animate a magnet approaching or leaving a coil. Arrows show the induced current direction and the opposing force.</p>
+
+      <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="lenzApproach()">Magnet Approaching</button>
+        <button class="btn btn-amber" onclick="lenzRecede()">Magnet Receding</button>
+        <button class="btn btn-green" onclick="lenzReset()">Reset</button>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="lenzCanvas" height="200"></canvas>
+      </div>
+
+      <div id="lenzInfo" style="font-size:0.78rem;color:var(--amber);padding:8px 0;min-height:24px"></div>
+
+      <div class="label">Practice Problems</div>
+
+      <div class="problem-block">
+        <div class="problem-text">1. A bar magnet is dropped through a vertical conducting loop. As the N-pole enters the loop, the induced current (viewed from above the magnet):</div>
+        <div class="mc-options" id="mc-s3p1">
+          <button class="mc-opt" onclick="checkMC('mc-s3p1',0,1)">A) Flows clockwise — creates repulsive upward force</button>
+          <button class="mc-opt" onclick="checkMC('mc-s3p1',1,1)">B) Flows counterclockwise — creates repulsive upward force</button>
+          <button class="mc-opt" onclick="checkMC('mc-s3p1',2,1)">C) Flows clockwise — creates attractive downward force</button>
+          <button class="mc-opt" onclick="checkMC('mc-s3p1',3,1)">D) No current flows since the magnet is moving</button>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">2. A conducting loop moves out of a magnetic field region pointing into the page. The induced current in the loop flows:</div>
+        <div class="mc-options" id="mc-s3p2">
+          <button class="mc-opt" onclick="checkMC('mc-s3p2',0,0)">A) Clockwise — to oppose the decreasing into-page flux</button>
+          <button class="mc-opt" onclick="checkMC('mc-s3p2',1,0)">B) Counterclockwise — to oppose the decreasing into-page flux</button>
+          <button class="mc-opt" onclick="checkMC('mc-s3p2',2,0)">C) Clockwise — to reinforce the decreasing flux</button>
+          <button class="mc-opt" onclick="checkMC('mc-s3p2',3,0)">D) No current flows</button>
+        </div>
+        <!-- correct: index 0 -->
+        <script>document.querySelector('#mc-s3p2').dataset.correct = 0;</script>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">3. A loop of resistance 2 &#937; experiences a flux change of 0.4 Wb in 0.1 s. What is the induced current magnitude (A)?</div>
+        <div class="answer-row">
+          <input type="number" id="s3p3" placeholder="Answer (A)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s3p3','fb-s3p3', 2, 0.05, 'A')">Check</button>
+          <span class="feedback" id="fb-s3p3"></span>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">4. Lenz's law is a consequence of which fundamental principle?</div>
+        <div class="mc-options" id="mc-s3p4">
+          <button class="mc-opt" onclick="checkMC('mc-s3p4',0,2)">A) Newton's second law</button>
+          <button class="mc-opt" onclick="checkMC('mc-s3p4',1,2)">B) Coulomb's law</button>
+          <button class="mc-opt" onclick="checkMC('mc-s3p4',2,2)">C) Conservation of energy</button>
+          <button class="mc-opt" onclick="checkMC('mc-s3p4',3,2)">D) Gauss's law</button>
+        </div>
+      </div>
+
+      <button class="btn btn-green" onclick="markComplete(3)" style="margin-top:16px">Mark Section Complete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 4 — INDUCTANCE
+═══════════════════════════════════════════════════ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(4)">
+    <div class="section-number">4</div>
+    <div class="section-title">Inductance</div>
+    <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/>
+    </svg>
+  </div>
+  <div class="section-body" id="body-4">
+    <div class="section-body-inner">
+
+      <p class="subtitle">Self-inductance is the property of a conductor by which a change in current induces an opposing EMF in itself. An inductor stores energy in its magnetic field — the electrical analog of inertia.</p>
+
+      <div class="formula-box indigo">
+        <div class="f-title">Self-Inductance</div>
+        <div><strong>&#949; = &minus;L (dI/dt)</strong></div>
+        <div style="font-size:0.75rem;opacity:0.75;margin-top:6px">
+          L = inductance (Henry, H) &nbsp;|&nbsp; dI/dt = rate of change of current (A/s)
+        </div>
+      </div>
+
+      <div class="formula-box green">
+        <div class="f-title">Energy Stored in Inductor</div>
+        <div><strong>U = &frac12; L I&sup2;</strong></div>
+        <div style="font-size:0.75rem;opacity:0.75;margin-top:6px">
+          Analogous to kinetic energy &frac12;mv&#178; — current plays the role of velocity
+        </div>
+      </div>
+
+      <div class="formula-box pink">
+        <div class="f-title">Solenoid Inductance</div>
+        <div><strong>L = &mu;<sub>0</sub> N&sup2; A / l</strong></div>
+        <div style="font-size:0.75rem;opacity:0.75;margin-top:6px">
+          &mu;<sub>0</sub> = 4&#960;&times;10<sup>&minus;7</sup> H/m &nbsp;|&nbsp; N = turns &nbsp;|&nbsp; A = cross-section area &nbsp;|&nbsp; l = solenoid length
+        </div>
+      </div>
+
+      <div class="formula-box amber">
+        <div class="f-title">RL Circuit Time Constant</div>
+        <div><strong>&#964; = L / R</strong></div>
+        <div><strong>I(t) = (V&#8320;/R)(1 &minus; e<sup>&minus;t/&#964;</sup>)</strong> &nbsp; (charging)</div>
+        <div><strong>I(t) = I&#8320; e<sup>&minus;t/&#964;</sup></strong> &nbsp; (decay)</div>
+        <div style="font-size:0.75rem;opacity:0.75;margin-top:6px">
+          After 1&#964;: 63% of final value &nbsp;|&nbsp; After 5&#964;: ~99% (fully charged)
+        </div>
+      </div>
+
+      <div class="label">Interactive: RL Circuit Simulator</div>
+      <p class="subtitle">Adjust L, R, and supply voltage to see the current buildup curve. The time constant &#964; is marked.</p>
+
+      <div class="slider-row">
+        <label>Inductance L (mH)</label>
+        <input type="range" min="1" max="500" step="1" value="100" id="rlL" oninput="drawRL()">
+        <span class="slider-val" id="rlLVal">100 mH</span>
+      </div>
+      <div class="slider-row">
+        <label>Resistance R (&#937;)</label>
+        <input type="range" min="1" max="200" step="1" value="50" id="rlR" oninput="drawRL()">
+        <span class="slider-val" id="rlRVal">50 &#937;</span>
+      </div>
+      <div class="slider-row">
+        <label>Voltage V&#8320; (V)</label>
+        <input type="range" min="1" max="24" step="0.5" value="12" id="rlV" oninput="drawRL()">
+        <span class="slider-val" id="rlVVal">12 V</span>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="rlCanvas" height="200"></canvas>
+      </div>
+
+      <div id="rlStats" style="font-size:0.79rem;color:var(--text-dim);padding:6px 0"></div>
+
+      <div class="label">Practice Problems</div>
+
+      <div class="problem-block">
+        <div class="problem-text">1. A solenoid has N = 500 turns, cross-sectional area A = 4 &times; 10<sup>&minus;4</sup> m&#178;, and length l = 0.2 m. Calculate its inductance L in mH. (&mu;<sub>0</sub> = 4&#960;&times;10<sup>&minus;7</sup>)</div>
+        <div class="answer-row">
+          <input type="number" id="s4p1" placeholder="Answer (mH)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s4p1','fb-s4p1', 0.628, 0.05, 'mH')">Check</button>
+          <span class="feedback" id="fb-s4p1"></span>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">2. An inductor L = 0.05 H carries a current of 3 A. How much energy (J) is stored in its magnetic field?</div>
+        <div class="answer-row">
+          <input type="number" id="s4p2" placeholder="Answer (J)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s4p2','fb-s4p2', 0.225, 0.005, 'J')">Check</button>
+          <span class="feedback" id="fb-s4p2"></span>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">3. An RL circuit has L = 200 mH and R = 40 &#937;. What is the time constant &#964; in ms?</div>
+        <div class="answer-row">
+          <input type="number" id="s4p3" placeholder="Answer (ms)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s4p3','fb-s4p3', 5, 0.2, 'ms')">Check</button>
+          <span class="feedback" id="fb-s4p3"></span>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">4. In an RL circuit with V&#8320; = 10 V and R = 5 &#937;, what is the final (steady-state) current in amps?</div>
+        <div class="answer-row">
+          <input type="number" id="s4p4" placeholder="Answer (A)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s4p4','fb-s4p4', 2, 0.05, 'A')">Check</button>
+          <span class="feedback" id="fb-s4p4"></span>
+        </div>
+      </div>
+
+      <button class="btn btn-green" onclick="markComplete(4)" style="margin-top:16px">Mark Section Complete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 5 — TRANSFORMERS & APPLICATIONS
+═══════════════════════════════════════════════════ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(5)">
+    <div class="section-number">5</div>
+    <div class="section-title">Transformers &amp; Applications</div>
+    <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/>
+    </svg>
+  </div>
+  <div class="section-body" id="body-5">
+    <div class="section-body-inner">
+
+      <p class="subtitle">Transformers exploit mutual inductance to change AC voltage levels. Ideal transformers conserve power: what you gain in voltage, you lose in current. This principle underpins long-distance AC power transmission.</p>
+
+      <div class="formula-box indigo">
+        <div class="f-title">Transformer Voltage Ratio</div>
+        <div><strong>V<sub>s</sub> / V<sub>p</sub> = N<sub>s</sub> / N<sub>p</sub></strong></div>
+      </div>
+
+      <div class="formula-box green">
+        <div class="f-title">Transformer Current Ratio</div>
+        <div><strong>I<sub>s</sub> / I<sub>p</sub> = N<sub>p</sub> / N<sub>s</sub></strong></div>
+        <div style="font-size:0.75rem;opacity:0.75;margin-top:6px">Current ratio is inverse of turns ratio</div>
+      </div>
+
+      <div class="formula-box pink">
+        <div class="f-title">Power Conservation (Ideal Transformer)</div>
+        <div><strong>P<sub>p</sub> = P<sub>s</sub> &nbsp;&rArr;&nbsp; V<sub>p</sub> I<sub>p</sub> = V<sub>s</sub> I<sub>s</sub></strong></div>
+      </div>
+
+      <div class="label">Step-Up vs Step-Down</div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Type</th><th>Turns Ratio</th><th>Voltage</th><th>Current</th><th>Use Case</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Step-Up</td><td>N<sub>s</sub> &gt; N<sub>p</sub></td><td>Increases</td><td>Decreases</td><td>Power transmission from plant</td></tr>
+          <tr><td>Step-Down</td><td>N<sub>s</sub> &lt; N<sub>p</sub></td><td>Decreases</td><td>Increases</td><td>Home/appliance delivery</td></tr>
+        </tbody>
+      </table>
+
+      <div class="key-point">
+        <strong>Why high voltage for transmission?</strong> Power lost in lines = I&#178;R. By stepping up voltage (reducing I), line losses drop dramatically. A 10&times; increase in V reduces current by 10&times;, reducing heat losses by 100&times;.
+      </div>
+
+      <div class="label">Interactive: Transformer Calculator</div>
+      <p class="subtitle">Enter primary voltage, turns, and load resistance to compute all secondary quantities.</p>
+
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>Primary Voltage V<sub>p</sub> (V)</label>
+          <input type="number" id="txVp" value="120" min="1" step="1" oninput="calcTransformer()">
+        </div>
+        <div class="calc-field">
+          <label>Primary Turns N<sub>p</sub></label>
+          <input type="number" id="txNp" value="100" min="1" step="1" oninput="calcTransformer()">
+        </div>
+        <div class="calc-field">
+          <label>Secondary Turns N<sub>s</sub></label>
+          <input type="number" id="txNs" value="500" min="1" step="1" oninput="calcTransformer()">
+        </div>
+        <div class="calc-field">
+          <label>Load Resistance R<sub>L</sub> (&#937;)</label>
+          <input type="number" id="txRL" value="1000" min="1" step="1" oninput="calcTransformer()">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcTransformer()">Calculate</button>
+
+      <div class="calc-result" id="txResult">
+        <div class="calc-result-row"><span>Secondary Voltage V<sub>s</sub></span><span class="val" id="txVsOut">—</span></div>
+        <div class="calc-result-row"><span>Secondary Current I<sub>s</sub></span><span class="val" id="txIsOut">—</span></div>
+        <div class="calc-result-row"><span>Primary Current I<sub>p</sub></span><span class="val" id="txIpOut">—</span></div>
+        <div class="calc-result-row"><span>Turns Ratio N<sub>s</sub>/N<sub>p</sub></span><span class="val" id="txRatioOut">—</span></div>
+        <div class="calc-result-row"><span>Power (ideal)</span><span class="val" id="txPowerOut">—</span></div>
+      </div>
+
+      <div class="label">Practice Problems</div>
+
+      <div class="problem-block">
+        <div class="problem-text">1. A transformer has N<sub>p</sub> = 200 turns and N<sub>s</sub> = 1000 turns. If V<sub>p</sub> = 120 V, what is V<sub>s</sub> (V)?</div>
+        <div class="answer-row">
+          <input type="number" id="s5p1" placeholder="Answer (V)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s5p1','fb-s5p1', 600, 2, 'V')">Check</button>
+          <span class="feedback" id="fb-s5p1"></span>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">2. A step-down transformer reduces 240 V to 12 V. If the primary has 2000 turns, how many turns does the secondary have?</div>
+        <div class="answer-row">
+          <input type="number" id="s5p2" placeholder="Answer (turns)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s5p2','fb-s5p2', 100, 2, 'turns')">Check</button>
+          <span class="feedback" id="fb-s5p2"></span>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">3. An ideal transformer has V<sub>p</sub> = 100 V and I<sub>p</sub> = 2 A. If V<sub>s</sub> = 400 V, what is I<sub>s</sub> (A)?</div>
+        <div class="answer-row">
+          <input type="number" id="s5p3" placeholder="Answer (A)" step="any">
+          <button class="btn btn-primary" onclick="checkNum('s5p3','fb-s5p3', 0.5, 0.02, 'A')">Check</button>
+          <span class="feedback" id="fb-s5p3"></span>
+        </div>
+      </div>
+
+      <div class="problem-block">
+        <div class="problem-text">4. Why are transformers only used with AC, not DC?</div>
+        <div class="mc-options" id="mc-s5p4">
+          <button class="mc-opt" onclick="checkMC('mc-s5p4',0,2)">A) DC has too high a voltage</button>
+          <button class="mc-opt" onclick="checkMC('mc-s5p4',1,2)">B) DC resistance is too low</button>
+          <button class="mc-opt" onclick="checkMC('mc-s5p4',2,2)">C) DC produces constant flux — no changing flux means no induced EMF</button>
+          <button class="mc-opt" onclick="checkMC('mc-s5p4',3,2)">D) DC cannot flow through iron cores</button>
+        </div>
+      </div>
+
+      <button class="btn btn-green" onclick="markComplete(5)" style="margin-top:16px">Mark Section Complete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     QUIZ
+═══════════════════════════════════════════════════ -->
+<div class="section-card" data-section="quiz" id="quizCard">
+  <div class="section-header" onclick="toggleSection('quiz')">
+    <div class="section-number" style="background:var(--amber-dim);color:var(--amber)">Q</div>
+    <div class="section-title">10-Question Quiz</div>
+    <svg class="section-chevron" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/>
+    </svg>
+  </div>
+  <div class="section-body" id="body-quiz">
+    <div class="section-body-inner">
+      <div class="quiz-header">
+        <span style="font-size:0.78rem;color:var(--text-dim)">Answer all 10 questions</span>
+        <span class="quiz-score" id="quizScore">0 / 10</span>
+      </div>
+      <div id="quizContainer"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  SECTION TOGGLE
+// ═══════════════════════════════════════════════════════════
+const TOTAL_SECTIONS = 5;
+let completedSections = new Set();
+let openSections = new Set();
+
+function toggleSection(id) {
+  const card = document.querySelector(`[data-section="${id}"]`);
+  const body = document.getElementById(`body-${id}`);
+  if (!card || !body) return;
+
+  if (openSections.has(id)) {
+    openSections.delete(id);
+    card.classList.remove('open');
+    body.style.maxHeight = '0';
+  } else {
+    openSections.add(id);
+    card.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 5000 + 'px';
+    // Re-trigger height after content renders
+    setTimeout(() => { body.style.maxHeight = body.scrollHeight + 5000 + 'px'; }, 100);
+  }
+}
+
+function markComplete(id) {
+  completedSections.add(id);
+  const card = document.querySelector(`[data-section="${id}"]`);
+  if (card) card.classList.add('completed');
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = (completedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${completedSections.size} / ${TOTAL_SECTIONS} sections`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ANSWER CHECKING
+// ═══════════════════════════════════════════════════════════
+function checkNum(inputId, fbId, answer, tol, unit) {
+  const input = document.getElementById(inputId);
+  const fb = document.getElementById(fbId);
+  const val = parseFloat(input.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.textContent = 'Enter a number'; return; }
+
+  const correct = Math.abs(val - answer) <= tol;
+  fb.className = 'feedback ' + (correct ? 'correct' : 'incorrect');
+  fb.textContent = correct ? `Correct! ${answer} ${unit}` : `Not quite. Try again.`;
+
+  // animate
+  input.classList.remove('spring-pop','shake');
+  void input.offsetWidth;
+  input.classList.add(correct ? 'spring-pop' : 'shake');
+  setTimeout(() => input.classList.remove('spring-pop','shake'), 500);
+}
+
+function checkMC(containerId, clickedIndex, correctIndex) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const opts = container.querySelectorAll('.mc-opt');
+  opts.forEach((o, i) => {
+    o.classList.add('disabled');
+    if (i === correctIndex) o.classList.add('reveal');
+  });
+  opts[clickedIndex].classList.remove('reveal');
+  if (clickedIndex === correctIndex) {
+    opts[clickedIndex].classList.add('correct');
+  } else {
+    opts[clickedIndex].classList.add('wrong');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FLUX DEMO (Section 1)
+// ═══════════════════════════════════════════════════════════
+function updateFluxDemo() {
+  const B = parseFloat(document.getElementById('fluxB').value);
+  const A = parseFloat(document.getElementById('fluxA').value);
+  const theta = parseFloat(document.getElementById('fluxTheta').value);
+
+  document.getElementById('fluxBVal').textContent = B.toFixed(1) + ' T';
+  document.getElementById('fluxAVal').textContent = A.toFixed(2) + ' m²';
+  document.getElementById('fluxThetaVal').textContent = theta + '°';
+
+  const flux = B * A * Math.cos(theta * Math.PI / 180);
+  drawFluxDemo(B, A, theta, flux);
+}
+
+function drawFluxDemo(B, A, theta, flux) {
+  const canvas = document.getElementById('fluxCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 600;
+  canvas.width = W;
+  canvas.height = 160;
+  const H = 160;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  // Draw loop as ellipse to simulate angle
+  const cx = W * 0.35, cy = H * 0.5;
+  const rx = 70;
+  const ry = Math.max(4, 60 * Math.abs(Math.cos(theta * Math.PI / 180)));
+  const loopAngle = Math.sin(theta * Math.PI / 180) > 0 ? 0 : 0;
+
+  // Field arrows
+  const fieldColor = '#6366f1';
+  ctx.strokeStyle = fieldColor;
+  ctx.lineWidth = 1.5;
+  for (let x = 20; x < W * 0.65; x += 40) {
+    for (let y = 20; y < H - 20; y += 35) {
+      drawArrow(ctx, x, y, x + 20, y, fieldColor, 1.5);
+    }
+  }
+
+  // B label
+  ctx.font = '600 13px JetBrains Mono, monospace';
+  ctx.fillStyle = fieldColor;
+  ctx.fillText('B', W * 0.05, H * 0.5);
+
+  // Loop
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, rx, ry, 0, 0, 2 * Math.PI);
+  ctx.strokeStyle = '#22c55e';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // Normal vector
+  const normalLen = 50;
+  const nx = Math.cos(theta * Math.PI / 180) * normalLen;
+  const ny = -Math.sin(theta * Math.PI / 180) * normalLen;
+  drawArrow(ctx, cx, cy, cx + nx, cy + ny, '#f59e0b', 2);
+
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.fillStyle = '#f59e0b';
+  ctx.fillText('n̂', cx + nx + 6, cy + ny - 4);
+
+  // Flux label
+  ctx.font = '600 13px JetBrains Mono, monospace';
+  ctx.fillStyle = flux >= 0 ? '#22c55e' : '#ec4899';
+  const fluxStr = `Φ = ${Math.abs(flux).toFixed(4)} Wb`;
+  ctx.fillText(fluxStr, W * 0.65, H * 0.4);
+
+  // Flux bar
+  const barX = W * 0.65, barY = H * 0.5, barW = W * 0.28, barH = 16;
+  const maxFlux = parseFloat(document.getElementById('fluxB').max) *
+                  parseFloat(document.getElementById('fluxA').max);
+  const fillW = (Math.abs(flux) / maxFlux) * barW;
+
+  ctx.fillStyle = '#363b47';
+  ctx.beginPath();
+  ctx.roundRect(barX, barY, barW, barH, 4);
+  ctx.fill();
+
+  ctx.fillStyle = flux >= 0 ? '#22c55e' : '#ec4899';
+  ctx.beginPath();
+  ctx.roundRect(barX, barY, Math.min(fillW, barW), barH, 4);
+  ctx.fill();
+
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.fillStyle = '#9ca3af';
+  ctx.fillText(`θ = ${theta}°`, barX, barY + barH + 18);
+}
+
+function drawArrow(ctx, x1, y1, x2, y2, color, lw) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.sqrt(dx * dx + dy * dy);
+  if (len < 1) return;
+  const ux = dx / len, uy = dy / len;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lw;
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  const hlen = 7;
+  const angle = 0.4;
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - hlen * (ux * Math.cos(angle) - uy * Math.sin(angle)),
+             y2 - hlen * (uy * Math.cos(angle) + ux * Math.sin(angle)));
+  ctx.lineTo(x2 - hlen * (ux * Math.cos(-angle) - uy * Math.sin(-angle)),
+             y2 - hlen * (uy * Math.cos(-angle) + ux * Math.sin(-angle)));
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FARADAY DEMO (Section 2)
+// ═══════════════════════════════════════════════════════════
+let faradayAnim = null;
+let faradayT = 0;
+let faradayRunning = false;
+let faradayB_val = 1;
+let faradayV_val = 1.5;
+let fluxHistory = [];
+let emfHistory = [];
+
+function updateFaradaySliders() {
+  faradayB_val = parseFloat(document.getElementById('faradayB').value);
+  faradayV_val = parseFloat(document.getElementById('faradayV').value);
+  document.getElementById('faradayBVal').textContent = faradayB_val.toFixed(1) + ' T';
+  document.getElementById('faradayVVal').textContent = faradayV_val.toFixed(1) + ' u/s';
+  if (!faradayRunning) drawFaradayFrame(faradayT);
+}
+
+function startFaraday() {
+  if (faradayRunning) return;
+  faradayRunning = true;
+  let last = null;
+  function frame(ts) {
+    if (!last) last = ts;
+    const dt = (ts - last) / 1000;
+    last = ts;
+    faradayT += dt * faradayV_val * 0.6;
+    if (faradayT > 12) { faradayT = 12; faradayRunning = false; return; }
+    drawFaradayFrame(faradayT);
+    if (faradayRunning) faradayAnim = requestAnimationFrame(frame);
+  }
+  faradayAnim = requestAnimationFrame(frame);
+}
+
+function resetFaraday() {
+  faradayRunning = false;
+  if (faradayAnim) cancelAnimationFrame(faradayAnim);
+  faradayT = 0;
+  fluxHistory = [];
+  emfHistory = [];
+  drawFaradayFrame(0);
+  drawGraph('fluxGraph', fluxHistory, 'Flux (Wb)', '#6366f1');
+  drawGraph('emfGraph', emfHistory, 'EMF (V)', '#ec4899');
+}
+
+function drawFaradayFrame(t) {
+  const canvas = document.getElementById('faradayCanvas');
+  if (!canvas) return;
+  const W = canvas.offsetWidth || 600;
+  canvas.width = W;
+  canvas.height = 200;
+  const H = 200;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  // Field region (center portion)
+  const fieldLeft = W * 0.3, fieldRight = W * 0.7;
+  ctx.fillStyle = 'rgba(99,102,241,0.08)';
+  ctx.fillRect(fieldLeft, 0, fieldRight - fieldLeft, H);
+  ctx.strokeStyle = 'rgba(99,102,241,0.3)';
+  ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(fieldLeft, 0); ctx.lineTo(fieldLeft, H); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(fieldRight, 0); ctx.lineTo(fieldRight, H); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Field dots (into page)
+  for (let x = fieldLeft + 20; x < fieldRight; x += 30) {
+    for (let y = 20; y < H - 20; y += 30) {
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, 2*Math.PI);
+      ctx.fillStyle = '#6366f1';
+      ctx.fill();
+    }
+  }
+
+  // B label
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.fillStyle = '#6366f1';
+  ctx.fillText('B (into page)', fieldLeft + 4, H - 8);
+
+  // Loop position: moves left to right
+  const loopW = 60, loopH = 80;
+  const startX = W * 0.05;
+  const endX = W * 0.95 - loopW;
+  const totalTime = 12;
+  const loopX = startX + (endX - startX) * (t / totalTime);
+  const loopY = H / 2 - loopH / 2;
+
+  ctx.strokeStyle = '#22c55e';
+  ctx.lineWidth = 2.5;
+  ctx.strokeRect(loopX, loopY, loopW, loopH);
+
+  // Calculate overlap with field region
+  const overlapLeft = Math.max(loopX, fieldLeft);
+  const overlapRight = Math.min(loopX + loopW, fieldRight);
+  const overlap = Math.max(0, overlapRight - overlapLeft);
+  const fluxArea = (overlap / loopW) * (loopW * loopH / 10000); // normalised
+  const flux = faradayB_val * fluxArea;
+
+  // Compute EMF (rate of change of flux)
+  const prevT = t - 0.016;
+  const prevLoopX = startX + (endX - startX) * (Math.max(0, prevT) / totalTime);
+  const prevOverlap = Math.max(0, Math.min(prevLoopX + loopW, fieldRight) - Math.max(prevLoopX, fieldLeft));
+  const prevFlux = faradayB_val * (prevOverlap / loopW) * (loopW * loopH / 10000);
+  const emf = -(flux - prevFlux) / 0.016 * faradayV_val;
+
+  fluxHistory.push(flux);
+  emfHistory.push(emf);
+  if (fluxHistory.length > 200) { fluxHistory.shift(); emfHistory.shift(); }
+
+  // Current arrows if EMF != 0
+  if (Math.abs(emf) > 0.001) {
+    const dir = emf > 0 ? 1 : -1;
+    const cx = loopX + loopW / 2, cy = loopY + loopH / 2;
+    drawCurrentArrows(ctx, loopX, loopY, loopW, loopH, dir);
+  }
+
+  // Info
+  ctx.font = '600 12px JetBrains Mono, monospace';
+  ctx.fillStyle = '#e2e4e9';
+  ctx.fillText(`Φ = ${flux.toFixed(4)} Wb`, 10, 20);
+  ctx.fillStyle = Math.abs(emf) > 0.001 ? '#ec4899' : '#9ca3af';
+  ctx.fillText(`EMF = ${emf.toFixed(3)} V`, 10, 38);
+
+  drawGraph('fluxGraph', fluxHistory, 'Flux (Wb)', '#6366f1');
+  drawGraph('emfGraph', emfHistory, 'EMF (V)', '#ec4899');
+}
+
+function drawCurrentArrows(ctx, x, y, w, h, dir) {
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 2;
+  // top edge
+  drawArrow(ctx, x + (dir>0?w:0), y, x + (dir>0?0:w), y, '#f59e0b', 2);
+  // bottom
+  drawArrow(ctx, x + (dir>0?0:w), y+h, x + (dir>0?w:0), y+h, '#f59e0b', 2);
+  // left
+  drawArrow(ctx, x, y + (dir>0?0:h), x, y + (dir>0?h:0), '#f59e0b', 2);
+  // right
+  drawArrow(ctx, x+w, y + (dir>0?h:0), x+w, y + (dir>0?0:h), '#f59e0b', 2);
+}
+
+function drawGraph(canvasId, data, label, color) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const W = canvas.offsetWidth || 280;
+  canvas.width = W;
+  canvas.height = 120;
+  const H = 120;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.fillStyle = '#9ca3af';
+  ctx.fillText(label, 6, 14);
+
+  if (data.length < 2) return;
+
+  const max = Math.max(...data.map(Math.abs), 0.001);
+  const pad = 20;
+  const pW = W - pad * 2, pH = H - pad * 2;
+
+  // Axis
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad, pad + pH / 2);
+  ctx.lineTo(pad + pW, pad + pH / 2);
+  ctx.stroke();
+
+  // Data
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  data.forEach((v, i) => {
+    const px = pad + (i / (data.length - 1)) * pW;
+    const py = pad + pH / 2 - (v / max) * (pH / 2 - 4);
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  });
+  ctx.stroke();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  LENZ VISUALIZER (Section 3)
+// ═══════════════════════════════════════════════════════════
+let lenzAnim = null;
+let lenzState = { phase: 'idle', t: 0, approach: true };
+
+function lenzApproach() {
+  lenzStop();
+  lenzState = { phase: 'run', t: 0, approach: true };
+  animateLenz();
+}
+
+function lenzRecede() {
+  lenzStop();
+  lenzState = { phase: 'run', t: 0, approach: false };
+  animateLenz();
+}
+
+function lenzReset() {
+  lenzStop();
+  lenzState = { phase: 'idle', t: 0, approach: true };
+  drawLenzFrame(0, true, false);
+  document.getElementById('lenzInfo').textContent = '';
+}
+
+function lenzStop() {
+  if (lenzAnim) cancelAnimationFrame(lenzAnim);
+}
+
+function animateLenz() {
+  let last = null;
+  function frame(ts) {
+    if (!last) last = ts;
+    lenzState.t += (ts - last) / 1000 * 1.2;
+    last = ts;
+    if (lenzState.t > 3) { lenzState.t = 3; drawLenzFrame(3, lenzState.approach, true); return; }
+    drawLenzFrame(lenzState.t, lenzState.approach, true);
+    lenzAnim = requestAnimationFrame(frame);
+  }
+  lenzAnim = requestAnimationFrame(frame);
+}
+
+function drawLenzFrame(t, approach, active) {
+  const canvas = document.getElementById('lenzCanvas');
+  if (!canvas) return;
+  const W = canvas.offsetWidth || 600;
+  canvas.width = W;
+  canvas.height = 200;
+  const H = 200;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  // Coil
+  const coilX = W * 0.55, coilY = H * 0.5;
+  const coilRx = 60, coilRy = 50;
+
+  // Draw coil (3 loops)
+  for (let i = -1; i <= 1; i++) {
+    ctx.beginPath();
+    ctx.ellipse(coilX, coilY + i * 6, coilRx, coilRy * 0.35, 0, 0, 2 * Math.PI);
+    ctx.strokeStyle = '#e2e4e9';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // Coil label
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.fillStyle = '#9ca3af';
+  ctx.fillText('Coil', coilX - 14, H - 12);
+
+  // Magnet position
+  const startMagX = approach ? W * 0.05 : W * 0.38;
+  const endMagX = approach ? W * 0.38 : W * 0.05;
+  const prog = Math.min(1, t / 3);
+  const magX = startMagX + (endMagX - startMagX) * prog;
+  const magY = coilY - 30;
+
+  // Magnet body
+  const magW = 50, magH = 60;
+  ctx.fillStyle = '#ec4899';
+  ctx.fillRect(magX, magY, magW, magH / 2);
+  ctx.fillStyle = '#6366f1';
+  ctx.fillRect(magX, magY + magH / 2, magW, magH / 2);
+
+  // N / S labels
+  ctx.font = 'bold 14px JetBrains Mono, monospace';
+  ctx.fillStyle = '#fff';
+  ctx.fillText('N', magX + 17, magY + 20);
+  ctx.fillText('S', magX + 18, magY + 48);
+
+  // Field lines
+  const nearCoil = magX + magW > coilX - coilRx * 0.8;
+  if (nearCoil) {
+    ctx.strokeStyle = 'rgba(99,102,241,0.4)';
+    ctx.lineWidth = 1;
+    for (let i = -2; i <= 2; i++) {
+      ctx.beginPath();
+      ctx.moveTo(magX + magW, magY + magH / 2 + i * 8);
+      ctx.lineTo(coilX, coilY + i * 10);
+      ctx.stroke();
+    }
+  }
+
+  // Induced current direction
+  if (active && prog > 0.1) {
+    const increasing = approach;
+    const curDir = increasing ? -1 : 1; // ccw to oppose increase, cw to oppose decrease
+    const arrowColor = '#f59e0b';
+    const r = coilRy * 0.9;
+
+    // Draw circular arrow
+    ctx.beginPath();
+    ctx.arc(coilX, coilY, coilRx * 0.65, curDir > 0 ? 0 : Math.PI, curDir > 0 ? Math.PI : 0, curDir < 0);
+    ctx.strokeStyle = arrowColor;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Arrowhead on arc
+    const endAngle = curDir > 0 ? Math.PI : 0;
+    const ax = coilX + coilRx * 0.65 * Math.cos(endAngle);
+    const ay = coilY + coilRx * 0.65 * Math.sin(endAngle) * 0.4;
+    const tangAngle = endAngle + (curDir > 0 ? Math.PI / 2 : -Math.PI / 2);
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.lineTo(ax + 8 * Math.cos(tangAngle - 0.4), ay + 8 * Math.sin(tangAngle - 0.4) * 0.4);
+    ctx.lineTo(ax + 8 * Math.cos(tangAngle + 0.4), ay + 8 * Math.sin(tangAngle + 0.4) * 0.4);
+    ctx.closePath();
+    ctx.fillStyle = arrowColor;
+    ctx.fill();
+
+    // Force arrow on magnet
+    const forceDir = approach ? -1 : 1; // repel when approaching, attract when receding
+    const forceX = magX + magW / 2;
+    const forceY = magY - 10;
+    drawArrow(ctx, forceX, forceY, forceX + forceDir * 40, forceY, '#22c55e', 2.5);
+
+    ctx.font = '11px JetBrains Mono, monospace';
+    ctx.fillStyle = '#22c55e';
+    ctx.fillText('F', forceX + forceDir * 44, forceY + 4);
+
+    // Info text
+    const infoEl = document.getElementById('lenzInfo');
+    if (infoEl) {
+      if (approach) {
+        infoEl.textContent = 'Flux increasing → induced current opposes → repulsive force on magnet';
+      } else {
+        infoEl.textContent = 'Flux decreasing → induced current maintains flux → attractive force on magnet';
+      }
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RL CIRCUIT (Section 4)
+// ═══════════════════════════════════════════════════════════
+function drawRL() {
+  const L = parseFloat(document.getElementById('rlL').value) / 1000; // to H
+  const R = parseFloat(document.getElementById('rlR').value);
+  const V0 = parseFloat(document.getElementById('rlV').value);
+
+  document.getElementById('rlLVal').textContent = (L * 1000).toFixed(0) + ' mH';
+  document.getElementById('rlRVal').textContent = R.toFixed(0) + ' Ω';
+  document.getElementById('rlVVal').textContent = V0.toFixed(1) + ' V';
+
+  const tau = L / R;
+  const Imax = V0 / R;
+
+  document.getElementById('rlStats').textContent =
+    `τ = L/R = ${(tau * 1000).toFixed(2)} ms  |  I_max = V₀/R = ${Imax.toFixed(3)} A  |  U_max = ½LI² = ${(0.5*L*Imax*Imax*1000).toFixed(3)} mJ`;
+
+  const canvas = document.getElementById('rlCanvas');
+  if (!canvas) return;
+  const W = canvas.offsetWidth || 600;
+  canvas.width = W;
+  canvas.height = 200;
+  const H = 200;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  const pad = { l: 50, r: 20, t: 20, b: 40 };
+  const pW = W - pad.l - pad.r;
+  const pH = H - pad.t - pad.b;
+
+  // Grid
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + (i / 4) * pH;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + pW, y); ctx.stroke();
+    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.fillStyle = '#9ca3af';
+    ctx.fillText(((1 - i / 4) * Imax).toFixed(2), 4, y + 4);
+  }
+
+  // Axes
+  ctx.strokeStyle = '#9ca3af';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t + pH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.l, pad.t + pH); ctx.lineTo(pad.l + pW, pad.t + pH); ctx.stroke();
+
+  // Labels
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.fillStyle = '#9ca3af';
+  ctx.fillText('I (A)', 4, pad.t - 4);
+  ctx.fillText('time', pad.l + pW - 20, pad.t + pH + 30);
+
+  // Time axis: show 5 tau
+  const tMax = 5 * tau;
+  const steps = 300;
+
+  // Current buildup
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * tMax;
+    const I = Imax * (1 - Math.exp(-t / tau));
+    const px = pad.l + (t / tMax) * pW;
+    const py = pad.t + pH - (I / Imax) * pH;
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // Tau marker
+  const tauX = pad.l + (tau / tMax) * pW;
+  const tauI = Imax * (1 - Math.exp(-1));
+  const tauY = pad.t + pH - (tauI / Imax) * pH;
+
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.moveTo(tauX, pad.t + pH); ctx.lineTo(tauX, tauY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.l, tauY); ctx.lineTo(tauX, tauY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.font = '600 11px JetBrains Mono, monospace';
+  ctx.fillStyle = '#f59e0b';
+  ctx.fillText('τ', tauX - 4, pad.t + pH + 16);
+  ctx.fillText('0.63·I_max', pad.l + 4, tauY - 4);
+
+  // Asymptote
+  ctx.strokeStyle = 'rgba(34,197,94,0.3)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([6,4]);
+  ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l + pW, pad.t); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.fillStyle = '#22c55e';
+  ctx.fillText('I_max', pad.l + pW - 36, pad.t + 14);
+
+  // Time axis labels (0, τ, 2τ, 3τ, 4τ, 5τ)
+  for (let i = 0; i <= 5; i++) {
+    const lx = pad.l + (i / 5) * pW;
+    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.fillStyle = '#9ca3af';
+    ctx.fillText(i === 0 ? '0' : `${i}τ`, lx - 5, pad.t + pH + 16);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TRANSFORMER CALCULATOR (Section 5)
+// ═══════════════════════════════════════════════════════════
+function calcTransformer() {
+  const Vp = parseFloat(document.getElementById('txVp').value) || 0;
+  const Np = parseFloat(document.getElementById('txNp').value) || 1;
+  const Ns = parseFloat(document.getElementById('txNs').value) || 1;
+  const RL = parseFloat(document.getElementById('txRL').value) || 1;
+
+  const ratio = Ns / Np;
+  const Vs = Vp * ratio;
+  const Is = Vs / RL;
+  const Ip = Is / ratio;
+  const P = Vp * Ip;
+
+  document.getElementById('txVsOut').textContent = Vs.toFixed(2) + ' V';
+  document.getElementById('txIsOut').textContent = Is.toFixed(4) + ' A';
+  document.getElementById('txIpOut').textContent = Ip.toFixed(4) + ' A';
+  document.getElementById('txRatioOut').textContent = ratio.toFixed(3);
+  document.getElementById('txPowerOut').textContent = P.toFixed(3) + ' W';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  QUIZ
+// ═══════════════════════════════════════════════════════════
+const QUIZ_DATA = [
+  {
+    q: "A circular loop of area 0.02 m² is placed in a 2 T field perpendicular to the field. What is the magnetic flux?",
+    opts: ["0.01 Wb", "0.04 Wb", "0.04 T·m", "2 Wb"],
+    ans: 1,
+    exp: "Φ = BA cos(0°) = 2 × 0.02 × 1 = 0.04 Wb. The unit for flux is Wb = T·m²."
+  },
+  {
+    q: "Faraday's law states the induced EMF is proportional to:",
+    opts: ["The magnetic field strength only", "The loop area only", "The rate of change of magnetic flux", "The total magnetic flux"],
+    ans: 2,
+    exp: "ε = −NΔΦ/Δt. EMF is induced by the rate of change of flux, not flux itself."
+  },
+  {
+    q: "A conductor of length 0.5 m moves at 4 m/s perpendicular to a 0.6 T field. What is the motional EMF?",
+    opts: ["1.2 V", "0.3 V", "2.4 V", "4.8 V"],
+    ans: 0,
+    exp: "ε = BLv = 0.6 × 0.5 × 4 = 1.2 V."
+  },
+  {
+    q: "Which statement best describes Lenz's law?",
+    opts: [
+      "Induced current flows in the same direction as the change in flux",
+      "Induced current opposes the change in flux that caused it",
+      "EMF is proportional to the number of field lines",
+      "Current magnitude equals flux divided by resistance"
+    ],
+    ans: 1,
+    exp: "Lenz's law: the induced current direction opposes the change in flux — a consequence of energy conservation."
+  },
+  {
+    q: "A 100-turn coil has flux changing at 0.3 Wb/s. What is the magnitude of the induced EMF?",
+    opts: ["0.3 V", "3 V", "30 V", "300 V"],
+    ans: 2,
+    exp: "|ε| = N|ΔΦ/Δt| = 100 × 0.3 = 30 V."
+  },
+  {
+    q: "An inductor of L = 0.1 H carries a current of 4 A. How much energy is stored?",
+    opts: ["0.2 J", "0.4 J", "0.8 J", "1.6 J"],
+    ans: 2,
+    exp: "U = ½LI² = 0.5 × 0.1 × 16 = 0.8 J."
+  },
+  {
+    q: "An RL circuit has L = 50 mH and R = 25 Ω. What is the time constant τ?",
+    opts: ["2 ms", "0.5 ms", "1250 ms", "125 ms"],
+    ans: 0,
+    exp: "τ = L/R = 0.05/25 = 0.002 s = 2 ms."
+  },
+  {
+    q: "A transformer has Np = 400 and Ns = 100 with a primary voltage of 240 V. What is the secondary voltage?",
+    opts: ["960 V", "60 V", "120 V", "24 V"],
+    ans: 1,
+    exp: "Vs = Vp × (Ns/Np) = 240 × (100/400) = 60 V. This is a step-down transformer."
+  },
+  {
+    q: "In an ideal step-up transformer, if voltage doubles, what happens to current?",
+    opts: ["Current doubles", "Current quadruples", "Current halves", "Current is unchanged"],
+    ans: 2,
+    exp: "P = VI is conserved. If V doubles, I must halve to keep P constant: Is/Ip = Np/Ns."
+  },
+  {
+    q: "Why does dropping a magnet through a copper tube cause it to fall slowly?",
+    opts: [
+      "Copper is magnetic and attracts the magnet",
+      "The induced eddy currents create opposing magnetic force per Lenz's law",
+      "Air resistance inside the tube is greater",
+      "Gravity is weaker inside conductors"
+    ],
+    ans: 1,
+    exp: "The changing flux from the falling magnet induces eddy currents in the tube. By Lenz's law, these currents create a field that opposes the magnet's motion, slowing its fall."
+  }
+];
+
+let quizScore = 0;
+let quizAnswered = new Array(10).fill(false);
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+
+  QUIZ_DATA.forEach((item, qi) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-question';
+    div.innerHTML = `
+      <div class="q-num">Question ${qi + 1} of ${QUIZ_DATA.length}</div>
+      <div class="q-text">${item.q}</div>
+      <div class="quiz-options" id="qopts-${qi}">
+        ${item.opts.map((o, oi) =>
+          `<button class="quiz-opt" onclick="answerQuiz(${qi},${oi})">${String.fromCharCode(65+oi)}) ${o}</button>`
+        ).join('')}
+      </div>
+      <div class="quiz-explanation" id="qexp-${qi}">${item.exp}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function answerQuiz(qi, selected) {
+  if (quizAnswered[qi]) return;
+  quizAnswered[qi] = true;
+
+  const opts = document.querySelectorAll(`#qopts-${qi} .quiz-opt`);
+  const correct = QUIZ_DATA[qi].ans;
+
+  opts.forEach((o, i) => {
+    o.classList.add('disabled');
+    if (i === correct) o.classList.add('reveal-correct');
+  });
+
+  if (selected === correct) {
+    opts[selected].classList.remove('reveal-correct');
+    opts[selected].classList.add('sel-correct');
+    quizScore++;
+  } else {
+    opts[selected].classList.add('sel-wrong');
+  }
+
+  document.getElementById(`qexp-${qi}`).style.display = 'block';
+  document.getElementById('quizScore').textContent = `${quizScore} / ${QUIZ_DATA.length}`;
+
+  if (quizAnswered.every(Boolean)) showQuizFinal();
+}
+
+function showQuizFinal() {
+  const container = document.getElementById('quizContainer');
+  const pct = Math.round((quizScore / QUIZ_DATA.length) * 100);
+  let grade, color;
+  if (pct >= 90) { grade = 'Excellent'; color = 'var(--green)'; }
+  else if (pct >= 70) { grade = 'Good Work'; color = 'var(--indigo)'; }
+  else if (pct >= 50) { grade = 'Keep Studying'; color = 'var(--amber)'; }
+  else { grade = 'Review Needed'; color = 'var(--pink)'; }
+
+  const final = document.createElement('div');
+  final.className = 'quiz-final';
+  final.innerHTML = `
+    <div class="big-score" style="color:${color}">${quizScore} / ${QUIZ_DATA.length}</div>
+    <div class="big-label" style="font-size:1rem;color:${color};margin-bottom:6px">${grade}</div>
+    <div class="big-label">${pct}% &mdash; Electromagnetic Induction Quiz</div>
+    <button class="btn btn-amber" style="margin-top:20px" onclick="retakeQuiz()">Retake Quiz</button>
+  `;
+  container.appendChild(final);
+
+  // Reopen body to show final
+  const body = document.getElementById('body-quiz');
+  if (body) body.style.maxHeight = body.scrollHeight + 2000 + 'px';
+}
+
+function retakeQuiz() {
+  quizScore = 0;
+  quizAnswered = new Array(10).fill(false);
+  document.getElementById('quizScore').textContent = '0 / 10';
+  buildQuiz();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  updateFluxDemo();
+  resetFaraday();
+  drawRL();
+  calcTransformer();
+  drawLenzFrame(0, true, false);
+  buildQuiz();
+
+  // Fix canvas widths after layout
+  setTimeout(() => {
+    updateFluxDemo();
+    drawRL();
+    drawFaradayFrame(0);
+  }, 200);
+});
+
+window.addEventListener('resize', () => {
+  updateFluxDemo();
+  drawRL();
+  if (!faradayRunning) drawFaradayFrame(faradayT);
+  drawLenzFrame(lenzState.t, lenzState.approach, lenzState.phase !== 'idle');
+});
+</script>
+</body>
+</html>

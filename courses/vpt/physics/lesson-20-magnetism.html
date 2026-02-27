@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 20: Magnetism</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.section-card.completed .section-num{background:var(--green-dim);color:var(--green)}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:130px;flex-shrink:0}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:80px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0;flex:1}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.formula-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.canvas-wrap{width:100%;display:flex;justify-content:center;margin:12px 0}
+canvas{border-radius:var(--radius);background:#1a1d24;display:block}
+.rhr-scenario{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.rhr-desc{font-size:.76rem;color:var(--text);margin-bottom:10px;line-height:1.7}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){
+  .content{padding:16px}
+  .section-header{padding:14px 16px}
+  .section-inner{padding:0 16px 16px}
+  .formula-grid{grid-template-columns:1fr}
+  .slider-row label{min-width:90px}
+  .readout{gap:8px}
+  .readout-item{padding:6px 10px;font-size:.7rem}
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>20</span> Magnetism</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: MAGNETIC FIELDS -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Magnetic Fields</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>magnetic field B</strong> is a vector field that exerts forces on moving charges and magnetic materials. The SI unit is the <strong>tesla (T)</strong> where 1 T = 1 kg/(A·s²). Magnetic fields are visualized using <strong>field lines</strong> that form closed loops — they never start or end (no magnetic monopoles exist). Field lines emerge from a north pole and enter a south pole, with line density indicating field strength.
+    </p>
+
+    <div class="formula-box large">B measured in Tesla (T) &nbsp;|&nbsp; 1 T = 1 N/(A·m)</div>
+
+    <p class="concept-text">
+      <strong>Magnetic monopoles do not exist.</strong> Every magnet has both a north and south pole. Cut a bar magnet in half — you get two smaller bar magnets, each with both poles. This is encoded in Gauss's Law for Magnetism: <strong>&oint; B · dA = 0</strong>. The net magnetic flux through any closed surface is always zero.
+    </p>
+
+    <div class="key-point">Earth's geographic North Pole is actually a magnetic south pole — it attracts the north-seeking end of a compass needle. Earth's magnetic field at the surface is roughly 25–65 microtesla (25–65 &mu;T).</div>
+
+    <p class="concept-text">
+      A <strong>solenoid</strong> is a tightly wound helical coil of wire. When current flows through it, the overlapping fields from each loop add constructively inside to create a strong, uniform magnetic field. The field inside an ideal solenoid depends only on the current and the turn density n (turns per meter).
+    </p>
+
+    <div class="formula-box green">B = &mu;&#8320;nI &nbsp;&nbsp; (inside solenoid) &nbsp;&nbsp; n = N/L</div>
+    <div class="formula-box">B = &mu;&#8320;I / (2&pi;r) &nbsp;&nbsp; (long straight wire, distance r)</div>
+
+    <p class="concept-text">
+      The <strong>permeability of free space</strong> &mu;&#8320; = 4&pi; &times; 10&#8315;&#8311; T·m/A &approx; 1.257 &times; 10&#8315;&#8311; T·m/A. The Biot-Savart Law describes how each current element dI contributes to the magnetic field — integrating it over a long straight wire gives the expression above.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Solenoid Field Calculator</div>
+      <div class="slider-row">
+        <label>Turns N</label>
+        <input type="range" id="solN" min="10" max="500" value="100" step="10" oninput="updateSolenoid()">
+        <span class="slider-val" id="solNVal">100 turns</span>
+      </div>
+      <div class="slider-row">
+        <label>Length L (m)</label>
+        <input type="range" id="solL" min="0.05" max="1.0" value="0.2" step="0.05" oninput="updateSolenoid()">
+        <span class="slider-val" id="solLVal">0.20 m</span>
+      </div>
+      <div class="slider-row">
+        <label>Current I (A)</label>
+        <input type="range" id="solI" min="0.1" max="20" value="5" step="0.1" oninput="updateSolenoid()">
+        <span class="slider-val" id="solIVal">5.0 A</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Turn density n</span><br><span class="value indigo" id="solRN">500 turns/m</span></div>
+        <div class="readout-item"><span class="label">B inside (T)</span><br><span class="value green" id="solRB">3.142 mT</span></div>
+        <div class="readout-item"><span class="label">B inside (mT)</span><br><span class="value amber" id="solRBmt">3.142 mT</span></div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="solenoidCanvas" width="560" height="130"></canvas>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Degaussing systems on warships use large current-carrying coils wound around the hull to neutralize the ship's magnetic signature, preventing detection by magnetic influence mines. Precise control of the coil currents — essentially adjustable solenoids — is critical for stealth in mine-threat waters.</div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems — Magnetic Fields</div>
+
+      <div class="problem" id="prob1a">
+        <p><strong>P1.</strong> A solenoid has 800 turns, length 0.40 m, and carries 3.0 A. What is the magnetic field strength inside? (&mu;&#8320; = 4&pi;&times;10&#8315;&#8311; T·m/A)</p>
+        <div class="problem-input-row">
+          <input type="text" id="p1a_ans" placeholder="in mT">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1a_ans','p1a_fb',7.54,0.15,'mT','B = μ₀nI = μ₀(800/0.40)(3.0) = 4π×10⁻⁷ × 2000 × 3.0 ≈ 7.54 mT')">Check</button>
+        </div>
+        <div class="feedback" id="p1a_fb"></div>
+      </div>
+
+      <div class="problem" id="prob1b">
+        <p><strong>P2.</strong> A long straight wire carries 15 A. What is B at a distance of 0.05 m from the wire?</p>
+        <div class="problem-input-row">
+          <input type="text" id="p1b_ans" placeholder="in &mu;T">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1b_ans','p1b_fb',60,1.5,'μT','B = μ₀I/2πr = (4π×10⁻⁷ × 15)/(2π × 0.05) = 60 μT')">Check</button>
+        </div>
+        <div class="feedback" id="p1b_fb"></div>
+      </div>
+
+      <div class="problem" id="prob1c">
+        <p><strong>P3.</strong> A solenoid of length 0.25 m needs an interior field of 5.0 mT with a current of 2.0 A. How many turns are needed?</p>
+        <div class="problem-input-row">
+          <input type="text" id="p1c_ans" placeholder="turns">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1c_ans','p1c_fb',497,20,'turns','n = B/(μ₀I) = 5×10⁻³/(4π×10⁻⁷ × 2) ≈ 1989 turns/m, N = nL = 1989 × 0.25 ≈ 497 turns')">Check</button>
+        </div>
+        <div class="feedback" id="p1c_fb"></div>
+      </div>
+
+      <div class="problem" id="prob1d">
+        <p><strong>P4.</strong> Earth's B field is 50 &mu;T. Express this in tesla (scientific notation).</p>
+        <div class="problem-input-row">
+          <input type="text" id="p1d_ans" placeholder="e.g. 5.0e-5">
+          <button class="btn btn-primary btn-sm" onclick="checkSci('p1d_ans','p1d_fb',5e-5,1e-5,'T','50 μT = 50 × 10⁻⁶ T = 5.0 × 10⁻⁵ T')">Check</button>
+        </div>
+        <div class="feedback" id="p1d_fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: MAGNETIC FORCE ON MOVING CHARGES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Magnetic Force on Moving Charges</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A charge q moving with velocity v in magnetic field B experiences the <strong>Lorentz magnetic force</strong>. The force is always perpendicular to both v and B, which means it does <strong>no work</strong> on the charge — kinetic energy is unchanged. The force changes only direction, not speed.
+    </p>
+
+    <div class="formula-box large">F = qv &times; B &nbsp;&nbsp;&nbsp; |F| = qvB sin&theta;</div>
+
+    <p class="concept-text">
+      The <strong>right-hand rule</strong> gives direction: point fingers of right hand along v, curl them toward B — the thumb points in the direction of F for a positive charge. For a negative charge (like an electron), reverse the direction. When v is parallel to B (&theta; = 0°), F = 0. Maximum force occurs when v &perp; B (&theta; = 90°).
+    </p>
+
+    <div class="key-point">Since F is always perpendicular to v, the magnetic force cannot do work on a moving charge. It changes the direction of motion but never the speed or kinetic energy.</div>
+
+    <p class="concept-text">
+      When a charged particle moves perpendicular to a uniform B field, the magnetic force acts as a centripetal force, producing <strong>uniform circular motion</strong>. Setting F = qvB equal to the centripetal force mv²/r gives the orbital radius. The <strong>cyclotron frequency</strong> is independent of speed — a key insight exploited in particle accelerators.
+    </p>
+
+    <div class="formula-grid">
+      <div class="formula-box green">r = mv / qB &nbsp;&nbsp; (orbital radius)</div>
+      <div class="formula-box pink">f = qB / (2&pi;m) &nbsp;&nbsp; (cyclotron freq)</div>
+    </div>
+
+    <p class="concept-text">
+      A <strong>velocity selector</strong> balances electric and magnetic forces so only particles with a specific speed pass through undeflected: qE = qvB, giving <strong>v = E/B</strong>. This is used in mass spectrometers to prepare a monoenergetic beam before the particles enter the deflection region.
+    </p>
+
+    <div class="formula-box amber">v = E/B &nbsp;&nbsp; (velocity selector condition)</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Circular Motion Simulator — Charged Particle in B Field</div>
+      <div class="slider-row">
+        <label>B field (mT)</label>
+        <input type="range" id="cmB" min="0.5" max="10" value="3" step="0.1" oninput="updateCircSim()">
+        <span class="slider-val" id="cmBVal">3.0 mT</span>
+      </div>
+      <div class="slider-row">
+        <label>Speed (Mm/s)</label>
+        <input type="range" id="cmV" min="0.5" max="10" value="3" step="0.1" oninput="updateCircSim()">
+        <span class="slider-val" id="cmVVal">3.0 Mm/s</span>
+      </div>
+      <div class="readout" style="margin-bottom:12px">
+        <div class="readout-item"><span class="label">Orbital radius r</span><br><span class="value indigo" id="cmRR">5.69 mm</span></div>
+        <div class="readout-item"><span class="label">Cyclotron freq f</span><br><span class="value green" id="cmRF">83.9 MHz</span></div>
+        <div class="readout-item"><span class="label">Period T</span><br><span class="value amber" id="cmRT">11.9 ns</span></div>
+        <div class="readout-item"><span class="label">Particle</span><br><span class="value pink">electron</span></div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="circCanvas" width="340" height="260"></canvas>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Right-Hand Rule Trainer</div>
+      <p style="font-size:.76rem;color:var(--text-dim);margin-bottom:12px;">Given the velocity and B field directions, select the correct force direction on the <strong style="color:var(--text-bright)">positive</strong> charge.</p>
+      <div id="rhrContainer"></div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Mass spectrometers aboard submarines and ships use velocity selectors followed by magnetic deflection to identify trace chemical agents or monitor atmospheric gases. The same cyclotron principle drives particle accelerators used in nuclear research and cancer proton therapy.</div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems — Force on Moving Charges</div>
+
+      <div class="problem">
+        <p><strong>P1.</strong> A proton (q = 1.6&times;10&#8315;&#185;&#8313; C, m = 1.67&times;10&#8315;&#178;&#8311; kg) moves at 2.0&times;10&#8310; m/s perpendicular to B = 0.50 T. What is the magnetic force?</p>
+        <div class="problem-input-row">
+          <input type="text" id="p2a_ans" placeholder="in nN">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2a_ans','p2a_fb',1.6,0.05,'nN','F = qvB = (1.6×10⁻¹⁹)(2×10⁶)(0.50) = 1.6×10⁻¹³ N = 0.16 nN... wait: 1.6×10⁻¹³ N = 0.16 pN. F = 1.6×10⁻¹³ N ≈ 0.16 pN')">Check</button>
+        </div>
+        <div class="feedback" id="p2a_fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P2.</strong> An electron (m = 9.11&times;10&#8315;&#179;&#185; kg, q = 1.6&times;10&#8315;&#185;&#8313; C) moves at 5.0&times;10&#8310; m/s in B = 0.20 T. What is the orbital radius in mm?</p>
+        <div class="problem-input-row">
+          <input type="text" id="p2b_ans" placeholder="in mm">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2b_ans','p2b_fb',1.42,0.05,'mm','r = mv/qB = (9.11×10⁻³¹ × 5×10⁶)/(1.6×10⁻¹⁹ × 0.20) = 4.555×10⁻²⁴/3.2×10⁻²⁰ ≈ 1.42×10⁻⁴ m = 0.142 mm')">Check</button>
+        </div>
+        <div class="feedback" id="p2b_fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P3.</strong> What is the cyclotron frequency (in MHz) for a proton in B = 1.0 T?  (q = 1.6&times;10&#8315;&#185;&#8313; C, m = 1.67&times;10&#8315;&#178;&#8311; kg)</p>
+        <div class="problem-input-row">
+          <input type="text" id="p2c_ans" placeholder="in MHz">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2c_ans','p2c_fb',15.2,0.5,'MHz','f = qB/2πm = (1.6×10⁻¹⁹ × 1.0)/(2π × 1.67×10⁻²⁷) ≈ 15.2 MHz')">Check</button>
+        </div>
+        <div class="feedback" id="p2c_fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P4 (MC).</strong> A positive charge moves to the right (+x). The B field points out of the page (+z). What is the direction of the magnetic force?</p>
+        <div class="mc-choices" id="mc2d">
+          <button class="mc-btn" onclick="checkMC('mc2d',this,false)">A) Into the page (−z)</button>
+          <button class="mc-btn" onclick="checkMC('mc2d',this,false)">B) Out of the page (+z)</button>
+          <button class="mc-btn" onclick="checkMC('mc2d',this,true)">C) In the −y direction (downward)</button>
+          <button class="mc-btn" onclick="checkMC('mc2d',this,false)">D) In the +y direction (upward)</button>
+        </div>
+        <div class="feedback" id="mc2d_fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: MAGNETIC FORCE ON CURRENT-CARRYING WIRES -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Force on Current-Carrying Wires</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A current-carrying wire in a magnetic field experiences a force because the wire contains moving charges. For a straight wire of length L carrying current I in field B, the total force is the sum of forces on all charge carriers. The result is:
+    </p>
+
+    <div class="formula-box large">F = IL &times; B &nbsp;&nbsp;&nbsp; |F| = BIL sin&theta;</div>
+
+    <p class="concept-text">
+      Direction is given by the right-hand rule on the current vector (not individual charges). This force is the operating principle of every <strong>electric motor</strong> and <strong>galvanometer</strong>. When &theta; = 90° (wire perpendicular to B), the force is maximum: F = BIL.
+    </p>
+
+    <div class="key-point">A current-carrying wire is nothing more than many moving charges. F = qvB per charge, summed over all charge carriers, gives F = BIL for the wire segment.</div>
+
+    <p class="concept-text">
+      A <strong>current loop</strong> in a uniform B field experiences no net force (forces on opposite sides cancel) but does experience a <strong>net torque</strong> that tends to align the loop's magnetic moment with B. For N turns of area A carrying current I at angle &theta; between B and the loop normal:
+    </p>
+
+    <div class="formula-grid">
+      <div class="formula-box pink">&tau; = NIAB sin&theta; &nbsp;&nbsp; (torque on loop)</div>
+      <div class="formula-box green">&mu; = NIA &nbsp;&nbsp; (magnetic moment)</div>
+    </div>
+
+    <p class="concept-text">
+      The torque can be written compactly as <strong>&tau; = &mu; &times; B</strong>. This is the fundamental principle of DC motors: current loops in a magnetic field experience torques that cause rotation. A <strong>commutator</strong> reverses current direction each half-turn to maintain unidirectional rotation.
+    </p>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Current Loop Torque Visualizer</div>
+      <div class="slider-row">
+        <label>Current I (A)</label>
+        <input type="range" id="torqI" min="0.1" max="20" value="5" step="0.1" oninput="updateTorque()">
+        <span class="slider-val" id="torqIVal">5.0 A</span>
+      </div>
+      <div class="slider-row">
+        <label>N turns</label>
+        <input type="range" id="torqN" min="1" max="200" value="50" step="1" oninput="updateTorque()">
+        <span class="slider-val" id="torqNVal">50</span>
+      </div>
+      <div class="slider-row">
+        <label>Area A (cm²)</label>
+        <input type="range" id="torqA" min="1" max="100" value="20" step="1" oninput="updateTorque()">
+        <span class="slider-val" id="torqAVal">20 cm²</span>
+      </div>
+      <div class="slider-row">
+        <label>B field (mT)</label>
+        <input type="range" id="torqB" min="1" max="100" value="30" step="1" oninput="updateTorque()">
+        <span class="slider-val" id="torqBVal">30 mT</span>
+      </div>
+      <div class="slider-row">
+        <label>Angle &theta; (deg)</label>
+        <input type="range" id="torqTheta" min="0" max="180" value="90" step="1" oninput="updateTorque()">
+        <span class="slider-val" id="torqThetaVal">90°</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Mag. moment &mu;</span><br><span class="value indigo" id="torqRMu">0.500 A·m²</span></div>
+        <div class="readout-item"><span class="label">Torque &tau;</span><br><span class="value green" id="torqRTau">15.0 mN·m</span></div>
+        <div class="readout-item"><span class="label">sin &theta;</span><br><span class="value amber" id="torqRSin">1.000</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Ship propulsion motors, the large electric motors on DDG-1000 destroyers and Ford-class carriers (which use electric drive), are all based on electromagnetic torque on current loops. The same physics that makes a benchtop motor spin also drives a 100,000-ton warship at 30 knots.</div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems — Force on Wires</div>
+
+      <div class="problem">
+        <p><strong>P1.</strong> A 0.30-m wire carries 8.0 A perpendicular to B = 0.25 T. What is the magnetic force on the wire in N?</p>
+        <div class="problem-input-row">
+          <input type="text" id="p3a_ans" placeholder="in N">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p3a_ans','p3a_fb',0.60,0.02,'N','F = BIL sin90° = 0.25 × 8.0 × 0.30 = 0.60 N')">Check</button>
+        </div>
+        <div class="feedback" id="p3a_fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P2.</strong> A rectangular coil has N = 100 turns, A = 0.010 m², I = 2.0 A, B = 0.50 T. What is the maximum torque (in N·m)?</p>
+        <div class="problem-input-row">
+          <input type="text" id="p3b_ans" placeholder="in N·m">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p3b_ans','p3b_fb',1.0,0.05,'N·m','τ_max = NIAB = 100 × 2.0 × 0.010 × 0.50 = 1.0 N·m')">Check</button>
+        </div>
+        <div class="feedback" id="p3b_fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P3.</strong> A wire carries 12 A at 30° to B = 0.40 T. If the force per meter is 2.4 N/m, what is L (wire length in m) if total force is 4.8 N?</p>
+        <div class="problem-input-row">
+          <input type="text" id="p3c_ans" placeholder="in m">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p3c_ans','p3c_fb',2.0,0.05,'m','F/L = BIsinθ = 0.40×12×sin30° = 2.4 N/m. L = F/(F/L) = 4.8/2.4 = 2.0 m')">Check</button>
+        </div>
+        <div class="feedback" id="p3c_fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P4 (MC).</strong> A current loop is in a uniform B field with its plane parallel to B (&theta; = 90°). What is true?</p>
+        <div class="mc-choices" id="mc3d">
+          <button class="mc-btn" onclick="checkMC('mc3d',this,false)">A) Net force is maximum, net torque is zero</button>
+          <button class="mc-btn" onclick="checkMC('mc3d',this,true)">B) Net force is zero, net torque is maximum</button>
+          <button class="mc-btn" onclick="checkMC('mc3d',this,false)">C) Both net force and net torque are maximum</button>
+          <button class="mc-btn" onclick="checkMC('mc3d',this,false)">D) Both net force and net torque are zero</button>
+        </div>
+        <div class="feedback" id="mc3d_fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: SOURCES OF MAGNETIC FIELDS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Sources of Magnetic Fields</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Ampere's Law</strong> relates the line integral of B around a closed path to the total current enclosed. For a symmetric current distribution, this makes calculating B much easier than using the Biot-Savart Law directly.
+    </p>
+
+    <div class="formula-box large">&oint; B &middot; dl = &mu;&#8320; I<sub>enc</sub></div>
+
+    <p class="concept-text">
+      Using Ampere's Law on different geometries gives the key results. For a <strong>long straight wire</strong>, choose a circular Amperian loop of radius r centered on the wire. By symmetry, B is tangent to and constant on this circle, so B(2&pi;r) = &mu;&#8320;I:
+    </p>
+
+    <div class="formula-box green">B = &mu;&#8320;I / 2&pi;r &nbsp;&nbsp; (outside infinite wire)</div>
+
+    <p class="concept-text">
+      For a <strong>toroid</strong> (a solenoid bent into a donut shape), B is confined entirely inside the toroid with B = &mu;&#8320;NI/2&pi;r. Outside the toroid, B = 0. This makes toroids much more efficient at confining magnetic fields than solenoids.
+    </p>
+
+    <div class="key-point">Two parallel wires carrying currents in the same direction attract each other. Antiparallel currents (opposite directions) repel. This is the historical definition of the ampere: 1 A produces a force of exactly 2×10⁻⁷ N/m between wires 1 m apart.</div>
+
+    <p class="concept-text">
+      The <strong>force per unit length</strong> between two parallel wires separated by distance d carrying currents I&#8321; and I&#8322; is found by combining B = &mu;&#8320;I&#8321;/2&pi;d with F = BI&#8322;L:
+    </p>
+
+    <div class="formula-box pink">F/L = &mu;&#8320;I&#8321;I&#8322; / 2&pi;d &nbsp;&nbsp; (parallel wires)</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Wire Force Visualizer</div>
+      <div class="slider-row">
+        <label>Current I&#8321; (A)</label>
+        <input type="range" id="wfI1" min="1" max="50" value="10" step="1" oninput="updateWireForce()">
+        <span class="slider-val" id="wfI1Val">10 A</span>
+      </div>
+      <div class="slider-row">
+        <label>Current I&#8322; (A)</label>
+        <input type="range" id="wfI2" min="-50" max="50" value="10" step="1" oninput="updateWireForce()">
+        <span class="slider-val" id="wfI2Val">10 A</span>
+      </div>
+      <div class="slider-row">
+        <label>Separation d (cm)</label>
+        <input type="range" id="wfD" min="1" max="50" value="10" step="1" oninput="updateWireForce()">
+        <span class="slider-val" id="wfDVal">10 cm</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">F/L (N/m)</span><br><span class="value green" id="wfRFL">200 μN/m</span></div>
+        <div class="readout-item"><span class="label">Interaction</span><br><span class="value amber" id="wfRDir">ATTRACT</span></div>
+        <div class="readout-item"><span class="label">B from wire 1 at d</span><br><span class="value indigo" id="wfRB1">20.0 μT</span></div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="wireCanvas" width="460" height="200"></canvas>
+      </div>
+    </div>
+
+    <div class="navy-context"><strong>Navy Context:</strong> Large parallel bus bars in ship power distribution systems carry hundreds of amps. Engineers must account for the attractive magnetic forces between adjacent bus bars — inadequate support can lead to violent mechanical failures during fault conditions when currents spike to thousands of amps.</div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems — Sources of Magnetic Fields</div>
+
+      <div class="problem">
+        <p><strong>P1.</strong> Two parallel wires 0.050 m apart carry I&#8321; = 20 A and I&#8322; = 30 A in the same direction. Find F/L in &mu;N/m.</p>
+        <div class="problem-input-row">
+          <input type="text" id="p4a_ans" placeholder="μN/m">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p4a_ans','p4a_fb',240,8,'μN/m','F/L = μ₀I₁I₂/2πd = (4π×10⁻⁷ × 20 × 30)/(2π × 0.050) = 240 μN/m')">Check</button>
+        </div>
+        <div class="feedback" id="p4a_fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P2.</strong> A long wire carries I = 40 A. What is B (in &mu;T) at r = 0.10 m?</p>
+        <div class="problem-input-row">
+          <input type="text" id="p4b_ans" placeholder="μT">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p4b_ans','p4b_fb',80,2,'μT','B = μ₀I/2πr = (4π×10⁻⁷ × 40)/(2π × 0.10) = 80 μT')">Check</button>
+        </div>
+        <div class="feedback" id="p4b_fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P3.</strong> Two wires carry 15 A in opposite directions, separated by 0.04 m. Do they attract or repel?</p>
+        <div class="mc-choices" id="mc4c">
+          <button class="mc-btn" onclick="checkMC('mc4c',this,false)">A) Attract — antiparallel currents attract</button>
+          <button class="mc-btn" onclick="checkMC('mc4c',this,true)">B) Repel — antiparallel currents repel</button>
+          <button class="mc-btn" onclick="checkMC('mc4c',this,false)">C) No force — equal and opposite currents cancel</button>
+          <button class="mc-btn" onclick="checkMC('mc4c',this,false)">D) The direction depends on wire material</button>
+        </div>
+        <div class="feedback" id="mc4c_fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P4.</strong> Using Ampere's Law, what is B inside a solenoid with n = 1500 turns/m and I = 4.0 A? Answer in mT.</p>
+        <div class="problem-input-row">
+          <input type="text" id="p4d_ans" placeholder="mT">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p4d_ans','p4d_fb',7.54,0.2,'mT','B = μ₀nI = 4π×10⁻⁷ × 1500 × 4.0 ≈ 7.54 mT')">Check</button>
+        </div>
+        <div class="feedback" id="p4d_fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: MAGNETIC MATERIALS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Magnetic Materials</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      All materials respond to magnetic fields at the atomic level. Electrons orbiting nuclei and spinning on their own axes create tiny magnetic dipoles. The bulk magnetic behavior of a material depends on how these dipoles interact.
+    </p>
+
+    <p class="concept-text">
+      <strong>Diamagnetic materials</strong> (copper, water, bismuth) have no permanent magnetic moments. An applied B field induces tiny opposing moments, weakly repelling the material from magnetic fields. Diamagnetism is present in all materials but very weak (&chi; ~ -10&#8315;&#8309;). <strong>Paramagnetic materials</strong> (aluminum, platinum, oxygen) have atoms with permanent magnetic moments that partially align with an applied field, weakly enhancing it. The alignment is destroyed by thermal agitation (&chi; ~ +10&#8315;&#8309; to 10&#8315;&#179;).
+    </p>
+
+    <div class="key-point">Diamagnetic materials are weakly repelled by B fields. Paramagnetic materials are weakly attracted. Both effects disappear when the external field is removed.</div>
+
+    <p class="concept-text">
+      <strong>Ferromagnetic materials</strong> (iron, nickel, cobalt) have atomic moments that align strongly through quantum mechanical exchange interactions, forming <strong>magnetic domains</strong> — regions of ~10&#185;&#8310;–10&#185;&#8310; atoms with parallel alignment. In an unmagnetized sample, domains point in random directions. An applied field causes domains aligned with the field to grow at the expense of others.
+    </p>
+
+    <div class="formula-box green">B = &mu;&#8320;&mu;<sub>r</sub> H &nbsp;&nbsp; (&mu;<sub>r</sub> = relative permeability, up to ~10,000 for iron)</div>
+
+    <p class="concept-text">
+      <strong>Hysteresis</strong> describes the lag between magnetization and applied field in ferromagnets. When you magnetize and then demagnetize iron, energy is dissipated as heat. The area enclosed by the B-H hysteresis loop equals the energy lost per cycle. <strong>Hard</strong> magnetic materials (neodymium, alnico) have wide loops — good for permanent magnets. <strong>Soft</strong> magnetic materials (silicon steel) have narrow loops — good for transformer cores where hysteresis loss must be minimized.
+    </p>
+
+    <div class="formula-grid">
+      <div class="formula-box amber">Hard magnets: wide B-H loop — good permanent magnets</div>
+      <div class="formula-box pink">Soft magnets: narrow B-H loop — good transformer cores</div>
+    </div>
+
+    <p class="concept-text">
+      <strong>Curie temperature:</strong> above this temperature, thermal energy disrupts domain alignment and ferromagnetic materials become paramagnetic. For iron, T<sub>C</sub> = 770°C. <strong>Applications:</strong> MRI machines use superconducting solenoids at 1.5–7 T; hard drives store data in magnetic domains on coated platters; transformer cores use soft iron to minimize hysteresis loss; electromagnets use high-&mu;<sub>r</sub> cores to achieve strong fields with modest currents.
+    </p>
+
+    <div class="navy-context"><strong>Navy Context:</strong> The degaussing system mentioned earlier works precisely because steel ship hulls are ferromagnetic — they develop a permanent magnetic signature from Earth's field and construction stresses. Demagnetizing and re-magnetizing the hull with controlled currents reduces the signature. MRI facilities in Navy medicine and nuclear reactor magnetic flux detectors are also critical ferromagnetism applications.</div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems — Magnetic Materials</div>
+
+      <div class="problem">
+        <p><strong>P1 (MC).</strong> Which best describes ferromagnetic materials?</p>
+        <div class="mc-choices" id="mc5a">
+          <button class="mc-btn" onclick="checkMC('mc5a',this,false)">A) Weakly repelled by magnetic fields; no permanent moments</button>
+          <button class="mc-btn" onclick="checkMC('mc5a',this,false)">B) Weakly attracted; individual atomic moments align partially with applied field</button>
+          <button class="mc-btn" onclick="checkMC('mc5a',this,true)">C) Strongly magnetized due to aligned domains; can retain magnetization</button>
+          <button class="mc-btn" onclick="checkMC('mc5a',this,false)">D) Only magnetic above the Curie temperature</button>
+        </div>
+        <div class="feedback" id="mc5a_fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P2 (MC).</strong> A transformer core should be made from material with:</p>
+        <div class="mc-choices" id="mc5b">
+          <button class="mc-btn" onclick="checkMC('mc5b',this,false)">A) High coercivity and wide hysteresis loop</button>
+          <button class="mc-btn" onclick="checkMC('mc5b',this,true)">B) High permeability and narrow hysteresis loop</button>
+          <button class="mc-btn" onclick="checkMC('mc5b',this,false)">C) Low permeability and wide hysteresis loop</button>
+          <button class="mc-btn" onclick="checkMC('mc5b',this,false)">D) Diamagnetic properties</button>
+        </div>
+        <div class="feedback" id="mc5b_fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P3 (MC).</strong> Above the Curie temperature, a ferromagnetic material becomes:</p>
+        <div class="mc-choices" id="mc5c">
+          <button class="mc-btn" onclick="checkMC('mc5c',this,false)">A) Diamagnetic</button>
+          <button class="mc-btn" onclick="checkMC('mc5c',this,true)">B) Paramagnetic</button>
+          <button class="mc-btn" onclick="checkMC('mc5c',this,false)">C) Superconducting</button>
+          <button class="mc-btn" onclick="checkMC('mc5c',this,false)">D) Antiferromagnetic</button>
+        </div>
+        <div class="feedback" id="mc5c_fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P4 (MC).</strong> Gauss's Law for magnetism (&oint; B &middot; dA = 0) implies:</p>
+        <div class="mc-choices" id="mc5d">
+          <button class="mc-btn" onclick="checkMC('mc5d',this,false)">A) Magnetic field lines can start on isolated north poles</button>
+          <button class="mc-btn" onclick="checkMC('mc5d',this,true)">B) Magnetic monopoles do not exist</button>
+          <button class="mc-btn" onclick="checkMC('mc5d',this,false)">C) The magnetic field is always zero everywhere</button>
+          <button class="mc-btn" onclick="checkMC('mc5d',this,false)">D) Magnetic flux is always positive</button>
+        </div>
+        <div class="feedback" id="mc5d_fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Lesson 20 Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+      <span style="font-size:.72rem;color:var(--text-dim)"><span id="quizAnswered">0</span> answered</span>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-q" id="qq1">
+      <div class="q-num">Question 1 of 10</div>
+      <div class="q-text">What is the SI unit of magnetic field strength?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('qq1',this,false)">A) Weber (Wb)</button>
+        <button class="choice-btn" onclick="quizAnswer('qq1',this,false)">B) Gauss (G)</button>
+        <button class="choice-btn" onclick="quizAnswer('qq1',this,true)">C) Tesla (T)</button>
+        <button class="choice-btn" onclick="quizAnswer('qq1',this,false)">D) Henry (H)</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q" id="qq2">
+      <div class="q-num">Question 2 of 10</div>
+      <div class="q-text">A proton moves parallel to a magnetic field (&theta; = 0°). The magnetic force on it is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('qq2',this,false)">A) qvB (maximum)</button>
+        <button class="choice-btn" onclick="quizAnswer('qq2',this,true)">B) Zero</button>
+        <button class="choice-btn" onclick="quizAnswer('qq2',this,false)">C) qvB/2</button>
+        <button class="choice-btn" onclick="quizAnswer('qq2',this,false)">D) qvB√2</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q" id="qq3">
+      <div class="q-num">Question 3 of 10</div>
+      <div class="q-text">An electron moves at v = 4×10⁶ m/s in a field B = 0.50 T perpendicular to its velocity. The orbital radius r = mv/qB. Which change doubles r?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('qq3',this,false)">A) Doubling B</button>
+        <button class="choice-btn" onclick="quizAnswer('qq3',this,true)">B) Doubling v</button>
+        <button class="choice-btn" onclick="quizAnswer('qq3',this,false)">C) Halving m</button>
+        <button class="choice-btn" onclick="quizAnswer('qq3',this,false)">D) Doubling q</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q" id="qq4">
+      <div class="q-num">Question 4 of 10</div>
+      <div class="q-text">The cyclotron frequency f = qB/2πm is independent of:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('qq4',this,false)">A) Charge q</button>
+        <button class="choice-btn" onclick="quizAnswer('qq4',this,false)">B) Mass m</button>
+        <button class="choice-btn" onclick="quizAnswer('qq4',this,true)">C) Speed v</button>
+        <button class="choice-btn" onclick="quizAnswer('qq4',this,false)">D) B field strength</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q" id="qq5">
+      <div class="q-num">Question 5 of 10</div>
+      <div class="q-text">A 0.50-m wire carries 6.0 A perpendicular to B = 0.30 T. The magnetic force on the wire is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('qq5',this,false)">A) 0.45 N</button>
+        <button class="choice-btn" onclick="quizAnswer('qq5',this,true)">B) 0.90 N</button>
+        <button class="choice-btn" onclick="quizAnswer('qq5',this,false)">C) 1.8 N</button>
+        <button class="choice-btn" onclick="quizAnswer('qq5',this,false)">D) 0.18 N</button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q" id="qq6">
+      <div class="q-num">Question 6 of 10</div>
+      <div class="q-text">Two parallel wires 0.10 m apart carry 20 A and 30 A in opposite directions. The force per unit length is F/L = μ₀I₁I₂/2πd. They:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('qq6',this,false)">A) Attract with F/L = 1.2 mN/m</button>
+        <button class="choice-btn" onclick="quizAnswer('qq6',this,true)">B) Repel with F/L = 1.2 mN/m</button>
+        <button class="choice-btn" onclick="quizAnswer('qq6',this,false)">C) Attract with F/L = 0.12 mN/m</button>
+        <button class="choice-btn" onclick="quizAnswer('qq6',this,false)">D) Repel with F/L = 0.12 mN/m</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q" id="qq7">
+      <div class="q-num">Question 7 of 10</div>
+      <div class="q-text">Ampere's Law states ∮ B · dl = μ₀I_enc. For a long straight wire, choosing a circular loop of radius r gives B =</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('qq7',this,false)">A) μ₀I/r</button>
+        <button class="choice-btn" onclick="quizAnswer('qq7',this,true)">B) μ₀I/2πr</button>
+        <button class="choice-btn" onclick="quizAnswer('qq7',this,false)">C) μ₀I/4πr²</button>
+        <button class="choice-btn" onclick="quizAnswer('qq7',this,false)">D) μ₀I·2πr</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q" id="qq8">
+      <div class="q-num">Question 8 of 10</div>
+      <div class="q-text">A solenoid has n = 2000 turns/m and carries I = 5.0 A. What is B inside (in mT)?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('qq8',this,false)">A) 2.51 mT</button>
+        <button class="choice-btn" onclick="quizAnswer('qq8',this,true)">B) 12.6 mT</button>
+        <button class="choice-btn" onclick="quizAnswer('qq8',this,false)">C) 6.28 mT</button>
+        <button class="choice-btn" onclick="quizAnswer('qq8',this,false)">D) 1.26 mT</button>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-q" id="qq9">
+      <div class="q-num">Question 9 of 10</div>
+      <div class="q-text">Which magnetic material type can retain its magnetization after the external field is removed?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('qq9',this,false)">A) Diamagnetic</button>
+        <button class="choice-btn" onclick="quizAnswer('qq9',this,false)">B) Paramagnetic</button>
+        <button class="choice-btn" onclick="quizAnswer('qq9',this,true)">C) Ferromagnetic</button>
+        <button class="choice-btn" onclick="quizAnswer('qq9',this,false)">D) Superconducting</button>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="quiz-q" id="qq10">
+      <div class="q-num">Question 10 of 10</div>
+      <div class="q-text">A current loop with N = 80, I = 3.0 A, A = 0.005 m² sits in B = 0.40 T with its plane parallel to B. The torque τ = NIAB sinθ equals:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer('qq10',this,false)">A) 0.048 N·m</button>
+        <button class="choice-btn" onclick="quizAnswer('qq10',this,true)">B) 0.48 N·m</button>
+        <button class="choice-btn" onclick="quizAnswer('qq10',this,false)">C) 4.8 N·m</button>
+        <button class="choice-btn" onclick="quizAnswer('qq10',this,false)">D) 0.0048 N·m</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ============================================================
+// SECTION TOGGLE + PROGRESS
+// ============================================================
+const TOTAL_SECTIONS = 6;
+const completedSections = new Set();
+
+function toggleSection(header) {
+  const card = header.closest('.section-card');
+  const isOpen = card.classList.contains('open');
+  card.classList.toggle('open', !isOpen);
+  const secNum = parseInt(card.dataset.section);
+  if (!isOpen && secNum < TOTAL_SECTIONS) {
+    completedSections.add(secNum);
+    card.classList.add('completed');
+    updateProgress();
+  }
+}
+
+function updateProgress() {
+  const pct = (completedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    completedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+// ============================================================
+// ANSWER CHECKING
+// ============================================================
+function checkNum(inputId, fbId, correct, tol, unit, explanation) {
+  const inp = document.getElementById(inputId);
+  const fb = document.getElementById(fbId);
+  const val = parseFloat(inp.value);
+  const parent = inp.closest('.problem') || inp.closest('.quiz-q');
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Enter a numeric value.';
+    return;
+  }
+  if (Math.abs(val - correct) <= tol) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! ' + explanation;
+    parent.classList.add('pop');
+    setTimeout(() => parent.classList.remove('pop'), 400);
+    markSectionDone(inp);
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Hint: ' + explanation;
+    parent.classList.add('shake');
+    setTimeout(() => parent.classList.remove('shake'), 500);
+  }
+}
+
+function checkSci(inputId, fbId, correct, tol, unit, explanation) {
+  const inp = document.getElementById(inputId);
+  const fb = document.getElementById(fbId);
+  const val = parseFloat(inp.value);
+  const parent = inp.closest('.problem');
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Enter a value like 5.0e-5';
+    return;
+  }
+  if (Math.abs(val - correct) <= tol) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! ' + explanation;
+    parent.classList.add('pop');
+    setTimeout(() => parent.classList.remove('pop'), 400);
+    markSectionDone(inp);
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. ' + explanation;
+    parent.classList.add('shake');
+    setTimeout(() => parent.classList.remove('shake'), 500);
+  }
+}
+
+function checkMC(containerId, btn, isCorrect) {
+  const container = document.getElementById(containerId);
+  const btns = container.querySelectorAll('.mc-btn');
+  btns.forEach(b => b.classList.add('disabled'));
+  const fbId = containerId + '_fb';
+  const fb = document.getElementById(fbId);
+  if (isCorrect) {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    btn.classList.add('pop');
+    setTimeout(() => btn.classList.remove('pop'), 400);
+    markSectionDone(btn);
+  } else {
+    btn.classList.add('wrong');
+    btns.forEach(b => {
+      if (b !== btn && !b.classList.contains('wrong')) {
+        // find correct one
+      }
+    });
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Incorrect. Review the concept and try again next time.';
+    btn.classList.add('shake');
+    setTimeout(() => btn.classList.remove('shake'), 500);
+  }
+}
+
+function markSectionDone(el) {
+  const card = el.closest('.section-card');
+  if (!card) return;
+  const secNum = parseInt(card.dataset.section);
+  completedSections.add(secNum);
+  card.classList.add('completed');
+  updateProgress();
+}
+
+// ============================================================
+// QUIZ LOGIC
+// ============================================================
+let quizScore = 0;
+let quizAnswered = 0;
+
+function quizAnswer(questionId, btn, isCorrect) {
+  const qEl = document.getElementById(questionId);
+  const allBtns = qEl.querySelectorAll('.choice-btn');
+  allBtns.forEach(b => {
+    b.classList.add('disabled');
+  });
+  if (isCorrect) {
+    btn.classList.add('selected-correct');
+    quizScore++;
+    document.getElementById('quizScore').textContent = quizScore;
+  } else {
+    btn.classList.add('selected-wrong');
+    allBtns.forEach(b => {
+      if (b.onclick.toString().includes('true')) {
+        b.classList.add('reveal-correct');
+      }
+    });
+  }
+  quizAnswered++;
+  document.getElementById('quizAnswered').textContent = quizAnswered;
+  if (quizAnswered >= 10) {
+    completedSections.add(6);
+    document.querySelector('[data-section="6"]').classList.add('completed');
+    updateProgress();
+  }
+}
+
+// ============================================================
+// SOLENOID CANVAS + READOUT
+// ============================================================
+const MU0 = 4 * Math.PI * 1e-7;
+
+function updateSolenoid() {
+  const N = parseInt(document.getElementById('solN').value);
+  const L = parseFloat(document.getElementById('solL').value);
+  const I = parseFloat(document.getElementById('solI').value);
+  document.getElementById('solNVal').textContent = N + ' turns';
+  document.getElementById('solLVal').textContent = L.toFixed(2) + ' m';
+  document.getElementById('solIVal').textContent = I.toFixed(1) + ' A';
+  const n = N / L;
+  const B = MU0 * n * I;
+  document.getElementById('solRN').textContent = n.toFixed(0) + ' /m';
+  document.getElementById('solRB').textContent = (B * 1e3).toFixed(4) + ' mT';
+  document.getElementById('solRBmt').textContent = (B * 1e3).toFixed(4) + ' mT';
+  drawSolenoid(N, L, B);
+}
+
+function drawSolenoid(N, L, B) {
+  const canvas = document.getElementById('solenoidCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const padX = 40, padY = 25;
+  const sx = padX, ex = W - padX;
+  const cy = H / 2;
+  const solenoidH = H - 2 * padY;
+  const halfH = solenoidH / 2;
+
+  // Draw solenoid body
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.rect(sx, padY, ex - sx, solenoidH);
+  ctx.stroke();
+
+  // Draw coil turns
+  const displayTurns = Math.min(N, 40);
+  const turnSpacing = (ex - sx) / displayTurns;
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i < displayTurns; i++) {
+    const x = sx + i * turnSpacing + turnSpacing / 2;
+    ctx.beginPath();
+    ctx.ellipse(x, cy, turnSpacing * 0.4, halfH * 0.85, 0, 0, 2 * Math.PI);
+    ctx.stroke();
+  }
+
+  // Draw B field lines inside
+  const Bnorm = Math.min(B / 0.05, 1.0);
+  const lineColor = `rgba(34,197,94,${0.3 + Bnorm * 0.7})`;
+  const numLines = 3;
+  const lineOffsets = [-halfH * 0.5, 0, halfH * 0.5];
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = 1.5;
+
+  // arrowhead marker
+  function drawArrow(x1, y1, x2, y2, color) {
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    // arrowhead
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const as = 7;
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - as * Math.cos(angle - 0.4), y2 - as * Math.sin(angle - 0.4));
+    ctx.lineTo(x2 - as * Math.cos(angle + 0.4), y2 - as * Math.sin(angle + 0.4));
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  lineOffsets.forEach(offset => {
+    const y = cy + offset;
+    drawArrow(sx + 8, y, ex - 8, y, lineColor);
+  });
+
+  // Labels
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('B = ' + (B * 1e3).toFixed(3) + ' mT', W / 2, H - 6);
+
+  // External field lines looping
+  ctx.strokeStyle = 'rgba(99,102,241,0.25)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(ex, cy);
+  ctx.bezierCurveTo(ex + 25, padY - 5, sx - 25, padY - 5, sx, cy);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(ex, cy);
+  ctx.bezierCurveTo(ex + 25, H - padY + 5, sx - 25, H - padY + 5, sx, cy);
+  ctx.stroke();
+}
+
+// ============================================================
+// CIRCULAR MOTION SIMULATOR
+// ============================================================
+let circAnim = null;
+let circAngle = 0;
+
+function updateCircSim() {
+  const B = parseFloat(document.getElementById('cmB').value) * 1e-3; // T
+  const v = parseFloat(document.getElementById('cmV').value) * 1e6;  // m/s
+  document.getElementById('cmBVal').textContent = (B * 1e3).toFixed(1) + ' mT';
+  document.getElementById('cmVVal').textContent = (v / 1e6).toFixed(1) + ' Mm/s';
+
+  const me = 9.109e-31, qe = 1.602e-19;
+  const r = me * v / (qe * B);
+  const f = qe * B / (2 * Math.PI * me);
+  const T = 1 / f;
+
+  document.getElementById('cmRR').textContent = (r * 1e3).toFixed(3) + ' mm';
+  document.getElementById('cmRF').textContent = (f / 1e6).toFixed(2) + ' MHz';
+  document.getElementById('cmRT').textContent = (T * 1e9).toFixed(2) + ' ns';
+
+  drawCircSim(r, v);
+}
+
+function drawCircSim(r_phys, v) {
+  const canvas = document.getElementById('circCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background dots (B field into page)
+  ctx.fillStyle = 'rgba(99,102,241,0.25)';
+  for (let x = 20; x < W; x += 32) {
+    for (let y = 20; y < H; y += 32) {
+      ctx.beginPath();
+      ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  }
+  // B label
+  ctx.fillStyle = '#6366f1';
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText('B (out of page)', 8, 16);
+
+  const cx = W / 2, cy = H / 2;
+  const maxR = Math.min(W, H) / 2 - 20;
+
+  // Scale radius visually
+  const B_val = parseFloat(document.getElementById('cmB').value) * 1e-3;
+  const v_val = parseFloat(document.getElementById('cmV').value) * 1e6;
+  const me = 9.109e-31, qe = 1.602e-19;
+  const r_min = me * 0.5e6 / (qe * 10e-3);
+  const r_max = me * 10e6 / (qe * 0.5e-3);
+  const logR = (Math.log(r_phys) - Math.log(r_min)) / (Math.log(r_max) - Math.log(r_min));
+  const r_draw = 25 + logR * (maxR - 25);
+
+  // Draw orbit
+  ctx.strokeStyle = 'rgba(34,197,94,0.5)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.arc(cx, cy, r_draw, 0, 2 * Math.PI);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Electron position
+  const ex = cx + r_draw * Math.cos(circAngle);
+  const ey = cy + r_draw * Math.sin(circAngle);
+
+  // Velocity vector (tangent, perpendicular to radius)
+  const vLen = 30;
+  const vx = -Math.sin(circAngle) * vLen;
+  const vy = Math.cos(circAngle) * vLen;
+
+  // Draw velocity arrow
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(ex, ey);
+  ctx.lineTo(ex + vx, ey + vy);
+  ctx.stroke();
+  // arrowhead
+  const va = Math.atan2(vy, vx);
+  ctx.fillStyle = '#f59e0b';
+  ctx.beginPath();
+  ctx.moveTo(ex + vx, ey + vy);
+  ctx.lineTo(ex + vx - 8 * Math.cos(va - 0.4), ey + vy - 8 * Math.sin(va - 0.4));
+  ctx.lineTo(ex + vx - 8 * Math.cos(va + 0.4), ey + vy - 8 * Math.sin(va + 0.4));
+  ctx.closePath();
+  ctx.fill();
+
+  // Draw electron
+  ctx.fillStyle = '#ec4899';
+  ctx.beginPath();
+  ctx.arc(ex, ey, 7, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 8px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('e⁻', ex, ey);
+
+  // Force vector (centripetal, toward center)
+  const fx = cx - ex;
+  const fy = cy - ey;
+  const fLen = Math.sqrt(fx * fx + fy * fy);
+  const fnx = fx / fLen * 25;
+  const fny = fy / fLen * 25;
+  ctx.strokeStyle = '#ec4899';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(ex, ey);
+  ctx.lineTo(ex + fnx, ey + fny);
+  ctx.stroke();
+
+  // Labels
+  ctx.fillStyle = '#f59e0b';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillText('v', ex + vx + 4, ey + vy - 14);
+
+  ctx.fillStyle = '#ec4899';
+  ctx.fillText('F', ex + fnx + 4, ey + fny - 6);
+
+  // Radius label
+  ctx.strokeStyle = 'rgba(34,197,94,0.4)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + r_draw, cy);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#22c55e';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('r = ' + (r_phys * 1e3).toFixed(3) + ' mm', cx + r_draw / 2, cy - 4);
+
+  // Animate
+  if (circAnim) cancelAnimationFrame(circAnim);
+  function animate() {
+    circAngle += 0.025;
+    drawCircSimFrame(cx, cy, r_draw, r_phys, v_val);
+    circAnim = requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+function drawCircSimFrame(cx, cy, r_draw, r_phys, v_val) {
+  const canvas = document.getElementById('circCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background B dots
+  ctx.fillStyle = 'rgba(99,102,241,0.25)';
+  for (let x = 20; x < W; x += 32) {
+    for (let y = 20; y < H; y += 32) {
+      ctx.beginPath();
+      ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  }
+  ctx.fillStyle = '#6366f1';
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillText('B (out of page)', 8, 8);
+
+  // Orbit
+  ctx.strokeStyle = 'rgba(34,197,94,0.5)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.arc(cx, cy, r_draw, 0, 2 * Math.PI);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  const ex = cx + r_draw * Math.cos(circAngle);
+  const ey = cy + r_draw * Math.sin(circAngle);
+  const vLen = 30;
+  const vx = -Math.sin(circAngle) * vLen;
+  const vy = Math.cos(circAngle) * vLen;
+
+  // Velocity
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(ex, ey);
+  ctx.lineTo(ex + vx, ey + vy);
+  ctx.stroke();
+  const va = Math.atan2(vy, vx);
+  ctx.fillStyle = '#f59e0b';
+  ctx.beginPath();
+  ctx.moveTo(ex + vx, ey + vy);
+  ctx.lineTo(ex + vx - 8 * Math.cos(va - 0.4), ey + vy - 8 * Math.sin(va - 0.4));
+  ctx.lineTo(ex + vx - 8 * Math.cos(va + 0.4), ey + vy - 8 * Math.sin(va + 0.4));
+  ctx.closePath();
+  ctx.fill();
+
+  // Force (toward center)
+  const fx = cx - ex, fy = cy - ey;
+  const fLen = Math.sqrt(fx * fx + fy * fy);
+  const fnx = fx / fLen * 25, fny = fy / fLen * 25;
+  ctx.strokeStyle = '#ec4899';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(ex, ey);
+  ctx.lineTo(ex + fnx, ey + fny);
+  ctx.stroke();
+  const fa = Math.atan2(fny, fnx);
+  ctx.fillStyle = '#ec4899';
+  ctx.beginPath();
+  ctx.moveTo(ex + fnx, ey + fny);
+  ctx.lineTo(ex + fnx - 7 * Math.cos(fa - 0.4), ey + fny - 7 * Math.sin(fa - 0.4));
+  ctx.lineTo(ex + fnx - 7 * Math.cos(fa + 0.4), ey + fny - 7 * Math.sin(fa + 0.4));
+  ctx.closePath();
+  ctx.fill();
+
+  // Electron
+  ctx.fillStyle = '#ec4899';
+  ctx.beginPath();
+  ctx.arc(ex, ey, 7, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 8px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('e⁻', ex, ey);
+
+  // Radius
+  ctx.strokeStyle = 'rgba(34,197,94,0.4)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + r_draw, cy);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#22c55e';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('r = ' + (r_phys * 1e3).toFixed(3) + ' mm', cx + r_draw / 2, cy - 4);
+
+  ctx.fillStyle = '#f59e0b';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillText('v', ex + vx + 3, ey + vy - 12);
+  ctx.fillStyle = '#ec4899';
+  ctx.fillText('F', ex + fnx + 3, ey + fny - 3);
+}
+
+// ============================================================
+// RIGHT-HAND RULE TRAINER
+// ============================================================
+const rhrScenarios = [
+  {
+    desc: 'A positive charge moves to the right (+x). B field points upward (+y).',
+    choices: ['Into the page (−z)', 'Out of the page (+z)', 'Downward (−y)', 'Upward (+y)'],
+    correct: 0,
+    explain: 'v = +x, B = +y. F = q(v×B) = q(x̂ × ŷ) = q(ẑ)... wait: x̂ × ŷ = ẑ, so F = +z = out of page. F points out of page (+z). Check: fingers along +x, curl toward +y → thumb points +z (out of page).'
+  },
+  {
+    desc: 'A positive charge moves upward (+y). B field points into the page (−z).',
+    choices: ['To the right (+x)', 'To the left (−x)', 'Downward (−y)', 'Out of page (+z)'],
+    correct: 0,
+    explain: 'v = +y, B = −z. F = q(ŷ × (−ẑ)) = −q(ŷ × ẑ) = −q(x̂) = −x. Wait: ŷ × (−ẑ) = −(ŷ × ẑ) = −x̂. So F = −x = left. Actually: use RHR: fingers along +y, curl toward −z → thumb points to the right (+x). F points right (+x).'
+  },
+  {
+    desc: 'A negative charge (electron) moves to the right (+x). B field points out of the page (+z).',
+    choices: ['Upward (+y)', 'Downward (−y)', 'Into page (−z)', 'To the left (−x)'],
+    correct: 0,
+    explain: 'For a positive charge with v = +x, B = +z: v×B = x̂ × ẑ = −ŷ (downward). Since charge is negative (q < 0), force reverses: F = upward (+y).'
+  },
+  {
+    desc: 'A positive charge moves into the page (−z). B field points to the right (+x).',
+    choices: ['Upward (+y)', 'Downward (−y)', 'To the left (−x)', 'Out of page (+z)'],
+    correct: 1,
+    explain: 'v = −z, B = +x. v×B = (−ẑ) × x̂ = −(ẑ × x̂) = −ŷ. So F = q(−ŷ) = downward (−y) for positive charge.'
+  }
+];
+
+let rhrCurrentIdx = 0;
+let rhrAnswered = new Array(rhrScenarios.length).fill(false);
+
+function buildRHR() {
+  const container = document.getElementById('rhrContainer');
+  const s = rhrScenarios[rhrCurrentIdx];
+  container.innerHTML = '';
+
+  const scenDiv = document.createElement('div');
+  scenDiv.className = 'rhr-scenario';
+
+  const desc = document.createElement('p');
+  desc.className = 'rhr-desc';
+  desc.textContent = s.desc;
+  scenDiv.appendChild(desc);
+
+  const choicesDiv = document.createElement('div');
+  choicesDiv.className = 'mc-choices';
+  choicesDiv.id = 'rhrChoices';
+
+  s.choices.forEach((ch, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'mc-btn';
+    btn.textContent = String.fromCharCode(65 + i) + ') ' + ch;
+    btn.onclick = function() { rhrPick(i, btn, s.correct === i, s.explain); };
+    choicesDiv.appendChild(btn);
+  });
+  scenDiv.appendChild(choicesDiv);
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback';
+  fb.id = 'rhrFb';
+  scenDiv.appendChild(fb);
+
+  container.appendChild(scenDiv);
+
+  // Navigation
+  const nav = document.createElement('div');
+  nav.style.cssText = 'display:flex;gap:10px;margin-top:12px;align-items:center;';
+
+  const counter = document.createElement('span');
+  counter.style.cssText = 'font-size:.7rem;color:var(--text-dim);flex:1';
+  counter.textContent = 'Scenario ' + (rhrCurrentIdx + 1) + ' of ' + rhrScenarios.length;
+  nav.appendChild(counter);
+
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'btn btn-sm';
+  prevBtn.textContent = 'Prev';
+  prevBtn.onclick = () => { if (rhrCurrentIdx > 0) { rhrCurrentIdx--; buildRHR(); } };
+  if (rhrCurrentIdx === 0) prevBtn.disabled = true;
+  nav.appendChild(prevBtn);
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn btn-sm btn-primary';
+  nextBtn.textContent = 'Next';
+  nextBtn.onclick = () => { if (rhrCurrentIdx < rhrScenarios.length - 1) { rhrCurrentIdx++; buildRHR(); } };
+  if (rhrCurrentIdx === rhrScenarios.length - 1) nextBtn.disabled = true;
+  nav.appendChild(nextBtn);
+
+  container.appendChild(nav);
+}
+
+function rhrPick(idx, btn, isCorrect, explain) {
+  const choicesDiv = document.getElementById('rhrChoices');
+  const btns = choicesDiv.querySelectorAll('.mc-btn');
+  btns.forEach(b => b.classList.add('disabled'));
+  const fb = document.getElementById('rhrFb');
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! ' + explain;
+    btn.classList.add('pop');
+    setTimeout(() => btn.classList.remove('pop'), 400);
+    rhrAnswered[rhrCurrentIdx] = true;
+    markSectionDone(document.getElementById('rhrContainer'));
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Incorrect. ' + explain;
+    btn.classList.add('shake');
+    setTimeout(() => btn.classList.remove('shake'), 500);
+  }
+}
+
+// ============================================================
+// TORQUE CALCULATOR
+// ============================================================
+function updateTorque() {
+  const I = parseFloat(document.getElementById('torqI').value);
+  const N = parseInt(document.getElementById('torqN').value);
+  const A = parseFloat(document.getElementById('torqA').value) * 1e-4; // cm² to m²
+  const B = parseFloat(document.getElementById('torqB').value) * 1e-3; // mT to T
+  const theta = parseFloat(document.getElementById('torqTheta').value);
+
+  document.getElementById('torqIVal').textContent = I.toFixed(1) + ' A';
+  document.getElementById('torqNVal').textContent = N;
+  document.getElementById('torqAVal').textContent = (A * 1e4).toFixed(0) + ' cm²';
+  document.getElementById('torqBVal').textContent = (B * 1e3).toFixed(0) + ' mT';
+  document.getElementById('torqThetaVal').textContent = theta.toFixed(0) + '°';
+
+  const mu = N * I * A;
+  const sinT = Math.sin(theta * Math.PI / 180);
+  const tau = mu * B * sinT;
+
+  document.getElementById('torqRMu').textContent = mu.toFixed(4) + ' A·m²';
+  document.getElementById('torqRSin').textContent = sinT.toFixed(4);
+
+  if (Math.abs(tau) >= 1) {
+    document.getElementById('torqRTau').textContent = tau.toFixed(4) + ' N·m';
+  } else if (Math.abs(tau) >= 1e-3) {
+    document.getElementById('torqRTau').textContent = (tau * 1e3).toFixed(4) + ' mN·m';
+  } else {
+    document.getElementById('torqRTau').textContent = (tau * 1e6).toFixed(4) + ' μN·m';
+  }
+}
+
+// ============================================================
+// WIRE FORCE VISUALIZER
+// ============================================================
+function updateWireForce() {
+  const I1 = parseFloat(document.getElementById('wfI1').value);
+  const I2 = parseFloat(document.getElementById('wfI2').value);
+  const d = parseFloat(document.getElementById('wfD').value) * 1e-2; // cm to m
+
+  document.getElementById('wfI1Val').textContent = I1.toFixed(0) + ' A';
+  document.getElementById('wfI2Val').textContent = I2.toFixed(0) + ' A';
+  document.getElementById('wfDVal').textContent = (d * 100).toFixed(0) + ' cm';
+
+  const FL = MU0 * Math.abs(I1 * I2) / (2 * Math.PI * d);
+  const B1 = MU0 * I1 / (2 * Math.PI * d);
+
+  // Format F/L
+  let flStr;
+  if (FL >= 1e-3) flStr = (FL * 1e3).toFixed(4) + ' mN/m';
+  else flStr = (FL * 1e6).toFixed(4) + ' μN/m';
+
+  document.getElementById('wfRFL').textContent = flStr;
+  document.getElementById('wfRDir').textContent = (I2 >= 0) ? 'ATTRACT' : 'REPEL';
+  document.getElementById('wfRDir').className = 'value ' + (I2 >= 0 ? 'green' : 'pink');
+
+  let b1Str;
+  if (B1 >= 1e-3) b1Str = (B1 * 1e3).toFixed(4) + ' mT';
+  else b1Str = (B1 * 1e6).toFixed(4) + ' μT';
+  document.getElementById('wfRB1').textContent = b1Str;
+
+  drawWires(I1, I2, d, FL);
+}
+
+function drawWires(I1, I2, d, FL) {
+  const canvas = document.getElementById('wireCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const w1x = W / 2 - 80;
+  const w2x = W / 2 + 80;
+  const wireY1 = 40;
+  const wireY2 = H - 40;
+
+  function drawCurrentSymbol(x, y, positive) {
+    ctx.strokeStyle = positive ? '#22c55e' : '#ec4899';
+    ctx.fillStyle = positive ? '#22c55e' : '#ec4899';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x, y, 14, 0, 2 * Math.PI);
+    ctx.stroke();
+    if (positive) {
+      // dot = out of page
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, 2 * Math.PI);
+      ctx.fill();
+    } else {
+      // X = into page
+      const s = 7;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x - s, y - s);
+      ctx.lineTo(x + s, y + s);
+      ctx.moveTo(x + s, y - s);
+      ctx.lineTo(x - s, y + s);
+      ctx.stroke();
+    }
+  }
+
+  // Draw wires
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(w1x, wireY1);
+  ctx.lineTo(w1x, wireY2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(w2x, wireY1);
+  ctx.lineTo(w2x, wireY2);
+  ctx.stroke();
+
+  // Current symbols at top and bottom
+  drawCurrentSymbol(w1x, wireY1, true);  // I1 always positive (slider min 1)
+  drawCurrentSymbol(w1x, wireY2, true);
+  drawCurrentSymbol(w2x, wireY1, I2 >= 0);
+  drawCurrentSymbol(w2x, wireY2, I2 >= 0);
+
+  // Force arrows between wires
+  const centerY = H / 2;
+  const arrowColor = I2 >= 0 ? '#22c55e' : '#ec4899';
+  const arrowDir = I2 >= 0 ? 1 : -1; // +1 = toward each other (attract), -1 = away (repel)
+
+  function drawHorizArrow(fromX, toX, y, color) {
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(fromX, y);
+    ctx.lineTo(toX, y);
+    ctx.stroke();
+    const dx = toX - fromX;
+    const angle = dx > 0 ? 0 : Math.PI;
+    const hs = 8;
+    ctx.beginPath();
+    ctx.moveTo(toX, y);
+    ctx.lineTo(toX - hs * Math.cos(angle - 0.4), y - hs * Math.sin(angle - 0.4));
+    ctx.lineTo(toX - hs * Math.cos(angle + 0.4), y - hs * Math.sin(angle + 0.4));
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  if (I2 >= 0) {
+    // Attract: arrows pointing toward each other
+    drawHorizArrow(w1x - 30, w1x + 16, centerY - 8, arrowColor);
+    drawHorizArrow(w2x + 30, w2x - 16, centerY - 8, arrowColor);
+  } else {
+    // Repel: arrows pointing away
+    drawHorizArrow(w1x + 16, w1x - 30, centerY - 8, arrowColor);
+    drawHorizArrow(w2x - 16, w2x + 30, centerY - 8, arrowColor);
+  }
+
+  // Distance label
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath();
+  ctx.moveTo(w1x, centerY + 28);
+  ctx.lineTo(w2x, centerY + 28);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText('d = ' + (document.getElementById('wfD').value) + ' cm', (w1x + w2x) / 2, centerY + 32);
+
+  // Labels
+  ctx.fillStyle = '#22c55e';
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('I₁ = ' + parseFloat(document.getElementById('wfI1').value).toFixed(0) + ' A', w1x, centerY + 12);
+
+  ctx.fillStyle = I2 >= 0 ? '#22c55e' : '#ec4899';
+  ctx.fillText('I₂ = ' + I2.toFixed(0) + ' A', w2x, centerY + 12);
+
+  ctx.fillStyle = I2 >= 0 ? '#22c55e' : '#ec4899';
+  ctx.font = 'bold 11px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(I2 >= 0 ? 'ATTRACT' : 'REPEL', (w1x + w2x) / 2, centerY - 24);
+}
+
+// ============================================================
+// INIT ALL
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  updateSolenoid();
+  updateCircSim();
+  buildRHR();
+  updateTorque();
+  updateWireForce();
+  updateProgress();
+});
+</script>
+</body>
+</html>

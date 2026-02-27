@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 19: DC Circuits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.formula-row{display:flex;gap:12px;flex-wrap:wrap}
+.formula-row .formula-box{flex:1;min-width:160px}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:70px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0;flex:1}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+/* Ohm's Law Triangle */
+.ohm-triangle-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;margin:16px 0}
+.ohm-triangle{position:relative;width:220px;height:200px;cursor:pointer;flex-shrink:0}
+.ohm-triangle svg{width:100%;height:100%}
+.ohm-tri-cell{cursor:pointer;transition:opacity .2s}
+.ohm-tri-cell:hover{opacity:.8}
+.ohm-inputs{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px}
+.ohm-input-row{display:flex;align-items:center;gap:10px}
+.ohm-input-row label{font-size:.72rem;color:var(--text-dim);min-width:80px}
+.ohm-input-row input{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:100px;outline:none;transition:border-color var(--transition)}
+.ohm-input-row input:focus{border-color:var(--indigo)}
+.ohm-input-row input.solve-target{background:var(--indigo-dim);border-color:var(--indigo);color:var(--indigo)}
+.ohm-result-display{background:var(--bg-card);border:1px solid var(--indigo);border-radius:var(--radius);padding:12px 18px;text-align:center;font-size:1rem;color:var(--indigo);font-weight:700;min-width:200px;margin-top:4px}
+/* Resistor builder */
+.resistor-grid{display:grid;gap:10px;margin:12px 0}
+.resistor-slot{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.resistor-slot .r-label{font-size:.7rem;color:var(--indigo);font-weight:700;min-width:22px}
+.resistor-slot .slider-mini{flex:1;min-width:80px}
+.resistor-slot .r-val{font-size:.72rem;color:var(--text-bright);font-weight:600;min-width:52px;text-align:right}
+.mode-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;width:fit-content;margin:10px 0}
+.mode-btn{padding:7px 18px;font-size:.72rem;font-family:'JetBrains Mono',monospace;border:none;cursor:pointer;background:var(--bg-card);color:var(--text-dim);transition:var(--transition)}
+.mode-btn.active{background:var(--indigo);color:#fff}
+.circuit-diagram{margin:12px 0}
+/* RC canvas */
+.rc-canvas-wrap{position:relative;margin:12px 0}
+canvas{border-radius:8px;display:block;width:100%}
+.rc-readout-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px}
+/* Kirchhoff diagram */
+.kirch-diagram{margin:12px 0;position:relative}
+.kirch-inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.kirch-input-row{display:flex;flex-direction:column;gap:4px}
+.kirch-input-row label{font-size:.68rem;color:var(--text-dim)}
+.kirch-input-row input{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.76rem;outline:none;transition:border-color var(--transition)}
+.kirch-input-row input:focus{border-color:var(--indigo)}
+.kirch-result{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-top:12px;font-size:.76rem;line-height:2}
+.kirch-result .eq{color:var(--text-dim)}
+.kirch-result .val{color:var(--indigo);font-weight:700}
+.kirch-result .solved{color:var(--green);font-weight:700}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:70px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.kirch-inputs{grid-template-columns:1fr}.formula-row .formula-box{min-width:120px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>19</span> DC Circuits</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 5 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: CURRENT & RESISTANCE -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Current &amp; Resistance</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Electric current</strong> is the rate of charge flow through a cross-section of a conductor. Conventional current flows from + to -, opposite to the direction electrons actually move.
+    </p>
+
+    <div class="formula-box large">I = &Delta;Q / &Delta;t &nbsp;&nbsp; [amperes, A = C/s]</div>
+
+    <p class="concept-text">
+      At the microscopic level, current is carried by electrons drifting slowly through the lattice — the <strong>drift velocity</strong> v_d is typically only ~mm/s. Despite this, electrical signals propagate near the speed of light because the electric field that drives drift spans the entire conductor instantly. The relationship is: <strong>I = nqv_dA</strong>, where n is carrier density, q is charge, and A is cross-sectional area.
+    </p>
+
+    <p class="concept-text">
+      <strong>Resistance</strong> R quantifies how much a material opposes current flow. It depends on the material's <strong>resistivity</strong> &rho; (an intrinsic property), the length L of the conductor, and its cross-sectional area A.
+    </p>
+
+    <div class="formula-box green">R = &rho;L / A &nbsp;&nbsp; [ohms, &Omega;]</div>
+
+    <p class="concept-text">
+      <strong>Ohm's Law</strong> relates voltage, current, and resistance for ohmic (linear) devices. Ohmic materials have constant R regardless of V or I. Non-ohmic devices (diodes, transistors, light bulbs at varying temperatures) do not obey a constant R relationship.
+    </p>
+
+    <div class="formula-box large">V = IR &nbsp;&nbsp; (Ohm's Law)</div>
+
+    <div class="key-point">Resistivity increases with temperature for metals: &rho;(T) = &rho;&#8320;[1 + &alpha;(T - T&#8320;)]. The coefficient &alpha; is positive for metals, negative for semiconductors. This is why a light bulb filament has higher R when hot.</div>
+
+    <!-- INTERACTIVE: Ohm's Law Triangle -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Ohm's Law Triangle — click a region to solve for it</div>
+      <div class="ohm-triangle-wrap">
+        <div class="ohm-triangle" id="ohmTriangle">
+          <svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <clipPath id="topClip"><polygon points="110,10 30,105 190,105"/></clipPath>
+              <clipPath id="botLeftClip"><polygon points="30,105 110,195 110,105"/></clipPath>
+              <clipPath id="botRightClip"><polygon points="190,105 110,105 110,195"/></clipPath>
+            </defs>
+            <!-- outer triangle -->
+            <polygon points="110,10 10,190 210,190" fill="none" stroke="#363b47" stroke-width="2"/>
+            <!-- divider lines -->
+            <line x1="110" y1="105" x2="30" y2="105" stroke="#363b47" stroke-width="2"/>
+            <line x1="110" y1="105" x2="190" y2="105" stroke="#363b47" stroke-width="2"/>
+            <line x1="110" y1="105" x2="110" y2="190" stroke="#363b47" stroke-width="2"/>
+            <!-- V region (top) -->
+            <polygon class="ohm-tri-cell" id="triV" points="110,12 32,105 188,105"
+              fill="rgba(99,102,241,0.18)" stroke="rgba(99,102,241,0.5)" stroke-width="1.5"
+              onclick="selectOhmSolve('V')"/>
+            <text x="110" y="72" text-anchor="middle" fill="#6366f1" font-size="28" font-weight="700" pointer-events="none">V</text>
+            <!-- I region (bottom-left) -->
+            <polygon class="ohm-tri-cell" id="triI" points="32,107 110,107 110,188"
+              fill="rgba(34,197,94,0.18)" stroke="rgba(34,197,94,0.5)" stroke-width="1.5"
+              onclick="selectOhmSolve('I')"/>
+            <text x="76" y="162" text-anchor="middle" fill="#22c55e" font-size="22" font-weight="700" pointer-events="none">I</text>
+            <!-- R region (bottom-right) -->
+            <polygon class="ohm-tri-cell" id="triR" points="188,107 110,107 110,188"
+              fill="rgba(245,158,11,0.18)" stroke="rgba(245,158,11,0.5)" stroke-width="1.5"
+              onclick="selectOhmSolve('R')"/>
+            <text x="148" y="162" text-anchor="middle" fill="#f59e0b" font-size="22" font-weight="700" pointer-events="none">R</text>
+            <!-- cover hint -->
+            <text x="110" y="188" text-anchor="middle" fill="#9ca3af" font-size="8" pointer-events="none">cover &amp; solve</text>
+          </svg>
+        </div>
+        <div class="ohm-inputs">
+          <div class="ohm-input-row">
+            <label>V (volts)</label>
+            <input type="number" id="ohmV" placeholder="e.g. 12" oninput="calcOhm()">
+          </div>
+          <div class="ohm-input-row">
+            <label>I (amperes)</label>
+            <input type="number" id="ohmI" placeholder="e.g. 2" oninput="calcOhm()">
+          </div>
+          <div class="ohm-input-row">
+            <label>R (ohms)</label>
+            <input type="number" id="ohmR" placeholder="e.g. 6" oninput="calcOhm()">
+          </div>
+          <div class="ohm-result-display" id="ohmResult">Click V, I, or R to solve for it</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRACTICE -->
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems — Current &amp; Resistance</div>
+
+      <div class="problem">
+        <p><strong>P1.</strong> A wire carries 3.0 A of current. How much charge passes through a cross-section in 4.0 s?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1ans" placeholder="Charge (C)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1ans',12,'p1fb',0.1)">Check</button>
+        </div>
+        <div class="feedback" id="p1fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P2.</strong> A copper wire (resistivity 1.68 &times; 10&#8315;&sup8; &Omega;&#183;m) has length 2.0 m and cross-sectional area 1.0 &times; 10&#8315;&sup6; m&sup2;. What is its resistance?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2ans" placeholder="R (&Omega;)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2ans',0.0336,'p2fb',0.002)">Check</button>
+        </div>
+        <div class="feedback" id="p2fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P3.</strong> Using Ohm's Law: a resistor has R = 47 &Omega; and a voltage of 9.4 V across it. What current flows through it?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p3ans" placeholder="I (A)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p3ans',0.2,'p3fb',0.01)">Check</button>
+        </div>
+        <div class="feedback" id="p3fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P4.</strong> A metal wire has resistance 10 &Omega; at 20&deg;C. At 120&deg;C its resistance is 12.5 &Omega;. What is the temperature coefficient &alpha; (per &deg;C)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p4ans" placeholder="&alpha; (/&deg;C)" step="0.0001">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p4ans',0.0025,'p4fb',0.0003)">Check</button>
+        </div>
+        <div class="feedback" id="p4fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: POWER & ENERGY -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Power &amp; Energy</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Electrical power</strong> is the rate at which energy is transferred or dissipated in a circuit element. Using Ohm's Law, three equivalent forms exist — choose the most convenient based on what quantities are known.
+    </p>
+
+    <div class="formula-row">
+      <div class="formula-box">P = IV</div>
+      <div class="formula-box green">P = I&sup2;R</div>
+      <div class="formula-box pink">P = V&sup2;/R</div>
+    </div>
+
+    <p class="concept-text">
+      <strong>Energy</strong> consumed is power multiplied by time. In household contexts, energy is measured in <strong>kilowatt-hours (kWh)</strong>: 1 kWh = 3.6 &times; 10&sup6; J. Power dissipated in a resistor becomes <strong>thermal energy (heat)</strong> — this is called Joule heating.
+    </p>
+
+    <div class="formula-box amber">E = Pt &nbsp; [joules] &nbsp;&nbsp; | &nbsp;&nbsp; 1 kWh = 3.6 MJ</div>
+
+    <div class="key-point">For series resistors: the larger resistor dissipates MORE power (P = I&sup2;R, same I). For parallel resistors: the smaller resistor dissipates MORE power (P = V&sup2;/R, same V). This is a common exam trap.</div>
+
+    <p class="concept-text">
+      <strong>Efficiency</strong> of an electrical device is the ratio of useful output power to total input power. Real devices always have losses (heat, friction), so efficiency &lt; 100%.
+    </p>
+    <div class="formula-box green">Efficiency = P<sub>useful</sub> / P<sub>input</sub> &times; 100%</div>
+
+    <!-- INTERACTIVE: Power calculator -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Power Dissipation Calculator</div>
+      <div class="slider-row">
+        <label>Voltage V (V)</label>
+        <input type="range" id="pwrV" min="1" max="240" value="12" oninput="updatePower()">
+        <span class="slider-val" id="pwrVVal">12 V</span>
+      </div>
+      <div class="slider-row">
+        <label>Resistance R (&Omega;)</label>
+        <input type="range" id="pwrR" min="1" max="1000" value="50" oninput="updatePower()">
+        <span class="slider-val" id="pwrRVal">50 &Omega;</span>
+      </div>
+      <div class="slider-row">
+        <label>Time t (s)</label>
+        <input type="range" id="pwrT" min="1" max="3600" value="60" oninput="updatePower()">
+        <span class="slider-val" id="pwrTVal">60 s</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Current I</span><br><span class="value green" id="pwrI">0.24 A</span></div>
+        <div class="readout-item"><span class="label">Power P</span><br><span class="value amber" id="pwrP">2.88 W</span></div>
+        <div class="readout-item"><span class="label">Energy E</span><br><span class="value pink" id="pwrE">172.8 J</span></div>
+        <div class="readout-item"><span class="label">Energy (kWh)</span><br><span class="value indigo" id="pwrKwh">4.80e-5 kWh</span></div>
+      </div>
+    </div>
+
+    <!-- PRACTICE -->
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems — Power &amp; Energy</div>
+
+      <div class="problem">
+        <p><strong>P1.</strong> A 60 W light bulb operates at 120 V. What is its resistance?</p>
+        <div class="problem-input-row">
+          <input type="number" id="pp1ans" placeholder="R (&Omega;)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('pp1ans',240,'pp1fb',1)">Check</button>
+        </div>
+        <div class="feedback" id="pp1fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P2.</strong> A 100 &Omega; resistor carries 0.50 A. How much energy does it dissipate in 2 minutes (120 s)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="pp2ans" placeholder="E (J)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('pp2ans',3000,'pp2fb',10)">Check</button>
+        </div>
+        <div class="feedback" id="pp2fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P3.</strong> A circuit has two resistors in parallel: R&#8321; = 10 &Omega; and R&#8322; = 40 &Omega; connected to 20 V. Which dissipates more power, and how much more? Enter the ratio P&#8321;/P&#8322;.</p>
+        <div class="problem-input-row">
+          <input type="number" id="pp3ans" placeholder="P1/P2 ratio">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('pp3ans',4,'pp3fb',0.1)">Check</button>
+        </div>
+        <div class="feedback" id="pp3fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P4.</strong> An electric motor draws 5.0 A at 120 V. It does 400 W of useful mechanical work. What is its efficiency (%)? Enter to one decimal place.</p>
+        <div class="problem-input-row">
+          <input type="number" id="pp4ans" placeholder="Efficiency (%)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('pp4ans',66.7,'pp4fb',0.5)">Check</button>
+        </div>
+        <div class="feedback" id="pp4fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: SERIES & PARALLEL RESISTORS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Series &amp; Parallel Resistors</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Series resistors</strong> are connected end-to-end; the same current flows through each. Voltages across each resistor add up to the total. Adding resistors in series always increases total resistance.
+    </p>
+
+    <div class="formula-row">
+      <div class="formula-box">R<sub>eq</sub> = R&#8321; + R&#8322; + ... + R<sub>n</sub></div>
+      <div class="formula-box green">V<sub>total</sub> = V&#8321; + V&#8322; + ... &nbsp;(same I)</div>
+    </div>
+
+    <p class="concept-text">
+      <strong>Parallel resistors</strong> share the same two nodes; the same voltage appears across each. Currents through each branch add up to the total. Adding resistors in parallel always decreases total resistance below the smallest branch.
+    </p>
+
+    <div class="formula-row">
+      <div class="formula-box pink">1/R<sub>eq</sub> = 1/R&#8321; + 1/R&#8322; + ... + 1/R<sub>n</sub></div>
+      <div class="formula-box amber">I<sub>total</sub> = I&#8321; + I&#8322; + ... &nbsp;(same V)</div>
+    </div>
+
+    <div class="key-point">Voltage divider (series): V&#8321; = V&#183;R&#8321;/(R&#8321;+R&#8322;). Current divider (parallel, 2 branches): I&#8321; = I&#183;R&#8322;/(R&#8321;+R&#8322;) — note the opposite resistor in the numerator.</div>
+
+    <!-- INTERACTIVE: Resistor Builder -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Resistance Network Builder (up to 5 resistors)</div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="modeSerBtn" onclick="setResMode('series')">Series</button>
+        <button class="mode-btn" id="modeParBtn" onclick="setResMode('parallel')">Parallel</button>
+      </div>
+      <div id="resistorSlots" class="resistor-grid"></div>
+      <div style="display:flex;gap:10px;align-items:center;margin:8px 0">
+        <button class="btn btn-sm" onclick="addResistor()" id="addResBtn">+ Add Resistor</button>
+        <button class="btn btn-sm" onclick="removeResistor()" id="rmResBtn">- Remove</button>
+      </div>
+      <div class="slider-row">
+        <label>Source V (V)</label>
+        <input type="range" id="resVoltage" min="1" max="100" value="12" oninput="updateResistors()">
+        <span class="slider-val" id="resVoltageVal">12 V</span>
+      </div>
+      <div class="readout" id="resReadout"></div>
+      <div class="circuit-diagram">
+        <canvas id="circuitCanvas" height="140"></canvas>
+      </div>
+    </div>
+
+    <!-- PRACTICE -->
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems — Series &amp; Parallel</div>
+
+      <div class="problem">
+        <p><strong>P1.</strong> Three resistors 10 &Omega;, 20 &Omega;, and 30 &Omega; are connected in series to a 12 V battery. What is the equivalent resistance?</p>
+        <div class="problem-input-row">
+          <input type="number" id="psp1ans" placeholder="R<sub>eq</sub> (&Omega;)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('psp1ans',60,'psp1fb',0.1)">Check</button>
+        </div>
+        <div class="feedback" id="psp1fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P2.</strong> The same three resistors (10 &Omega;, 20 &Omega;, 30 &Omega;) are connected in parallel. What is the equivalent resistance? Round to two decimal places.</p>
+        <div class="problem-input-row">
+          <input type="number" id="psp2ans" placeholder="R<sub>eq</sub> (&Omega;)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('psp2ans',5.45,'psp2fb',0.05)">Check</button>
+        </div>
+        <div class="feedback" id="psp2fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P3.</strong> A voltage divider has R&#8321; = 2 k&Omega; and R&#8322; = 8 k&Omega; in series, connected to 10 V. What voltage appears across R&#8322;?</p>
+        <div class="problem-input-row">
+          <input type="number" id="psp3ans" placeholder="V<sub>R2</sub> (V)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('psp3ans',8,'psp3fb',0.1)">Check</button>
+        </div>
+        <div class="feedback" id="psp3fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P4.</strong> Two resistors in parallel: R&#8321; = 6 &Omega; and R&#8322; = 12 &Omega;. Total current entering is 6 A. How much current flows through R&#8322;?</p>
+        <div class="problem-input-row">
+          <input type="number" id="psp4ans" placeholder="I<sub>2</sub> (A)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('psp4ans',2,'psp4fb',0.05)">Check</button>
+        </div>
+        <div class="feedback" id="psp4fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: KIRCHHOFF'S LAWS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Kirchhoff's Laws</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Kirchhoff's two laws allow analysis of any circuit, no matter how complex. They are direct consequences of charge conservation (KCL) and energy conservation (KVL).
+    </p>
+
+    <div class="formula-box large">KCL: &Sigma;I<sub>in</sub> = &Sigma;I<sub>out</sub> &nbsp;&nbsp; (at each junction)</div>
+
+    <p class="concept-text">
+      <strong>Kirchhoff's Current Law (KCL):</strong> charge cannot accumulate at a node. All current entering a junction must leave it. Assign current directions (guess if unknown — a negative result just means the actual direction is opposite).
+    </p>
+
+    <div class="formula-box pink">KVL: &Sigma;V = 0 &nbsp;&nbsp; (around any closed loop)</div>
+
+    <p class="concept-text">
+      <strong>Kirchhoff's Voltage Law (KVL):</strong> the sum of all voltage rises and drops around any closed loop equals zero. <strong>Sign convention:</strong> traversing a resistor in the direction of assumed current gives a voltage drop (-IR). Traversing a battery from - to + gives a rise (+&epsilon;). Going from + to - gives a drop (-&epsilon;).
+    </p>
+
+    <div class="key-point">For a circuit with N nodes and B branches, you need (N-1) independent KCL equations and enough KVL loops to cover all branches. Set up the system, then solve the simultaneous equations.</div>
+
+    <!-- INTERACTIVE: Kirchhoff's loop solver -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: 2-Loop Circuit Solver (KVL)</div>
+      <p class="concept-text" style="font-size:.74rem;margin-bottom:8px">Two batteries &epsilon;&#8321; and &epsilon;&#8322; sharing a middle branch R&#8322;. Three branch currents I&#8321;, I&#8322;, I&#8323; with KCL: I&#8321; = I&#8322; + I&#8323;.</p>
+      <div style="margin:12px 0">
+        <canvas id="kirchCanvas" width="520" height="180" style="max-width:100%;height:auto;border-radius:8px"></canvas>
+      </div>
+      <div class="kirch-inputs">
+        <div class="kirch-input-row"><label>&epsilon;&#8321; — left battery (V)</label><input type="number" id="ke1" value="12" oninput="solveKirch()"></div>
+        <div class="kirch-input-row"><label>&epsilon;&#8322; — right battery (V)</label><input type="number" id="ke2" value="6" oninput="solveKirch()"></div>
+        <div class="kirch-input-row"><label>R&#8321; — left branch (&Omega;)</label><input type="number" id="kr1" value="4" oninput="solveKirch()"></div>
+        <div class="kirch-input-row"><label>R&#8322; — shared middle (&Omega;)</label><input type="number" id="kr2" value="2" oninput="solveKirch()"></div>
+        <div class="kirch-input-row"><label>R&#8323; — right branch (&Omega;)</label><input type="number" id="kr3" value="3" oninput="solveKirch()"></div>
+      </div>
+      <div class="kirch-result" id="kirchResult"></div>
+    </div>
+
+    <!-- PRACTICE -->
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems — Kirchhoff's Laws</div>
+
+      <div class="problem">
+        <p><strong>P1.</strong> At a junction, 3.0 A enters from the left, 1.5 A enters from above. How much current (A) exits from the right? (KCL)</p>
+        <div class="problem-input-row">
+          <input type="number" id="pkl1ans" placeholder="I<sub>out</sub> (A)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('pkl1ans',4.5,'pkl1fb',0.05)">Check</button>
+        </div>
+        <div class="feedback" id="pkl1fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P2.</strong> A single loop has a 9 V battery, a 2 &Omega; resistor, and a 7 &Omega; resistor in series. Using KVL, what is the current (A)? (KVL)</p>
+        <div class="problem-input-row">
+          <input type="number" id="pkl2ans" placeholder="I (A)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('pkl2ans',1,'pkl2fb',0.05)">Check</button>
+        </div>
+        <div class="feedback" id="pkl2fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P3.</strong> Two loops share a middle branch. Loop 1: &epsilon;&#8321; = 10 V, R&#8321; = 2 &Omega;, R&#8322; = 3 &Omega;. Loop 2: &epsilon;&#8322; = 5 V, R&#8323; = 2 &Omega;, same R&#8322;. Using the interactive solver above with these values, what is I&#8321; (A)? Round to 2 decimal places.</p>
+        <div class="problem-input-row">
+          <input type="number" id="pkl3ans" placeholder="I&#8321; (A)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('pkl3ans',2.14,'pkl3fb',0.05)">Check</button>
+        </div>
+        <div class="feedback" id="pkl3fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P4 (MC).</strong> What does a negative result for a mesh current mean when applying KVL?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','pkl4fb')">A) An error was made in setting up the equations</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','pkl4fb')">B) The actual current flows opposite to the assumed direction</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','pkl4fb')">C) The current is zero in that branch</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','pkl4fb')">D) The circuit cannot be solved</button>
+        </div>
+        <div class="feedback" id="pkl4fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: RC CIRCUITS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> RC Circuits</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      An <strong>RC circuit</strong> contains a resistor and capacitor. When connected to a voltage source, the capacitor charges exponentially. When the source is removed, it discharges through the resistor. The behavior is governed by an exponential approach — never truly reaching full charge or zero, but practically so after ~5 time constants.
+    </p>
+
+    <div class="formula-row">
+      <div class="formula-box">Charging:<br>V<sub>C</sub>(t) = V&#8320;(1 &minus; e<sup>&minus;t/&tau;</sup>)</div>
+      <div class="formula-box green">Discharging:<br>V<sub>C</sub>(t) = V&#8320; e<sup>&minus;t/&tau;</sup></div>
+    </div>
+
+    <div class="formula-box pink large">&tau; = RC &nbsp;&nbsp; [seconds] &nbsp;&nbsp; (time constant)</div>
+
+    <p class="concept-text">
+      After one time constant &tau;, a charging capacitor reaches 63.2% of V&#8320;. After 5&tau;, it is at 99.3% — considered fully charged for practical purposes. The charging current follows: <strong>I(t) = (V&#8320;/R) e<sup>&minus;t/&tau;</sup></strong> — maximum at t=0, decaying to zero.
+    </p>
+
+    <div class="key-point">5&tau; rule: after 5 time constants, the capacitor is effectively fully charged (or fully discharged). This rule is used in timing circuits, camera flash, defibrillators, and analog filters. &tau; sets the frequency breakpoint for RC filters.</div>
+
+    <!-- INTERACTIVE: RC Animator -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: RC Charging/Discharging Curve</div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="rcChargeBtn" onclick="setRCMode('charge')">Charging</button>
+        <button class="mode-btn" id="rcDischBtn" onclick="setRCMode('discharge')">Discharging</button>
+      </div>
+      <div class="slider-row">
+        <label>Resistance R (k&Omega;)</label>
+        <input type="range" id="rcR" min="1" max="100" value="10" oninput="updateRC()">
+        <span class="slider-val" id="rcRVal">10 k&Omega;</span>
+      </div>
+      <div class="slider-row">
+        <label>Capacitance C (&mu;F)</label>
+        <input type="range" id="rcC" min="1" max="1000" value="100" oninput="updateRC()">
+        <span class="slider-val" id="rcCVal">100 &mu;F</span>
+      </div>
+      <div class="slider-row">
+        <label>Source V&#8320; (V)</label>
+        <input type="range" id="rcV0" min="1" max="50" value="10" oninput="updateRC()">
+        <span class="slider-val" id="rcV0Val">10 V</span>
+      </div>
+      <div class="slider-row">
+        <label>Query time t (s)</label>
+        <input type="range" id="rcT" min="0" max="100" value="10" step="0.1" oninput="updateRC()">
+        <span class="slider-val" id="rcTVal">10.0 s</span>
+      </div>
+      <div class="rc-canvas-wrap">
+        <canvas id="rcCanvas" height="220"></canvas>
+      </div>
+      <div class="rc-readout-row">
+        <div class="readout-item"><span class="label">Time constant &tau;</span><br><span class="value indigo" id="rcTau">1.00 s</span></div>
+        <div class="readout-item"><span class="label">V<sub>C</sub>(t)</span><br><span class="value green" id="rcVc">6.32 V</span></div>
+        <div class="readout-item"><span class="label">% of V&#8320;</span><br><span class="value amber" id="rcPct">63.2%</span></div>
+        <div class="readout-item"><span class="label">t / &tau;</span><br><span class="value pink" id="rcRatio">1.0</span></div>
+      </div>
+    </div>
+
+    <!-- PRACTICE -->
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems — RC Circuits</div>
+
+      <div class="problem">
+        <p><strong>P1.</strong> An RC circuit has R = 5 k&Omega; and C = 200 &mu;F. What is the time constant &tau; in seconds?</p>
+        <div class="problem-input-row">
+          <input type="number" id="prc1ans" placeholder="&tau; (s)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('prc1ans',1,'prc1fb',0.01)">Check</button>
+        </div>
+        <div class="feedback" id="prc1fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P2.</strong> A capacitor charges through R = 10 k&Omega; from a 20 V source (C = 50 &mu;F). What voltage is across the capacitor after one time constant? Round to one decimal.</p>
+        <div class="problem-input-row">
+          <input type="number" id="prc2ans" placeholder="V<sub>C</sub> (V)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('prc2ans',12.6,'prc2fb',0.1)">Check</button>
+        </div>
+        <div class="feedback" id="prc2fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P3.</strong> A 100 &mu;F capacitor pre-charged to 15 V discharges through a 20 k&Omega; resistor. After 2 &tau;, what is V<sub>C</sub>? Round to two decimal places. (Hint: e<sup>&minus;2</sup> &asymp; 0.1353)</p>
+        <div class="problem-input-row">
+          <input type="number" id="prc3ans" placeholder="V<sub>C</sub> (V)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('prc3ans',2.03,'prc3fb',0.05)">Check</button>
+        </div>
+        <div class="feedback" id="prc3fb"></div>
+      </div>
+
+      <div class="problem">
+        <p><strong>P4 (MC).</strong> Approximately how many time constants must pass before a charging capacitor is considered fully charged?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','prc4fb')">A) 1&tau;</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','prc4fb')">B) 2&tau;</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','prc4fb')">C) 3&tau;</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','prc4fb')">D) 5&tau;</button>
+        </div>
+        <div class="feedback" id="prc4fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- QUIZ SECTION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6" id="quizSection">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num" style="background:var(--amber-dim);color:var(--amber)">Q</span> 10-Question Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / <span id="quizTotal">10</span></span>
+      <span style="font-size:.72rem;color:var(--text-dim)" id="quizStatus">Answer all questions</span>
+    </div>
+    <div id="quizContainer"></div>
+  </div></div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ============================================================
+// PROGRESS TRACKING
+// ============================================================
+const TOTAL_SECTIONS = 5;
+const completedSections = new Set();
+
+function updateProgress() {
+  const pct = (completedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+function markSectionComplete(sectionNum) {
+  if (!completedSections.has(sectionNum)) {
+    completedSections.add(sectionNum);
+    const card = document.querySelector('[data-section="' + sectionNum + '"]');
+    if (card) card.classList.add('completed');
+    updateProgress();
+  }
+}
+
+// ============================================================
+// COLLAPSIBLE SECTIONS
+// ============================================================
+function toggleSection(header) {
+  const card = header.parentElement;
+  const isOpen = card.classList.contains('open');
+  card.classList.toggle('open', !isOpen);
+}
+
+// ============================================================
+// ANIMATIONS
+// ============================================================
+function springPop(el) {
+  el.classList.remove('pop', 'shake');
+  void el.offsetWidth;
+  el.classList.add('pop');
+  setTimeout(() => el.classList.remove('pop'), 400);
+}
+
+function shakeEl(el) {
+  el.classList.remove('pop', 'shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 500);
+}
+
+// ============================================================
+// PRACTICE PROBLEM CHECKERS
+// ============================================================
+function checkNum(inputId, correct, fbId, tol) {
+  const input = document.getElementById(inputId);
+  const fb = document.getElementById(fbId);
+  const val = parseFloat(input.value);
+  if (isNaN(val)) { fb.className = 'feedback incorrect'; fb.style.display = 'block'; fb.textContent = 'Enter a numeric value.'; return; }
+  const diff = Math.abs(val - correct);
+  if (diff <= tol) {
+    fb.className = 'feedback correct'; fb.style.display = 'block';
+    fb.textContent = 'Correct! Answer: ' + correct;
+    springPop(input);
+    // detect section from fb element and mark complete
+    const section = getSectionNum(fb);
+    if (section) markSectionComplete(section);
+  } else {
+    fb.className = 'feedback incorrect'; fb.style.display = 'block';
+    fb.textContent = 'Not quite. Expected ~' + correct + '. Got ' + val.toFixed(4) + '.';
+    shakeEl(input);
+  }
+}
+
+function checkMC(btn, outcome, fbId) {
+  const fb = document.getElementById(fbId);
+  const allBtns = btn.parentElement.querySelectorAll('.mc-btn');
+  allBtns.forEach(b => b.classList.add('disabled'));
+  if (outcome === 'correct') {
+    btn.classList.add('correct');
+    fb.className = 'feedback correct'; fb.style.display = 'block'; fb.textContent = 'Correct!';
+    springPop(btn);
+    const section = getSectionNum(fb);
+    if (section) markSectionComplete(section);
+  } else {
+    btn.classList.add('wrong');
+    // reveal correct
+    allBtns.forEach(b => { if (b.onclick.toString().includes("'correct'")) b.classList.add('correct'); });
+    fb.className = 'feedback incorrect'; fb.style.display = 'block'; fb.textContent = 'Incorrect — correct answer highlighted.';
+    shakeEl(btn);
+  }
+}
+
+function getSectionNum(el) {
+  const card = el.closest('[data-section]');
+  if (!card) return null;
+  const n = parseInt(card.dataset.section);
+  return (n >= 1 && n <= 5) ? n : null;
+}
+
+// ============================================================
+// OHM'S LAW TRIANGLE
+// ============================================================
+let ohmSolveFor = 'V';
+
+function selectOhmSolve(target) {
+  ohmSolveFor = target;
+  ['V','I','R'].forEach(k => {
+    const inp = document.getElementById('ohm' + k);
+    inp.classList.toggle('solve-target', k === target);
+    inp.readOnly = (k === target);
+    inp.value = (k === target) ? '' : inp.value;
+  });
+  // highlight triangle cell
+  ['V','I','R'].forEach(k => {
+    const cell = document.getElementById('tri' + k);
+    const isTarget = k === target;
+    const fills = { V:'rgba(99,102,241,0.18)', I:'rgba(34,197,94,0.18)', R:'rgba(245,158,11,0.18)' };
+    const fillsActive = { V:'rgba(99,102,241,0.45)', I:'rgba(34,197,94,0.45)', R:'rgba(245,158,11,0.45)' };
+    cell.setAttribute('fill', isTarget ? fillsActive[k] : fills[k]);
+  });
+  document.getElementById('ohmResult').textContent = 'Enter the other two values...';
+  calcOhm();
+}
+
+function calcOhm() {
+  const vEl = document.getElementById('ohmV');
+  const iEl = document.getElementById('ohmI');
+  const rEl = document.getElementById('ohmR');
+  const res = document.getElementById('ohmResult');
+
+  if (ohmSolveFor === 'V') {
+    const i = parseFloat(iEl.value), r = parseFloat(rEl.value);
+    if (!isNaN(i) && !isNaN(r)) { const v = i * r; vEl.value = v.toFixed(4); res.textContent = 'V = I \u00d7 R = ' + i + ' \u00d7 ' + r + ' = ' + v.toFixed(4) + ' V'; }
+    else { res.textContent = 'Enter I and R values...'; }
+  } else if (ohmSolveFor === 'I') {
+    const v = parseFloat(vEl.value), r = parseFloat(rEl.value);
+    if (!isNaN(v) && !isNaN(r) && r !== 0) { const i = v / r; iEl.value = i.toFixed(6); res.textContent = 'I = V \u00f7 R = ' + v + ' \u00f7 ' + r + ' = ' + i.toFixed(4) + ' A'; }
+    else { res.textContent = 'Enter V and R values...'; }
+  } else {
+    const v = parseFloat(vEl.value), i = parseFloat(iEl.value);
+    if (!isNaN(v) && !isNaN(i) && i !== 0) { const r = v / i; rEl.value = r.toFixed(4); res.textContent = 'R = V \u00f7 I = ' + v + ' \u00f7 ' + i + ' = ' + r.toFixed(4) + ' \u03a9'; }
+    else { res.textContent = 'Enter V and I values...'; }
+  }
+}
+
+// Init Ohm triangle default
+selectOhmSolve('V');
+
+// ============================================================
+// POWER CALCULATOR
+// ============================================================
+function updatePower() {
+  const V = parseFloat(document.getElementById('pwrV').value);
+  const R = parseFloat(document.getElementById('pwrR').value);
+  const t = parseFloat(document.getElementById('pwrT').value);
+  document.getElementById('pwrVVal').textContent = V + ' V';
+  document.getElementById('pwrRVal').textContent = R + ' \u03a9';
+  document.getElementById('pwrTVal').textContent = t + ' s';
+  const I = V / R;
+  const P = V * I;
+  const E = P * t;
+  const kWh = E / 3600000;
+  document.getElementById('pwrI').textContent = I.toFixed(3) + ' A';
+  document.getElementById('pwrP').textContent = P.toFixed(3) + ' W';
+  document.getElementById('pwrE').textContent = E.toFixed(2) + ' J';
+  document.getElementById('pwrKwh').textContent = kWh.toExponential(2) + ' kWh';
+}
+updatePower();
+
+// ============================================================
+// RESISTOR BUILDER
+// ============================================================
+let resMode = 'series';
+let resistors = [47, 22, 10]; // initial values in ohms
+
+function setResMode(m) {
+  resMode = m;
+  document.getElementById('modeSerBtn').classList.toggle('active', m === 'series');
+  document.getElementById('modeParBtn').classList.toggle('active', m === 'parallel');
+  updateResistors();
+}
+
+function addResistor() {
+  if (resistors.length >= 5) return;
+  resistors.push(100);
+  renderResistorSlots();
+  updateResistors();
+}
+
+function removeResistor() {
+  if (resistors.length <= 1) return;
+  resistors.pop();
+  renderResistorSlots();
+  updateResistors();
+}
+
+function renderResistorSlots() {
+  const container = document.getElementById('resistorSlots');
+  container.innerHTML = '';
+  resistors.forEach((val, i) => {
+    const div = document.createElement('div');
+    div.className = 'resistor-slot';
+    div.innerHTML = `<span class="r-label">R${i+1}</span>
+      <input type="range" class="slider-mini" min="1" max="1000" value="${val}"
+        oninput="resistors[${i}]=parseInt(this.value);document.getElementById('rval${i}').textContent=this.value+' \u03a9';updateResistors()">
+      <span class="r-val" id="rval${i}">${val} \u03a9</span>`;
+    container.appendChild(div);
+  });
+  document.getElementById('addResBtn').disabled = resistors.length >= 5;
+  document.getElementById('rmResBtn').disabled = resistors.length <= 1;
+}
+
+function updateResistors() {
+  const V = parseFloat(document.getElementById('resVoltage').value);
+  document.getElementById('resVoltageVal').textContent = V + ' V';
+
+  let Req;
+  if (resMode === 'series') {
+    Req = resistors.reduce((a, b) => a + b, 0);
+  } else {
+    Req = 1 / resistors.reduce((a, b) => a + 1/b, 0);
+  }
+
+  const Itotal = V / Req;
+  const readout = document.getElementById('resReadout');
+  let html = `<div class="readout-item"><span class="label">R<sub>eq</sub></span><br><span class="value indigo">${Req.toFixed(2)} \u03a9</span></div>`;
+  html += `<div class="readout-item"><span class="label">I total</span><br><span class="value green">${Itotal.toFixed(3)} A</span></div>`;
+  if (resMode === 'series') {
+    html += `<div class="readout-item"><span class="label">Current (each)</span><br><span class="value amber">${Itotal.toFixed(3)} A</span></div>`;
+    resistors.forEach((r, i) => {
+      const v = Itotal * r;
+      html += `<div class="readout-item"><span class="label">V across R${i+1}</span><br><span class="value pink">${v.toFixed(2)} V</span></div>`;
+    });
+  } else {
+    html += `<div class="readout-item"><span class="label">Voltage (each)</span><br><span class="value amber">${V.toFixed(1)} V</span></div>`;
+    resistors.forEach((r, i) => {
+      const ib = V / r;
+      html += `<div class="readout-item"><span class="label">I thru R${i+1}</span><br><span class="value pink">${ib.toFixed(3)} A</span></div>`;
+    });
+  }
+  readout.innerHTML = html;
+  drawCircuit(V, Req, Itotal);
+}
+
+function drawCircuit(V, Req, Itotal) {
+  const canvas = document.getElementById('circuitCanvas');
+  const W = canvas.offsetWidth || 800;
+  canvas.width = W;
+  const H = 140;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  const bg = '#1a1d24';
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  const n = resistors.length;
+  const wireColor = '#6366f1';
+  const resColor = '#f59e0b';
+  const textColor = '#e2e4e9';
+  const dimColor = '#9ca3af';
+
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.lineWidth = 2;
+
+  if (resMode === 'series') {
+    // Draw series circuit: battery on left, resistors in a row
+    const margin = 40;
+    const topY = 35;
+    const botY = 110;
+    const batX = margin;
+
+    // battery
+    drawBattery(ctx, batX, topY, botY, V);
+
+    const resSpan = W - margin * 2 - 30;
+    const resWidth = Math.min(50, (resSpan / n) - 12);
+    const startX = batX + 30;
+    const spacing = resSpan / n;
+
+    // top wire
+    ctx.strokeStyle = wireColor;
+    ctx.beginPath(); ctx.moveTo(batX + 15, topY); ctx.lineTo(W - margin, topY); ctx.stroke();
+    // bottom wire
+    ctx.beginPath(); ctx.moveTo(batX + 15, botY); ctx.lineTo(W - margin, botY); ctx.stroke();
+    // right close
+    ctx.beginPath(); ctx.moveTo(W - margin, topY); ctx.lineTo(W - margin, botY); ctx.stroke();
+
+    for (let i = 0; i < n; i++) {
+      const cx = startX + spacing * i + spacing / 2;
+      drawResistor(ctx, cx - resWidth/2, topY - 8, resWidth, resColor, 'R' + (i+1) + '\n' + resistors[i] + '\u03a9', textColor);
+    }
+
+    // current arrow
+    const arrX = startX + resSpan * 0.6;
+    drawArrow(ctx, arrX, topY, arrX + 30, topY, '#22c55e');
+    ctx.fillStyle = '#22c55e';
+    ctx.fillText('I=' + Itotal.toFixed(2) + 'A', arrX + 2, topY - 6);
+
+  } else {
+    // Parallel circuit
+    const margin = 40;
+    const topY = 20;
+    const botY = 120;
+    const batX = margin;
+
+    drawBattery(ctx, batX, topY, botY, V);
+
+    const railX = batX + 30;
+    const rightX = W - margin;
+    const railSpan = rightX - railX;
+    const branchW = Math.min(60, railSpan / (n + 1));
+    const branchStart = railX + (railSpan - branchW * n) / 2;
+
+    // top & bottom rails
+    ctx.strokeStyle = wireColor;
+    ctx.beginPath(); ctx.moveTo(railX, topY); ctx.lineTo(rightX, topY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(railX, botY); ctx.lineTo(rightX, botY); ctx.stroke();
+    // right close
+    ctx.beginPath(); ctx.moveTo(rightX, topY); ctx.lineTo(rightX, botY); ctx.stroke();
+
+    for (let i = 0; i < n; i++) {
+      const bx = branchStart + i * branchW + branchW / 2;
+      // vertical wire down
+      ctx.strokeStyle = wireColor;
+      ctx.beginPath(); ctx.moveTo(bx, topY); ctx.lineTo(bx, topY + 18); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bx, botY); ctx.lineTo(bx, botY - 18); ctx.stroke();
+      // resistor
+      drawResistor(ctx, bx - 18, topY + 16, 36, resColor, 'R' + (i+1) + '\n' + resistors[i] + '\u03a9', textColor);
+    }
+
+    ctx.fillStyle = '#22c55e';
+    ctx.fillText('V=' + V + 'V, I=' + Itotal.toFixed(2) + 'A', railX + 4, botY + 14);
+  }
+}
+
+function drawBattery(ctx, x, topY, botY, V) {
+  const midY = (topY + botY) / 2;
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x, topY); ctx.lineTo(x, midY - 10); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x, botY); ctx.lineTo(x, midY + 10); ctx.stroke();
+  // battery symbol
+  ctx.beginPath(); ctx.moveTo(x - 10, midY - 10); ctx.lineTo(x + 10, midY - 10); ctx.stroke();
+  ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(x - 6, midY + 10); ctx.lineTo(x + 6, midY + 10); ctx.stroke();
+  ctx.lineWidth = 2;
+  // + label
+  ctx.fillStyle = '#22c55e';
+  ctx.font = '11px JetBrains Mono, monospace';
+  ctx.fillText('+', x + 13, midY - 6);
+  // wire from battery to circuit
+  ctx.strokeStyle = '#6366f1';
+  ctx.beginPath(); ctx.moveTo(x, topY); ctx.lineTo(x + 15, topY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x, botY); ctx.lineTo(x + 15, botY); ctx.stroke();
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.fillText(V + 'V', x - 18, midY - 2);
+}
+
+function drawResistor(ctx, x, y, w, color, label, textColor) {
+  const h = 16;
+  ctx.fillStyle = 'rgba(245,158,11,0.15)';
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.roundRect(x, y, w, h, 3);
+  ctx.fill(); ctx.stroke();
+  // label
+  ctx.fillStyle = textColor;
+  ctx.font = '9px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  const lines = label.split('\n');
+  lines.forEach((line, i) => ctx.fillText(line, x + w/2, y + h + 10 + i * 11));
+  ctx.textAlign = 'left';
+}
+
+function drawArrow(ctx, x1, y1, x2, y2, color) {
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  const hs = 7;
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - hs * Math.cos(angle - 0.4), y2 - hs * Math.sin(angle - 0.4));
+  ctx.lineTo(x2 - hs * Math.cos(angle + 0.4), y2 - hs * Math.sin(angle + 0.4));
+  ctx.closePath(); ctx.fill();
+}
+
+// Init resistor builder
+renderResistorSlots();
+updateResistors();
+
+// ============================================================
+// KIRCHHOFF SOLVER
+// ============================================================
+function solveKirch() {
+  const e1 = parseFloat(document.getElementById('ke1').value) || 0;
+  const e2 = parseFloat(document.getElementById('ke2').value) || 0;
+  const r1 = parseFloat(document.getElementById('kr1').value) || 1;
+  const r2 = parseFloat(document.getElementById('kr2').value) || 1;
+  const r3 = parseFloat(document.getElementById('kr3').value) || 1;
+
+  // Circuit: Two loops sharing middle branch R2
+  // Loop 1 (left): e1 drives I1 clockwise through R1 and R2
+  // Loop 2 (right): e2 drives I3 clockwise through R3 and R2
+  // KCL: I2 = I1 - I3 (I2 flows down through R2 from top node)
+  // KVL Loop 1: e1 - I1*r1 - (I1-I3)*r2 = 0
+  //   => e1 = I1*(r1+r2) - I3*r2
+  // KVL Loop 2: e2 - I3*r3 - (I3-I1)*r2 = 0  [note direction: if both loops CW, I2 = I1 - I3]
+  //   Actually for loop 2 going CW: e2 - I3*r3 + (I1-I3)*r2 = 0
+  //   => e2 = -I1*r2 + I3*(r3+r2)  ... let's re-derive carefully
+  //
+  // Assign: I1 = current in left loop (CW), I3 = current in right loop (CW)
+  // Middle branch current going down = I1 - I3 (if both CW, they oppose in middle)
+  // KVL Loop 1 (CW): e1 - I1*r1 - (I1-I3)*r2 = 0
+  //   => e1 = I1*r1 + I1*r2 - I3*r2 = I1*(r1+r2) - I3*r2
+  // KVL Loop 2 (CW): -e2 + I3*r3 + (I3-I1)*r2 ... hmm let me use standard mesh
+  //   For loop 2 CW: going around: -e2 (if + terminal hit going CW means voltage drop) wait
+  //   Let's just do: e2 is in right loop, + terminal at top. Going CW in loop 2:
+  //   -e2 + I3*r3 + (I3-I1)*r2 = 0
+  //   => -e2 + I3*(r3+r2) - I1*r2 = 0
+  //   => e2 = I3*(r3+r2) - I1*r2
+  //
+  // System: a11*I1 + a12*I3 = b1
+  //         a21*I1 + a22*I3 = b2
+  const a11 = r1 + r2, a12 = -r2;
+  const a21 = -r2,     a22 = r2 + r3;
+  const b1 = e1, b2 = e2;
+
+  const det = a11 * a22 - a12 * a21;
+  if (Math.abs(det) < 1e-12) {
+    document.getElementById('kirchResult').innerHTML = '<span class="eq">System is singular — check resistor values.</span>';
+    return;
+  }
+  const I1 = (b1 * a22 - b2 * a12) / det;
+  const I3 = (a11 * b2 - a21 * b1) / det;
+  const I2 = I1 - I3;
+
+  const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(3);
+  document.getElementById('kirchResult').innerHTML =
+    `<div class="eq">KVL Loop 1: &epsilon;&#8321; - I&#8321;&middot;R&#8321; - (I&#8321;-I&#8323;)&middot;R&#8322; = 0</div>
+     <div class="eq">KVL Loop 2: &epsilon;&#8322; - I&#8323;&middot;R&#8323; - (I&#8323;-I&#8321;)&middot;R&#8322; = 0</div>
+     <div style="margin-top:10px">
+       <span class="eq">I&#8321; (left loop) = </span><span class="solved">${fmt(I1)} A</span><br>
+       <span class="eq">I&#8323; (right loop) = </span><span class="solved">${fmt(I3)} A</span><br>
+       <span class="eq">I&#8322; (middle branch, down) = </span><span class="solved">${fmt(I2)} A</span>
+     </div>
+     <div style="margin-top:8px;font-size:.7rem;color:var(--text-dim)">Negative values indicate current flows opposite to assumed direction.</div>`;
+
+  drawKirch(e1, e2, r1, r2, r3, I1, I3, I2);
+}
+
+function drawKirch(e1, e2, r1, r2, r3, I1, I3, I2) {
+  const canvas = document.getElementById('kirchCanvas');
+  const W = canvas.width, H = canvas.height;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  const topY = 30, botY = 150, leftX = 60, midX = 260, rightX = 460;
+  const wc = '#6366f1', rc = '#f59e0b', gc = '#22c55e', pc = '#ec4899', tc = '#e2e4e9', dc = '#9ca3af';
+
+  ctx.lineWidth = 2;
+  ctx.font = '10px JetBrains Mono, monospace';
+
+  // top wires
+  ctx.strokeStyle = wc;
+  ctx.beginPath(); ctx.moveTo(leftX, topY); ctx.lineTo(midX, topY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(midX, topY); ctx.lineTo(rightX, topY); ctx.stroke();
+  // bottom wires
+  ctx.beginPath(); ctx.moveTo(leftX, botY); ctx.lineTo(midX, botY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(midX, botY); ctx.lineTo(rightX, botY); ctx.stroke();
+
+  // left battery (e1)
+  drawKirchBattery(ctx, leftX, topY, botY, e1, 'e1', wc, tc);
+  // right battery (e2)
+  drawKirchBattery(ctx, rightX, topY, botY, e2, 'e2', wc, tc);
+
+  // R1 on top-left
+  drawKirchResistor(ctx, leftX + 30, topY - 10, midX - leftX - 60, rc, 'R1=' + r1 + '\u03a9', tc);
+  // R3 on top-right
+  drawKirchResistor(ctx, midX + 10, topY - 10, rightX - midX - 50, rc, 'R3=' + r3 + '\u03a9', tc);
+  // R2 middle vertical
+  const r2x = midX - 10, r2y1 = topY + 10, r2y2 = botY - 10;
+  ctx.strokeStyle = rc;
+  ctx.fillStyle = 'rgba(245,158,11,0.15)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(r2x, r2y1, 20, r2y2 - r2y1, 3); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = tc;
+  ctx.textAlign = 'center';
+  ctx.fillText('R2', midX, r2y1 + (r2y2 - r2y1) / 2 - 4);
+  ctx.fillText(r2 + '\u03a9', midX, r2y1 + (r2y2 - r2y1) / 2 + 9);
+
+  // Current labels
+  ctx.fillStyle = gc;
+  ctx.textAlign = 'center';
+  ctx.fillText('I\u2081=' + (I1 >= 0 ? '+' : '') + I1.toFixed(2) + 'A', (leftX + midX) / 2, topY - 15);
+  ctx.fillStyle = pc;
+  ctx.fillText('I\u2083=' + (I3 >= 0 ? '+' : '') + I3.toFixed(2) + 'A', (midX + rightX) / 2, topY - 15);
+  ctx.fillStyle = '#818cf8';
+  ctx.fillText('I\u2082=' + (I2 >= 0 ? '+' : '') + I2.toFixed(2) + 'A', midX + 22, (topY + botY) / 2);
+
+  ctx.textAlign = 'left';
+}
+
+function drawKirchBattery(ctx, x, topY, botY, emf, label, wc, tc) {
+  const midY = (topY + botY) / 2;
+  ctx.strokeStyle = wc; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x, topY); ctx.lineTo(x, midY - 12); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x, botY); ctx.lineTo(x, midY + 12); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x - 12, midY - 12); ctx.lineTo(x + 12, midY - 12); ctx.stroke();
+  ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(x - 8, midY + 12); ctx.lineTo(x + 8, midY + 12); ctx.stroke();
+  ctx.lineWidth = 2;
+  ctx.fillStyle = tc;
+  ctx.font = '9px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(label + '=' + emf + 'V', x, midY + 28);
+  ctx.textAlign = 'left';
+}
+
+function drawKirchResistor(ctx, x, y, w, color, label, tc) {
+  const h = 16;
+  ctx.fillStyle = 'rgba(245,158,11,0.15)';
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(x, y, w, h, 3); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = tc;
+  ctx.font = '9px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(label, x + w / 2, y + h + 11);
+  ctx.textAlign = 'left';
+}
+
+solveKirch();
+
+// ============================================================
+// RC CIRCUIT
+// ============================================================
+let rcMode = 'charge';
+
+function setRCMode(m) {
+  rcMode = m;
+  document.getElementById('rcChargeBtn').classList.toggle('active', m === 'charge');
+  document.getElementById('rcDischBtn').classList.toggle('active', m === 'discharge');
+  updateRC();
+}
+
+function updateRC() {
+  const Rk = parseFloat(document.getElementById('rcR').value);
+  const Cuf = parseFloat(document.getElementById('rcC').value);
+  const V0 = parseFloat(document.getElementById('rcV0').value);
+  const t = parseFloat(document.getElementById('rcT').value);
+
+  document.getElementById('rcRVal').textContent = Rk + ' k\u03a9';
+  document.getElementById('rcCVal').textContent = Cuf + ' \u03bcF';
+  document.getElementById('rcV0Val').textContent = V0 + ' V';
+  document.getElementById('rcTVal').textContent = t.toFixed(1) + ' s';
+
+  const R = Rk * 1000;
+  const C = Cuf * 1e-6;
+  const tau = R * C;
+
+  let Vc;
+  if (rcMode === 'charge') {
+    Vc = V0 * (1 - Math.exp(-t / tau));
+  } else {
+    Vc = V0 * Math.exp(-t / tau);
+  }
+  const pct = (Vc / V0 * 100);
+
+  document.getElementById('rcTau').textContent = tau.toFixed(3) + ' s';
+  document.getElementById('rcVc').textContent = Vc.toFixed(3) + ' V';
+  document.getElementById('rcPct').textContent = pct.toFixed(1) + '%';
+  document.getElementById('rcRatio').textContent = (t / tau).toFixed(2);
+
+  drawRCCurve(tau, V0, t);
+}
+
+function drawRCCurve(tau, V0, queryT) {
+  const canvas = document.getElementById('rcCanvas');
+  const W = canvas.offsetWidth || 800;
+  canvas.width = W;
+  const H = 220;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  const pad = { top: 20, right: 30, bottom: 40, left: 50 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+
+  const tMax = Math.max(tau * 6, queryT * 1.2, 0.1);
+
+  // Grid
+  ctx.strokeStyle = '#2c313c';
+  ctx.lineWidth = 1;
+  for (let g = 0; g <= 4; g++) {
+    const gy = pad.top + cH * (1 - g / 4);
+    ctx.beginPath(); ctx.moveTo(pad.left, gy); ctx.lineTo(pad.left + cW, gy); ctx.stroke();
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '9px JetBrains Mono, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText((V0 * g / 4).toFixed(1) + 'V', pad.left - 4, gy + 3);
+  }
+  for (let g = 0; g <= 5; g++) {
+    const gx = pad.left + cW * g / 5;
+    ctx.beginPath(); ctx.moveTo(gx, pad.top); ctx.lineTo(gx, pad.top + cH); ctx.stroke();
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '9px JetBrains Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText((tMax * g / 5).toFixed(2) + 's', gx, pad.top + cH + 14);
+  }
+
+  // Axes
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, pad.top + cH); ctx.lineTo(pad.left + cW, pad.top + cH); ctx.stroke();
+
+  // Tau markers (at 1tau, 2tau, 3tau, 4tau, 5tau)
+  for (let k = 1; k <= 5; k++) {
+    const tx = pad.left + (k * tau / tMax) * cW;
+    if (tx > pad.left && tx < pad.left + cW) {
+      ctx.strokeStyle = 'rgba(245,158,11,0.3)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(tx, pad.top); ctx.lineTo(tx, pad.top + cH); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = '8px JetBrains Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(k + '\u03c4', tx, pad.top + 12);
+    }
+  }
+
+  // Curve
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (let px = 0; px <= cW; px++) {
+    const t = (px / cW) * tMax;
+    let v;
+    if (rcMode === 'charge') {
+      v = V0 * (1 - Math.exp(-t / tau));
+    } else {
+      v = V0 * Math.exp(-t / tau);
+    }
+    const py = pad.top + cH * (1 - v / V0);
+    if (px === 0) ctx.moveTo(pad.left + px, py);
+    else ctx.lineTo(pad.left + px, py);
+  }
+  ctx.stroke();
+
+  // Asymptote
+  ctx.strokeStyle = 'rgba(34,197,94,0.3)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  const asymY = rcMode === 'charge' ? pad.top : pad.top + cH;
+  ctx.beginPath(); ctx.moveTo(pad.left, asymY); ctx.lineTo(pad.left + cW, asymY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Query point
+  const qx = pad.left + (queryT / tMax) * cW;
+  let qv;
+  if (rcMode === 'charge') qv = V0 * (1 - Math.exp(-queryT / tau));
+  else qv = V0 * Math.exp(-queryT / tau);
+  const qy = pad.top + cH * (1 - qv / V0);
+
+  if (qx >= pad.left && qx <= pad.left + cW) {
+    ctx.strokeStyle = 'rgba(236,72,153,0.5)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(qx, pad.top + cH); ctx.lineTo(qx, qy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.left, qy); ctx.lineTo(qx, qy); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ec4899';
+    ctx.beginPath(); ctx.arc(qx, qy, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ec4899';
+    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.textAlign = 'left';
+    const labelX = qx + 8 > pad.left + cW - 80 ? qx - 85 : qx + 8;
+    ctx.fillText('t=' + queryT.toFixed(1) + 's', labelX, qy - 7);
+    ctx.fillText('Vc=' + qv.toFixed(2) + 'V', labelX, qy + 13);
+  }
+
+  // Axis labels
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('time (s)', pad.left + cW / 2, H - 4);
+  ctx.save();
+  ctx.translate(12, pad.top + cH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('V\u2092 (V)', 0, 0);
+  ctx.restore();
+
+  // Label curve
+  ctx.fillStyle = '#6366f1';
+  ctx.textAlign = 'left';
+  ctx.font = '10px JetBrains Mono, monospace';
+  const labelStr = rcMode === 'charge' ? 'V\u2092 = V\u2080(1\u2212e\u207b\u1d57\u1d9c\u207f)' : 'V\u2092 = V\u2080 e\u207b\u1d57\u1d9c\u207f';
+  ctx.fillText(labelStr, pad.left + 6, pad.top + 18);
+}
+
+updateRC();
+
+// ============================================================
+// QUIZ
+// ============================================================
+const quizData = [
+  {
+    q: 'A wire carries a current of 2.5 A. How much charge (in coulombs) passes a cross-section in 8 seconds?',
+    choices: ['5 C', '10 C', '20 C', '0.31 C'],
+    correct: 1,
+    explain: 'Q = I \u00d7 t = 2.5 \u00d7 8 = 20 C'
+  },
+  {
+    q: 'A 10 \u03a9 resistor is connected to a 5 V source. What power is dissipated?',
+    choices: ['50 W', '2.5 W', '0.5 W', '25 W'],
+    correct: 1,
+    explain: 'P = V\u00b2/R = 25/10 = 2.5 W'
+  },
+  {
+    q: 'Three 6 \u03a9 resistors are connected in parallel. What is the equivalent resistance?',
+    choices: ['18 \u03a9', '2 \u03a9', '3 \u03a9', '6 \u03a9'],
+    correct: 1,
+    explain: '1/R_eq = 1/6 + 1/6 + 1/6 = 3/6, so R_eq = 2 \u03a9'
+  },
+  {
+    q: 'Which statement about series resistors is correct?',
+    choices: [
+      'Voltage is the same across each resistor',
+      'Current is the same through each resistor',
+      'Equivalent resistance is less than the smallest',
+      'Current divides inversely with resistance'
+    ],
+    correct: 1,
+    explain: 'In series, the same current flows through all resistors; voltages add.'
+  },
+  {
+    q: 'Kirchhoff\'s Current Law (KCL) is a consequence of which conservation principle?',
+    choices: ['Energy conservation', 'Momentum conservation', 'Charge conservation', 'Mass conservation'],
+    correct: 2,
+    explain: 'KCL follows from conservation of charge \u2014 charge cannot accumulate at a node.'
+  },
+  {
+    q: 'An RC circuit has R = 2 k\u03a9 and C = 500 \u03bcF. What is the time constant \u03c4?',
+    choices: ['1 ms', '1 s', '4 s', '0.25 s'],
+    correct: 1,
+    explain: '\u03c4 = RC = 2000 \u00d7 500\u00d710\u207b\u2076 = 1.0 s'
+  },
+  {
+    q: 'When traversing a resistor in the direction of assumed current when applying KVL, the voltage change is:',
+    choices: ['+IR (rise)', '\u2212IR (drop)', 'Zero', '\u2212V/R'],
+    correct: 1,
+    explain: 'Going through a resistor in the current direction gives a voltage drop: \u2212IR.'
+  },
+  {
+    q: 'A capacitor is charged to 20 V and then discharges through a resistor. After 3\u03c4, what voltage remains (approximately)?',
+    choices: ['0.99 V', '1.0 V', '7.36 V', '13.5 V'],
+    correct: 0,
+    explain: 'V = 20 e\u207b\u00b3 = 20 \u00d7 0.0498 = 0.996 V \u2248 0.99 V'
+  },
+  {
+    q: 'Two resistors R\u2081 = 4 \u03a9 and R\u2082 = 12 \u03a9 are in parallel. What fraction of the total current flows through R\u2081?',
+    choices: ['1/4', '3/4', '1/3', '2/3'],
+    correct: 1,
+    explain: 'Current divider: I\u2081/I = R\u2082/(R\u2081+R\u2082) = 12/16 = 3/4. Smaller R gets more current.'
+  },
+  {
+    q: 'A device operates at 120 V drawing 2 A, producing 180 W of useful output. What is its efficiency?',
+    choices: ['75%', '90%', '67%', '83%'],
+    correct: 0,
+    explain: 'P_in = 120 \u00d7 2 = 240 W. Efficiency = 180/240 = 0.75 = 75%.'
+  }
+];
+
+let quizScore = 0;
+let quizAnswered = 0;
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  quizData.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-q';
+    div.id = 'qq' + idx;
+    let choicesHtml = item.choices.map((c, ci) =>
+      `<button class="choice-btn" onclick="answerQuiz(${idx},${ci})">${String.fromCharCode(65+ci)}) ${c}</button>`
+    ).join('');
+    div.innerHTML = `<div class="q-num">Question ${idx+1} of 10</div>
+      <div class="q-text">${item.q}</div>
+      <div class="choices">${choicesHtml}</div>
+      <div class="feedback" id="qfb${idx}"></div>`;
+    container.appendChild(div);
+  });
+}
+
+function answerQuiz(qIdx, choiceIdx) {
+  const item = quizData[qIdx];
+  const qEl = document.getElementById('qq' + qIdx);
+  const btns = qEl.querySelectorAll('.choice-btn');
+  const fb = document.getElementById('qfb' + qIdx);
+
+  // Already answered?
+  if (fb.style.display === 'block') return;
+
+  btns.forEach(b => b.classList.add('disabled'));
+  quizAnswered++;
+
+  if (choiceIdx === item.correct) {
+    btns[choiceIdx].classList.add('selected-correct');
+    fb.className = 'feedback correct';
+    fb.style.display = 'block';
+    fb.textContent = 'Correct! ' + item.explain;
+    quizScore++;
+    springPop(btns[choiceIdx]);
+  } else {
+    btns[choiceIdx].classList.add('selected-wrong');
+    btns[item.correct].classList.add('reveal-correct');
+    fb.className = 'feedback incorrect';
+    fb.style.display = 'block';
+    fb.textContent = 'Incorrect. ' + item.explain;
+    shakeEl(btns[choiceIdx]);
+  }
+
+  document.getElementById('quizScore').textContent = quizScore;
+  if (quizAnswered === quizData.length) {
+    const pct = Math.round((quizScore / quizData.length) * 100);
+    let grade = pct >= 90 ? 'Outstanding' : pct >= 70 ? 'Good work' : pct >= 50 ? 'Keep studying' : 'Review the material';
+    document.getElementById('quizStatus').textContent = grade + ' \u2014 ' + pct + '%';
+    document.getElementById('quizStatus').style.color = pct >= 70 ? 'var(--green)' : 'var(--amber)';
+  }
+}
+
+buildQuiz();
+
+// ============================================================
+// RESIZE: redraw canvases on window resize
+// ============================================================
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    updateResistors();
+    updateRC();
+    solveKirch();
+  }, 150);
+});
+
+</script>
+</body>
+</html>

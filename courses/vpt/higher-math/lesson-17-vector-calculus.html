@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 17: Vector Calculus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:120px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.step-box{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:12px 0}
+.step-box .step-label{font-size:.68rem;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.step-box .step-content{font-size:.78rem;line-height:1.8}
+.step-box .step-content strong{color:var(--text-bright)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.info-box{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;font-size:.76rem}
+.info-box .ib-label{font-size:.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:600}
+.info-box .ib-val{color:var(--text-bright);font-weight:600}
+canvas{display:block;border-radius:6px}
+.calc-output{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin-top:10px;font-size:.76rem;color:var(--text-bright);min-height:36px}
+.calc-output .calc-label{font-size:.65rem;color:var(--text-dim);margin-bottom:4px}
+.select-styled{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:7px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.75rem;outline:none;cursor:pointer;transition:border-color var(--transition)}
+.select-styled:focus{border-color:var(--indigo)}
+.num-input-sm{width:52px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.72rem;outline:none}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>17</span> Vector Calculus</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 5 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: VECTOR FIELDS -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Vector Fields</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>vector field</strong> assigns a vector to every point in space. In 3D,
+      <strong>F</strong>(x,y,z) = P(x,y,z) <strong>i</strong> + Q(x,y,z) <strong>j</strong> + R(x,y,z) <strong>k</strong>.
+      Physically, think of wind velocity at every point in the atmosphere, or the gravitational force at every
+      point in space -- each location has a direction and magnitude.
+    </p>
+
+    <div class="formula-box large"><strong>F</strong>(x,y,z) = P(x,y,z) <strong>i</strong> + Q(x,y,z) <strong>j</strong> + R(x,y,z) <strong>k</strong></div>
+
+    <p class="concept-text">
+      The <strong>gradient field</strong> of a scalar function f is the vector field
+      &#8711;f = (&#8706;f/&#8706;x) <strong>i</strong> + (&#8706;f/&#8706;y) <strong>j</strong> + (&#8706;f/&#8706;z) <strong>k</strong>.
+      Gradient fields point in the direction of steepest ascent of f and always have zero curl (irrotational).
+    </p>
+
+    <div class="formula-box green">&#8711;f = (&#8706;f/&#8706;x) <strong>i</strong> + (&#8706;f/&#8706;y) <strong>j</strong> + (&#8706;f/&#8706;z) <strong>k</strong> &nbsp;&mdash;&nbsp; gradient / conservative field</div>
+
+    <p class="concept-text">
+      A vector field <strong>F</strong> is <strong>conservative</strong> if <strong>F</strong> = &#8711;f for some scalar
+      function f called the <strong>potential function</strong>. Conservative fields obey
+      <strong>path independence</strong>: the work done moving from A to B depends only on the endpoints,
+      not the path taken. This makes computation dramatically easier.
+    </p>
+
+    <div class="key-point"><strong>Test for conservative field (2D):</strong> F = P<strong>i</strong> + Q<strong>j</strong> is conservative on a simply connected domain if and only if &#8706;P/&#8706;y = &#8706;Q/&#8706;x. Equivalently, curl F = 0.</div>
+
+    <div class="step-box">
+      <div class="step-label">Example: Finding the potential function</div>
+      <div class="step-content">
+        <strong>F</strong> = (2x + y) <strong>i</strong> + (x + 2y) <strong>j</strong>. Check: &#8706;P/&#8706;y = 1 = &#8706;Q/&#8706;x. Conservative!<br>
+        Integrate P: f = x&sup2; + xy + g(y)<br>
+        Set &#8706;f/&#8706;y = Q: x + g&prime;(y) = x + 2y &rarr; g&prime;(y) = 2y &rarr; g(y) = y&sup2;<br>
+        Potential: <strong>f(x,y) = x&sup2; + xy + y&sup2;</strong>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: 2D Vector Field Visualizer</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Select a field type to see the arrow diagram. Observe how gradient and rotational fields differ structurally.</p>
+      <div class="controls-row">
+        <select class="select-styled" id="vfSelect" onchange="drawVectorField()">
+          <option value="gradient">Gradient: F = (x, y)</option>
+          <option value="rot">Rotational: F = (-y, x)</option>
+          <option value="sink">Sink: F = (-x, -y)</option>
+          <option value="shear">Shear: F = (y, x)</option>
+          <option value="saddle">Saddle: F = (x, -y)</option>
+        </select>
+      </div>
+      <canvas id="vfCanvas" width="500" height="300" style="width:100%;max-width:500px;margin:0 auto"></canvas>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Field Type</span><br><span class="value indigo" id="vfType">Gradient</span></div>
+        <div class="readout-item"><span class="label">Conservative?</span><br><span class="value green" id="vfConservative">Yes</span></div>
+        <div class="readout-item"><span class="label">div F</span><br><span class="value amber" id="vfDiv">2</span></div>
+        <div class="readout-item"><span class="label">curl F (z-comp)</span><br><span class="value pink" id="vfCurl">0</span></div>
+        <div class="readout-item"><span class="label">Potential f</span><br><span class="value" id="vfPotential">(x&#178;+y&#178;)/2</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> In fluid dynamics aboard naval vessels, <strong>velocity fields</strong> around a hull are vector fields. The flow around a submarine hull is approximately conservative (irrotational) far from the boundary layer -- this allows potential flow theory to compute pressure distributions using Bernoulli's equation, critical for drag and lift calculations.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s1p1">
+        <p><strong>1.</strong> Let f(x,y) = x&#178;y + y&#179;. Compute &#8706;f/&#8706;y. The result has the form ay&#178; + x&#178;. Enter the coefficient a.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p1_in" placeholder="a =">
+          <button class="btn btn-sm" onclick="checkNum('s1p1_in',3,0.05,'s1p1_fb','s1','s1p1')">Check</button>
+        </div>
+        <div class="feedback" id="s1p1_fb"></div>
+      </div>
+
+      <div class="problem" id="s1p2">
+        <p><strong>2.</strong> Is <strong>F</strong> = (2xy) <strong>i</strong> + (x&#178;) <strong>j</strong> conservative?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'correct','s1p2_fb','s1','s1p2')">Yes -- &#8706;P/&#8706;y = 2x = &#8706;Q/&#8706;x</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s1p2_fb','s1','s1p2')">No -- &#8706;P/&#8706;y &#8800; &#8706;Q/&#8706;x</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s1p2_fb','s1','s1p2')">Cannot determine without knowing the domain shape</button>
+        </div>
+        <div class="feedback" id="s1p2_fb"></div>
+      </div>
+
+      <div class="problem" id="s1p3">
+        <p><strong>3.</strong> For <strong>F</strong> = &#8711;f where f = x&#178; + y&#178;, what is the work done moving from (0,0) to (1,1) along any path? (Use path independence: W = f(1,1) - f(0,0))</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p3_in" placeholder="W =">
+          <button class="btn btn-sm" onclick="checkNum('s1p3_in',2,0.05,'s1p3_fb','s1','s1p3')">Check</button>
+        </div>
+        <div class="feedback" id="s1p3_fb"></div>
+      </div>
+
+      <div class="problem" id="s1p4">
+        <p><strong>4.</strong> The potential for <strong>F</strong> = (cos x) <strong>i</strong> + (e<sup>y</sup>) <strong>j</strong> is f(x,y) = sin x + e<sup>y</sup>. Work from (0,0) to (&#960;/2, 1) = f(&#960;/2,1) - f(0,0). Round to 3 decimal places.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s1p4_in" placeholder="W =">
+          <button class="btn btn-sm" onclick="checkNum('s1p4_in',1.718,0.02,'s1p4_fb','s1','s1p4')">Check</button>
+        </div>
+        <div class="feedback" id="s1p4_fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: LINE INTEGRALS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Line Integrals</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>line integral</strong> integrates a function along a curve C. For a vector field <strong>F</strong>,
+      the <strong>work integral</strong> &#8747;<sub>C</sub> <strong>F</strong> &middot; d<strong>r</strong> measures total
+      work done by <strong>F</strong> on a particle traveling along C. The vector d<strong>r</strong> = (dx, dy, dz)
+      is the infinitesimal displacement tangent to the curve.
+    </p>
+
+    <div class="formula-box large">&#8747;<sub>C</sub> <strong>F</strong> &middot; d<strong>r</strong> = &#8747;<sub>C</sub> P dx + Q dy + R dz &nbsp;&mdash;&nbsp; work integral</div>
+
+    <p class="concept-text">
+      To evaluate: <strong>parameterize the curve</strong> as <strong>r</strong>(t) = (x(t), y(t), z(t)) for t in [a,b].
+      Then substitute dx = x&prime;(t) dt, dy = y&prime;(t) dt, and reduce to a standard definite integral in t.
+    </p>
+
+    <div class="step-box">
+      <div class="step-label">Example: Work along a parabola</div>
+      <div class="step-content">
+        <strong>F</strong> = (y, x), C: y = x&#178; from (0,0) to (1,1). Parameterize: x = t, y = t&#178;, t&isin;[0,1].<br>
+        dx = dt, dy = 2t dt.<br>
+        &#8747;<sub>C</sub> <strong>F</strong> &middot; d<strong>r</strong> = &#8747;<sub>0</sub><sup>1</sup> [t&#178;&middot;1 + t&middot;2t] dt = &#8747;<sub>0</sub><sup>1</sup> 3t&#178; dt = [t&#179;]<sub>0</sub><sup>1</sup> = <strong>1</strong>
+      </div>
+    </div>
+
+    <p class="concept-text">
+      The <strong>scalar line integral</strong> &#8747;<sub>C</sub> f ds integrates a scalar function over arc length,
+      where ds = |<strong>r</strong>&prime;(t)| dt. This gives the mass of a wire with linear density f(x,y,z),
+      or the total arc-length-weighted value of f along C.
+    </p>
+
+    <div class="formula-box pink">&#8747;<sub>C</sub> f ds = &#8747;<sub>a</sub><sup>b</sup> f(<strong>r</strong>(t)) |<strong>r</strong>&prime;(t)| dt &nbsp;&mdash;&nbsp; scalar line integral</div>
+
+    <p class="concept-text">
+      <strong>Green's Theorem</strong> relates a line integral around a closed curve C (counterclockwise) to
+      a double integral over the enclosed region D. It converts a path integral into an area integral --
+      often far easier to compute.
+    </p>
+
+    <div class="formula-box amber large">&#8750;<sub>C</sub> P dx + Q dy = &#8748;&#8748;<sub>D</sub> (&#8706;Q/&#8706;x &minus; &#8706;P/&#8706;y) dA &nbsp;&mdash;&nbsp; Green's Theorem</div>
+
+    <div class="key-point"><strong>Green's Theorem requires:</strong> C is a simple, closed, positively oriented (counterclockwise) curve. D is the region bounded by C. P and Q have continuous partial derivatives on D.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Green's Theorem Checker</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">For <strong>F</strong> = (-y, x) around a circle of radius r (CCW), both sides of Green's theorem equal 2&#960;r&#178;. Adjust radius and confirm.</p>
+      <div class="slider-row">
+        <label>Radius r</label>
+        <input type="range" id="gtR" min="0.5" max="2.5" step="0.1" value="1" oninput="updateGreens()">
+        <span class="slider-val" id="gtR_val">1.0</span>
+      </div>
+      <canvas id="gtCanvas" width="300" height="280" style="width:100%;max-width:300px;margin:0 auto;display:block"></canvas>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Line integral &#8750; F&middot;dr</span><br><span class="value green" id="gtLine">6.28</span></div>
+        <div class="readout-item"><span class="label">&#8748;&#8748; (&#8706;Q/&#8706;x-&#8706;P/&#8706;y) dA</span><br><span class="value green" id="gtDouble">6.28</span></div>
+        <div class="readout-item"><span class="label">Match?</span><br><span class="value amber" id="gtMatch">YES</span></div>
+        <div class="readout-item"><span class="label">Enclosed area</span><br><span class="value indigo" id="gtArea">3.14</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> Green's theorem underpins <strong>hull area measurement</strong> from boundary data.
+      Waterplane area = (1/2) &#8750; (x dy - y dx) computed around the hull perimeter. Naval architects use this
+      when hull geometry is given as a boundary point series -- the contour integral directly yields cross-sectional
+      area without needing interior grid data.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s2p1">
+        <p><strong>1.</strong> Evaluate &#8747;<sub>C</sub> <strong>F</strong>&middot;d<strong>r</strong> where <strong>F</strong> = (1, 2), C: straight line from (0,0) to (2,1). Parameterize: <strong>r</strong>(t) = (2t, t), t&isin;[0,1]. Then F&middot;r&prime; = 1&middot;2 + 2&middot;1 = 4.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p1_in" placeholder="answer =">
+          <button class="btn btn-sm" onclick="checkNum('s2p1_in',4,0.05,'s2p1_fb','s2','s2p1')">Check</button>
+        </div>
+        <div class="feedback" id="s2p1_fb"></div>
+      </div>
+
+      <div class="problem" id="s2p2">
+        <p><strong>2.</strong> Using Green's theorem, &#8750;<sub>C</sub> (x&#178; - y) dx + (y&#178; + x) dy over the unit square [0,1]&#178; (CCW). What is the integrand &#8706;Q/&#8706;x - &#8706;P/&#8706;y?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'correct','s2p2_fb','s2','s2p2')">1 - (-1) = 2 (constant)</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s2p2_fb','s2','s2p2')">2y - 2x (varies with position)</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s2p2_fb','s2','s2p2')">x&#178; + y&#178;</button>
+        </div>
+        <div class="feedback" id="s2p2_fb"></div>
+      </div>
+
+      <div class="problem" id="s2p3">
+        <p><strong>3.</strong> Continuing from problem 2: evaluate &#8748;&#8748;<sub>[0,1]&#178;</sub> 2 dA.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s2p3_in" placeholder="answer =">
+          <button class="btn btn-sm" onclick="checkNum('s2p3_in',2,0.05,'s2p3_fb','s2','s2p3')">Check</button>
+        </div>
+        <div class="feedback" id="s2p3_fb"></div>
+      </div>
+
+      <div class="problem" id="s2p4">
+        <p><strong>4.</strong> The scalar line integral &#8747;<sub>C</sub> 1 ds over the unit circle gives the perimeter. What is the result?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s2p4_fb','s2','s2p4')">&#960;</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','s2p4_fb','s2','s2p4')">2&#960; (circumference of unit circle)</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s2p4_fb','s2','s2p4')">&#960;&#178;</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s2p4_fb','s2','s2p4')">4&#960;</button>
+        </div>
+        <div class="feedback" id="s2p4_fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: DIVERGENCE & CURL -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Divergence &amp; Curl</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>divergence</strong> of <strong>F</strong> = (P, Q, R) is the scalar
+      &#8711;&middot;<strong>F</strong> = &#8706;P/&#8706;x + &#8706;Q/&#8706;y + &#8706;R/&#8706;z.
+      Physically, divergence measures net outflow per unit volume at a point.
+      Positive divergence = <strong>source</strong> (field expanding outward).
+      Negative = <strong>sink</strong> (converging inward). Zero = incompressible flow.
+    </p>
+
+    <div class="formula-box large">div <strong>F</strong> = &#8711;&middot;<strong>F</strong> = &#8706;P/&#8706;x + &#8706;Q/&#8706;y + &#8706;R/&#8706;z</div>
+
+    <p class="concept-text">
+      The <strong>curl</strong> of <strong>F</strong> measures rotation or circulation at a point.
+      It is the vector &#8711;&times;<strong>F</strong>. The direction of curl gives the rotation axis;
+      magnitude equals twice the angular velocity of a tiny paddle wheel placed in the flow.
+    </p>
+
+    <div class="formula-box pink">curl <strong>F</strong> = &#8711;&times;<strong>F</strong> = (&#8706;R/&#8706;y &minus; &#8706;Q/&#8706;z) <strong>i</strong> + (&#8706;P/&#8706;z &minus; &#8706;R/&#8706;x) <strong>j</strong> + (&#8706;Q/&#8706;x &minus; &#8706;P/&#8706;y) <strong>k</strong></div>
+
+    <p class="concept-text">
+      Key terminology: a field with <strong>curl F = 0</strong> is <em>irrotational</em> (all conservative fields are
+      irrotational). A field with <strong>div F = 0</strong> is <em>solenoidal</em> -- no sources or sinks,
+      like incompressible fluid or magnetic fields. Fundamental identity: div(curl <strong>F</strong>) = 0 always.
+    </p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <div class="ib-label">Irrotational</div>
+        <div class="ib-val" style="color:var(--indigo)">curl F = 0</div>
+        <div style="font-size:.72rem;color:var(--text-dim);margin-top:4px">Conservative fields. No rotation. Potential function exists.</div>
+      </div>
+      <div class="info-box">
+        <div class="ib-label">Solenoidal</div>
+        <div class="ib-val" style="color:var(--green)">div F = 0</div>
+        <div style="font-size:.72rem;color:var(--text-dim);margin-top:4px">Incompressible flow. No sources/sinks. All magnetic fields.</div>
+      </div>
+    </div>
+
+    <div class="key-point"><strong>Fundamental identities:</strong> curl(&#8711;f) = 0 for any scalar f (gradient fields are irrotational). div(curl F) = 0 for any F (curl fields are solenoidal). These are the "exactness" conditions of vector calculus.</div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Divergence &amp; Curl Calculator</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">Enter linear coefficients for <strong>F</strong> = P<strong>i</strong> + Q<strong>j</strong> + R<strong>k</strong> where P = ax + by + cz, Q = dx + ey + fz, R = gx + hy + kz.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0">
+        <div>
+          <div class="sub-label">P = ax + by + cz</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <input type="number" id="Pax" class="num-input-sm" placeholder="a" value="1">
+            <input type="number" id="Pby" class="num-input-sm" placeholder="b" value="0">
+            <input type="number" id="Pcz" class="num-input-sm" placeholder="c" value="0">
+          </div>
+        </div>
+        <div>
+          <div class="sub-label">Q = dx + ey + fz</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <input type="number" id="Qdx" class="num-input-sm" placeholder="d" value="0">
+            <input type="number" id="Qey" class="num-input-sm" placeholder="e" value="1">
+            <input type="number" id="Qfz" class="num-input-sm" placeholder="f" value="0">
+          </div>
+        </div>
+        <div>
+          <div class="sub-label">R = gx + hy + kz</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <input type="number" id="Rgx" class="num-input-sm" placeholder="g" value="0">
+            <input type="number" id="Rhy" class="num-input-sm" placeholder="h" value="0">
+            <input type="number" id="Rkz" class="num-input-sm" placeholder="k" value="1">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-sm" onclick="computeDivCurl()" style="margin-top:6px">Compute Div &amp; Curl</button>
+      <div class="calc-output" id="dcOutput"><div class="calc-label">Results appear here after clicking Compute.</div></div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Example: curl of F = (xz, xy, yz)</div>
+      <div class="step-content">
+        curl <strong>F</strong>:<br>
+        i: &#8706;(yz)/&#8706;y &minus; &#8706;(xy)/&#8706;z = z &minus; 0 = z<br>
+        j: &#8706;(xz)/&#8706;z &minus; &#8706;(yz)/&#8706;x = x &minus; 0 = x &nbsp;(note: j component is &#8706;P/&#8706;z - &#8706;R/&#8706;x)<br>
+        k: &#8706;(xy)/&#8706;x &minus; &#8706;(xz)/&#8706;y = y &minus; 0 = y<br>
+        curl <strong>F</strong> = <strong>(z, x, y)</strong><br>
+        div <strong>F</strong> = z + x + y
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> <strong>Vorticity</strong> = curl of velocity field. Around propeller blade tips, high vorticity creates <strong>tip vortices</strong> -- the spiraling wakes visible behind naval propellers. The Helmholtz vorticity theorems govern how these vortex tubes persist and move, crucial for understanding cavitation and propeller-induced hull vibration on surface combatants.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s3p1">
+        <p><strong>1.</strong> Compute div <strong>F</strong> for <strong>F</strong> = (x&#178;y, y&#178;z, z&#178;x). The result is 2xy + 2yz + 2zx. If x = y = z = t, div F = 6t&#178;. For div F = 0, what is t?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p1_in" placeholder="t =">
+          <button class="btn btn-sm" onclick="checkNum('s3p1_in',0,0.05,'s3p1_fb','s3','s3p1')">Check</button>
+        </div>
+        <div class="feedback" id="s3p1_fb"></div>
+      </div>
+
+      <div class="problem" id="s3p2">
+        <p><strong>2.</strong> For <strong>F</strong> = (-y, x, 0), compute the z-component of curl <strong>F</strong>: &#8706;Q/&#8706;x &minus; &#8706;P/&#8706;y.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p2_in" placeholder="z-comp =">
+          <button class="btn btn-sm" onclick="checkNum('s3p2_in',2,0.05,'s3p2_fb','s3','s3p2')">Check</button>
+        </div>
+        <div class="feedback" id="s3p2_fb"></div>
+      </div>
+
+      <div class="problem" id="s3p3">
+        <p><strong>3.</strong> A field is solenoidal if:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s3p3_fb','s3','s3p3')">curl F = 0 everywhere</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','s3p3_fb','s3','s3p3')">div F = 0 everywhere (no sources/sinks)</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s3p3_fb','s3','s3p3')">F = &#8711;f for some potential f</button>
+        </div>
+        <div class="feedback" id="s3p3_fb"></div>
+      </div>
+
+      <div class="problem" id="s3p4">
+        <p><strong>4.</strong> For <strong>F</strong> = &#8711;f = (2x, 2y, 2z) (gradient field), what is |curl <strong>F</strong>|? (Recall: gradient fields are always irrotational.)</p>
+        <div class="problem-input-row">
+          <input type="number" id="s3p4_in" placeholder="|curl F| =">
+          <button class="btn btn-sm" onclick="checkNum('s3p4_in',0,0.05,'s3p4_fb','s3','s3p4')">Check</button>
+        </div>
+        <div class="feedback" id="s3p4_fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: SURFACE INTEGRALS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Surface Integrals</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>surface integral</strong> extends integration to 2D surfaces in 3D space.
+      For a surface parameterized by <strong>r</strong>(u,v), the surface area element is
+      dS = |<strong>r</strong><sub>u</sub> &times; <strong>r</strong><sub>v</sub>| du dv.
+      The <strong>scalar surface integral</strong> &#8748;&#8748;<sub>S</sub> f dS integrates a scalar function
+      over the surface -- think of it as computing total mass if f is surface density.
+    </p>
+
+    <div class="formula-box">&#8748;&#8748;<sub>S</sub> f dS = &#8748;&#8748;<sub>D</sub> f(<strong>r</strong>(u,v)) |<strong>r</strong><sub>u</sub> &times; <strong>r</strong><sub>v</sub>| du dv</div>
+
+    <p class="concept-text">
+      For a surface given as z = g(x,y), the area element simplifies to
+      dS = &#8730;(1 + g<sub>x</sub>&#178; + g<sub>y</sub>&#178;) dA.
+      This factor "stretches" the flat projected area dA to account for the surface tilt.
+    </p>
+
+    <div class="formula-box green">Surface area = &#8748;&#8748;<sub>D</sub> &#8730;(1 + g<sub>x</sub>&#178; + g<sub>y</sub>&#178;) dA &nbsp;&mdash;&nbsp; for z = g(x,y)</div>
+
+    <p class="concept-text">
+      The <strong>flux integral</strong> &#8748;&#8748;<sub>S</sub> <strong>F</strong> &middot; d<strong>S</strong>
+      measures net flow of <strong>F</strong> through a surface. Here d<strong>S</strong> = <strong>n</strong> dS
+      combines the unit normal and area element. For z = g(x,y) with <em>upward</em> orientation:
+      d<strong>S</strong> = (&minus;g<sub>x</sub>, &minus;g<sub>y</sub>, 1) dA.
+    </p>
+
+    <div class="formula-box pink large">&#8748;&#8748;<sub>S</sub> <strong>F</strong> &middot; d<strong>S</strong> = &#8748;&#8748;<sub>D</sub> <strong>F</strong> &middot; (&minus;g<sub>x</sub>, &minus;g<sub>y</sub>, 1) dA &nbsp;&mdash;&nbsp; flux integral</div>
+
+    <div class="key-point"><strong>Orientation matters:</strong> A flux integral changes sign if you reverse the normal direction (inward vs outward). Always specify orientation explicitly. Non-orientable surfaces like the Mobius strip cannot carry a consistent normal and have no well-defined flux integral.</div>
+
+    <div class="step-box">
+      <div class="step-label">Example: Flux of F = (0,0,1) through paraboloid cap</div>
+      <div class="step-content">
+        Surface: z = 1 - x&#178; - y&#178;, z &ge; 0, upward normal. g<sub>x</sub> = -2x, g<sub>y</sub> = -2y.<br>
+        <strong>F</strong> &middot; d<strong>S</strong> = (0)(2x) + (0)(2y) + (1)(1) = 1 per unit area<br>
+        Flux = &#8748;&#8748;<sub>D</sub> 1 dA = area of D (unit disk) = <strong>&#960;</strong>
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Surface Flux Estimator</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">For <strong>F</strong> = (0, 0, c) through a flat disk of radius r (upward normal), flux = c &times; &#960;r&#178;. Adjust c and r.</p>
+      <div class="slider-row">
+        <label>F z-component c</label>
+        <input type="range" id="fluxC" min="-3" max="3" step="0.5" value="1" oninput="updateFlux()">
+        <span class="slider-val" id="fluxC_val">1.0</span>
+      </div>
+      <div class="slider-row">
+        <label>Disk radius r</label>
+        <input type="range" id="fluxR" min="0.5" max="2" step="0.1" value="1" oninput="updateFlux()">
+        <span class="slider-val" id="fluxR_val">1.0</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">Field F</span><br><span class="value indigo" id="fluxField">(0, 0, 1)</span></div>
+        <div class="readout-item"><span class="label">Disk area &#960;r&#178;</span><br><span class="value" id="fluxArea">3.14</span></div>
+        <div class="readout-item"><span class="label">Flux = c&#960;r&#178;</span><br><span class="value green" id="fluxVal">3.14</span></div>
+        <div class="readout-item"><span class="label">Flow direction</span><br><span class="value amber" id="fluxDir">Outward</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> <strong>Radar cross-section (RCS)</strong> of a naval vessel is computed using surface integrals of reflected electromagnetic fields over the hull. The flux of scattered waves through a measurement sphere gives the radar signature. Stealth ship design -- like the DDG-1000 Zumwalt -- minimizes RCS by shaping hull surfaces to redirect rather than back-reflect radar energy.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s4p1">
+        <p><strong>1.</strong> Surface area of z = 2x + 3y + 1 over [0,1]&times;[0,1]. dS = &#8730;(1 + 2&#178; + 3&#178;) dA = &#8730;14 dA. Compute &#8730;14 &times; 1. Round to 3 decimal places.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p1_in" placeholder="area =">
+          <button class="btn btn-sm" onclick="checkNum('s4p1_in',3.742,0.01,'s4p1_fb','s4','s4p1')">Check</button>
+        </div>
+        <div class="feedback" id="s4p1_fb"></div>
+      </div>
+
+      <div class="problem" id="s4p2">
+        <p><strong>2.</strong> Flux of <strong>F</strong> = (0, 0, 3) through the flat square [0,2]&times;[0,2] in the xy-plane (upward normal <strong>n</strong> = <strong>k</strong>). Flux = F&middot;n &times; area = 3 &times; 4 = ?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p2_in" placeholder="flux =">
+          <button class="btn btn-sm" onclick="checkNum('s4p2_in',12,0.05,'s4p2_fb','s4','s4p2')">Check</button>
+        </div>
+        <div class="feedback" id="s4p2_fb"></div>
+      </div>
+
+      <div class="problem" id="s4p3">
+        <p><strong>3.</strong> The vector surface element for z = x&#178; + y&#178; (upward) is d<strong>S</strong> = (-2x, -2y, 1) dA. For <strong>F</strong> = (0, 0, 1), what is <strong>F</strong> &middot; d<strong>S</strong>?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'correct','s4p3_fb','s4','s4p3')">1 dA (only the k-component contributes)</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s4p3_fb','s4','s4p3')">(-2x - 2y + 1) dA</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s4p3_fb','s4','s4p3')">0 (F is perpendicular to the surface normal)</button>
+        </div>
+        <div class="feedback" id="s4p3_fb"></div>
+      </div>
+
+      <div class="problem" id="s4p4">
+        <p><strong>4.</strong> The flux of <strong>F</strong> = (x, y, z) through the unit sphere S equals 3 &times; vol(unit ball) = 3 &times; (4/3)&#960; via the Divergence Theorem. Compute this value (round to 3 decimal places).</p>
+        <div class="problem-input-row">
+          <input type="number" id="s4p4_in" placeholder="flux =">
+          <button class="btn btn-sm" onclick="checkNum('s4p4_in',12.566,0.05,'s4p4_fb','s4','s4p4')">Check</button>
+        </div>
+        <div class="feedback" id="s4p4_fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: DIVERGENCE & STOKES' THEOREMS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Divergence &amp; Stokes' Theorems</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>Divergence Theorem</strong> (Gauss's Theorem) relates a flux integral over a <em>closed</em>
+      surface S to a volume integral over the enclosed region V. Total outward flux through S equals total
+      divergence inside V. This is the 3D generalization of Green's theorem.
+    </p>
+
+    <div class="formula-box large">&#8748;&#8748;<sub>S</sub> <strong>F</strong> &middot; d<strong>S</strong> = &#8748;&#8748;&#8748;<sub>V</sub> (&#8711;&middot;<strong>F</strong>) dV &nbsp;&mdash;&nbsp; Divergence Theorem</div>
+
+    <p class="concept-text">
+      <strong>Stokes' Theorem</strong> relates a line integral around a closed curve C to a surface integral
+      over any surface S bounded by C. The integrand on the right is the flux of curl <strong>F</strong> through S.
+      Green's theorem is the special case when S lies flat in the xy-plane with normal <strong>k</strong>.
+    </p>
+
+    <div class="formula-box amber large">&#8750;<sub>C</sub> <strong>F</strong> &middot; d<strong>r</strong> = &#8748;&#8748;<sub>S</sub> (&#8711;&times;<strong>F</strong>) &middot; d<strong>S</strong> &nbsp;&mdash;&nbsp; Stokes' Theorem</div>
+
+    <p class="concept-text">
+      These theorems form a <strong>unified family</strong> -- all are special cases of the generalized Stokes'
+      theorem from differential geometry: &#8747;<sub>M</sub> d&#969; = &#8747;<sub>&#8706;M</sub> &#969;.
+      The pattern: an integral over a region equals an integral over its boundary.
+    </p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <div class="ib-label">Divergence Theorem</div>
+        <div class="ib-val" style="color:var(--indigo)">Volume &rarr; Surface</div>
+        <div style="font-size:.72rem;color:var(--text-dim);margin-top:4px">Convert surface flux integrals to volume integrals. Useful when div F is simple.</div>
+      </div>
+      <div class="info-box">
+        <div class="ib-label">Stokes' Theorem</div>
+        <div class="ib-val" style="color:var(--amber)">Surface &rarr; Curve</div>
+        <div style="font-size:.72rem;color:var(--text-dim);margin-top:4px">Convert line integrals to surface integrals. Choose any convenient spanning surface.</div>
+      </div>
+    </div>
+
+    <div class="key-point"><strong>The unified pattern:</strong> FTC (1D), Green's (2D), Divergence (3D), and Stokes' are all the same idea -- integral of a derivative over a region = integral over the boundary. The boundary of a boundary is always empty (&#8706;&#178; = 0).</div>
+
+    <div class="step-box">
+      <div class="step-label">Example: Divergence Theorem for F = (x,y,z) over unit ball</div>
+      <div class="step-content">
+        Direct flux through unit sphere S would require parameterizing the sphere.<br>
+        <strong>Via Divergence Theorem:</strong> div <strong>F</strong> = 1 + 1 + 1 = 3.<br>
+        &#8748;&#8748;&#8748;<sub>V</sub> 3 dV = 3 &times; (4/3)&#960;(1)&#179; = <strong>4&#960;</strong>
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-label">Example: Stokes' Theorem for F = (-y, x, 0) around unit circle</div>
+      <div class="step-content">
+        curl <strong>F</strong> = (0, 0, &#8706;x/&#8706;x &minus; &#8706;(-y)/&#8706;y) = (0, 0, 1+1) = (0,0,2).<br>
+        S: unit disk, <strong>n</strong> = <strong>k</strong>. (&#8711;&times;<strong>F</strong>) &middot; <strong>n</strong> = 2.<br>
+        &#8748;&#8748;<sub>S</sub> 2 dS = 2 &times; &#960; = <strong>2&#960;</strong><br>
+        Verify directly: parameterize x=cos t, y=sin t &rarr; &#8750; (-sin t)(-sin t) + (cos t)(cos t) dt = &#8747;<sub>0</sub><sup>2&#960;</sup> 1 dt = 2&#960;. Confirmed.
+      </div>
+    </div>
+
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Divergence Theorem Dashboard</div>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:10px">For <strong>F</strong> = (ax, by, cz) over a ball of radius r: Divergence Theorem gives flux = (a+b+c) &times; (4/3)&#960;r&#179;. Adjust to verify.</p>
+      <div class="slider-row">
+        <label>a (P = ax)</label>
+        <input type="range" id="dtA" min="-2" max="3" step="0.5" value="1" oninput="updateDivThm()">
+        <span class="slider-val" id="dtA_val">1.0</span>
+      </div>
+      <div class="slider-row">
+        <label>b (Q = by)</label>
+        <input type="range" id="dtB" min="-2" max="3" step="0.5" value="1" oninput="updateDivThm()">
+        <span class="slider-val" id="dtB_val">1.0</span>
+      </div>
+      <div class="slider-row">
+        <label>c (R = cz)</label>
+        <input type="range" id="dtC" min="-2" max="3" step="0.5" value="1" oninput="updateDivThm()">
+        <span class="slider-val" id="dtC_val">1.0</span>
+      </div>
+      <div class="slider-row">
+        <label>Ball radius r</label>
+        <input type="range" id="dtR" min="0.5" max="2" step="0.1" value="1" oninput="updateDivThm()">
+        <span class="slider-val" id="dtR_val">1.0</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><span class="label">div F = a+b+c</span><br><span class="value indigo" id="dtDiv">3.0</span></div>
+        <div class="readout-item"><span class="label">Ball volume</span><br><span class="value" id="dtVol">4.19</span></div>
+        <div class="readout-item"><span class="label">&#8748;&#8748;&#8748; div F dV</span><br><span class="value green" id="dtVolInt">12.57</span></div>
+        <div class="readout-item"><span class="label">Outward flux</span><br><span class="value green" id="dtFlux">12.57</span></div>
+      </div>
+    </div>
+
+    <div class="navy-context">
+      <strong>Navy context:</strong> The Divergence Theorem gives <strong>Archimedes' principle</strong> a rigorous field-theoretic proof. Buoyancy force = &#8748;&#8748;<sub>S</sub> (-p<strong>n</strong>) dS where p = &#961;gz. By Divergence Theorem: &#8748;&#8748;&#8748;<sub>V</sub> &#8711;p dV = &#8748;&#8748;&#8748;<sub>V</sub> &#961;g<strong>k</strong> dV = &#961;gV<strong>k</strong>, the weight of displaced fluid. This is why submarines in ballast computations use volume integrals rather than surface pressure integration.
+    </div>
+
+    <div class="practice-block"><div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="s5p1">
+        <p><strong>1.</strong> Use the Divergence Theorem to find flux of <strong>F</strong> = (x&#178;, y&#178;, z&#178;) out of the unit cube [0,1]&#179;. div F = 2x + 2y + 2z. By symmetry: &#8748;&#8748;&#8748; 2x dV = 2 &times; (1/2) = 1, and same for y and z. Total = ?</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p1_in" placeholder="flux =">
+          <button class="btn btn-sm" onclick="checkNum('s5p1_in',3,0.05,'s5p1_fb','s5','s5p1')">Check</button>
+        </div>
+        <div class="feedback" id="s5p1_fb"></div>
+      </div>
+
+      <div class="problem" id="s5p2">
+        <p><strong>2.</strong> Stokes' theorem says &#8750;<sub>C</sub> <strong>F</strong>&middot;d<strong>r</strong> = &#8748;&#8748;<sub>S</sub> (&#8711;&times;<strong>F</strong>)&middot;d<strong>S</strong>. If curl <strong>F</strong> = <strong>0</strong> everywhere, what is &#8750;<sub>C</sub> <strong>F</strong>&middot;d<strong>r</strong> for any closed curve?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'correct','s5p2_fb','s5','s5p2')">0 -- the integral vanishes for any closed curve</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s5p2_fb','s5','s5p2')">It depends on the shape of C</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s5p2_fb','s5','s5p2')">Cannot determine without knowing F explicitly</button>
+        </div>
+        <div class="feedback" id="s5p2_fb"></div>
+      </div>
+
+      <div class="problem" id="s5p3">
+        <p><strong>3.</strong> Green's theorem is a special case of Stokes' theorem when the surface S lies in the:</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s5p3_fb','s5','s5p3')">xz-plane</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','s5p3_fb','s5','s5p3')">xy-plane (z = 0, normal n = k)</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','s5p3_fb','s5','s5p3')">yz-plane</button>
+        </div>
+        <div class="feedback" id="s5p3_fb"></div>
+      </div>
+
+      <div class="problem" id="s5p4">
+        <p><strong>4.</strong> For <strong>F</strong> = (y, -x, z), use Stokes' over the disk of radius 2 in xy-plane (n = <strong>k</strong>). curl <strong>F</strong> = (0, 0, -2). Flux of curl = -2 &times; &#960;(2&#178;) = -8&#960;. Compute -8&#960; to 3 decimal places.</p>
+        <div class="problem-input-row">
+          <input type="number" id="s5p4_in" placeholder="circ. =">
+          <button class="btn btn-sm" onclick="checkNum('s5p4_in',-25.133,0.1,'s5p4_fb','s5','s5p4')">Check</button>
+        </div>
+        <div class="feedback" id="s5p4_fb"></div>
+      </div>
+
+    </div>
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- FINAL QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="quiz">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num" style="background:var(--amber-dim);color:var(--amber)">Q</span> Final Quiz &mdash; 10 Questions</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / <span id="quizTotal">10</span></span>
+      <span style="font-size:.72rem;color:var(--text-dim)">Answer all questions to test your mastery of vector calculus</span>
+    </div>
+
+    <div class="quiz-q" id="qq1">
+      <div class="q-num">Question 1</div>
+      <div class="q-text">A vector field <strong>F</strong> is conservative if and only if:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">div F = 0 everywhere</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">curl F is nonzero</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',true)">curl F = 0 on a simply connected domain (equivalently, F = &#8711;f)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq1',false)">div F is constant everywhere</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq2">
+      <div class="q-num">Question 2</div>
+      <div class="q-text">Compute div <strong>F</strong> for <strong>F</strong> = (x&#179;, y&#178;, z):</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">x&#179; + y&#178; + z</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',true)">3x&#178; + 2y + 1</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">3x + 2y + 1</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq2',false)">0 (F is solenoidal)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq3">
+      <div class="q-num">Question 3</div>
+      <div class="q-text">Green's Theorem converts &#8750;<sub>C</sub> P dx + Q dy into a double integral of:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">&#8706;P/&#8706;x + &#8706;Q/&#8706;y over D</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',true)">&#8706;Q/&#8706;x &minus; &#8706;P/&#8706;y over D</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">&#8706;P/&#8706;y &minus; &#8706;Q/&#8706;x over D</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq3',false)">P + Q over D</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq4">
+      <div class="q-num">Question 4</div>
+      <div class="q-text">Work done by <strong>F</strong> = &#8711;f moving from point A to point B equals:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">&#8747; |F| ds (arc length integral)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">0 always (conservative fields do no work)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',true)">f(B) &minus; f(A) (path independent)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq4',false)">Depends on the specific path taken from A to B</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq5">
+      <div class="q-num">Question 5</div>
+      <div class="q-text">For <strong>F</strong> = (-y, x, 0), the z-component of curl <strong>F</strong> (= &#8706;Q/&#8706;x &minus; &#8706;P/&#8706;y) is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">0</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">-2</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',true)">2 &nbsp;(= 1 &minus; (-1) = 1 + 1)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq5',false)">1</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq6">
+      <div class="q-num">Question 6</div>
+      <div class="q-text">The Divergence Theorem (Gauss's Theorem) states:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">&#8750;<sub>C</sub> F&middot;dr = &#8748;&#8748;<sub>S</sub> (curl F)&middot;dS</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">&#8750;<sub>C</sub> P dx + Q dy = &#8748;&#8748;<sub>D</sub> (&#8706;Q/&#8706;x - &#8706;P/&#8706;y) dA</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',true)">&#8748;&#8748;<sub>S</sub> F&middot;dS = &#8748;&#8748;&#8748;<sub>V</sub> (div F) dV for a closed surface S</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq6',false)">&#8748;&#8748; f dA = &#8747; f ds along the boundary</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq7">
+      <div class="q-num">Question 7</div>
+      <div class="q-text">A solenoidal vector field satisfies:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">curl F = 0</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',true)">div F = 0 (no sources or sinks)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">F = &#8711;f for a potential function f</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq7',false)">&#8750;<sub>C</sub> F&middot;dr = 0 for all closed curves</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq8">
+      <div class="q-num">Question 8</div>
+      <div class="q-text">Stokes' Theorem converts &#8750;<sub>C</sub> <strong>F</strong>&middot;d<strong>r</strong> into:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">&#8748;&#8748;&#8748;<sub>V</sub> div F dV over the enclosed volume</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',true)">&#8748;&#8748;<sub>S</sub> (curl F)&middot;dS over any surface bounded by C</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">&#8748;&#8748;<sub>S</sub> F&middot;dS over the surface</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq8',false)">&#8747;<sub>C</sub> |F| ds (scalar line integral)</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq9">
+      <div class="q-num">Question 9</div>
+      <div class="q-text">For <strong>F</strong> = (x, y, z), div F = 3. The Divergence Theorem gives flux through the unit sphere as 3 &times; (4/3)&#960;. This equals:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">3&#960;</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">6&#960;</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',true)">4&#960;</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq9',false)">2&#960;</button>
+      </div>
+    </div>
+
+    <div class="quiz-q" id="qq10">
+      <div class="q-num">Question 10</div>
+      <div class="q-text">The surface area element for a surface z = g(x,y) is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">dx dy &nbsp;(flat projection, ignoring tilt)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">&#8730;(g<sub>x</sub>&#178; + g<sub>y</sub>&#178;) dA &nbsp;(missing the +1)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',true)">&#8730;(1 + g<sub>x</sub>&#178; + g<sub>y</sub>&#178;) dA &nbsp;(correct tilt factor)</button>
+        <button class="choice-btn" onclick="quizAnswer(this,'qq10',false)">(1 + g<sub>x</sub> + g<sub>y</sub>) dA &nbsp;(not squared)</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ==================== TOGGLE SECTIONS ====================
+function toggleSection(hdr){
+  const card = hdr.closest('.section-card');
+  card.classList.toggle('open');
+}
+
+// ==================== PROGRESS TRACKING ====================
+const TOTAL_SECTIONS = 5;
+const sectionDone = {s1:new Set(),s2:new Set(),s3:new Set(),s4:new Set(),s5:new Set()};
+const sectionTotal = {s1:4,s2:4,s3:4,s4:4,s5:4};
+let completedSections = new Set();
+
+function updateProgress(){
+  const pct = (completedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+function tryCompleteSection(secKey){
+  if(sectionDone[secKey].size >= sectionTotal[secKey] && !completedSections.has(secKey)){
+    completedSections.add(secKey);
+    const num = secKey.replace('s','');
+    const el = document.querySelector('[data-section="'+num+'"]');
+    if(el) el.classList.add('completed');
+    updateProgress();
+  }
+}
+
+// ==================== ANIMATION HELPERS ====================
+function springPop(el){
+  el.classList.remove('pop','shake');
+  void el.offsetWidth;
+  el.classList.add('pop');
+}
+function shakeEl(el){
+  el.classList.remove('pop','shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+}
+
+// ==================== CHECK FUNCTIONS ====================
+function checkNum(inputId, correct, tol, fbId, secKey, probId){
+  const inp = document.getElementById(inputId);
+  const fb  = document.getElementById(fbId);
+  const val = parseFloat(inp.value);
+  if(isNaN(val)){
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Enter a numeric value.';
+    shakeEl(inp); return;
+  }
+  if(Math.abs(val - correct) <= tol){
+    fb.className = 'feedback correct';
+    fb.innerHTML = 'Correct! ' + numHint(correct);
+    springPop(inp);
+    if(secKey && probId){
+      sectionDone[secKey].add(probId);
+      tryCompleteSection(secKey);
+    }
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Expected: ' + correct + '. Review the setup and try again.';
+    shakeEl(inp);
+  }
+}
+
+function numHint(v){
+  const m = {
+    3: '&#8706;(x&#178;y + y&#179;)/&#8706;y = x&#178; + 3y&#178;, coefficient is 3.',
+    2: 'f(1,1) - f(0,0) = 2 - 0 = 2. Path independence confirmed.',
+    1.718: 'f(&#960;/2,1) - f(0,0) = (1 + e) - (0 + 1) = e - 1 &#8776; 1.718.',
+    4: '&#8747;<sub>0</sub><sup>1</sup> (1&#183;2 + 2&#183;1) dt = 4.',
+    0: '6t&#178; = 0 only when t = 0.',
+    12: '3 &#215; 4 = 12.',
+    3.742: '&#8730;14 &#8776; 3.742.',
+    12.566: '4&#960; &#8776; 12.566.',
+    3: '1 + 1 + 1 = 3.',
+    '-25.133': '-8&#960; &#8776; -25.133.'
+  };
+  return m[v] || '';
+}
+
+function checkMC(btn, result, fbId, secKey, probId){
+  const container = btn.closest('.mc-choices');
+  const fb = document.getElementById(fbId);
+  if(result === 'correct'){
+    container.querySelectorAll('button').forEach(b => { b.classList.add('disabled'); b.style.pointerEvents='none'; });
+    btn.classList.add('correct');
+    if(fb){ fb.className='feedback correct'; fb.textContent='Correct!'; }
+    springPop(btn);
+    if(secKey && probId){
+      sectionDone[secKey].add(probId);
+      tryCompleteSection(secKey);
+    }
+  } else {
+    btn.classList.add('wrong');
+    btn.style.pointerEvents = 'none';
+    if(fb){ fb.className='feedback incorrect'; fb.textContent='Not correct -- review the concept and try another option.'; }
+    shakeEl(btn);
+  }
+}
+
+// ==================== QUIZ ====================
+let quizScore = 0;
+const quizAnswered = new Set();
+
+function quizAnswer(btn, qId, isCorrect){
+  if(quizAnswered.has(qId)) return;
+  quizAnswered.add(qId);
+  const qDiv = document.getElementById(qId);
+  qDiv.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
+  if(isCorrect){
+    btn.classList.add('selected-correct');
+    springPop(btn);
+    quizScore++;
+  } else {
+    btn.classList.add('selected-wrong');
+    shakeEl(btn);
+    // Reveal the correct one
+    qDiv.querySelectorAll('.choice-btn').forEach(b => {
+      if(b !== btn && b.getAttribute('onclick') && b.getAttribute('onclick').includes('true')){
+        b.classList.add('reveal-correct');
+      }
+    });
+  }
+  document.getElementById('quizScore').textContent = quizScore;
+}
+
+// ==================== VECTOR FIELD CANVAS ====================
+const VF = {
+  gradient:{ label:'Gradient', p:(x,y)=>x,  q:(x,y)=>y,  div:2,  curl:0, cons:'Yes', pot:'(x\u00b2+y\u00b2)/2' },
+  rot:     { label:'Rotational',p:(x,y)=>-y, q:(x,y)=>x,  div:0,  curl:2, cons:'No',  pot:'None' },
+  sink:    { label:'Sink',      p:(x,y)=>-x, q:(x,y)=>-y, div:-2, curl:0, cons:'Yes', pot:'-(x\u00b2+y\u00b2)/2' },
+  shear:   { label:'Shear',     p:(x,y)=>y,  q:(x,y)=>x,  div:0,  curl:0, cons:'Yes', pot:'xy' },
+  saddle:  { label:'Saddle',    p:(x,y)=>x,  q:(x,y)=>-y, div:0,  curl:0, cons:'Yes', pot:'(x\u00b2-y\u00b2)/2' }
+};
+
+function drawVectorField(){
+  const key = document.getElementById('vfSelect').value;
+  const d = VF[key];
+  const canvas = document.getElementById('vfCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0,0,W,H);
+
+  const PAD = 30, N = 13;
+  const gw = W - 2*PAD, gh = H - 2*PAD;
+
+  // Axes
+  ctx.strokeStyle = '#4b5563'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(PAD, H/2); ctx.lineTo(W-PAD, H/2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W/2, PAD); ctx.lineTo(W/2, H-PAD); ctx.stroke();
+
+  // Arrows
+  for(let i = 0; i <= N; i++){
+    for(let j = 0; j <= N; j++){
+      const rx = (i/N)*4 - 2;
+      const ry = 2 - (j/N)*4;
+      const px = d.p(rx, ry);
+      const qy = d.q(rx, ry);
+      const mag = Math.sqrt(px*px + qy*qy);
+      if(mag < 0.001) continue;
+
+      const nx = px/mag, ny = qy/mag;
+      const len = Math.min(mag * 14, 18);
+      const cx2 = PAD + (i/N)*gw;
+      const cy2 = PAD + (j/N)*gh;
+      const ex = cx2 + nx*len;
+      const ey = cy2 - ny*len;
+
+      const t = Math.min(mag/2.5, 1);
+      const ri = Math.round(99  + t*(236-99));
+      const gi = Math.round(102 + t*(72-102));
+      const bi = Math.round(241 + t*(153-241));
+      const col = `rgba(${ri},${gi},${bi},0.8)`;
+      ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 1.3;
+
+      ctx.beginPath(); ctx.moveTo(cx2, cy2); ctx.lineTo(ex, ey); ctx.stroke();
+
+      const ang = Math.atan2(-ny, nx), as = 4;
+      ctx.beginPath();
+      ctx.moveTo(ex, ey);
+      ctx.lineTo(ex - as*Math.cos(ang-0.4), ey - as*Math.sin(ang-0.4));
+      ctx.lineTo(ex - as*Math.cos(ang+0.4), ey - as*Math.sin(ang+0.4));
+      ctx.closePath(); ctx.fill();
+    }
+  }
+
+  ctx.fillStyle = '#6b7280'; ctx.font = '10px JetBrains Mono,monospace';
+  ctx.fillText(d.label, PAD+4, H-6);
+
+  document.getElementById('vfType').textContent = d.label;
+  document.getElementById('vfConservative').textContent = d.cons;
+  document.getElementById('vfConservative').className = 'value ' + (d.cons==='Yes'?'green':'pink');
+  document.getElementById('vfDiv').textContent = d.div;
+  document.getElementById('vfCurl').textContent = d.curl;
+  document.getElementById('vfPotential').textContent = d.pot;
+}
+
+// ==================== GREEN'S THEOREM ====================
+function updateGreens(){
+  const r = parseFloat(document.getElementById('gtR').value);
+  document.getElementById('gtR_val').textContent = r.toFixed(1);
+
+  // F = (-y, x): ∮ F·dr = 2πr², ∬(∂Q/∂x-∂P/∂y)dA = ∬2 dA = 2πr²
+  const val = (2 * Math.PI * r * r).toFixed(2);
+  const area = (Math.PI * r * r).toFixed(2);
+  document.getElementById('gtLine').textContent = val;
+  document.getElementById('gtDouble').textContent = val;
+  document.getElementById('gtArea').textContent = area;
+  document.getElementById('gtMatch').textContent = 'YES';
+
+  const canvas = document.getElementById('gtCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#1a1d24'; ctx.fillRect(0,0,W,H);
+
+  const cx = W/2, cy = H/2;
+  const maxR = Math.min(W,H)/2 - 20;
+  const pxR = Math.min(r/2.5 * maxR, maxR);
+
+  ctx.beginPath(); ctx.arc(cx,cy,pxR,0,2*Math.PI);
+  ctx.fillStyle = 'rgba(99,102,241,0.1)'; ctx.fill();
+  ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2.5; ctx.stroke();
+
+  // CCW arrow at rightmost point
+  ctx.fillStyle = '#6366f1';
+  ctx.beginPath();
+  ctx.moveTo(cx+pxR, cy-8);
+  ctx.lineTo(cx+pxR+10, cy);
+  ctx.lineTo(cx+pxR, cy+8);
+  ctx.closePath(); ctx.fill();
+
+  // Axes
+  ctx.strokeStyle = '#363b47'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(20,cy); ctx.lineTo(W-20,cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx,20); ctx.lineTo(cx,H-20); ctx.stroke();
+
+  ctx.fillStyle = '#9ca3af'; ctx.font='10px JetBrains Mono,monospace';
+  ctx.fillText('r='+r.toFixed(1), cx+pxR*0.4, cy-pxR*0.55);
+  ctx.fillText('CCW', cx-18, cy-pxR-6);
+}
+
+// ==================== DIV/CURL CALCULATOR ====================
+function computeDivCurl(){
+  const a=+document.getElementById('Pax').value||0, b=+document.getElementById('Pby').value||0, c=+document.getElementById('Pcz').value||0;
+  const dd=+document.getElementById('Qdx').value||0, e=+document.getElementById('Qey').value||0, f=+document.getElementById('Qfz').value||0;
+  const g=+document.getElementById('Rgx').value||0, h=+document.getElementById('Rhy').value||0, k=+document.getElementById('Rkz').value||0;
+
+  // div F = ∂P/∂x + ∂Q/∂y + ∂R/∂z = a + e + k
+  const divF = a + e + k;
+  // curl F:
+  // i: ∂R/∂y - ∂Q/∂z = h - f
+  // j: ∂P/∂z - ∂R/∂x = c - g
+  // k: ∂Q/∂x - ∂P/∂y = d - b
+  const ci = h - f, cj = c - g, ck = dd - b;
+
+  const fc = (v,s) => v===0?'':(v===1?'+'+s:v===-1?'-'+s:(v>0?'+'+v:v)+s);
+  const fmtComp = (ax,bx,cx2) => {
+    let s = fc(ax,'x')+fc(bx,'y')+fc(cx2,'z');
+    return s ? (s[0]==='+' ? s.slice(1) : s) : '0';
+  };
+
+  const out = document.getElementById('dcOutput');
+  out.innerHTML =
+    '<div class="calc-label"><strong>F</strong> = ('+fmtComp(a,b,c)+')<strong>i</strong> + ('+fmtComp(dd,e,f)+')<strong>j</strong> + ('+fmtComp(g,h,k)+')<strong>k</strong></div>'+
+    '<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:14px">'+
+      '<div><span style="color:var(--text-dim);font-size:.65rem">div F = &#8706;P/&#8706;x + &#8706;Q/&#8706;y + &#8706;R/&#8706;z</span><br>'+
+      '<span style="color:var(--amber);font-weight:600">'+a+' + '+e+' + '+k+' = '+divF+'</span></div>'+
+      '<div><span style="color:var(--text-dim);font-size:.65rem">curl F components</span><br>'+
+      '<span style="color:var(--pink);font-weight:600">('+ci+', '+cj+', '+ck+')</span></div>'+
+      '<div><span style="color:var(--text-dim);font-size:.65rem">Irrotational?</span><br>'+
+      '<span style="color:'+(ci===0&&cj===0&&ck===0?'var(--green)':'var(--pink)')+';font-weight:600">'+(ci===0&&cj===0&&ck===0?'YES (curl=0)':'NO')+'</span></div>'+
+      '<div><span style="color:var(--text-dim);font-size:.65rem">Solenoidal?</span><br>'+
+      '<span style="color:'+(divF===0?'var(--green)':'var(--pink)')+';font-weight:600">'+(divF===0?'YES (div=0)':'NO')+'</span></div>'+
+    '</div>';
+}
+
+// ==================== FLUX ESTIMATOR ====================
+function updateFlux(){
+  const c = parseFloat(document.getElementById('fluxC').value);
+  const r = parseFloat(document.getElementById('fluxR').value);
+  document.getElementById('fluxC_val').textContent = c.toFixed(1);
+  document.getElementById('fluxR_val').textContent = r.toFixed(1);
+  const area = Math.PI*r*r;
+  const flux = c*area;
+  document.getElementById('fluxField').textContent = '(0, 0, '+c.toFixed(1)+')';
+  document.getElementById('fluxArea').textContent = (area).toFixed(2);
+  document.getElementById('fluxVal').textContent = flux.toFixed(2);
+  const dirEl = document.getElementById('fluxDir');
+  dirEl.textContent = flux>0?'Outward':flux<0?'Inward':'Zero flow';
+  dirEl.className = 'value '+(flux>0?'green':flux<0?'pink':'');
+}
+
+// ==================== DIVERGENCE THEOREM DASHBOARD ====================
+function updateDivThm(){
+  const a=parseFloat(document.getElementById('dtA').value);
+  const b=parseFloat(document.getElementById('dtB').value);
+  const c=parseFloat(document.getElementById('dtC').value);
+  const r=parseFloat(document.getElementById('dtR').value);
+  document.getElementById('dtA_val').textContent = a.toFixed(1);
+  document.getElementById('dtB_val').textContent = b.toFixed(1);
+  document.getElementById('dtC_val').textContent = c.toFixed(1);
+  document.getElementById('dtR_val').textContent = r.toFixed(1);
+  const divF = a+b+c;
+  const vol  = (4/3)*Math.PI*r*r*r;
+  const result = divF*vol;
+  document.getElementById('dtDiv').textContent = divF.toFixed(1);
+  document.getElementById('dtVol').textContent = vol.toFixed(2);
+  document.getElementById('dtVolInt').textContent = result.toFixed(2);
+  document.getElementById('dtFlux').textContent = result.toFixed(2);
+}
+
+// ==================== INIT ====================
+window.addEventListener('load', function(){
+  drawVectorField();
+  updateGreens();
+  updateFlux();
+  updateDivThm();
+  computeDivCurl();
+  updateProgress();
+});
+</script>
+</body>
+</html>

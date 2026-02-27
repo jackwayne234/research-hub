@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 22: AC Circuits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:99999px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:130px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:130px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:70px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:4px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:90px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>22</span> AC Circuits</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 5 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: AC FUNDAMENTALS -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> AC Fundamentals</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Alternating current (AC) differs from DC in that the voltage and current reverse direction periodically. The voltage and current vary sinusoidally with time: <strong>V(t) = V_max sin(&omega;t)</strong> and <strong>I(t) = I_max sin(&omega;t)</strong>. The <strong>angular frequency</strong> &omega; = 2&pi;f relates to the ordinary frequency f in Hz. The <strong>period</strong> T = 1/f is the time for one complete cycle.
+    </p>
+    <p class="concept-text">
+      Because AC oscillates between +V_max and -V_max, the simple average of V(t) over a full cycle is zero. Instead, we use the <strong>root-mean-square (RMS)</strong> value, which represents the equivalent DC value for power delivery. For a sinusoid, <strong>V_rms = V_max / &radic;2 &asymp; 0.707 V_max</strong> and similarly I_rms = I_max / &radic;2. The standard household supply of <strong>120 V</strong> in the US is an RMS value; the peak voltage is actually &asymp;170 V.
+    </p>
+
+    <div class="formula-box large">V(t) = V<sub>max</sub> sin(&omega;t) &nbsp;&nbsp; | &nbsp;&nbsp; I(t) = I<sub>max</sub> sin(&omega;t)</div>
+    <div class="formula-box green">&omega; = 2&pi;f &nbsp;&nbsp; | &nbsp;&nbsp; T = 1/f &nbsp;&nbsp; | &nbsp;&nbsp; f = &omega; / (2&pi;)</div>
+    <div class="formula-box amber">V<sub>rms</sub> = V<sub>max</sub> / &radic;2 &nbsp;&nbsp; | &nbsp;&nbsp; I<sub>rms</sub> = I<sub>max</sub> / &radic;2</div>
+    <div class="key-point">Household 120 V (US) is the RMS voltage. The actual peak swings to &plusmn;169.7 V. The RMS value is what matters for power calculations and is what voltmeters read on AC circuits.</div>
+
+    <!-- INTERACTIVE: AC Waveform Display -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: AC Waveform Visualizer</div>
+      <div class="slider-row">
+        <label>V<sub>max</sub> (V)</label>
+        <input type="range" id="w1Vmax" min="20" max="200" value="120" step="5" oninput="drawWaveform()">
+        <span class="slider-val" id="w1VmaxVal">120 V</span>
+      </div>
+      <div class="slider-row">
+        <label>Frequency (Hz)</label>
+        <input type="range" id="w1Freq" min="10" max="200" value="60" step="5" oninput="drawWaveform()">
+        <span class="slider-val" id="w1FreqVal">60 Hz</span>
+      </div>
+      <div class="slider-row">
+        <label>Phase diff &phi; (deg)</label>
+        <input type="range" id="w1Phase" min="-90" max="90" value="0" step="5" oninput="drawWaveform()">
+        <span class="slider-val" id="w1PhaseVal">0&deg;</span>
+      </div>
+      <canvas id="waveCanvas" width="860" height="160" style="width:100%;display:block;border-radius:6px;margin-top:8px"></canvas>
+      <div class="readout">
+        <div class="readout-item"><span class="label">V<sub>max</sub></span><br><span class="value indigo" id="w1RVmax">--</span></div>
+        <div class="readout-item"><span class="label">V<sub>rms</sub></span><br><span class="value indigo" id="w1RVrms">--</span></div>
+        <div class="readout-item"><span class="label">I<sub>max</sub></span><br><span class="value green" id="w1RImax">--</span></div>
+        <div class="readout-item"><span class="label">I<sub>rms</sub></span><br><span class="value green" id="w1RIrms">--</span></div>
+        <div class="readout-item"><span class="label">Period T</span><br><span class="value amber" id="w1RT">--</span></div>
+        <div class="readout-item"><span class="label">&omega; (rad/s)</span><br><span class="value pink" id="w1ROmega">--</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem">
+        <p>P1.1 — A household outlet has V_rms = 120 V. What is the peak voltage V_max? (round to 1 decimal, in V)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1_1" placeholder="V_max (V)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1_1','fb1_1',169.7,1)">Check</button>
+        </div>
+        <div class="feedback" id="fb1_1"></div>
+      </div>
+
+      <div class="problem">
+        <p>P1.2 — An AC source has V_max = 340 V at f = 50 Hz. What is &omega; in rad/s? (round to 1 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1_2" placeholder="&omega; (rad/s)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1_2','fb1_2',314.2,1)">Check</button>
+        </div>
+        <div class="feedback" id="fb1_2"></div>
+      </div>
+
+      <div class="problem">
+        <p>P1.3 — An AC current has I_rms = 5.0 A. What is I_max in amperes? (round to 2 decimal places)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1_3" placeholder="I_max (A)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1_3','fb1_3',7.07,2)">Check</button>
+        </div>
+        <div class="feedback" id="fb1_3"></div>
+      </div>
+
+      <div class="problem">
+        <p>P1.4 — An AC source operates at &omega; = 377 rad/s. What is the period T in milliseconds? (round to 2 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1_4" placeholder="T (ms)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1_4','fb1_4',16.67,2)">Check</button>
+        </div>
+        <div class="feedback" id="fb1_4"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: RESISTORS IN AC -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Resistors in AC</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      In a purely resistive AC circuit, the voltage and current are <strong>in phase</strong> — they reach their peaks and zeros at exactly the same times. Ohm's law applies instantaneously: V(t) = I(t) &middot; R. This means V_max = I_max &middot; R and V_rms = I_rms &middot; R. Resistors behave the same for AC as for DC when RMS values are used.
+    </p>
+    <p class="concept-text">
+      The instantaneous power is p(t) = V(t) &middot; I(t) = V_max I_max sin&sup2;(&omega;t), which oscillates between 0 and V_max I_max. The <strong>average power</strong> delivered equals half the peak: <strong>P_avg = &frac12; V_max I_max = V_rms I_rms</strong>. This is the same formula as DC power using RMS values.
+    </p>
+
+    <div class="formula-box large">V<sub>R</sub>(t) = I(t) &middot; R &nbsp;&nbsp; (V and I in phase)</div>
+    <div class="formula-box green">P<sub>avg</sub> = &frac12; V<sub>max</sub> I<sub>max</sub> = V<sub>rms</sub> I<sub>rms</sub> = I<sub>rms</sub>&sup2; R = V<sub>rms</sub>&sup2; / R</div>
+    <div class="key-point">For purely resistive circuits: phase difference = 0. Power factor = 1. All voltage drives current — no energy is stored and released as with reactive components. RMS values follow identical rules to DC Ohm's law.</div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem">
+        <p>P2.1 — A 50 &ohm; resistor is connected to a 120 V_rms source. What is I_rms in amperes? (round to 2 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2_1" placeholder="I_rms (A)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2_1','fb2_1',2.4,2)">Check</button>
+        </div>
+        <div class="feedback" id="fb2_1"></div>
+      </div>
+
+      <div class="problem">
+        <p>P2.2 — A resistor draws I_max = 3.0 A from a V_max = 150 V AC source. What is P_avg in watts? (round to 1 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2_2" placeholder="P_avg (W)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2_2','fb2_2',225.0,1)">Check</button>
+        </div>
+        <div class="feedback" id="fb2_2"></div>
+      </div>
+
+      <div class="problem">
+        <p>P2.3 — A 100 &ohm; resistor is on a 240 V_rms circuit. How much average power does it dissipate in watts? (round to 1 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2_3" placeholder="P (W)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2_3','fb2_3',576.0,1)">Check</button>
+        </div>
+        <div class="feedback" id="fb2_3"></div>
+      </div>
+
+      <div class="problem">
+        <p>P2.4 — In a resistive AC circuit, V_rms = 85 V and P_avg = 170 W. What is the resistance R in ohms? (round to 2 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2_4" placeholder="R (&ohm;)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2_4','fb2_4',42.5,2)">Check</button>
+        </div>
+        <div class="feedback" id="fb2_4"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: CAPACITORS & INDUCTORS IN AC -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Capacitors &amp; Inductors in AC</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      Reactive components (capacitors and inductors) introduce a <strong>phase shift</strong> between voltage and current, and their opposition to AC flow depends on frequency. This frequency-dependent resistance is called <strong>reactance X</strong>, measured in ohms.
+    </p>
+    <p class="concept-text">
+      <strong>Capacitive reactance</strong>: X_C = 1/(&omega;C). At high frequencies, a capacitor passes current easily (low X_C). At low or DC frequencies, it blocks current (high X_C &rarr; &infin;). In a capacitor, the <strong>voltage lags the current by 90&deg;</strong> (or equivalently, current leads voltage by 90&deg;). Memory aid: "ICE" — current (I) before voltage (E) in a Capacitor.
+    </p>
+    <p class="concept-text">
+      <strong>Inductive reactance</strong>: X_L = &omega;L. Inductors oppose changes in current. At high frequencies, they block current (high X_L). At DC, they are just wire (X_L = 0). In an inductor, the <strong>voltage leads the current by 90&deg;</strong>. Memory aid: "ELI" — voltage (E) before current (I) in an Inductor.
+    </p>
+
+    <div class="formula-box large">X<sub>C</sub> = 1/(&omega;C) = 1/(2&pi;fC) &nbsp;&nbsp; (V lags I by 90&deg;)</div>
+    <div class="formula-box pink">X<sub>L</sub> = &omega;L = 2&pi;fL &nbsp;&nbsp; (V leads I by 90&deg;)</div>
+    <div class="formula-box amber">"ELI the ICE man" — Inductor: V leads I &nbsp;|&nbsp; Capacitor: I leads V</div>
+    <div class="key-point">Reactive components store and release energy — they do NOT dissipate average power (P_avg = 0 for a pure capacitor or inductor). The voltage and current are 90&deg; out of phase, so positive and negative power half-cycles cancel exactly.</div>
+
+    <!-- INTERACTIVE: Phasor Diagram -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Phasor Diagram — RLC Voltages</div>
+      <div class="slider-row">
+        <label>R (&ohm;)</label>
+        <input type="range" id="ph_R" min="10" max="300" value="100" step="5" oninput="drawPhasor()">
+        <span class="slider-val" id="ph_RVal">100 &ohm;</span>
+      </div>
+      <div class="slider-row">
+        <label>L (mH)</label>
+        <input type="range" id="ph_L" min="1" max="200" value="50" step="1" oninput="drawPhasor()">
+        <span class="slider-val" id="ph_LVal">50 mH</span>
+      </div>
+      <div class="slider-row">
+        <label>C (&mu;F)</label>
+        <input type="range" id="ph_C" min="1" max="200" value="50" step="1" oninput="drawPhasor()">
+        <span class="slider-val" id="ph_CVal">50 &mu;F</span>
+      </div>
+      <div class="slider-row">
+        <label>&omega; (rad/s)</label>
+        <input type="range" id="ph_W" min="50" max="3000" value="500" step="25" oninput="drawPhasor()">
+        <span class="slider-val" id="ph_WVal">500 rad/s</span>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-top:10px">
+        <svg id="phasorSvg" width="280" height="280" viewBox="-140 -140 280 280" style="flex-shrink:0;width:min(280px,100%)"></svg>
+        <div style="flex:1;min-width:200px">
+          <div class="readout" style="flex-direction:column;gap:10px">
+            <div class="readout-item"><span class="label">X<sub>L</sub> = &omega;L</span><br><span class="value pink" id="ph_XL">--</span></div>
+            <div class="readout-item"><span class="label">X<sub>C</sub> = 1/&omega;C</span><br><span class="value green" id="ph_XC">--</span></div>
+            <div class="readout-item"><span class="label">Z = &radic;(R&sup2;+(X<sub>L</sub>-X<sub>C</sub>)&sup2;)</span><br><span class="value indigo" id="ph_Z">--</span></div>
+            <div class="readout-item"><span class="label">Phase &phi;</span><br><span class="value amber" id="ph_Phi">--</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem">
+        <p>P3.1 — A 100 &mu;F capacitor is connected to a 60 Hz AC source. What is X_C in ohms? (round to 2 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p3_1" placeholder="X_C (&ohm;)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p3_1','fb3_1',26.53,2)">Check</button>
+        </div>
+        <div class="feedback" id="fb3_1"></div>
+      </div>
+
+      <div class="problem">
+        <p>P3.2 — A 200 mH inductor is in an AC circuit at f = 400 Hz. What is X_L in ohms? (round to 1 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p3_2" placeholder="X_L (&ohm;)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p3_2','fb3_2',502.7,1)">Check</button>
+        </div>
+        <div class="feedback" id="fb3_2"></div>
+      </div>
+
+      <div class="problem">
+        <p>P3.3 — At what frequency f does a 50 mH inductor have X_L = 100 &ohm;? (round to 2 decimal, answer in Hz)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p3_3" placeholder="f (Hz)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p3_3','fb3_3',318.31,2)">Check</button>
+        </div>
+        <div class="feedback" id="fb3_3"></div>
+      </div>
+
+      <div class="problem">
+        <p>P3.4 — A capacitor has X_C = 200 &ohm; at f = 1000 Hz. What is its capacitance C in &mu;F? (round to 3 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p3_4" placeholder="C (&mu;F)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p3_4','fb3_4',0.796,3)">Check</button>
+        </div>
+        <div class="feedback" id="fb3_4"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: RLC SERIES CIRCUIT -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> RLC Series Circuit</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When R, L, and C are in series with an AC source, we combine their effects using <strong>impedance Z</strong> — the total opposition to AC current flow. Because the resistive voltage drop (V_R) is in phase with current while the reactive drops (V_L, V_C) are each 90&deg; out of phase, we cannot add them algebraically; we must use the Pythagorean theorem in phasor space.
+    </p>
+    <p class="concept-text">
+      The impedance is <strong>Z = &radic;(R&sup2; + (X_L - X_C)&sup2;)</strong>. The <strong>phase angle &phi; = arctan((X_L - X_C) / R)</strong> tells us how much the source voltage leads the current: &phi; &gt; 0 means inductive behavior (V leads I), &phi; &lt; 0 means capacitive behavior (I leads V). The RMS current is simply <strong>I_rms = V_rms / Z</strong>.
+    </p>
+    <p class="concept-text">
+      The <strong>power factor</strong> cos &phi; represents the fraction of apparent power (V_rms &middot; I_rms) that actually does useful work. <strong>P_avg = V_rms I_rms cos &phi; = I_rms&sup2; R</strong>. Only the resistive component dissipates real power — the reactive components store and return energy each cycle.
+    </p>
+
+    <div class="formula-box large">Z = &radic;(R&sup2; + (X<sub>L</sub> - X<sub>C</sub>)&sup2;) &nbsp;&nbsp; | &nbsp;&nbsp; I<sub>rms</sub> = V<sub>rms</sub> / Z</div>
+    <div class="formula-box pink">&phi; = arctan((X<sub>L</sub> - X<sub>C</sub>) / R)</div>
+    <div class="formula-box green">P<sub>avg</sub> = V<sub>rms</sub> I<sub>rms</sub> cos &phi; = I<sub>rms</sub>&sup2; R &nbsp;&nbsp; | &nbsp;&nbsp; power factor = cos &phi;</div>
+    <div class="key-point">Apparent power S = V_rms I_rms (VA). Real power P = S cos &phi; (W). Reactive power Q = S sin &phi; (VAR). In a purely resistive circuit cos &phi; = 1 and all apparent power is real. In a purely reactive circuit cos &phi; = 0 and no real power is delivered.</div>
+
+    <!-- INTERACTIVE: Power Factor Calculator -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Power Factor Calculator</div>
+      <div class="two-col">
+        <div>
+          <div class="slider-row">
+            <label>R (&ohm;)</label>
+            <input type="range" id="pf_R" min="0" max="500" value="100" step="10" oninput="updatePF()">
+            <span class="slider-val" id="pf_RVal">100 &ohm;</span>
+          </div>
+          <div class="slider-row">
+            <label>X<sub>L</sub> (&ohm;)</label>
+            <input type="range" id="pf_XL" min="0" max="500" value="200" step="10" oninput="updatePF()">
+            <span class="slider-val" id="pf_XLVal">200 &ohm;</span>
+          </div>
+          <div class="slider-row">
+            <label>X<sub>C</sub> (&ohm;)</label>
+            <input type="range" id="pf_XC" min="0" max="500" value="50" step="10" oninput="updatePF()">
+            <span class="slider-val" id="pf_XCVal">50 &ohm;</span>
+          </div>
+          <div class="slider-row">
+            <label>V<sub>rms</sub> (V)</label>
+            <input type="range" id="pf_V" min="10" max="240" value="120" step="10" oninput="updatePF()">
+            <span class="slider-val" id="pf_VVal">120 V</span>
+          </div>
+        </div>
+        <div>
+          <div class="readout" style="flex-direction:column;gap:10px">
+            <div class="readout-item"><span class="label">Z (&ohm;)</span><br><span class="value indigo" id="pf_Z">--</span></div>
+            <div class="readout-item"><span class="label">I<sub>rms</sub> (A)</span><br><span class="value green" id="pf_I">--</span></div>
+            <div class="readout-item"><span class="label">Phase &phi;</span><br><span class="value pink" id="pf_Phi">--</span></div>
+            <div class="readout-item"><span class="label">Power Factor cos&phi;</span><br><span class="value amber" id="pf_PF">--</span></div>
+            <div class="readout-item"><span class="label">Real Power P (W)</span><br><span class="value green" id="pf_P">--</span></div>
+            <div class="readout-item"><span class="label">Apparent Power S (VA)</span><br><span class="value indigo" id="pf_S">--</span></div>
+          </div>
+        </div>
+      </div>
+      <canvas id="pfCanvas" width="860" height="100" style="width:100%;display:block;border-radius:6px;margin-top:8px"></canvas>
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem">
+        <p>P4.1 — An RLC series circuit has R = 30 &ohm;, X_L = 80 &ohm;, X_C = 40 &ohm;. What is Z in ohms? (round to 2 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p4_1" placeholder="Z (&ohm;)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p4_1','fb4_1',50.0,2)">Check</button>
+        </div>
+        <div class="feedback" id="fb4_1"></div>
+      </div>
+
+      <div class="problem">
+        <p>P4.2 — For P4.1, a V_rms = 100 V source is applied. What is I_rms in amperes? (round to 2 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p4_2" placeholder="I_rms (A)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p4_2','fb4_2',2.0,2)">Check</button>
+        </div>
+        <div class="feedback" id="fb4_2"></div>
+      </div>
+
+      <div class="problem">
+        <p>P4.3 — For P4.1, what is the phase angle &phi; in degrees? (round to 2 decimal; positive = inductive)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p4_3" placeholder="&phi; (&deg;)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p4_3','fb4_3',53.13,2)">Check</button>
+        </div>
+        <div class="feedback" id="fb4_3"></div>
+      </div>
+
+      <div class="problem">
+        <p>P4.4 — A circuit has Z = 75 &ohm;, &phi; = 30&deg;, V_rms = 150 V. What is the average real power P in watts? (round to 1 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p4_4" placeholder="P (W)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p4_4','fb4_4',259.8,1)">Check</button>
+        </div>
+        <div class="feedback" id="fb4_4"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: RESONANCE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Resonance</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Resonance</strong> in an RLC series circuit occurs at the frequency where X_L = X_C. At this frequency, the reactive components cancel each other, leaving only R as the total impedance. Setting X_L = X_C: &omega;L = 1/(&omega;C), which gives the <strong>resonant angular frequency &omega;_0 = 1/&radic;(LC)</strong> and <strong>resonant frequency f_0 = 1/(2&pi;&radic;(LC))</strong>.
+    </p>
+    <p class="concept-text">
+      At resonance: Z is at its minimum (Z = R), current I_rms = V_rms/R is at maximum, phase angle &phi; = 0, and power factor = 1 (maximum real power). The voltage across L and C individually can be much larger than the source voltage — they cancel when added but are large individually.
+    </p>
+    <p class="concept-text">
+      The <strong>quality factor Q = &omega;_0 L / R</strong> describes the sharpness of the resonance peak. A high-Q circuit has a narrow bandwidth and passes only a narrow range of frequencies. The <strong>bandwidth BW = f_0 / Q = R / (2&pi;L)</strong>. Applications include AM/FM radio tuning (selecting one station's frequency), bandpass filters, and antenna circuits.
+    </p>
+
+    <div class="formula-box large">&omega;<sub>0</sub> = 1/&radic;(LC) &nbsp;&nbsp; | &nbsp;&nbsp; f<sub>0</sub> = 1/(2&pi;&radic;(LC))</div>
+    <div class="formula-box green">At resonance: Z = R (min), I<sub>rms</sub> = V<sub>rms</sub>/R (max), &phi; = 0</div>
+    <div class="formula-box pink">Q = &omega;<sub>0</sub>L / R &nbsp;&nbsp; | &nbsp;&nbsp; BW = f<sub>0</sub>/Q = R/(2&pi;L)</div>
+    <div class="key-point">Radio tuners exploit resonance: by adjusting C (variable capacitor), you shift f_0 to match the desired station's broadcast frequency. Only that frequency drives maximum current through the circuit — all others are attenuated. Higher Q = more selective = better station separation.</div>
+
+    <!-- INTERACTIVE: RLC Resonance Explorer -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: RLC Resonance Explorer — Z vs Frequency</div>
+      <div class="slider-row">
+        <label>R (&ohm;)</label>
+        <input type="range" id="res_R" min="5" max="300" value="50" step="5" oninput="drawResonance()">
+        <span class="slider-val" id="res_RVal">50 &ohm;</span>
+      </div>
+      <div class="slider-row">
+        <label>L (mH)</label>
+        <input type="range" id="res_L" min="1" max="200" value="40" step="1" oninput="drawResonance()">
+        <span class="slider-val" id="res_LVal">40 mH</span>
+      </div>
+      <div class="slider-row">
+        <label>C (&mu;F)</label>
+        <input type="range" id="res_C" min="1" max="200" value="40" step="1" oninput="drawResonance()">
+        <span class="slider-val" id="res_CVal">40 &mu;F</span>
+      </div>
+      <canvas id="resCanvas" width="860" height="200" style="width:100%;display:block;border-radius:6px;margin-top:8px"></canvas>
+      <div class="readout">
+        <div class="readout-item"><span class="label">f<sub>0</sub> (Hz)</span><br><span class="value indigo" id="res_F0">--</span></div>
+        <div class="readout-item"><span class="label">Z<sub>min</sub> = R</span><br><span class="value green" id="res_Zmin">--</span></div>
+        <div class="readout-item"><span class="label">Q factor</span><br><span class="value pink" id="res_Q">--</span></div>
+        <div class="readout-item"><span class="label">Bandwidth (Hz)</span><br><span class="value amber" id="res_BW">--</span></div>
+      </div>
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem">
+        <p>P5.1 — An RLC circuit has L = 25 mH and C = 100 &mu;F. What is the resonant frequency f_0 in Hz? (round to 2 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p5_1" placeholder="f_0 (Hz)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p5_1','fb5_1',100.66,2)">Check</button>
+        </div>
+        <div class="feedback" id="fb5_1"></div>
+      </div>
+
+      <div class="problem">
+        <p>P5.2 — At resonance with R = 20 &ohm; and V_rms = 50 V, what is the maximum I_rms? (round to 2 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p5_2" placeholder="I_rms (A)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p5_2','fb5_2',2.5,2)">Check</button>
+        </div>
+        <div class="feedback" id="fb5_2"></div>
+      </div>
+
+      <div class="problem">
+        <p>P5.3 — An RLC circuit has L = 10 mH, C = 10 nF, R = 5 &ohm;. What is the Q factor? (round to 1 decimal; use f_0 = 1/(2&pi;&radic;LC) to find &omega;_0)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p5_3" placeholder="Q">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p5_3','fb5_3',200.0,0)">Check</button>
+        </div>
+        <div class="feedback" id="fb5_3"></div>
+      </div>
+
+      <div class="problem">
+        <p>P5.4 — A series RLC circuit resonates at f_0 = 1 MHz. If L = 10 &mu;H, what must C be in pF? (round to 2 decimal)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p5_4" placeholder="C (pF)">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p5_4','fb5_4',2.53,2)">Check</button>
+        </div>
+        <div class="feedback" id="fb5_4"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- QUIZ SECTION -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="quiz">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num" style="background:var(--amber-dim);color:var(--amber)">Q</span> 10-Question Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+    <div class="quiz-score">
+      <span class="score-text">Score: <span id="quizScore">0</span> / <span id="quizTotal">10</span></span>
+      <span style="font-size:.75rem;color:var(--text-dim)" id="quizStatus">Answer all questions</span>
+    </div>
+    <div id="quizContainer"></div>
+  </div></div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ============================================================
+// SECTION TOGGLE & PROGRESS
+// ============================================================
+const TOTAL_SECTIONS = 5;
+let completedSections = new Set();
+
+function toggleSection(hdr) {
+  const card = hdr.closest('.section-card');
+  card.classList.toggle('open');
+}
+
+function markCompleted(sectionNum) {
+  completedSections.add(sectionNum);
+  document.querySelectorAll('.section-card').forEach(card => {
+    const sn = card.getAttribute('data-section');
+    if (completedSections.has(Number(sn))) {
+      card.classList.add('completed');
+    }
+  });
+  const pct = (completedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+// ============================================================
+// FEEDBACK HELPERS
+// ============================================================
+function springPop(el) {
+  el.classList.remove('pop','shake');
+  void el.offsetWidth;
+  el.classList.add('pop');
+}
+function doShake(el) {
+  el.classList.remove('pop','shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+}
+
+function checkNum(inputId, fbId, answer, decimals) {
+  const input = document.getElementById(inputId);
+  const fb = document.getElementById(fbId);
+  const val = parseFloat(input.value);
+  const tolerance = Math.pow(10, -decimals) * 0.6;
+  if (isNaN(val)) {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Enter a number.';
+    doShake(input);
+    return;
+  }
+  if (Math.abs(val - answer) <= Math.max(tolerance, Math.abs(answer) * 0.005)) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! Answer: ' + answer.toFixed(decimals);
+    springPop(input);
+    // check if all problems in section are done
+    const section = input.closest('.section-card');
+    if (section) {
+      const sn = parseInt(section.getAttribute('data-section'));
+      if (!isNaN(sn)) {
+        const allFb = section.querySelectorAll('.feedback.correct');
+        const allProbs = section.querySelectorAll('.problem');
+        if (allFb.length >= allProbs.length) markCompleted(sn);
+      }
+    }
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Try again. (hint: expected ~' + answer.toFixed(decimals) + ')';
+    doShake(input);
+  }
+}
+
+function checkMC(btns, chosen, correct, fbId) {
+  const fb = document.getElementById(fbId);
+  btns.forEach((b, i) => {
+    b.classList.add('disabled');
+    if (i === correct) b.classList.add('correct');
+  });
+  if (chosen === correct) {
+    btns[chosen].classList.remove('disabled');
+    btns[chosen].className = 'mc-btn correct';
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    springPop(btns[chosen]);
+  } else {
+    btns[chosen].className = 'mc-btn wrong';
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Incorrect. The correct answer is highlighted.';
+    doShake(btns[chosen]);
+  }
+}
+
+// ============================================================
+// SECTION 1: WAVEFORM CANVAS
+// ============================================================
+function drawWaveform() {
+  const Vmax = parseFloat(document.getElementById('w1Vmax').value);
+  const freq = parseFloat(document.getElementById('w1Freq').value);
+  const phaseDeg = parseFloat(document.getElementById('w1Phase').value);
+  const phase = phaseDeg * Math.PI / 180;
+
+  document.getElementById('w1VmaxVal').textContent = Vmax + ' V';
+  document.getElementById('w1FreqVal').textContent = freq + ' Hz';
+  document.getElementById('w1PhaseVal').textContent = phaseDeg + '\u00b0';
+
+  const Vrms = Vmax / Math.SQRT2;
+  const Imax = Vmax / 50; // assume 50-ohm load for visual
+  const Irms = Imax / Math.SQRT2;
+  const T = 1 / freq;
+  const omega = 2 * Math.PI * freq;
+
+  document.getElementById('w1RVmax').textContent = Vmax.toFixed(1) + ' V';
+  document.getElementById('w1RVrms').textContent = Vrms.toFixed(1) + ' V';
+  document.getElementById('w1RImax').textContent = Imax.toFixed(2) + ' A';
+  document.getElementById('w1RIrms').textContent = Irms.toFixed(2) + ' A';
+  document.getElementById('w1RT').textContent = (T * 1000).toFixed(2) + ' ms';
+  document.getElementById('w1ROmega').textContent = omega.toFixed(1) + ' rad/s';
+
+  const canvas = document.getElementById('waveCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // background
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  // axes
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(40, H/2); ctx.lineTo(W-10, H/2);
+  ctx.moveTo(40, 10); ctx.lineTo(40, H-10);
+  ctx.stroke();
+
+  // grid lines
+  ctx.setLineDash([3, 4]);
+  ctx.strokeStyle = '#2c313c';
+  for (let y = H/4; y < H; y += H/4) {
+    if (Math.abs(y - H/2) > 5) {
+      ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+  }
+  ctx.setLineDash([]);
+
+  const plotW = W - 50;
+  const cycles = 3;
+  const scaleY = (H/2 - 16) / Vmax;
+
+  // Voltage wave
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (let px = 0; px <= plotW; px++) {
+    const t = (px / plotW) * cycles * T;
+    const v = Vmax * Math.sin(omega * t);
+    const x = 40 + px;
+    const y = H/2 - v * scaleY;
+    px === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Current wave (with phase offset)
+  ctx.strokeStyle = '#22c55e';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 3]);
+  ctx.beginPath();
+  const Iscale = (H/2 - 16) / Imax;
+  for (let px = 0; px <= plotW; px++) {
+    const t = (px / plotW) * cycles * T;
+    const i = Imax * Math.sin(omega * t - phase);
+    const x = 40 + px;
+    const y = H/2 - i * Iscale;
+    px === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // RMS lines
+  ctx.strokeStyle = 'rgba(99,102,241,.4)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  ctx.moveTo(40, H/2 - Vrms*scaleY);
+  ctx.lineTo(W-10, H/2 - Vrms*scaleY);
+  ctx.moveTo(40, H/2 + Vrms*scaleY);
+  ctx.lineTo(W-10, H/2 + Vrms*scaleY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.fillStyle = '#6366f1';
+  ctx.font = '500 11px JetBrains Mono, monospace';
+  ctx.fillText('V(t)', 44, 20);
+  ctx.fillStyle = '#22c55e';
+  ctx.fillText('I(t)', 74, 20);
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.fillText('V_rms', W - 45, H/2 - Vrms*scaleY - 3);
+}
+
+drawWaveform();
+
+// ============================================================
+// SECTION 3: PHASOR DIAGRAM
+// ============================================================
+function drawPhasor() {
+  const R = parseFloat(document.getElementById('ph_R').value);
+  const Lmh = parseFloat(document.getElementById('ph_L').value);
+  const Cuf = parseFloat(document.getElementById('ph_C').value);
+  const omega = parseFloat(document.getElementById('ph_W').value);
+
+  document.getElementById('ph_RVal').textContent = R + ' \u03a9';
+  document.getElementById('ph_LVal').textContent = Lmh + ' mH';
+  document.getElementById('ph_CVal').textContent = Cuf + ' \u03bcF';
+  document.getElementById('ph_WVal').textContent = omega + ' rad/s';
+
+  const L = Lmh / 1000;
+  const C = Cuf / 1e6;
+  const XL = omega * L;
+  const XC = 1 / (omega * C);
+  const Z = Math.sqrt(R*R + (XL-XC)*(XL-XC));
+  const phi = Math.atan2(XL - XC, R);
+
+  document.getElementById('ph_XL').textContent = XL.toFixed(2) + ' \u03a9';
+  document.getElementById('ph_XC').textContent = XC.toFixed(2) + ' \u03a9';
+  document.getElementById('ph_Z').textContent = Z.toFixed(2) + ' \u03a9';
+  document.getElementById('ph_Phi').textContent = (phi * 180/Math.PI).toFixed(1) + '\u00b0';
+
+  const svg = document.getElementById('phasorSvg');
+  const maxVal = Math.max(R, XL, XC, Z, 1);
+  const scale = 110 / maxVal;
+
+  svg.innerHTML = '';
+
+  function mkEl(tag, attrs) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k, v));
+    return el;
+  }
+
+  // background
+  svg.appendChild(mkEl('rect', {x:-140,y:-140,width:280,height:280,fill:'#1a1d24',rx:6}));
+
+  // grid circles
+  [0.33, 0.66, 1.0].forEach(f => {
+    const r = f * 110;
+    svg.appendChild(mkEl('circle', {cx:0,cy:0,r,stroke:'#363b47','stroke-width':1,fill:'none'}));
+  });
+
+  // axes
+  svg.appendChild(mkEl('line', {x1:-120,y1:0,x2:120,y2:0,stroke:'#363b47','stroke-width':1}));
+  svg.appendChild(mkEl('line', {x1:0,y1:-120,x2:0,y2:120,stroke:'#363b47','stroke-width':1}));
+
+  // axis labels
+  const lR = mkEl('text',{x:115,y:14,fill:'#9ca3af','font-size':'10',fill:'#9ca3af'}); lR.textContent='+R'; svg.appendChild(lR);
+  const lX = mkEl('text',{x:4,y:-115,fill:'#ec4899','font-size':'10'}); lX.textContent='+X_L'; svg.appendChild(lX);
+  const lXc = mkEl('text',{x:4,y:125,fill:'#22c55e','font-size':'10'}); lXc.textContent='-X_C'; svg.appendChild(lXc);
+
+  function arrow(x1,y1,x2,y2,color,label,labelOff) {
+    const len = Math.sqrt((x2-x1)**2+(y2-y1)**2);
+    if (len < 2) return;
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    const line = mkEl('line',{x1,y1,x2,y2,stroke:color,'stroke-width':2.5,'stroke-linecap':'round'});
+    g.appendChild(line);
+    // arrowhead
+    const ang = Math.atan2(y2-y1, x2-x1);
+    const hs = 8;
+    const p1x = x2 - hs*Math.cos(ang-0.4);
+    const p1y = y2 - hs*Math.sin(ang-0.4);
+    const p2x = x2 - hs*Math.cos(ang+0.4);
+    const p2y = y2 - hs*Math.sin(ang+0.4);
+    const head = mkEl('polygon',{points:`${x2},${y2} ${p1x},${p1y} ${p2x},${p2y}`,fill:color});
+    g.appendChild(head);
+    if (label) {
+      const lx = (x1+x2)/2 + (labelOff ? labelOff[0] : 6);
+      const ly = (y1+y2)/2 + (labelOff ? labelOff[1] : -6);
+      const t = mkEl('text',{x:lx,y:ly,fill:color,'font-size':'11','font-weight':'600'});
+      t.textContent = label;
+      g.appendChild(t);
+    }
+    svg.appendChild(g);
+  }
+
+  // V_R phasor (along +x axis)
+  const vR = R * scale;
+  arrow(0,0, vR,0, '#e2e4e9', 'V_R', [2, -8]);
+
+  // V_L phasor (along -y axis in SVG = +y in math)
+  const vL = XL * scale;
+  arrow(0,0, 0,-vL, '#ec4899', 'V_L', [6, 0]);
+
+  // V_C phasor (along +y in SVG = -y in math)
+  const vC = XC * scale;
+  arrow(0,0, 0,vC, '#22c55e', 'V_C', [6, 0]);
+
+  // Net reactive
+  const netX = (XL - XC) * scale;
+  if (Math.abs(netX) > 3) {
+    const col = netX < 0 ? '#22c55e' : '#ec4899';
+    // dashed net
+    const dashed = mkEl('line',{x1:vR,y1:0,x2:vR,y2:-netX,stroke:col,'stroke-width':1.5,'stroke-dasharray':'4,3'});
+    svg.appendChild(dashed);
+  }
+
+  // Z phasor (total)
+  const zx = R * scale;
+  const zy = -(XL - XC) * scale;
+  arrow(0,0, zx,zy, '#6366f1', 'Z', [6, 4]);
+
+  // phi arc label
+  if (Math.abs(phi) > 0.05) {
+    const arcR = 30;
+    const startA = 0;
+    const endA = -phi;
+    const x1a = arcR*Math.cos(startA), y1a = arcR*Math.sin(startA);
+    const x2a = arcR*Math.cos(endA), y2a = arcR*Math.sin(endA);
+    const large = Math.abs(phi) > Math.PI ? 1 : 0;
+    const sweep = phi > 0 ? 0 : 1;
+    const pathD = `M ${x1a} ${y1a} A ${arcR} ${arcR} 0 ${large} ${sweep} ${x2a} ${y2a}`;
+    svg.appendChild(mkEl('path',{d:pathD,stroke:'#f59e0b','stroke-width':1.5,fill:'none'}));
+    const midA = -phi/2;
+    const lt = mkEl('text',{x:arcR*Math.cos(midA)+6,y:arcR*Math.sin(midA)-4,fill:'#f59e0b','font-size':'10'});
+    lt.textContent = '\u03c6';
+    svg.appendChild(lt);
+  }
+}
+
+drawPhasor();
+
+// ============================================================
+// SECTION 4: POWER FACTOR CANVAS
+// ============================================================
+function updatePF() {
+  const R = parseFloat(document.getElementById('pf_R').value);
+  const XL = parseFloat(document.getElementById('pf_XL').value);
+  const XC = parseFloat(document.getElementById('pf_XC').value);
+  const Vrms = parseFloat(document.getElementById('pf_V').value);
+
+  document.getElementById('pf_RVal').textContent = R + ' \u03a9';
+  document.getElementById('pf_XLVal').textContent = XL + ' \u03a9';
+  document.getElementById('pf_XCVal').textContent = XC + ' \u03a9';
+  document.getElementById('pf_VVal').textContent = Vrms + ' V';
+
+  const Z = Math.sqrt(R*R + (XL-XC)**2);
+  const phi = Math.atan2(XL-XC, R);
+  const cosPhi = Math.cos(phi);
+  const Irms = Vrms / Z;
+  const P = Vrms * Irms * cosPhi;
+  const S = Vrms * Irms;
+
+  document.getElementById('pf_Z').textContent = Z.toFixed(2) + ' \u03a9';
+  document.getElementById('pf_I').textContent = Irms.toFixed(3) + ' A';
+  document.getElementById('pf_Phi').textContent = (phi*180/Math.PI).toFixed(1) + '\u00b0';
+  document.getElementById('pf_PF').textContent = cosPhi.toFixed(3);
+  document.getElementById('pf_P').textContent = P.toFixed(2) + ' W';
+  document.getElementById('pf_S').textContent = S.toFixed(2) + ' VA';
+
+  // Draw power bar canvas
+  const canvas = document.getElementById('pfCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  const barH = 28;
+  const barY1 = 20;
+  const barY2 = 62;
+  const maxBarW = W - 160;
+
+  // Apparent power bar
+  ctx.fillStyle = '#363b47';
+  ctx.beginPath(); ctx.roundRect(120, barY1, maxBarW, barH, 4); ctx.fill();
+  ctx.fillStyle = '#6366f1';
+  ctx.beginPath(); ctx.roundRect(120, barY1, maxBarW, barH, 4); ctx.fill();
+
+  // Real power bar (overlaid)
+  ctx.fillStyle = '#22c55e';
+  ctx.beginPath(); ctx.roundRect(120, barY1, maxBarW * cosPhi, barH, 4); ctx.fill();
+
+  // Reactive power bar
+  ctx.fillStyle = '#363b47';
+  ctx.beginPath(); ctx.roundRect(120, barY2, maxBarW, barH, 4); ctx.fill();
+  const sinPhi = Math.abs(Math.sin(phi));
+  ctx.fillStyle = '#ec4899';
+  ctx.beginPath(); ctx.roundRect(120, barY2, maxBarW * sinPhi, barH, 4); ctx.fill();
+
+  ctx.fillStyle = '#e2e4e9';
+  ctx.font = '500 11px JetBrains Mono, monospace';
+  ctx.fillText('Real P vs S', 10, barY1 + 18);
+  ctx.fillText('Reactive Q', 10, barY2 + 18);
+
+  ctx.fillStyle = '#22c55e';
+  ctx.font = '600 11px JetBrains Mono, monospace';
+  ctx.fillText(P.toFixed(1)+'W / '+S.toFixed(1)+'VA', 126, barY1 + 18);
+  ctx.fillStyle = '#ec4899';
+  ctx.fillText((S*sinPhi).toFixed(1)+' VAR', 126, barY2 + 18);
+}
+
+updatePF();
+
+// ============================================================
+// SECTION 5: RESONANCE EXPLORER
+// ============================================================
+function drawResonance() {
+  const R = parseFloat(document.getElementById('res_R').value);
+  const Lmh = parseFloat(document.getElementById('res_L').value);
+  const Cuf = parseFloat(document.getElementById('res_C').value);
+
+  document.getElementById('res_RVal').textContent = R + ' \u03a9';
+  document.getElementById('res_LVal').textContent = Lmh + ' mH';
+  document.getElementById('res_CVal').textContent = Cuf + ' \u03bcF';
+
+  const L = Lmh / 1000;
+  const C = Cuf / 1e6;
+  const omega0 = 1 / Math.sqrt(L * C);
+  const f0 = omega0 / (2 * Math.PI);
+  const Q = omega0 * L / R;
+  const BW = f0 / Q;
+
+  document.getElementById('res_F0').textContent = f0.toFixed(2) + ' Hz';
+  document.getElementById('res_Zmin').textContent = R + ' \u03a9';
+  document.getElementById('res_Q').textContent = Q.toFixed(2);
+  document.getElementById('res_BW').textContent = BW.toFixed(2) + ' Hz';
+
+  const canvas = document.getElementById('resCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1d24';
+  ctx.fillRect(0, 0, W, H);
+
+  const padL = 55, padR = 20, padT = 15, padB = 35;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+
+  // frequency range: 0.05*f0 to 8*f0
+  const fMin = 0.05 * f0;
+  const fMax = 8 * f0;
+
+  // compute Z values
+  const points = [];
+  let maxZ = 0;
+  for (let i = 0; i <= plotW; i++) {
+    const f = fMin + (fMax - fMin) * (i / plotW);
+    const omega = 2 * Math.PI * f;
+    const XL = omega * L;
+    const XC = 1 / (omega * C);
+    const Z = Math.sqrt(R*R + (XL-XC)**2);
+    points.push({f, Z});
+    if (Z > maxZ) maxZ = Z;
+  }
+
+  const zMax = Math.min(maxZ, R * 30); // cap display
+
+  // grid
+  ctx.strokeStyle = '#2c313c';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3,4]);
+  for (let i = 1; i <= 4; i++) {
+    const y = padT + plotH * (1 - i/4);
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W-padR, y); ctx.stroke();
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText((zMax * i/4).toFixed(0), padL - 5, y + 4);
+  }
+  ctx.setLineDash([]);
+
+  // axes
+  ctx.strokeStyle = '#363b47';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT); ctx.lineTo(padL, padT+plotH); ctx.lineTo(W-padR, padT+plotH);
+  ctx.stroke();
+
+  // Z curve
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  points.forEach((pt, i) => {
+    const px = padL + i;
+    const py = padT + plotH * (1 - Math.min(pt.Z, zMax) / zMax);
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  });
+  ctx.stroke();
+
+  // f0 vertical line
+  const f0px = padL + plotW * ((f0 - fMin) / (fMax - fMin));
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([5,3]);
+  ctx.beginPath();
+  ctx.moveTo(f0px, padT);
+  ctx.lineTo(f0px, padT + plotH);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // f0 label
+  ctx.fillStyle = '#f59e0b';
+  ctx.font = '600 10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('f\u2080=' + f0.toFixed(0)+'Hz', f0px, padT + plotH + 22);
+
+  // Z=R marker
+  const rY = padT + plotH * (1 - Math.min(R, zMax)/zMax);
+  ctx.strokeStyle = '#22c55e';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(padL, rY); ctx.lineTo(W-padR, rY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#22c55e';
+  ctx.textAlign = 'left';
+  ctx.fillText('Z=R', padL+4, rY-3);
+
+  // axis labels
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('Frequency (Hz)', padL + plotW/2, H - 5);
+  ctx.save();
+  ctx.translate(12, padT + plotH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('Impedance Z (\u03a9)', 0, 0);
+  ctx.restore();
+}
+
+drawResonance();
+
+// ============================================================
+// QUIZ
+// ============================================================
+const quizData = [
+  {
+    q: "An AC source has V_max = 311 V. What is V_rms in volts (rounded to 1 decimal)?",
+    choices: ["219.9 V", "220.0 V", "155.5 V", "440.0 V"],
+    correct: 0
+  },
+  {
+    q: "In a purely resistive AC circuit, how do voltage and current relate in phase?",
+    choices: [
+      "Voltage leads current by 90°",
+      "Current leads voltage by 90°",
+      "They are in phase (0° difference)",
+      "They are 180° out of phase"
+    ],
+    correct: 2
+  },
+  {
+    q: "A 25 µF capacitor is connected to a 60 Hz source. What is X_C rounded to 2 decimal places?",
+    choices: ["106.10 Ω", "9.42 Ω", "53.05 Ω", "212.21 Ω"],
+    correct: 0
+  },
+  {
+    q: "For an inductor in AC, which phrase correctly describes the phase relationship?",
+    choices: [
+      "Current leads voltage by 90° (ICE)",
+      "Voltage leads current by 90° (ELI)",
+      "Voltage and current are in phase",
+      "Voltage lags current by 45°"
+    ],
+    correct: 1
+  },
+  {
+    q: "An RLC series circuit has R = 40 Ω, X_L = 70 Ω, X_C = 40 Ω. What is Z?",
+    choices: ["50.0 Ω", "70.0 Ω", "30.0 Ω", "40.0 Ω"],
+    correct: 0
+  },
+  {
+    q: "At resonance in a series RLC circuit, which statement is TRUE?",
+    choices: [
+      "Impedance Z is at maximum",
+      "Current I_rms is at minimum",
+      "X_L = X_C so Z = R (minimum impedance)",
+      "Power factor equals zero"
+    ],
+    correct: 2
+  },
+  {
+    q: "An RLC circuit has L = 100 mH, C = 100 µF. What is the resonant frequency f₀ in Hz (round to 2 decimal)?",
+    choices: ["50.33 Hz", "15.92 Hz", "100.0 Hz", "31.83 Hz"],
+    correct: 1
+  },
+  {
+    q: "A circuit has Z = 100 Ω and power factor cos φ = 0.6. If V_rms = 200 V, what is average power P?",
+    choices: ["240 W", "120 W", "200 W", "400 W"],
+    correct: 0
+  },
+  {
+    q: "An RLC circuit has R = 10 Ω, resonant frequency f₀ = 1000 Hz, L = 10 mH. What is the Q factor (round to 2 decimal)?",
+    choices: ["6.28", "62.83", "628.3", "0.628"],
+    correct: 1
+  },
+  {
+    q: "If X_C > X_L in a series RLC circuit, the circuit is predominantly:",
+    choices: [
+      "Resistive — voltage and current in phase",
+      "Inductive — voltage leads current",
+      "Capacitive — current leads voltage",
+      "At resonance"
+    ],
+    correct: 2
+  }
+];
+
+let quizScore = 0;
+let quizAnswered = 0;
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  quizData.forEach((item, qi) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-q';
+    div.innerHTML = `
+      <div class="q-num">Question ${qi+1} of ${quizData.length}</div>
+      <div class="q-text">${item.q}</div>
+      <div class="choices" id="qchoices_${qi}"></div>
+      <div class="feedback" id="qfb_${qi}"></div>
+    `;
+    const choicesDiv = div.querySelector(`#qchoices_${qi}`);
+    item.choices.forEach((ch, ci) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = ch;
+      btn.onclick = () => handleQuizAnswer(qi, ci);
+      choicesDiv.appendChild(btn);
+    });
+    container.appendChild(div);
+  });
+}
+
+function handleQuizAnswer(qi, ci) {
+  const item = quizData[qi];
+  const choices = document.querySelectorAll(`#qchoices_${qi} .choice-btn`);
+  const fb = document.getElementById(`qfb_${qi}`);
+
+  choices.forEach(b => b.classList.add('disabled'));
+
+  if (ci === item.correct) {
+    choices[ci].classList.add('selected-correct');
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct!';
+    quizScore++;
+    springPop(choices[ci]);
+  } else {
+    choices[ci].classList.add('selected-wrong');
+    choices[item.correct].classList.add('reveal-correct');
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Incorrect. The correct answer is highlighted in green.';
+    doShake(choices[ci]);
+  }
+
+  quizAnswered++;
+  document.getElementById('quizScore').textContent = quizScore;
+  if (quizAnswered === quizData.length) {
+    const pct = Math.round((quizScore / quizData.length) * 100);
+    document.getElementById('quizStatus').textContent =
+      pct >= 80 ? 'Excellent! ' + pct + '%' :
+      pct >= 60 ? 'Good effort — ' + pct + '%' :
+      'Keep reviewing — ' + pct + '%';
+  }
+}
+
+buildQuiz();
+</script>
+</body>
+</html>

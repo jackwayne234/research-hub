@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 18: Complex Numbers &amp; Complex Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:80000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;position:relative}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:130px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:110px;flex-shrink:0}
+.slider-row input[type="range"]{flex:1}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:60px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:10px 0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.controls-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.scenario-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.scenario-tab{padding:6px 14px;font-size:.7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-dim);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.scenario-tab:hover{border-color:var(--indigo)}
+.scenario-tab.active{border-color:var(--indigo);background:var(--indigo-dim);color:var(--indigo)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.sub-label{font-size:.7rem;color:var(--text-dim);margin:10px 0 4px}
+.navy-context{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.76rem;color:var(--text-dim)}
+.navy-context strong{color:var(--indigo)}
+.step-box{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:12px 0}
+.step-box .step-label{font-size:.68rem;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.step-box .step-content{font-size:.78rem;line-height:1.8}
+.step-box .step-content strong{color:var(--text-bright)}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+canvas{display:block;border-radius:8px}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>18</span> Complex Numbers &amp; Complex Analysis</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content">
+
+<!-- SECTION 1: Complex Number Basics -->
+<div class="section-card" id="sec1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span>Complex Number Basics</h2>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">A <strong>complex number</strong> z = a + bi combines a real part a and an imaginary part b, where <strong>i = &radic;(-1)</strong>. The complex number system extends the real line into a full 2D plane — the <strong>complex plane</strong> — where the horizontal axis holds real parts and the vertical axis holds imaginary parts. This single extension makes every polynomial equation solvable.</p>
+
+      <div class="formula-box large">z = a + bi &nbsp;&nbsp; where i&sup2; = &minus;1</div>
+
+      <p class="concept-text">The <strong>complex conjugate</strong> z&#772; = a &minus; bi reflects z across the real axis. The <strong>modulus</strong> |z| measures the distance from the origin to z in the complex plane. Together they satisfy |z|&sup2; = z &middot; z&#772; = a&sup2; + b&sup2;, which is just the Pythagorean theorem.</p>
+
+      <div class="formula-box green">z&#772; = a &minus; bi &nbsp;&nbsp;&nbsp; |z| = &radic;(a&sup2; + b&sup2;)</div>
+
+      <p class="concept-text"><strong>Arithmetic rules:</strong> Addition and subtraction work component-wise. Multiplication uses FOIL with i&sup2; = &minus;1. Division multiplies numerator and denominator by the conjugate of the denominator to eliminate i from the bottom.</p>
+
+      <div class="step-box">
+        <div class="step-label">Complex Arithmetic Summary</div>
+        <div class="step-content">
+          <strong>Add:</strong> (a+bi) + (c+di) = (a+c) + (b+d)i<br>
+          <strong>Multiply:</strong> (a+bi)(c+di) = (ac&minus;bd) + (ad+bc)i<br>
+          <strong>Conjugate product:</strong> z&middot;z&#772; = a&sup2;+b&sup2; = |z|&sup2;<br>
+          <strong>Divide:</strong> (a+bi)/(c+di) = [(a+bi)(c&minus;di)] / (c&sup2;+d&sup2;)
+        </div>
+      </div>
+
+      <div class="formula-box amber">Division: &nbsp; (a+bi)/(c+di) = [(ac+bd) + (bc&minus;ad)i] / (c&sup2;+d&sup2;)</div>
+
+      <div class="key-point">Geometric insight: Adding two complex numbers is vector addition. Multiplying by i rotates a vector 90&deg; counterclockwise. Multiplying by -1 rotates 180&deg;, which is why i&sup2; = -1 makes geometric sense.</div>
+
+      <div class="navy-context"><strong>Navy / EE application:</strong> Complex numbers are the native language of AC circuit analysis. Voltage and current phasors are complex numbers. A capacitor has impedance Z = 1/(j&omega;C) — a purely imaginary number — meaning it rotates the current 90&deg; from the voltage. Every circuit simulator works in complex arithmetic.</div>
+
+      <div class="interactive-area">
+        <div class="interactive-label">Interactive — Complex Plane Visualizer</div>
+        <p class="concept-text" style="font-size:.75rem;margin-bottom:8px;">Click the canvas to place <strong>z&#8321;</strong> (indigo). Click again to place <strong>z&#8322;</strong> (pink). See sum z&#8321;+z&#8322; (green) and product z&#8321;&middot;z&#8322; (amber). Right-click resets.</p>
+        <canvas id="complexPlaneCanvas" width="600" height="360" style="width:100%;max-width:600px;cursor:crosshair;background:#1a1d24;border:1px solid var(--border)"></canvas>
+        <div class="readout">
+          <div class="readout-item"><div class="label">z&#8321;</div><div class="value indigo" id="cpZ1">—</div></div>
+          <div class="readout-item"><div class="label">z&#8322;</div><div class="value pink" id="cpZ2">—</div></div>
+          <div class="readout-item"><div class="label">|z&#8321;|</div><div class="value" id="cpMod1">—</div></div>
+          <div class="readout-item"><div class="label">z&#8321;+z&#8322;</div><div class="value green" id="cpSum">—</div></div>
+          <div class="readout-item"><div class="label">z&#8321;&middot;z&#8322;</div><div class="value amber" id="cpProd">—</div></div>
+          <div class="readout-item"><div class="label">arg(z&#8321;)</div><div class="value" id="cpArg1">—</div></div>
+        </div>
+        <div class="controls-row">
+          <button class="btn btn-sm" onclick="resetComplexPlane()">Reset</button>
+          <span style="font-size:.7rem;color:var(--text-dim)">Click: place z&#8321; then z&#8322; &nbsp;|&nbsp; Right-click: reset</span>
+        </div>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+        <div class="problem">
+          <p>1. Compute (3 + 2i)(1 &minus; 4i). What is the real part of the result?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p1_1" placeholder="Re(result)">
+            <button class="btn btn-sm btn-primary" onclick="checkNum('p1_1',11,0.1)">Check</button>
+          </div>
+          <div class="feedback" id="fb_p1_1"></div>
+        </div>
+        <div class="problem">
+          <p>2. Compute (2 + 3i) / (1 + i). Give the real part of the result. <em>(Hint: multiply top and bottom by 1 &minus; i)</em></p>
+          <div class="problem-input-row">
+            <input type="number" id="p1_2" placeholder="Re(result)" step="0.5">
+            <button class="btn btn-sm btn-primary" onclick="checkNum('p1_2',2.5,0.1)">Check</button>
+          </div>
+          <div class="feedback" id="fb_p1_2"></div>
+        </div>
+        <div class="problem">
+          <p>3. What is |3 + 4i|?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p1_3" placeholder="|z|">
+            <button class="btn btn-sm btn-primary" onclick="checkNum('p1_3',5,0.05)">Check</button>
+          </div>
+          <div class="feedback" id="fb_p1_3"></div>
+        </div>
+        <div class="problem">
+          <p>4. Which property of the complex conjugate is correct?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'mc1_4','wrong')">A) z + z&#772; = 2bi (imaginary)</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc1_4','correct')">B) z &middot; z&#772; = |z|&sup2; (always real and nonneg)</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc1_4','wrong')">C) z&#772;&#772; = &minus;z</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc1_4','wrong')">D) |z&#772;| = &minus;|z|</button>
+          </div>
+          <div class="feedback" id="fb_mc1_4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: Polar & Exponential Form -->
+<div class="section-card" id="sec2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span>Polar &amp; Exponential Form</h2>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">Instead of Cartesian (a,b), we can describe any complex number by its <strong>modulus r</strong> (distance from origin) and its <strong>argument &theta;</strong> (angle from positive real axis). This polar form reveals the rotational geometry hidden in complex multiplication.</p>
+
+      <div class="formula-box large">z = r(cos&theta; + i sin&theta;) = re<sup>i&theta;</sup></div>
+
+      <p class="concept-text">The bridge between these forms is <strong>Euler's formula</strong>: e<sup>i&theta;</sup> = cos&theta; + i sin&theta;. This stunning result unifies exponential functions with trigonometry. It arises from comparing the Taylor series of e<sup>x</sup>, cos(x), and sin(x).</p>
+
+      <div class="formula-box green">Euler's Formula: &nbsp; e<sup>i&theta;</sup> = cos&theta; + i sin&theta;</div>
+      <div class="formula-box pink">Euler's Identity: &nbsp; e<sup>i&pi;</sup> + 1 = 0 &nbsp; (the most beautiful equation in math)</div>
+
+      <p class="concept-text">Converting between forms: given a + bi, find <strong>r = &radic;(a&sup2;+b&sup2;)</strong> and <strong>&theta; = arctan(b/a)</strong> (using the correct quadrant via atan2). Given (r,&theta;), recover <strong>a = r cos&theta;</strong> and <strong>b = r sin&theta;</strong>.</p>
+
+      <div class="formula-box amber">Multiplication in polar: z&#8321;z&#8322; = r&#8321;r&#8322; &middot; e<sup>i(&theta;&#8321;+&theta;&#8322;)</sup> &nbsp; (multiply moduli, add angles)</div>
+
+      <div class="key-point">Multiplying by e<sup>i&theta;</sup> is a pure rotation by &theta; radians. Multiplying by r is a pure scaling. So every complex multiplication = rotation + scaling. This is why complex numbers are so powerful for geometry and signal processing.</div>
+
+      <div class="navy-context"><strong>Signal processing:</strong> In radar and sonar, signals are represented as phasors Ae<sup>i&omega;t</sup>. The amplitude A is the modulus; &omega;t is the argument (phase). Mixing two signals multiplies their phasors: moduli multiply (amplitude product) and phases add (phase shift). All of DSP lives in this algebra.</div>
+
+      <div class="interactive-area">
+        <div class="interactive-label">Interactive — Polar Form Converter</div>
+        <p class="concept-text" style="font-size:.75rem;margin-bottom:8px;">Enter a + bi to see the polar form and visualize z on the unit circle (scaled).</p>
+        <div class="controls-row">
+          <span style="font-size:.75rem;color:var(--text-dim)">a =</span>
+          <input type="number" id="polarA" value="1" step="0.1" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.75rem;width:80px;outline:none">
+          <span style="font-size:.75rem;color:var(--text-dim)">b =</span>
+          <input type="number" id="polarB" value="1" step="0.1" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.75rem;width:80px;outline:none">
+          <button class="btn btn-sm btn-primary" onclick="updatePolar()">Convert</button>
+        </div>
+        <canvas id="polarCanvas" width="600" height="300" style="width:100%;max-width:600px;background:#1a1d24;border:1px solid var(--border);margin-top:10px"></canvas>
+        <div class="readout">
+          <div class="readout-item"><div class="label">Rectangular</div><div class="value indigo" id="polarRect">1 + 1i</div></div>
+          <div class="readout-item"><div class="label">r = |z|</div><div class="value green" id="polarR">1.414</div></div>
+          <div class="readout-item"><div class="label">&theta; (rad)</div><div class="value amber" id="polarTheta">0.785</div></div>
+          <div class="readout-item"><div class="label">&theta; (deg)</div><div class="value" id="polarThetaDeg">45.0&deg;</div></div>
+          <div class="readout-item"><div class="label">Exponential</div><div class="value pink" id="polarExp">1.414 e^(0.785i)</div></div>
+        </div>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+        <div class="problem">
+          <p>1. Write z = &minus;1 + i in polar form re<sup>i&theta;</sup>. What is r? <em>(&radic;2)</em></p>
+          <div class="problem-input-row">
+            <input type="number" id="p2_1" placeholder="r" step="0.01">
+            <button class="btn btn-sm btn-primary" onclick="checkNum('p2_1',1.4142,0.01)">Check</button>
+          </div>
+          <div class="feedback" id="fb_p2_1"></div>
+        </div>
+        <div class="problem">
+          <p>2. z = 2e<sup>i&pi;/3</sup>. What is the imaginary part b = 2sin(&pi;/3)? Give 3 decimal places.</p>
+          <div class="problem-input-row">
+            <input type="number" id="p2_2" placeholder="Im(z)" step="0.001">
+            <button class="btn btn-sm btn-primary" onclick="checkNum('p2_2',1.732,0.01)">Check</button>
+          </div>
+          <div class="feedback" id="fb_p2_2"></div>
+        </div>
+        <div class="problem">
+          <p>3. e<sup>i&pi;</sup> + 1 equals what?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'mc2_3','wrong')">A) 2</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc2_3','correct')">B) 0 (Euler's Identity)</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc2_3','wrong')">C) i</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc2_3','wrong')">D) &minus;2</button>
+          </div>
+          <div class="feedback" id="fb_mc2_3"></div>
+        </div>
+        <div class="problem">
+          <p>4. Multiply z&#8321; = 2e<sup>i&pi;/6</sup> by z&#8322; = 3e<sup>i&pi;/4</sup>. What is the modulus |z&#8321;z&#8322;|?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p2_4" placeholder="|product|">
+            <button class="btn btn-sm btn-primary" onclick="checkNum('p2_4',6,0.05)">Check</button>
+          </div>
+          <div class="feedback" id="fb_p2_4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Powers & Roots -->
+<div class="section-card" id="sec3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span>Powers &amp; Roots — De Moivre's Theorem</h2>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">In polar form, raising a complex number to a power becomes beautifully simple: just raise the modulus to that power and multiply the angle. This is <strong>De Moivre's Theorem</strong>, which follows immediately from the exponential form.</p>
+
+      <div class="formula-box large">De Moivre: &nbsp; z<sup>n</sup> = r<sup>n</sup>e<sup>in&theta;</sup> = r<sup>n</sup>(cos n&theta; + i sin n&theta;)</div>
+
+      <p class="concept-text">The <strong>nth roots</strong> of a complex number w are the n values of z satisfying z<sup>n</sup> = w. If w = Re<sup>i&phi;</sup>, then the n roots are evenly spaced around a circle of radius R<sup>1/n</sup>, separated by angle 2&pi;/n. This is one of the most elegant results in all of mathematics.</p>
+
+      <div class="formula-box green">nth roots of w = Re<sup>i&phi;</sup>: &nbsp; z<sub>k</sub> = R<sup>1/n</sup> e<sup>i(&phi;+2&pi;k)/n</sup>, &nbsp; k = 0, 1, ..., n&minus;1</div>
+
+      <p class="concept-text">The <strong>nth roots of unity</strong> are the n solutions to z<sup>n</sup> = 1. They form a perfect regular n-gon inscribed in the unit circle, with vertices at e<sup>2&pi;ik/n</sup> for k = 0,...,n&minus;1. These appear everywhere: Fourier transforms, filter design, crystallography.</p>
+
+      <div class="formula-box amber">Roots of unity: &nbsp; &omega;<sub>k</sub> = e<sup>2&pi;ik/n</sup> = cos(2&pi;k/n) + i sin(2&pi;k/n)</div>
+
+      <div class="key-point">De Moivre also proves trig identities: since (cos&theta;+i sin&theta;)&sup2; = cos2&theta;+i sin2&theta;, expanding the left side gives cos2&theta; = cos&sup2;&theta;&minus;sin&sup2;&theta; and sin2&theta; = 2sin&theta;cos&theta; automatically.</div>
+
+      <div class="navy-context"><strong>Signal processing / FFT:</strong> The Fast Fourier Transform hinges entirely on the nth roots of unity. The twiddle factors W<sub>N</sub><sup>k</sup> = e<sup>&minus;2&pi;ik/N</sup> are precisely the Nth roots of unity. Every sonar and radar signal processor runs FFTs thousands of times per second using this geometry.</div>
+
+      <div class="interactive-area">
+        <div class="interactive-label">Interactive — De Moivre Explorer &amp; Roots of Unity</div>
+        <div class="scenario-tabs" id="demoivreTabs">
+          <div class="scenario-tab active" onclick="setDemoivreMode('power',this)">Compute z^n</div>
+          <div class="scenario-tab" onclick="setDemoivreMode('roots',this)">Roots of Unity</div>
+        </div>
+        <div id="demoivrePowerPanel">
+          <p class="concept-text" style="font-size:.75rem;margin-bottom:8px;">Set z = a + bi and integer n. See z<sup>n</sup> step by step.</p>
+          <div class="controls-row">
+            <span style="font-size:.75rem;color:var(--text-dim)">a =</span>
+            <input type="number" id="dmA" value="1" step="0.1" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.75rem;width:70px;outline:none">
+            <span style="font-size:.75rem;color:var(--text-dim)">b =</span>
+            <input type="number" id="dmB" value="1" step="0.1" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.75rem;width:70px;outline:none">
+            <span style="font-size:.75rem;color:var(--text-dim)">n =</span>
+            <input type="number" id="dmN" value="3" min="1" max="12" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.75rem;width:60px;outline:none">
+            <button class="btn btn-sm btn-primary" onclick="computeDemoivre()">Compute</button>
+          </div>
+          <div id="demoivreSteps" style="font-size:.75rem;color:var(--text-dim);margin-top:8px;line-height:1.8"></div>
+        </div>
+        <div id="demoivreRootsPanel" style="display:none">
+          <div class="slider-row">
+            <label>n (roots of unity)</label>
+            <input type="range" id="unityN" min="2" max="8" step="1" value="4" oninput="updateUnity()">
+            <span class="slider-val" id="unityNval">4</span>
+          </div>
+        </div>
+        <canvas id="demoivreCanvas" width="600" height="340" style="width:100%;max-width:600px;background:#1a1d24;border:1px solid var(--border);margin-top:10px"></canvas>
+        <div class="readout" id="demoivreReadout">
+          <div class="readout-item"><div class="label">z</div><div class="value indigo" id="dmZ">1 + 1i</div></div>
+          <div class="readout-item"><div class="label">r = |z|</div><div class="value" id="dmR">1.414</div></div>
+          <div class="readout-item"><div class="label">&theta;</div><div class="value amber" id="dmTheta">45.0&deg;</div></div>
+          <div class="readout-item"><div class="label">z^n</div><div class="value green" id="dmResult">—</div></div>
+        </div>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+        <div class="problem">
+          <p>1. Compute (1+i)<sup>4</sup> using De Moivre. <em>(r = &radic;2, &theta; = &pi;/4; raise to 4th: r&sup4;=4, 4&theta;=&pi;, so result = 4(cos&pi;+i sin&pi;) = ?)</em></p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'mc3_1','wrong')">A) 4 + 4i</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc3_1','correct')">B) &minus;4</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc3_1','wrong')">C) 4i</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc3_1','wrong')">D) &minus;4i</button>
+          </div>
+          <div class="feedback" id="fb_mc3_1"></div>
+        </div>
+        <div class="problem">
+          <p>2. The cube roots of 1 are evenly spaced at 120&deg; = 2&pi;/3. What is the argument (in degrees) of the second root (&omega;<sub>1</sub>)?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p3_2" placeholder="degrees">
+            <button class="btn btn-sm btn-primary" onclick="checkNum('p3_2',120,1)">Check</button>
+          </div>
+          <div class="feedback" id="fb_p3_2"></div>
+        </div>
+        <div class="problem">
+          <p>3. Find all 4th roots of 16. What is the modulus of each root?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p3_3" placeholder="|z|">
+            <button class="btn btn-sm btn-primary" onclick="checkNum('p3_3',2,0.05)">Check</button>
+          </div>
+          <div class="feedback" id="fb_p3_3"></div>
+        </div>
+        <div class="problem">
+          <p>4. Using De Moivre, cos(3&theta;) = Re[(cos&theta;+i sin&theta;)&sup3;]. Expand to get cos(3&theta;) = ?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'mc3_4','wrong')">A) 3cos&theta; &minus; sin&sup3;&theta;</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc3_4','correct')">B) 4cos&sup3;&theta; &minus; 3cos&theta;</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc3_4','wrong')">C) cos&sup3;&theta; + 3cos&theta;sin&sup2;&theta;</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc3_4','wrong')">D) cos&sup3;&theta; &minus; sin&sup3;&theta;</button>
+          </div>
+          <div class="feedback" id="fb_mc3_4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: Complex Functions & Cauchy-Riemann -->
+<div class="section-card" id="sec4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span>Complex Functions &amp; Cauchy-Riemann Equations</h2>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">A <strong>complex function</strong> f(z) = f(x+iy) maps complex numbers to complex numbers. Writing f = u + iv where u and v are real-valued functions of (x,y), we can analyze complex functions using 2D real calculus. The function f(z) = z&sup2; becomes u = x&sup2;&minus;y&sup2; and v = 2xy.</p>
+
+      <div class="formula-box large">f(z) = u(x,y) + i v(x,y)</div>
+
+      <p class="concept-text">A function is <strong>complex differentiable</strong> (analytic / holomorphic) at a point if the limit &Delta;f/&Delta;z exists regardless of how &Delta;z approaches zero — horizontally, vertically, or diagonally. This imposes tight constraints on u and v, captured by the <strong>Cauchy-Riemann equations</strong>.</p>
+
+      <div class="formula-box green">Cauchy-Riemann: &nbsp; &part;u/&part;x = &part;v/&part;y &nbsp;&nbsp; and &nbsp;&nbsp; &part;u/&part;y = &minus;&part;v/&part;x</div>
+
+      <p class="concept-text">An <strong>analytic function</strong> satisfies the CR equations and has continuous first partials. Analytic functions have remarkable properties: they are infinitely differentiable, equal their Taylor series, and their real and imaginary parts are both <strong>harmonic</strong> (&nabla;&sup2;u = 0).</p>
+
+      <div class="formula-box amber">Analytic &rArr; u and v both harmonic: &nbsp; &nabla;&sup2;u = u<sub>xx</sub> + u<sub>yy</sub> = 0</div>
+
+      <div class="step-box">
+        <div class="step-label">Checking analyticity: example f(z) = z&sup2;</div>
+        <div class="step-content">
+          z&sup2; = (x+iy)&sup2; = x&sup2;&minus;y&sup2; + 2xyi, so u = x&sup2;&minus;y&sup2;, v = 2xy<br>
+          <strong>CR check 1:</strong> &part;u/&part;x = 2x &nbsp;=&nbsp; &part;v/&part;y = 2x &nbsp; &#10003;<br>
+          <strong>CR check 2:</strong> &part;u/&part;y = &minus;2y &nbsp;=&nbsp; &minus;&part;v/&part;x = &minus;2y &nbsp; &#10003;<br>
+          Both satisfied everywhere &rArr; f(z) = z&sup2; is entire (analytic on all of &Copf;)
+        </div>
+      </div>
+
+      <p class="concept-text"><strong>Conformal mappings</strong>: analytic functions with nonzero derivative preserve angles between curves. The map f(z) = z&sup2; doubles all angles. Conformal maps are used to transform complicated domains into simple ones for solving PDEs — the Joukowski transform turns a circle into an airfoil cross-section.</p>
+
+      <div class="formula-box pink">Conformal: f analytic, f'(z) &ne; 0 &rArr; f preserves angles between intersecting curves</div>
+
+      <div class="key-point">The CR equations are extremely restrictive. Most real functions of two variables are NOT the real part of any analytic function. For instance, f(z) = z&#772; (conjugate) fails CR everywhere: &part;x/&part;x = 1 &ne; &minus;1 = &part;(&minus;y)/&part;y. Complex conjugation is NOT analytic.</div>
+
+      <div class="navy-context"><strong>Fluid dynamics / sonar:</strong> For 2D irrotational, incompressible flow, the velocity potential &phi; and stream function &psi; satisfy CR exactly. The complex potential w = &phi; + i&psi; is analytic. Naval architects use conformal mappings (Joukowski) to compute flow around ship hull cross-sections analytically.</div>
+
+      <div class="interactive-area">
+        <div class="interactive-label">Interactive — CR Equation Checker</div>
+        <p class="concept-text" style="font-size:.75rem;margin-bottom:8px;">Select a function and see whether it satisfies the Cauchy-Riemann equations, with partial derivatives computed symbolically.</p>
+        <div class="scenario-tabs" id="crTabs">
+          <div class="scenario-tab active" onclick="setCRFunc('zsq',this)">f(z)=z&sup2;</div>
+          <div class="scenario-tab" onclick="setCRFunc('ez',this)">f(z)=e<sup>z</sup></div>
+          <div class="scenario-tab" onclick="setCRFunc('conj',this)">f(z)=z&#772;</div>
+          <div class="scenario-tab" onclick="setCRFunc('absz',this)">f(z)=|z|&sup2;</div>
+        </div>
+        <div id="crDisplay" style="margin-top:12px"></div>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+        <div class="problem">
+          <p>1. For f(z) = z&sup2;, u = x&sup2;&minus;y&sup2;. Compute &part;u/&part;x.</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'mc4_1','wrong')">A) &minus;2y</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc4_1','correct')">B) 2x</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc4_1','wrong')">C) 2x&minus;2y</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc4_1','wrong')">D) x&sup2;</button>
+          </div>
+          <div class="feedback" id="fb_mc4_1"></div>
+        </div>
+        <div class="problem">
+          <p>2. For f(z) = e<sup>z</sup> = e<sup>x</sup>cos y + i e<sup>x</sup>sin y, verify CR: &part;u/&part;x = e<sup>x</sup>cos y. Does &part;v/&part;y equal this?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'mc4_2','correct')">A) Yes — &part;(e<sup>x</sup>sin y)/&part;y = e<sup>x</sup>cos y &#10003;</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc4_2','wrong')">B) No — &part;v/&part;y = e<sup>x</sup>sin y</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc4_2','wrong')">C) No — &part;v/&part;y = &minus;e<sup>x</sup>cos y</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc4_2','wrong')">D) The CR equations don't apply to e<sup>z</sup></button>
+          </div>
+          <div class="feedback" id="fb_mc4_2"></div>
+        </div>
+        <div class="problem">
+          <p>3. f(z) = x (i.e., u=x, v=0). Is this analytic? Check CR: &part;u/&part;x = 1 vs &part;v/&part;y = 0.</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'mc4_3','wrong')">A) Yes, it's analytic</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc4_3','correct')">B) No — CR fails (&part;u/&part;x &ne; &part;v/&part;y)</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc4_3','wrong')">C) Analytic only on the imaginary axis</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc4_3','wrong')">D) Need more information</button>
+          </div>
+          <div class="feedback" id="fb_mc4_3"></div>
+        </div>
+        <div class="problem">
+          <p>4. What do both u and v of an analytic function f = u+iv satisfy?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'mc4_4','wrong')">A) The wave equation u<sub>tt</sub> = c&sup2;u<sub>xx</sub></button>
+            <button class="mc-btn" onclick="checkMC(this,'mc4_4','correct')">B) Laplace's equation &nabla;&sup2;u = u<sub>xx</sub> + u<sub>yy</sub> = 0</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc4_4','wrong')">C) The heat equation u<sub>t</sub> = u<sub>xx</sub></button>
+            <button class="mc-btn" onclick="checkMC(this,'mc4_4','wrong')">D) The Cauchy equation xu<sub>x</sub> + yu<sub>y</sub> = u</button>
+          </div>
+          <div class="feedback" id="fb_mc4_4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: Applications -->
+<div class="section-card" id="sec5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span>Applications</h2>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <p class="concept-text">Complex numbers aren't just abstract algebra — they are the operating system of modern engineering and physics. The Fundamental Theorem of Algebra guarantees every degree-n polynomial has exactly n roots (counting multiplicity) in &Copf;. This is why real polynomials factor completely over the complex numbers.</p>
+
+      <div class="formula-box large">Fundamental Theorem: every p(z) = a<sub>n</sub>z<sup>n</sup> + ... + a<sub>0</sub> has exactly n roots in &Copf;</div>
+
+      <p class="concept-text"><strong>AC Circuit Analysis:</strong> In AC circuits, the imaginary unit j (engineers use j instead of i) turns differential equations into algebra. The impedance of a resistor is R (real), inductor jωL (imaginary), and capacitor 1/(jωC) (imaginary). Total impedance Z = R + jX combines them. Ohm's law becomes V = IZ in complex arithmetic.</p>
+
+      <div class="formula-box green">Impedance: &nbsp; Z = R + jX &nbsp;&nbsp; |Z| = &radic;(R&sup2;+X&sup2;) &nbsp;&nbsp; phase = arctan(X/R)</div>
+
+      <p class="concept-text"><strong>Fourier Transform:</strong> The Fourier transform decomposes signals into complex exponentials e<sup>2&pi;ift</sup>. The transform F(&omega;) = &int; f(t) e<sup>&minus;i&omega;t</sup> dt is complex-valued — the modulus |F(&omega;)| gives the amplitude spectrum and the argument arg(F(&omega;)) gives the phase spectrum. This is the mathematical backbone of all digital communications.</p>
+
+      <div class="formula-box amber">Fourier: &nbsp; F(&omega;) = &int;<sub>&minus;&infin;</sub><sup>&infin;</sup> f(t) e<sup>&minus;i&omega;t</sup> dt</div>
+
+      <p class="concept-text"><strong>Mandelbrot Set:</strong> The most famous fractal is defined by the simple iteration z<sub>n+1</sub> = z<sub>n</sub>&sup2; + c, starting at z<sub>0</sub> = 0. A complex parameter c belongs to the Mandelbrot set if this sequence stays bounded. The infinite complexity of the boundary emerges from this two-line algorithm — a testament to the richness hidden in complex arithmetic.</p>
+
+      <div class="formula-box pink">Mandelbrot iteration: &nbsp; z&#8321; = c, &nbsp; z<sub>n+1</sub> = z<sub>n</sub>&sup2; + c &nbsp; (c &isin; M if sequence stays bounded)</div>
+
+      <div class="key-point">Real complex roots of real polynomials always come in conjugate pairs. If z = a+bi is a root of p(x) with real coefficients, then z&#772; = a&minus;bi is also a root. This means the complex roots of a real polynomial factor as (x&minus;z)(x&minus;z&#772;) = x&sup2;&minus;2ax+(a&sup2;+b&sup2;) — a real quadratic.</div>
+
+      <div class="navy-context"><strong>Radar / communications:</strong> The entire modern communications stack — from shipboard radio to satellite uplinks — relies on complex baseband representation. I/Q (in-phase/quadrature) signals are literally the real and imaginary parts of a complex exponential. Every software-defined radio, every GPS receiver, every 5G modem operates in complex number arithmetic.</div>
+
+      <div class="interactive-area">
+        <div class="interactive-label">Interactive — AC Impedance Calculator</div>
+        <p class="concept-text" style="font-size:.75rem;margin-bottom:8px;">Set R (ohms), L (henries), C (farads), and &omega; (rad/s) to compute complex impedance Z = R + j(&omega;L &minus; 1/(&omega;C)).</p>
+        <div class="controls-row" style="flex-wrap:wrap;gap:10px">
+          <span style="font-size:.72rem;color:var(--text-dim)">R=</span>
+          <input type="number" id="acR" value="50" min="0" step="10" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.72rem;width:70px;outline:none">
+          <span style="font-size:.72rem;color:var(--text-dim)">L(mH)=</span>
+          <input type="number" id="acL" value="10" min="0" step="1" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.72rem;width:60px;outline:none">
+          <span style="font-size:.72rem;color:var(--text-dim)">C(&mu;F)=</span>
+          <input type="number" id="acC" value="100" min="0.1" step="10" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.72rem;width:70px;outline:none">
+          <span style="font-size:.72rem;color:var(--text-dim)">f(Hz)=</span>
+          <input type="number" id="acF" value="1000" min="1" step="100" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.72rem;width:80px;outline:none">
+          <button class="btn btn-sm btn-primary" onclick="computeImpedance()">Compute Z</button>
+        </div>
+        <canvas id="impedanceCanvas" width="600" height="260" style="width:100%;max-width:600px;background:#1a1d24;border:1px solid var(--border);margin-top:10px"></canvas>
+        <div class="readout">
+          <div class="readout-item"><div class="label">R (&Omega;)</div><div class="value" id="acRout">50</div></div>
+          <div class="readout-item"><div class="label">X = X<sub>L</sub>&minus;X<sub>C</sub> (&Omega;)</div><div class="value pink" id="acXout">—</div></div>
+          <div class="readout-item"><div class="label">|Z| (&Omega;)</div><div class="value green" id="acMagOut">—</div></div>
+          <div class="readout-item"><div class="label">Phase</div><div class="value amber" id="acPhaseOut">—</div></div>
+          <div class="readout-item"><div class="label">Z = R + jX</div><div class="value indigo" id="acZout">—</div></div>
+        </div>
+      </div>
+
+      <div class="practice-block">
+        <div class="practice-title">Practice Problems</div>
+        <div class="problem">
+          <p>1. How many roots does p(z) = z<sup>5</sup> &minus; 3z&sup2; + 2 have in &Copf; (counting multiplicity)?</p>
+          <div class="problem-input-row">
+            <input type="number" id="p5_1" placeholder="# roots">
+            <button class="btn btn-sm btn-primary" onclick="checkNum('p5_1',5,0)">Check</button>
+          </div>
+          <div class="feedback" id="fb_p5_1"></div>
+        </div>
+        <div class="problem">
+          <p>2. A series RLC circuit has R=10&Omega;, X<sub>L</sub>=20&Omega;, X<sub>C</sub>=5&Omega;. What is |Z|? <em>(X = X<sub>L</sub>&minus;X<sub>C</sub> = 15, |Z|=&radic;(10&sup2;+15&sup2;))</em></p>
+          <div class="problem-input-row">
+            <input type="number" id="p5_2" placeholder="|Z| ohms" step="0.01">
+            <button class="btn btn-sm btn-primary" onclick="checkNum('p5_2',18.028,0.05)">Check</button>
+          </div>
+          <div class="feedback" id="fb_p5_2"></div>
+        </div>
+        <div class="problem">
+          <p>3. The Mandelbrot iteration z<sub>n+1</sub> = z<sub>n</sub>&sup2; + c. For c = 0, starting at z&#8321; = 0, the sequence is?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'mc5_3','correct')">A) 0, 0, 0, ... (bounded, c=0 is in Mandelbrot set)</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc5_3','wrong')">B) 0, 1, 1, 1, ... (diverges to 1)</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc5_3','wrong')">C) 0, i, &minus;1+i, ... (diverges)</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc5_3','wrong')">D) Undefined for c=0</button>
+          </div>
+          <div class="feedback" id="fb_mc5_3"></div>
+        </div>
+        <div class="problem">
+          <p>4. If 3 &minus; 2i is a root of a polynomial with real coefficients, which is also a root?</p>
+          <div class="mc-choices">
+            <button class="mc-btn" onclick="checkMC(this,'mc5_4','wrong')">A) 3 + 3i</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc5_4','correct')">B) 3 + 2i (complex conjugate)</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc5_4','wrong')">C) &minus;3 + 2i</button>
+            <button class="mc-btn" onclick="checkMC(this,'mc5_4','wrong')">D) &minus;3 &minus; 2i</button>
+          </div>
+          <div class="feedback" id="fb_mc5_4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: QUIZ -->
+<div class="section-card" id="sec6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span>Lesson 18 Quiz — 10 Questions</h2>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="section-body">
+    <div class="section-inner">
+      <div class="quiz-score">
+        <span class="score-text">Score: <span id="quizScore">0</span> / 10</span>
+        <span style="font-size:.75rem;color:var(--text-dim)">Select answers below</span>
+      </div>
+
+      <div class="quiz-q" id="qq1">
+        <div class="q-num">Question 1</div>
+        <div class="q-text">What is (2 + 3i)(2 &minus; 3i)?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(this,'qq1','wrong')">A) 4 + 9i</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq1','wrong')">B) 4 &minus; 9</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq1','correct')">C) 13 (real number)</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq1','wrong')">D) 13i</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq2">
+        <div class="q-num">Question 2</div>
+        <div class="q-text">The modulus |4 + 3i| equals:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(this,'qq2','wrong')">A) 7</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq2','correct')">B) 5</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq2','wrong')">C) &radic;7</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq2','wrong')">D) 25</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq3">
+        <div class="q-num">Question 3</div>
+        <div class="q-text">Euler's formula states e<sup>i&theta;</sup> = ?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(this,'qq3','wrong')">A) sin&theta; + i cos&theta;</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq3','correct')">B) cos&theta; + i sin&theta;</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq3','wrong')">C) e<sup>&theta;</sup>(cos 1 + i sin 1)</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq3','wrong')">D) cosh&theta; + i sinh&theta;</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq4">
+        <div class="q-num">Question 4</div>
+        <div class="q-text">Using De Moivre's Theorem, (cos 20&deg; + i sin 20&deg;)<sup>9</sup> = ?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(this,'qq4','wrong')">A) cos 20&deg; + i sin 20&deg;</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq4','wrong')">B) cos 180&deg; + i sin 180&deg; = &minus;1</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq4','correct')">C) cos 180&deg; + i sin 180&deg; = &minus;1 (9 &times; 20&deg; = 180&deg;)</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq4','wrong')">D) cos 29&deg; + i sin 29&deg;</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq5">
+        <div class="q-num">Question 5</div>
+        <div class="q-text">The 6th roots of unity are spaced how far apart on the unit circle?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(this,'qq5','wrong')">A) 45&deg; apart</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq5','wrong')">B) 90&deg; apart</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq5','correct')">C) 60&deg; apart (360/6 = 60)</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq5','wrong')">D) 30&deg; apart</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq6">
+        <div class="q-num">Question 6</div>
+        <div class="q-text">The Cauchy-Riemann equations for f = u + iv are:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(this,'qq6','wrong')">A) u<sub>x</sub> = v<sub>x</sub> and u<sub>y</sub> = v<sub>y</sub></button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq6','correct')">B) u<sub>x</sub> = v<sub>y</sub> and u<sub>y</sub> = &minus;v<sub>x</sub></button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq6','wrong')">C) u<sub>x</sub> = &minus;v<sub>y</sub> and u<sub>y</sub> = v<sub>x</sub></button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq6','wrong')">D) u<sub>xx</sub> + u<sub>yy</sub> = v<sub>xx</sub> + v<sub>yy</sub></button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq7">
+        <div class="q-num">Question 7</div>
+        <div class="q-text">Is f(z) = z&#772; (complex conjugate, u=x, v=&minus;y) analytic?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(this,'qq7','wrong')">A) Yes, everywhere</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq7','correct')">B) No — CR fails: u<sub>x</sub>=1 &ne; v<sub>y</sub>=&minus;1</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq7','wrong')">C) Only on the real axis</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq7','wrong')">D) Only at z = 0</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq8">
+        <div class="q-num">Question 8</div>
+        <div class="q-text">In AC circuit analysis, a capacitor with capacitance C at frequency &omega; has impedance:</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(this,'qq8','wrong')">A) j&omega;C</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq8','correct')">B) 1/(j&omega;C) = &minus;j/(&omega;C)</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq8','wrong')">C) R + j&omega;C</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq8','wrong')">D) &omega;C</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq9">
+        <div class="q-num">Question 9</div>
+        <div class="q-text">Euler's identity e<sup>i&pi;</sup> + 1 = 0 follows because cos&pi; = ?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(this,'qq9','wrong')">A) 1</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq9','wrong')">B) 0</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq9','correct')">C) &minus;1 (so e<sup>i&pi;</sup> = &minus;1 + 0i)</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq9','wrong')">D) i</button>
+        </div>
+      </div>
+
+      <div class="quiz-q" id="qq10">
+        <div class="q-num">Question 10</div>
+        <div class="q-text">The Fundamental Theorem of Algebra guarantees that z<sup>3</sup> &minus; 8 = 0 has how many roots in &Copf;?</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="quizAnswer(this,'qq10','wrong')">A) 1 (only z=2)</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq10','wrong')">B) 2</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq10','correct')">C) 3 (one real: z=2; two complex conjugate roots)</button>
+          <button class="choice-btn" onclick="quizAnswer(this,'qq10','wrong')">D) 6</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// ─── PROGRESS ───────────────────────────────────────────────────────────────
+const TOTAL_SECTIONS = 6;
+const openSections = new Set();
+const completedSections = new Set();
+
+function updateProgress(){
+  const pct = (completedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = completedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+function toggleSection(header){
+  const card = header.closest('.section-card');
+  const isOpen = card.classList.contains('open');
+  if(isOpen){
+    card.classList.remove('open');
+    openSections.delete(card.id);
+  } else {
+    card.classList.add('open');
+    openSections.add(card.id);
+    if(!completedSections.has(card.id)){
+      completedSections.add(card.id);
+      card.classList.add('completed');
+      updateProgress();
+    }
+    // Trigger lazy inits
+    if(card.id === 'sec1') initComplexPlane();
+    if(card.id === 'sec2') { updatePolar(); }
+    if(card.id === 'sec3') { computeDemoivre(); }
+    if(card.id === 'sec4') { setCRFunc('zsq', document.querySelector('#crTabs .scenario-tab')); }
+    if(card.id === 'sec5') { computeImpedance(); }
+  }
+}
+
+// ─── FEEDBACK HELPERS ────────────────────────────────────────────────────────
+let quizScoreVal = 0;
+const quizAnswered = {};
+
+function springPop(el){ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+function shakeEl(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+
+function checkNum(inputId, answer, tol){
+  const inp = document.getElementById(inputId);
+  const fb  = document.getElementById('fb_' + inputId);
+  const val = parseFloat(inp.value);
+  if(isNaN(val)){ fb.className='feedback incorrect'; fb.textContent='Enter a number first.'; return; }
+  if(Math.abs(val - answer) <= tol){
+    fb.className='feedback correct'; fb.textContent='Correct! ' + answer + (tol>0?' (within tolerance)':'');
+    springPop(inp);
+  } else {
+    fb.className='feedback incorrect'; fb.textContent='Not quite. Expected \u2248' + answer;
+    shakeEl(inp);
+  }
+}
+
+function checkMC(btn, groupId, result){
+  const siblings = btn.closest('.mc-choices').querySelectorAll('.mc-btn');
+  siblings.forEach(b => b.classList.add('disabled'));
+  const fb = document.getElementById('fb_' + groupId);
+  if(result === 'correct'){
+    btn.classList.add('correct');
+    fb.className='feedback correct'; fb.textContent='Correct!';
+    springPop(btn);
+  } else {
+    btn.classList.add('wrong');
+    fb.className='feedback incorrect'; fb.textContent='Not quite — review the concept above.';
+    shakeEl(btn);
+    siblings.forEach(b => { if(b.classList.contains('correct')) b.classList.add('correct'); });
+  }
+}
+
+// ─── QUIZ ────────────────────────────────────────────────────────────────────
+function quizAnswer(btn, qId, result){
+  if(quizAnswered[qId]) return;
+  quizAnswered[qId] = true;
+  const siblings = btn.closest('.choices').querySelectorAll('.choice-btn');
+  siblings.forEach(b => b.classList.add('disabled'));
+  if(result === 'correct'){
+    btn.classList.add('selected-correct');
+    quizScoreVal++;
+    document.getElementById('quizScore').textContent = quizScoreVal;
+    springPop(btn);
+  } else {
+    btn.classList.add('selected-wrong');
+    shakeEl(btn);
+    siblings.forEach(b => {
+      if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'correct'")){
+        b.classList.add('reveal-correct');
+      }
+    });
+  }
+}
+
+// ─── CANVAS HELPERS ──────────────────────────────────────────────────────────
+function fmt(v, d=2){ return v.toFixed(d); }
+function fmtC(a,b){ return (b>=0 ? fmt(a)+' + '+fmt(b)+'i' : fmt(a)+' \u2212 '+fmt(Math.abs(b))+'i'); }
+
+function drawGrid(ctx, cx, cy, scale, w, h){
+  ctx.strokeStyle = '#2a2f3a';
+  ctx.lineWidth = 1;
+  const step = scale;
+  for(let x=cx%step; x<w; x+=step){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke(); }
+  for(let y=cy%step; y<h; y+=step){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke(); }
+  // axes
+  ctx.strokeStyle = '#4a5060';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,h);ctx.stroke();
+  // axis labels
+  ctx.fillStyle='#6b7280'; ctx.font='10px JetBrains Mono'; ctx.textAlign='center';
+  ctx.fillText('Re',w-14,cy-6);
+  ctx.textAlign='left'; ctx.fillText('Im',cx+6,14);
+  // tick numbers
+  ctx.fillStyle='#4b5563'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+  for(let k=-4;k<=4;k++){
+    if(k===0) continue;
+    const px=cx+k*scale; const py=cy-k*scale;
+    ctx.fillText(k,px,cy+14);
+    ctx.textAlign='right'; ctx.fillText(k,cx-4,py+3); ctx.textAlign='center';
+  }
+}
+
+function drawArrow(ctx, x1,y1,x2,y2,color,lw=2){
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+  if(len<1) return;
+  ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.fillStyle=color;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  const angle=Math.atan2(dy,dx);
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-10*Math.cos(angle-0.4),y2-10*Math.sin(angle-0.4));
+  ctx.lineTo(x2-10*Math.cos(angle+0.4),y2-10*Math.sin(angle+0.4));
+  ctx.closePath(); ctx.fill();
+}
+
+function drawDot(ctx,x,y,r,color){ ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.fillStyle=color;ctx.fill(); }
+
+// ─── SECTION 1: COMPLEX PLANE ────────────────────────────────────────────────
+let cpCanvas, cpCtx, cpState={z1:null,z2:null,placing:1}, cpInited=false;
+
+function initComplexPlane(){
+  if(cpInited) return; cpInited=true;
+  cpCanvas = document.getElementById('complexPlaneCanvas');
+  cpCtx = cpCanvas.getContext('2d');
+  drawCPCanvas();
+  cpCanvas.addEventListener('click', cpClick);
+  cpCanvas.addEventListener('contextmenu', e=>{ e.preventDefault(); resetComplexPlane(); });
+}
+
+function cpToCanvas(a,b,cx,cy,sc){ return [cx+a*sc, cy-b*sc]; }
+function canvasToCP(px,py,cx,cy,sc){ return [(px-cx)/sc,(cy-py)/sc]; }
+
+function drawCPCanvas(){
+  if(!cpCtx) return;
+  const w=cpCanvas.width, h=cpCanvas.height;
+  const cx=w/2, cy=h/2, sc=60;
+  cpCtx.clearRect(0,0,w,h);
+  drawGrid(cpCtx,cx,cy,sc,w,h);
+
+  const s=cpState;
+  if(s.z1){
+    const [px,py]=cpToCanvas(s.z1[0],s.z1[1],cx,cy,sc);
+    drawArrow(cpCtx,cx,cy,px,py,'#6366f1',2.5);
+    drawDot(cpCtx,px,py,6,'#6366f1');
+    cpCtx.fillStyle='#818cf8'; cpCtx.font='11px JetBrains Mono'; cpCtx.textAlign='left';
+    cpCtx.fillText('z\u2081='+fmtC(s.z1[0],s.z1[1]),px+8,py-6);
+    document.getElementById('cpZ1').textContent=fmtC(s.z1[0],s.z1[1]);
+    const mod=Math.sqrt(s.z1[0]**2+s.z1[1]**2);
+    document.getElementById('cpMod1').textContent=fmt(mod);
+    document.getElementById('cpArg1').textContent=fmt(Math.atan2(s.z1[1],s.z1[0])*180/Math.PI,1)+'°';
+  }
+  if(s.z2){
+    const [px,py]=cpToCanvas(s.z2[0],s.z2[1],cx,cy,sc);
+    drawArrow(cpCtx,cx,cy,px,py,'#ec4899',2.5);
+    drawDot(cpCtx,px,py,6,'#ec4899');
+    cpCtx.fillStyle='#f472b6'; cpCtx.font='11px JetBrains Mono'; cpCtx.textAlign='left';
+    cpCtx.fillText('z\u2082='+fmtC(s.z2[0],s.z2[1]),px+8,py+14);
+    document.getElementById('cpZ2').textContent=fmtC(s.z2[0],s.z2[1]);
+  }
+  if(s.z1 && s.z2){
+    // Sum
+    const sa=s.z1[0]+s.z2[0], sb=s.z1[1]+s.z2[1];
+    const [spx,spy]=cpToCanvas(sa,sb,cx,cy,sc);
+    drawArrow(cpCtx,cx,cy,spx,spy,'#22c55e',2.5);
+    drawDot(cpCtx,spx,spy,6,'#22c55e');
+    // Parallelogram dashes
+    const [p1x,p1y]=cpToCanvas(s.z1[0],s.z1[1],cx,cy,sc);
+    const [p2x,p2y]=cpToCanvas(s.z2[0],s.z2[1],cx,cy,sc);
+    cpCtx.setLineDash([4,4]); cpCtx.strokeStyle='#374151'; cpCtx.lineWidth=1;
+    cpCtx.beginPath(); cpCtx.moveTo(p1x,p1y); cpCtx.lineTo(spx,spy); cpCtx.stroke();
+    cpCtx.beginPath(); cpCtx.moveTo(p2x,p2y); cpCtx.lineTo(spx,spy); cpCtx.stroke();
+    cpCtx.setLineDash([]);
+    cpCtx.fillStyle='#4ade80'; cpCtx.font='11px JetBrains Mono'; cpCtx.textAlign='left';
+    cpCtx.fillText('sum='+fmtC(sa,sb),spx+8,spy-6);
+    document.getElementById('cpSum').textContent=fmtC(sa,sb);
+    // Product
+    const pa=s.z1[0]*s.z2[0]-s.z1[1]*s.z2[1];
+    const pb=s.z1[0]*s.z2[1]+s.z1[1]*s.z2[0];
+    const [ppx,ppy]=cpToCanvas(pa,pb,cx,cy,sc);
+    drawArrow(cpCtx,cx,cy,ppx,ppy,'#f59e0b',2.5);
+    drawDot(cpCtx,ppx,ppy,6,'#f59e0b');
+    cpCtx.fillStyle='#fbbf24'; cpCtx.font='11px JetBrains Mono';
+    cpCtx.fillText('prod='+fmtC(pa,pb),ppx+8,ppy+14);
+    document.getElementById('cpProd').textContent=fmtC(pa,pb);
+  }
+}
+
+function cpClick(e){
+  const rect=cpCanvas.getBoundingClientRect();
+  const scaleX=cpCanvas.width/rect.width, scaleY=cpCanvas.height/rect.height;
+  const px=(e.clientX-rect.left)*scaleX, py=(e.clientY-rect.top)*scaleY;
+  const cx=cpCanvas.width/2, cy=cpCanvas.height/2, sc=60;
+  const [a,b]=canvasToCP(px,py,cx,cy,sc);
+  if(cpState.placing===1){ cpState.z1=[a,b]; cpState.placing=2; }
+  else { cpState.z2=[a,b]; cpState.placing=1; }
+  drawCPCanvas();
+}
+
+function resetComplexPlane(){ cpState={z1:null,z2:null,placing:1}; drawCPCanvas(); ['cpZ1','cpZ2','cpMod1','cpSum','cpProd','cpArg1'].forEach(id=>document.getElementById(id).textContent='—'); }
+
+// ─── SECTION 2: POLAR CONVERTER ──────────────────────────────────────────────
+function updatePolar(){
+  const a=parseFloat(document.getElementById('polarA').value)||0;
+  const b=parseFloat(document.getElementById('polarB').value)||0;
+  const r=Math.sqrt(a*a+b*b);
+  const theta=Math.atan2(b,a);
+  const thetaDeg=theta*180/Math.PI;
+  document.getElementById('polarRect').textContent=fmtC(a,b);
+  document.getElementById('polarR').textContent=fmt(r,4);
+  document.getElementById('polarTheta').textContent=fmt(theta,4);
+  document.getElementById('polarThetaDeg').textContent=fmt(thetaDeg,2)+'°';
+  document.getElementById('polarExp').textContent=fmt(r,3)+' e^('+fmt(theta,3)+'i)';
+  drawPolarCanvas(a,b,r,theta);
+}
+
+function drawPolarCanvas(a,b,r,theta){
+  const canvas=document.getElementById('polarCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height;
+  const cx=w/2,cy=h/2;
+  const sc=Math.min(w,h)*0.38;
+  ctx.clearRect(0,0,w,h);
+  // Unit circle
+  ctx.beginPath(); ctx.arc(cx,cy,sc,0,2*Math.PI);
+  ctx.strokeStyle='#374151'; ctx.lineWidth=1.5; ctx.stroke();
+  // Grid axes
+  ctx.strokeStyle='#4a5060'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,h);ctx.stroke();
+  // axis labels
+  ctx.fillStyle='#6b7280'; ctx.font='10px JetBrains Mono';
+  ctx.textAlign='center'; ctx.fillText('Re',w-18,cy-6);
+  ctx.textAlign='left'; ctx.fillText('Im',cx+6,14);
+  // Unit circle marks
+  ctx.fillStyle='#374151'; ctx.font='9px JetBrains Mono';
+  ctx.textAlign='center'; ctx.fillText('1',cx+sc+2,cy-6);
+  ctx.fillText('\u22121',cx-sc-4,cy-6);
+  ctx.fillText('i',cx+4,cy-sc-4);
+  ctx.fillText('\u2212i',cx+4,cy+sc+12);
+  if(r < 0.001) return;
+  const dispR=Math.min(r,3); // clamp display
+  const displaySc=sc*(dispR/Math.max(dispR,1));
+  const px=cx+Math.cos(theta)*displaySc;
+  const py=cy-Math.sin(theta)*displaySc;
+  // Arc showing angle
+  ctx.beginPath(); ctx.arc(cx,cy,sc*0.28,0,-theta,theta>0);
+  ctx.strokeStyle='#f59e0b44'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.fillStyle='#f59e0b'; ctx.font='10px JetBrains Mono'; ctx.textAlign='center';
+  const midA=theta/2;
+  ctx.fillText(fmt(theta*180/Math.PI,1)+'°', cx+sc*0.38*Math.cos(midA), cy-sc*0.38*Math.sin(midA));
+  // Vector
+  drawArrow(ctx,cx,cy,px,py,'#6366f1',2.5);
+  drawDot(ctx,px,py,7,'#6366f1');
+  ctx.fillStyle='#818cf8'; ctx.font='11px JetBrains Mono'; ctx.textAlign='left';
+  ctx.fillText(fmtC(a,b), px+10, py-6);
+  // r label
+  const mx=(cx+px)/2, my=(cy+py)/2;
+  ctx.fillStyle='#22c55e'; ctx.font='10px JetBrains Mono'; ctx.textAlign='center';
+  ctx.fillText('r='+fmt(r,3),mx,my-8);
+}
+
+// ─── SECTION 3: DE MOIVRE / ROOTS OF UNITY ───────────────────────────────────
+let demoivreMode='power';
+
+function setDemoivreMode(mode,tab){
+  demoivreMode=mode;
+  document.querySelectorAll('#demoivreTabs .scenario-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('demoivrePowerPanel').style.display=(mode==='power'?'block':'none');
+  document.getElementById('demoivreRootsPanel').style.display=(mode==='roots'?'block':'none');
+  if(mode==='roots') updateUnity();
+  else computeDemoivre();
+}
+
+function computeDemoivre(){
+  const a=parseFloat(document.getElementById('dmA').value)||0;
+  const b=parseFloat(document.getElementById('dmB').value)||0;
+  const n=parseInt(document.getElementById('dmN').value)||1;
+  const r=Math.sqrt(a*a+b*b);
+  const theta=Math.atan2(b,a);
+  const rn=Math.pow(r,n);
+  const nTheta=n*theta;
+  const ra=rn*Math.cos(nTheta);
+  const rb=rn*Math.sin(nTheta);
+  document.getElementById('dmZ').textContent=fmtC(a,b);
+  document.getElementById('dmR').textContent=fmt(r,4);
+  document.getElementById('dmTheta').textContent=fmt(theta*180/Math.PI,2)+'°';
+  document.getElementById('dmResult').textContent=fmtC(ra,rb);
+  const stepsEl=document.getElementById('demoivreSteps');
+  stepsEl.innerHTML=
+    '<span style="color:var(--text-bright)">Step 1:</span> r = |z| = &radic;('+(a*a+b*b).toFixed(4)+') = '+fmt(r,4)+'<br>'+
+    '<span style="color:var(--text-bright)">Step 2:</span> &theta; = arctan('+fmt(b,4)+'/'+fmt(a,4)+') = '+fmt(theta,4)+' rad = '+fmt(theta*180/Math.PI,2)+'&deg;<br>'+
+    '<span style="color:var(--text-bright)">Step 3:</span> r<sup>n</sup> = '+fmt(r,4)+'<sup>'+n+'</sup> = '+fmt(rn,4)+'<br>'+
+    '<span style="color:var(--text-bright)">Step 4:</span> n&theta; = '+n+' &times; '+fmt(theta,4)+' = '+fmt(nTheta,4)+' rad = '+fmt(nTheta*180/Math.PI,2)+'&deg;<br>'+
+    '<span style="color:var(--text-bright)">Result:</span> z<sup>'+n+'</sup> = '+fmt(rn,4)+'(cos '+fmt(nTheta*180/Math.PI,2)+'&deg; + i sin '+fmt(nTheta*180/Math.PI,2)+'&deg;) = <span style="color:var(--green)">'+fmtC(ra,rb)+'</span>';
+  drawDemoivreCanvas(a,b,ra,rb,r,theta,n,rn,nTheta);
+}
+
+function updateUnity(){
+  const n=parseInt(document.getElementById('unityN').value)||4;
+  document.getElementById('unityNval').textContent=n;
+  drawUnityCanvas(n);
+}
+
+function drawDemoivreCanvas(a,b,ra,rb,r,theta,n,rn,nTheta){
+  const canvas=document.getElementById('demoivreCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height;
+  const cx=w/2,cy=h/2;
+  const maxR=Math.max(r,rn,1.5);
+  const sc=Math.min(w,h)*0.38/maxR;
+  ctx.clearRect(0,0,w,h);
+  // unit circle
+  ctx.beginPath(); ctx.arc(cx,cy,1*sc,0,2*Math.PI);
+  ctx.strokeStyle='#2a2f3a'; ctx.lineWidth=1; ctx.stroke();
+  // r circle if different
+  if(Math.abs(r-1)>0.05){
+    ctx.beginPath(); ctx.arc(cx,cy,r*sc,0,2*Math.PI);
+    ctx.strokeStyle='rgba(99,102,241,0.2)'; ctx.lineWidth=1; ctx.stroke();
+  }
+  if(Math.abs(rn-1)>0.05){
+    ctx.beginPath(); ctx.arc(cx,cy,rn*sc,0,2*Math.PI);
+    ctx.strokeStyle='rgba(34,197,94,0.2)'; ctx.lineWidth=1; ctx.stroke();
+  }
+  // axes
+  ctx.strokeStyle='#4a5060'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,h);ctx.stroke();
+  ctx.fillStyle='#6b7280'; ctx.font='10px JetBrains Mono';
+  ctx.textAlign='center'; ctx.fillText('Re',w-18,cy-6);
+  ctx.textAlign='left'; ctx.fillText('Im',cx+6,14);
+  // z vector
+  const [zpx,zpy]=[cx+a*sc,cy-b*sc];
+  drawArrow(ctx,cx,cy,zpx,zpy,'#6366f1',2.5);
+  drawDot(ctx,zpx,zpy,6,'#6366f1');
+  ctx.fillStyle='#818cf8'; ctx.font='11px JetBrains Mono'; ctx.textAlign='left';
+  ctx.fillText('z='+fmtC(a,b),zpx+8,zpy-6);
+  // z^n vector
+  const [rnpx,rnpy]=[cx+ra*sc,cy-rb*sc];
+  drawArrow(ctx,cx,cy,rnpx,rnpy,'#22c55e',2.5);
+  drawDot(ctx,rnpx,rnpy,6,'#22c55e');
+  ctx.fillStyle='#4ade80'; ctx.font='11px JetBrains Mono';
+  ctx.fillText('z^'+n+'='+fmtC(ra,rb),rnpx+8,rnpy+14);
+  // angle arc for z
+  ctx.beginPath(); ctx.arc(cx,cy,r*sc*0.35,0,-theta,theta>0);
+  ctx.strokeStyle='#6366f155'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.fillStyle='#6366f1'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+  ctx.fillText('\u03b8='+fmt(theta*180/Math.PI,0)+'°',cx+r*sc*0.5*Math.cos(theta/2),cy-r*sc*0.5*Math.sin(theta/2));
+  // angle arc for z^n
+  const clampedNTheta=nTheta%(2*Math.PI);
+  ctx.beginPath(); ctx.arc(cx,cy,rn*sc*0.35,0,-nTheta,nTheta>0);
+  ctx.strokeStyle='#22c55e55'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.fillStyle='#22c55e'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+  ctx.fillText('n\u03b8='+fmt(nTheta*180/Math.PI,0)+'°',cx+rn*sc*0.5*Math.cos(nTheta/2),cy-rn*sc*0.5*Math.sin(nTheta/2));
+}
+
+function drawUnityCanvas(n){
+  const canvas=document.getElementById('demoivreCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height;
+  const cx=w/2,cy=h/2,sc=Math.min(w,h)*0.38;
+  ctx.clearRect(0,0,w,h);
+  // unit circle
+  ctx.beginPath(); ctx.arc(cx,cy,sc,0,2*Math.PI);
+  ctx.strokeStyle='#374151'; ctx.lineWidth=1.5; ctx.stroke();
+  // axes
+  ctx.strokeStyle='#4a5060'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,h);ctx.stroke();
+  ctx.fillStyle='#6b7280'; ctx.font='10px JetBrains Mono';
+  ctx.textAlign='center'; ctx.fillText('Re',w-18,cy-6);
+  ctx.textAlign='left'; ctx.fillText('Im',cx+6,14);
+  // polygon
+  const colors=['#6366f1','#22c55e','#ec4899','#f59e0b','#818cf8','#34d399','#f472b6','#fbbf24'];
+  const pts=[];
+  for(let k=0;k<n;k++){
+    const ang=2*Math.PI*k/n;
+    pts.push([cx+sc*Math.cos(ang), cy-sc*Math.sin(ang)]);
+  }
+  ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+  for(let k=1;k<n;k++) ctx.lineTo(pts[k][0],pts[k][1]);
+  ctx.closePath(); ctx.strokeStyle='#374151'; ctx.lineWidth=1; ctx.stroke();
+  for(let k=0;k<n;k++){
+    const [px,py]=pts[k];
+    const ang=2*Math.PI*k/n;
+    const a=Math.cos(ang), b=Math.sin(ang);
+    drawArrow(ctx,cx,cy,px,py,colors[k%colors.length],2);
+    drawDot(ctx,px,py,7,colors[k%colors.length]);
+    const lx=px+(px>cx?12:-12), ly=py+(py>cy?14:-8);
+    ctx.fillStyle=colors[k%colors.length]; ctx.font='10px JetBrains Mono';
+    ctx.textAlign=px>cx?'left':'right';
+    ctx.fillText('\u03c9\u2080'+(k>0?('=e^('+fmt(ang,2)+'i)'):'=1'),lx,ly);
+  }
+  ctx.fillStyle='#e2e4e9'; ctx.font='12px JetBrains Mono'; ctx.textAlign='center';
+  ctx.fillText('The '+n+' roots of unity (\u03c9^'+n+'=1)',cx,h-12);
+}
+
+// update unity slider live
+document.getElementById('unityN').addEventListener('input',updateUnity);
+
+// ─── SECTION 4: CR DISPLAY ───────────────────────────────────────────────────
+const crData = {
+  zsq:{
+    label:'f(z) = z\u00b2',
+    u:'u(x,y) = x\u00b2 \u2212 y\u00b2',
+    v:'v(x,y) = 2xy',
+    ux:'&part;u/&part;x = 2x',
+    vy:'&part;v/&part;y = 2x',
+    uy:'&part;u/&part;y = \u22122y',
+    vx:'&part;v/&part;x = 2y &nbsp;\u2192&nbsp; \u2212&part;v/&part;x = \u22122y',
+    cr1:true,cr2:true,
+    analytic:true,
+    note:'f(z)=z\u00b2 is entire (analytic everywhere). f\u2032(z)=2z.'
+  },
+  ez:{
+    label:'f(z) = e^z',
+    u:'u(x,y) = e^x cos y',
+    v:'v(x,y) = e^x sin y',
+    ux:'&part;u/&part;x = e^x cos y',
+    vy:'&part;v/&part;y = e^x cos y',
+    uy:'&part;u/&part;y = \u2212e^x sin y',
+    vx:'&part;v/&part;x = e^x sin y &nbsp;\u2192&nbsp; \u2212&part;v/&part;x = \u2212e^x sin y',
+    cr1:true,cr2:true,
+    analytic:true,
+    note:'e^z is entire. Its own derivative: d/dz(e^z) = e^z.'
+  },
+  conj:{
+    label:'f(z) = z\u0305 (conjugate)',
+    u:'u(x,y) = x',
+    v:'v(x,y) = \u2212y',
+    ux:'&part;u/&part;x = 1',
+    vy:'&part;v/&part;y = \u22121',
+    uy:'&part;u/&part;y = 0',
+    vx:'&part;v/&part;x = 0 &nbsp;\u2192&nbsp; \u2212&part;v/&part;x = 0',
+    cr1:false,cr2:true,
+    analytic:false,
+    note:'CR eq 1 fails: 1 \u2260 \u22121. z\u0305 is NOWHERE analytic despite being continuous everywhere.'
+  },
+  absz:{
+    label:'f(z) = |z|\u00b2 = x\u00b2+y\u00b2',
+    u:'u(x,y) = x\u00b2 + y\u00b2',
+    v:'v(x,y) = 0',
+    ux:'&part;u/&part;x = 2x',
+    vy:'&part;v/&part;y = 0',
+    uy:'&part;u/&part;y = 2y',
+    vx:'&part;v/&part;x = 0 &nbsp;\u2192&nbsp; \u2212&part;v/&part;x = 0',
+    cr1:false,cr2:false,
+    analytic:false,
+    note:'CR fails except at origin (x=0,y=0). |z|\u00b2 is differentiable only at z=0, not analytic anywhere.'
+  }
+};
+
+function setCRFunc(key,tab){
+  document.querySelectorAll('#crTabs .scenario-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  const d=crData[key];
+  const check=ok=>'<span style="color:'+(ok?'var(--green)':'var(--pink)')+'">'+( ok?'&#10003; equal':'&#10007; NOT equal')+'</span>';
+  const analLabel=d.analytic?'<span style="color:var(--green)">ANALYTIC (holomorphic)</span>':'<span style="color:var(--pink)">NOT analytic</span>';
+  document.getElementById('crDisplay').innerHTML=`
+    <div class="step-box">
+      <div class="step-label">${d.label}</div>
+      <div class="step-content">
+        <strong>${d.u}</strong><br>
+        <strong>${d.v}</strong><br><br>
+        <span style="color:var(--text-dim)">CR Eq 1:</span> ${d.ux} &nbsp;vs&nbsp; ${d.vy} &nbsp; ${check(d.cr1)}<br>
+        <span style="color:var(--text-dim)">CR Eq 2:</span> ${d.uy} &nbsp;vs&nbsp; ${d.vx} &nbsp; ${check(d.cr2)}<br><br>
+        <strong>Verdict:</strong> ${analLabel}<br>
+        <span style="color:var(--text-dim);font-size:.72rem">${d.note}</span>
+      </div>
+    </div>`;
+}
+
+// ─── SECTION 5: IMPEDANCE ────────────────────────────────────────────────────
+function computeImpedance(){
+  const R=parseFloat(document.getElementById('acR').value)||0;
+  const Lmh=parseFloat(document.getElementById('acL').value)||0;
+  const Cuf=parseFloat(document.getElementById('acC').value)||1;
+  const freq=parseFloat(document.getElementById('acF').value)||1;
+  const L=Lmh*1e-3, C=Cuf*1e-6, omega=2*Math.PI*freq;
+  const XL=omega*L, XC=1/(omega*C), X=XL-XC;
+  const magZ=Math.sqrt(R*R+X*X);
+  const phase=Math.atan2(X,R)*180/Math.PI;
+  document.getElementById('acRout').textContent=fmt(R,1)+' \u03a9';
+  document.getElementById('acXout').textContent=fmt(X,2)+' \u03a9';
+  document.getElementById('acMagOut').textContent=fmt(magZ,2)+' \u03a9';
+  document.getElementById('acPhaseOut').textContent=fmt(phase,2)+'°';
+  document.getElementById('acZout').textContent=fmtC(R,X)+' \u03a9';
+  drawImpedanceCanvas(R,X,magZ,phase);
+}
+
+function drawImpedanceCanvas(R,X,magZ,phase){
+  const canvas=document.getElementById('impedanceCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  const cx=w*0.12, cy=h*0.5;
+  const sc=Math.min(w*0.7,h*0.8)/Math.max(magZ,1)*0.85;
+  // R axis
+  ctx.strokeStyle='#4a5060'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,h);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(w*0.95,cy);ctx.stroke();
+  ctx.fillStyle='#6b7280'; ctx.font='10px JetBrains Mono';
+  ctx.textAlign='center'; ctx.fillText('R (\u03a9)',w*0.85,cy-8);
+  ctx.textAlign='left'; ctx.fillText('jX',cx+6,18);
+  ctx.fillText('+jX (inductive)',cx+6,24);
+  ctx.fillText('\u2212jX (capacitive)',cx+6,h-8);
+  // R vector
+  if(R>0.01){
+    drawArrow(ctx,cx,cy,cx+R*sc,cy,'#9ca3af',2);
+    ctx.fillStyle='#9ca3af'; ctx.font='10px JetBrains Mono'; ctx.textAlign='center';
+    ctx.fillText('R='+fmt(R,0)+'\u03a9',cx+R*sc/2,cy+14);
+  }
+  // X vector from tip of R
+  const rtipx=cx+R*sc;
+  if(Math.abs(X)>0.01){
+    drawArrow(ctx,rtipx,cy,rtipx,cy-X*sc,'#ec4899',2);
+    ctx.fillStyle='#ec4899'; ctx.font='10px JetBrains Mono'; ctx.textAlign='left';
+    ctx.fillText('X='+fmt(X,1)+'\u03a9',rtipx+6,cy-X*sc/2);
+  }
+  // Z vector
+  const zex=cx+R*sc, zey=cy-X*sc;
+  drawArrow(ctx,cx,cy,zex,zey,'#6366f1',2.5);
+  ctx.fillStyle='#818cf8'; ctx.font='11px JetBrains Mono'; ctx.textAlign='left';
+  ctx.fillText('|Z|='+fmt(magZ,2)+'\u03a9',zex+10,zey);
+  // right angle marker
+  if(Math.abs(R)>0.01 && Math.abs(X)>0.01){
+    const s=10;
+    ctx.strokeStyle='#374151'; ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(rtipx-s,cy);ctx.lineTo(rtipx-s,cy-s);ctx.lineTo(rtipx,cy-s);ctx.stroke();
+  }
+  // phase arc
+  if(magZ>0.01){
+    const ang=Math.atan2(-X*sc,R*sc);
+    ctx.beginPath(); ctx.arc(cx,cy,magZ*sc*0.25,0,ang);
+    ctx.strokeStyle='#f59e0b44'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#f59e0b'; ctx.font='10px JetBrains Mono'; ctx.textAlign='center';
+    ctx.fillText('\u03c6='+fmt(phase,1)+'°',cx+magZ*sc*0.35*Math.cos(ang/2),cy+magZ*sc*0.35*Math.sin(ang/2));
+  }
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+updateProgress();
+</script>
+</body>
+</html>

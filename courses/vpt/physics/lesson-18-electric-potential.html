@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 18: Electric Potential</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1e2128;--bg-card:#262a33;--bg-card-hover:#2c313c;--bg-input:#1a1d24;--border:#363b47;--text:#e2e4e9;--text-dim:#9ca3af;--text-bright:#fff;--indigo:#6366f1;--indigo-dim:rgba(99,102,241,.15);--green:#22c55e;--green-dim:rgba(34,197,94,.15);--pink:#ec4899;--pink-dim:rgba(236,72,153,.15);--amber:#f59e0b;--amber-dim:rgba(245,158,11,.15);--radius:10px;--transition:0.3s cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;padding:0}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(30,33,40,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 24px}
+.top-bar h1{font-size:1.1rem;font-weight:600;color:var(--text-bright);margin-bottom:10px;letter-spacing:-.02em}
+.top-bar h1 span{color:var(--indigo)}
+.progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#818cf8);border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.7rem;color:var(--text-dim);margin-top:6px;text-align:right}
+.content{max-width:900px;margin:0 auto;padding:24px}
+.section-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;transition:border-color var(--transition)}
+.section-card.completed{border-color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;transition:background var(--transition)}
+.section-header:hover{background:var(--bg-card-hover)}
+.section-header h2{font-size:.95rem;font-weight:600;color:var(--text-bright);display:flex;align-items:center;gap:10px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);font-size:.75rem;font-weight:700;flex-shrink:0}
+.section-card.completed .section-num{background:var(--green-dim);color:var(--green)}
+.chevron{width:20px;height:20px;color:var(--text-dim);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.section-card.open .chevron{transform:rotate(180deg)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
+.section-card.open .section-body{max-height:9000px}
+.section-inner{padding:0 22px 22px}
+.concept-text{font-size:.82rem;color:var(--text);margin-bottom:16px;line-height:1.8}
+.concept-text strong{color:var(--text-bright)}
+.formula-box{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:16px 20px;margin:16px 0;text-align:center;font-size:1rem;color:var(--indigo);font-weight:600}
+.formula-box.large{font-size:1.15rem;padding:20px 24px}
+.formula-box.green{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.formula-box.pink{background:var(--pink-dim);border-color:rgba(236,72,153,.3);color:var(--pink)}
+.formula-box.amber{background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.key-point{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;margin:14px 0;font-size:.78rem;color:var(--amber)}
+.interactive-area{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0}
+.interactive-label{font-size:.7rem;color:var(--indigo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.readout-item{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.75rem}
+.readout-item .label{color:var(--text-dim);font-size:.65rem}
+.readout-item .value{color:var(--text-bright);font-weight:600}
+.readout-item .value.green{color:var(--green)}
+.readout-item .value.pink{color:var(--pink)}
+.readout-item .value.amber{color:var(--amber)}
+.readout-item .value.indigo{color:var(--indigo)}
+svg text{font-family:'JetBrains Mono',monospace}
+.practice-block{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.practice-title{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:14px}
+.problem{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.problem p{font-size:.78rem;margin-bottom:10px;line-height:1.7}
+.problem-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.problem input[type="text"],.problem input[type="number"]{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text-bright);font-family:'JetBrains Mono',monospace;font-size:.78rem;width:130px;outline:none;transition:border-color var(--transition)}
+.problem input:focus{border-color:var(--indigo)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;cursor:pointer;transition:var(--transition);user-select:none}
+.btn:hover{background:var(--bg-card-hover);border-color:var(--indigo);color:var(--text-bright)}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.btn-primary:hover{background:#5558e6}
+.btn-sm{padding:6px 12px;font-size:.68rem}
+.feedback{font-size:.75rem;margin-top:8px;padding:8px 12px;border-radius:6px;display:none}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.feedback.incorrect{display:block;background:var(--pink-dim);color:var(--pink);border:1px solid rgba(236,72,153,.3)}
+.slider-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.slider-row label{font-size:.7rem;color:var(--text-dim);min-width:130px;flex-shrink:0}
+.slider-row .slider-val{font-size:.75rem;color:var(--text-bright);font-weight:600;min-width:70px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:3px;outline:none;margin:4px 0;flex:1}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--text-bright)}
+.mc-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mc-btn{text-align:left;padding:8px 12px;font-size:.74rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace}
+.mc-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.mc-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);pointer-events:none}
+.mc-btn.wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink);pointer-events:none}
+.mc-btn.disabled{pointer-events:none;opacity:.6}
+.quiz-score{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quiz-score .score-text{font-size:.85rem;color:var(--text-bright);font-weight:600}
+.quiz-score .score-num{font-size:1.4rem;font-weight:700;color:var(--indigo)}
+.quiz-q{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.quiz-q .q-num{font-size:.65rem;color:var(--indigo);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.quiz-q .q-text{font-size:.78rem;margin-bottom:12px;line-height:1.7}
+.quiz-q .choices{display:flex;flex-direction:column;gap:8px}
+.quiz-q .choice-btn{text-align:left;padding:10px 14px;font-size:.76rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);cursor:pointer;transition:var(--transition);font-family:'JetBrains Mono',monospace;width:100%}
+.quiz-q .choice-btn:hover{border-color:var(--indigo);background:var(--bg-card-hover)}
+.quiz-q .choice-btn.selected-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.selected-wrong{border-color:var(--pink);background:var(--pink-dim);color:var(--pink)}
+.quiz-q .choice-btn.reveal-correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-q .choice-btn.disabled{pointer-events:none;opacity:.7}
+.cap-builder{margin:12px 0}
+.cap-builder-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.cap-chip{display:inline-flex;align-items:center;gap:6px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:.72rem;color:var(--text)}
+.cap-chip .cap-val{color:var(--indigo);font-weight:600}
+.cap-chip .remove-cap{cursor:pointer;color:var(--pink);font-size:.85rem;line-height:1;padding:0 2px}
+.cap-chip .remove-cap:hover{color:var(--text-bright)}
+.eq-result{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:6px;padding:10px 14px;font-size:.8rem;color:var(--indigo);font-weight:600;margin-top:8px;display:inline-block}
+.canvas-wrap{position:relative;border-radius:var(--radius);overflow:hidden}
+canvas{display:block;width:100%;border-radius:var(--radius)}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pop{animation:popCorrect .35s cubic-bezier(.34,1.56,.64,1)}
+.shake{animation:shakeWrong .4s ease}
+@media(max-width:640px){.content{padding:16px}.section-header{padding:14px 16px}.section-inner{padding:0 16px 16px}.slider-row label{min-width:80px}.readout{gap:8px}.readout-item{padding:6px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1><span>18</span> Electric Potential</h1>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 6 sections</div>
+</div>
+
+<div class="content" id="contentArea">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: ELECTRIC POTENTIAL ENERGY -->
+<!-- ============================================================ -->
+<div class="section-card open" data-section="1">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">1</span> Electric Potential Energy</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Electric potential energy (U)</strong> is the energy stored in a system of charges due to their configuration. Like gravitational potential energy, it is always defined relative to a reference point. The standard reference is <strong>U = 0 at infinity</strong> — meaning two charges infinitely far apart have zero potential energy.
+    </p>
+
+    <p class="concept-text">
+      For two point charges q&#8321; and q&#8322; separated by distance r, the electric potential energy is:
+    </p>
+
+    <div class="formula-box large">U = kq&#8321;q&#8322; / r</div>
+
+    <p class="concept-text">
+      where <strong>k = 8.99 &times; 10&#8313; N&middot;m&#178;/C&#178;</strong> (Coulomb's constant). Notice: if both charges have the same sign, U &gt; 0 (repulsive — energy stored doing work to push them together). If opposite signs, U &lt; 0 (attractive — the system releases energy as they approach).
+    </p>
+
+    <div class="formula-box green">W<sub>by E-field</sub> = &minus;&Delta;U = &minus;(U<sub>f</sub> &minus; U<sub>i</sub>)</div>
+
+    <p class="concept-text">
+      The work done <strong>by the electric force</strong> equals the negative change in potential energy. This mirrors the work-energy theorem for conservative forces. Equivalently, an external agent doing work against the field stores energy: W<sub>ext</sub> = +&Delta;U.
+    </p>
+
+    <p class="concept-text">
+      In a <strong>uniform electric field E</strong> (like between parallel plates), the potential energy of charge q displaced a distance d along the field direction is:
+    </p>
+
+    <div class="formula-box amber">U = qEd &nbsp;&nbsp; (uniform field, ref at d = 0)</div>
+
+    <div class="key-point">Potential energy is a property of the system, not a single charge. The reference U = 0 at infinity means isolated charges have zero PE — it takes work to bring them together from infinity.</div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="p1a">
+        <p><strong>P1.</strong> Two protons (q = 1.6 &times; 10&#8315;&#185;&#8313; C) are 2.0 &times; 10&#8315;&#185;&#8304; m apart. Calculate the electric potential energy in units of 10&#8315;&#185;&#8304; J. (k = 9 &times; 10&#8313;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1aIn" placeholder="× 10⁻¹⁹ J" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1a','p1aIn',23.0,1.5,'U = kq²/r = (9e9)(1.6e-19)²/(2e-10) = 1.152e-18 J = 11.5 × 10⁻¹⁹ J','p1aFb')">Check</button>
+        </div>
+        <div class="feedback" id="p1aFb"></div>
+      </div>
+
+      <div class="problem" id="p1b">
+        <p><strong>P2.</strong> A charge of +2 &mu;C is moved from rest through a uniform field doing 6 &times; 10&#8315;&#8310; J of work BY the electric force. What is &Delta;U in &mu;J?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1bIn" placeholder="μJ" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1b','p1bIn',-6,0.5,'W_by_field = -ΔU, so ΔU = -W = -6 × 10⁻⁶ J = -6 μJ','p1bFb')">Check</button>
+        </div>
+        <div class="feedback" id="p1bFb"></div>
+      </div>
+
+      <div class="problem" id="p1c">
+        <p><strong>P3.</strong> An electron (q = &minus;1.6 &times; 10&#8315;&#185;&#8313; C) is in a uniform field E = 500 N/C. How much potential energy (in eV) does it gain when displaced 0.1 m against the field direction?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'p1c',false)">A) +8 eV — PE increases moving against field for any charge</button>
+          <button class="mc-btn" onclick="checkMC(this,'p1c',false)">B) &minus;50 eV — field does positive work so PE decreases</button>
+          <button class="mc-btn" onclick="checkMC(this,'p1c',true)">C) +50 eV — negative charge gains PE moving against field direction</button>
+          <button class="mc-btn" onclick="checkMC(this,'p1c',false)">D) 0 — charge moves perpendicular, no PE change</button>
+        </div>
+        <div class="feedback" id="p1cFb"></div>
+      </div>
+
+      <div class="problem" id="p1d">
+        <p><strong>P4.</strong> Charges of +3 &mu;C and &minus;3 &mu;C are 0.05 m apart. What is U in mJ? (k = 9 &times; 10&#8313;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p1dIn" placeholder="mJ" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p1d','p1dIn',-1620,100,'U = k(+3e-6)(-3e-6)/0.05 = (9e9)(9e-12)/0.05 × (-1) = -1.62 J = -1620 mJ','p1dFb')">Check</button>
+        </div>
+        <div class="feedback" id="p1dFb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: ELECTRIC POTENTIAL -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="2">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">2</span> Electric Potential (Voltage)</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      <strong>Electric potential V</strong> is the electric potential energy per unit charge. It tells you how much potential energy a unit positive test charge would have at that location. Unlike the electric field (a vector), potential is a <strong>scalar quantity</strong> — no direction needed, which makes calculations much simpler.
+    </p>
+
+    <div class="formula-box large">V = U / q &nbsp;&nbsp; (units: volts, V = J/C)</div>
+
+    <p class="concept-text">
+      For a single <strong>point charge Q</strong>, the electric potential at distance r is:
+    </p>
+
+    <div class="formula-box">V = kQ / r</div>
+
+    <p class="concept-text">
+      Positive charges create positive (high) potential nearby; negative charges create negative (low) potential. Potential falls off as 1/r (slower than the 1/r&sup2; field).
+    </p>
+
+    <p class="concept-text">
+      <strong>Superposition of potentials</strong> — because V is a scalar, the total potential from multiple charges is simply an algebraic sum (no vector components to worry about):
+    </p>
+
+    <div class="formula-box green">V<sub>total</sub> = &Sigma; kq<sub>i</sub> / r<sub>i</sub></div>
+
+    <div class="key-point">Superposition is what makes potential so useful. Adding the contributions from each charge is plain arithmetic, whereas adding electric fields requires full vector addition.</div>
+
+    <!-- Equipotential Map Interactive -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Equipotential Map</div>
+      <p class="concept-text" style="margin-bottom:10px">Concentric rings are <strong>equipotential surfaces</strong> — surfaces of constant V. Field lines (arrows) are always perpendicular to equipotentials, pointing from high to low potential.</p>
+      <div class="slider-row">
+        <label>Source charge Q</label>
+        <input type="range" id="eqCharge" min="-5" max="5" value="3" step="0.5" oninput="drawEquipotential()">
+        <span class="slider-val" id="eqChargeVal">+3 &mu;C</span>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="eqCanvas" width="860" height="340"></canvas>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><div class="label">Charge</div><div class="value indigo" id="eqReadQ">+3.0 μC</div></div>
+        <div class="readout-item"><div class="label">V at r=1cm</div><div class="value amber" id="eqReadV1">2.70 MV</div></div>
+        <div class="readout-item"><div class="label">V at r=5cm</div><div class="value green" id="eqReadV5">0.54 MV</div></div>
+      </div>
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="p2a">
+        <p><strong>P5.</strong> A +5 &mu;C point charge. What is V in kV at r = 0.30 m? (k = 9 &times; 10&#8313;)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2aIn" placeholder="kV" step="1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2a','p2aIn',150,8,'V = kQ/r = (9e9)(5e-6)/0.30 = 150,000 V = 150 kV','p2aFb')">Check</button>
+        </div>
+        <div class="feedback" id="p2aFb"></div>
+      </div>
+
+      <div class="problem" id="p2b">
+        <p><strong>P6.</strong> Two charges: +4 &mu;C at origin and &minus;4 &mu;C at x = 0.10 m. What is V (in kV) at x = 0.05 m (midpoint)?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2bIn" placeholder="kV" step="1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2b','p2bIn',0,5,'V = k(+4e-6)/0.05 + k(-4e-6)/0.05 = (720 - 720) kV = 0 kV. Superposition of opposite charges at equal distance = 0.','p2bFb')">Check</button>
+        </div>
+        <div class="feedback" id="p2bFb"></div>
+      </div>
+
+      <div class="problem" id="p2c">
+        <p><strong>P7.</strong> Which statement about electric potential is correct?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'p2c',false)">A) V is a vector quantity pointing away from positive charges</button>
+          <button class="mc-btn" onclick="checkMC(this,'p2c',true)">B) V is a scalar; superposition uses algebraic (signed) addition</button>
+          <button class="mc-btn" onclick="checkMC(this,'p2c',false)">C) V at a point depends on the test charge placed there</button>
+          <button class="mc-btn" onclick="checkMC(this,'p2c',false)">D) V decreases as 1/r&sup2; from a point charge</button>
+        </div>
+        <div class="feedback" id="p2cFb"></div>
+      </div>
+
+      <div class="problem" id="p2d">
+        <p><strong>P8.</strong> A point charge creates V = 360 V at r = 0.25 m. What is V in V at r = 0.50 m?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p2dIn" placeholder="V" step="1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p2d','p2dIn',180,5,'V ∝ 1/r, so doubling r halves V: 360/2 = 180 V','p2dFb')">Check</button>
+        </div>
+        <div class="feedback" id="p2dFb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: POTENTIAL DIFFERENCE & WORK -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="3">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">3</span> Potential Difference &amp; Work</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      The <strong>potential difference</strong> (voltage) between two points A and B is:
+    </p>
+
+    <div class="formula-box large">&Delta;V = V<sub>B</sub> &minus; V<sub>A</sub></div>
+
+    <p class="concept-text">
+      The work done by the electric field when moving charge q from A to B is related to &Delta;V by:
+    </p>
+
+    <div class="formula-box green">W<sub>by field</sub> = q(V<sub>A</sub> &minus; V<sub>B</sub>) = &minus;q&Delta;V</div>
+
+    <p class="concept-text">
+      Equivalently, the work done by an external agent to move the charge is W<sub>ext</sub> = q&Delta;V. A positive charge naturally moves from high potential to low potential (like a mass falling downhill).
+    </p>
+
+    <p class="concept-text">
+      The <strong>electron-volt (eV)</strong> is a unit of energy convenient at atomic scales: the kinetic energy gained by one elementary charge accelerated through 1 volt of potential difference.
+    </p>
+
+    <div class="formula-box amber">1 eV = 1.6 &times; 10&#8315;&#185;&#8313; J</div>
+
+    <p class="concept-text">
+      <strong>Equipotential surfaces</strong> are surfaces on which V is constant. No work is done moving a charge along an equipotential. The electric field is always perpendicular to equipotential surfaces.
+    </p>
+
+    <p class="concept-text">
+      The relationship between electric field strength and potential difference over a distance d:
+    </p>
+
+    <div class="formula-box pink">E = &minus;&Delta;V / &Delta;d &nbsp;&nbsp; (uniform field)</div>
+
+    <div class="key-point">The negative sign means E points from high V to low V (downhill in potential). A 12 V battery separated by 0.01 m gives E = 1200 V/m between the terminals.</div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="p3a">
+        <p><strong>P9.</strong> A charge of +3.0 &mu;C moves from V<sub>A</sub> = 200 V to V<sub>B</sub> = 50 V. How much work (in &mu;J) does the electric field do?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p3aIn" placeholder="μJ" step="1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p3a','p3aIn',450,20,'W = q(V_A - V_B) = (3e-6)(200-50) = 3e-6 × 150 = 450 μJ. Field does positive work — charge moves from high to low V.','p3aFb')">Check</button>
+        </div>
+        <div class="feedback" id="p3aFb"></div>
+      </div>
+
+      <div class="problem" id="p3b">
+        <p><strong>P10.</strong> An electron is accelerated through 500 V. What is its kinetic energy in eV, and in joules (to 2 sig figs, &times; 10&#8315;&#185;&#8311; J)?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'p3b',false)">A) 500 eV and 3.2 &times; 10&#8315;&#185;&#8311; J</button>
+          <button class="mc-btn" onclick="checkMC(this,'p3b',true)">B) 500 eV and 8.0 &times; 10&#8315;&#185;&#8317; J</button>
+          <button class="mc-btn" onclick="checkMC(this,'p3b',false)">C) 250 eV and 4.0 &times; 10&#8315;&#185;&#8317; J</button>
+          <button class="mc-btn" onclick="checkMC(this,'p3b',false)">D) 1000 eV and 1.6 &times; 10&#8315;&#185;&#8310; J</button>
+        </div>
+        <div class="feedback" id="p3bFb"></div>
+      </div>
+
+      <div class="problem" id="p3c">
+        <p><strong>P11.</strong> Parallel plates are separated by 4.0 mm with a potential difference of 120 V. What is E in kV/m?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p3cIn" placeholder="kV/m" step="1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p3c','p3cIn',30,2,'E = ΔV/d = 120 V / 0.004 m = 30,000 V/m = 30 kV/m','p3cFb')">Check</button>
+        </div>
+        <div class="feedback" id="p3cFb"></div>
+      </div>
+
+      <div class="problem" id="p3d">
+        <p><strong>P12.</strong> A proton moves from a point at &minus;100 V to a point at +200 V. What is &Delta;KE in eV?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p3dIn" placeholder="eV" step="1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p3d','p3dIn',-300,10,'W_field = q(V_A - V_B) = (1e)(−100 − 200) = −300 eV. Field does -300 eV work, so KE decreases by 300 eV. ΔKE = −300 eV.','p3dFb')">Check</button>
+        </div>
+        <div class="feedback" id="p3dFb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: CAPACITANCE -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="4">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">4</span> Capacitance</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      A <strong>capacitor</strong> stores charge (and energy) by maintaining a potential difference between two conducting surfaces. <strong>Capacitance C</strong> is the ratio of charge stored to voltage applied:
+    </p>
+
+    <div class="formula-box large">C = Q / V &nbsp;&nbsp; (units: farads, F = C/V)</div>
+
+    <p class="concept-text">
+      For a <strong>parallel-plate capacitor</strong> with plate area A and separation d, the capacitance is:
+    </p>
+
+    <div class="formula-box">&epsilon;&#8320; = 8.85 &times; 10&#8315;&#185;&#178; F/m &nbsp;&nbsp;&nbsp; C = &epsilon;&#8320;A / d</div>
+
+    <p class="concept-text">
+      Larger plates store more charge; wider gap means less capacitance. The energy stored in a charged capacitor is:
+    </p>
+
+    <div class="formula-box green">U = &frac12;CV&sup2; = Q&sup2;/2C = &frac12;QV</div>
+
+    <p class="concept-text">
+      <strong>Dielectrics</strong> are insulating materials placed between the plates to increase capacitance. A dielectric with constant &kappa; (kappa) multiplies capacitance: C<sub>new</sub> = &kappa;C&#8320;. Common materials: paper (&kappa; &asymp; 3.7), mica (&kappa; &asymp; 6), ceramic (&kappa; &asymp; 7–10,000).
+    </p>
+
+    <div class="key-point">A dielectric reduces the electric field between the plates (polarized molecules oppose E), allowing more charge at the same voltage — hence larger C.</div>
+
+    <!-- Capacitor Energy Calculator -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Capacitor Energy Calculator</div>
+      <div class="slider-row">
+        <label>Capacitance C (&mu;F)</label>
+        <input type="range" id="capC" min="1" max="100" value="10" step="1" oninput="updateCapCalc()">
+        <span class="slider-val" id="capCVal">10 &mu;F</span>
+      </div>
+      <div class="slider-row">
+        <label>Voltage V (V)</label>
+        <input type="range" id="capV" min="1" max="200" value="50" step="1" oninput="updateCapCalc()">
+        <span class="slider-val" id="capVVal">50 V</span>
+      </div>
+      <div class="slider-row">
+        <label>Plate sep. d (mm)</label>
+        <input type="range" id="capD" min="1" max="20" value="5" step="0.5" oninput="updateCapCalc()">
+        <span class="slider-val" id="capDVal">5 mm</span>
+      </div>
+      <div class="readout">
+        <div class="readout-item"><div class="label">Charge Q</div><div class="value indigo" id="capReadQ">500 &mu;C</div></div>
+        <div class="readout-item"><div class="label">Energy U</div><div class="value green" id="capReadU">12.5 mJ</div></div>
+        <div class="readout-item"><div class="label">E field</div><div class="value amber" id="capReadE">10.0 kV/m</div></div>
+        <div class="readout-item"><div class="label">Plate Area A</div><div class="value pink" id="capReadA">5.65 m&#178;</div></div>
+      </div>
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="p4a">
+        <p><strong>P13.</strong> A 47 &mu;F capacitor is charged to 12 V. What is the stored energy in mJ?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p4aIn" placeholder="mJ" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p4a','p4aIn',3.384,0.15,'U = ½CV² = ½(47e-6)(12)² = ½(47e-6)(144) = 3.384 mJ','p4aFb')">Check</button>
+        </div>
+        <div class="feedback" id="p4aFb"></div>
+      </div>
+
+      <div class="problem" id="p4b">
+        <p><strong>P14.</strong> A parallel-plate capacitor has A = 0.04 m&#178; and d = 2 mm. Find C in pF. (&epsilon;&#8320; = 8.85 &times; 10&#8315;&#185;&#178; F/m)</p>
+        <div class="problem-input-row">
+          <input type="number" id="p4bIn" placeholder="pF" step="1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p4b','p4bIn',177,10,'C = ε₀A/d = (8.85e-12)(0.04)/(0.002) = 177 pF','p4bFb')">Check</button>
+        </div>
+        <div class="feedback" id="p4bFb"></div>
+      </div>
+
+      <div class="problem" id="p4c">
+        <p><strong>P15.</strong> A capacitor with C = 20 &mu;F and V = 100 V has a dielectric (&kappa; = 4) inserted while connected to the battery. What is the new energy in mJ?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'p4c',false)">A) 100 mJ — inserting dielectric increases voltage</button>
+          <button class="mc-btn" onclick="checkMC(this,'p4c',true)">B) 400 mJ — C quadruples, V constant, so U = ½(4C)V² = 4U₀ = 400 mJ</button>
+          <button class="mc-btn" onclick="checkMC(this,'p4c',false)">C) 25 mJ — dielectric reduces energy by factor of &kappa;</button>
+          <button class="mc-btn" onclick="checkMC(this,'p4c',false)">D) 100 mJ — energy is unchanged by dielectric</button>
+        </div>
+        <div class="feedback" id="p4cFb"></div>
+      </div>
+
+      <div class="problem" id="p4d">
+        <p><strong>P16.</strong> Q = 600 &mu;C is stored on a capacitor at V = 120 V. What is C in &mu;F?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p4dIn" placeholder="μF" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p4d','p4dIn',5,0.3,'C = Q/V = 600e-6 / 120 = 5 μF','p4dFb')">Check</button>
+        </div>
+        <div class="feedback" id="p4dFb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: CAPACITORS IN CIRCUITS -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="5">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">5</span> Capacitors in Circuits</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <p class="concept-text">
+      When capacitors are connected together, they can be replaced by a single <strong>equivalent capacitor</strong> C<sub>eq</sub>. The rule depends on the configuration.
+    </p>
+
+    <p class="concept-text">
+      <strong>Series:</strong> plates share the same charge Q; voltages add. Equivalent capacitance is smaller than the smallest individual capacitor.
+    </p>
+
+    <div class="formula-box">1/C<sub>eq</sub> = 1/C&#8321; + 1/C&#8322; + 1/C&#8323; + &hellip; &nbsp;&nbsp; (series)</div>
+
+    <p class="concept-text">
+      <strong>Parallel:</strong> each capacitor shares the same voltage V; charges add. Equivalent capacitance is the sum.
+    </p>
+
+    <div class="formula-box green">C<sub>eq</sub> = C&#8321; + C&#8322; + C&#8323; + &hellip; &nbsp;&nbsp; (parallel)</div>
+
+    <div class="key-point">Memory trick: capacitors in parallel add directly (like resistors in series). Capacitors in series use the reciprocal rule (like resistors in parallel). This is the OPPOSITE of the resistor rules.</div>
+
+    <p class="concept-text">
+      <strong>Charge distribution:</strong> In series, all capacitors hold the same charge Q. In parallel, Q splits: Q&#7522; = C&#7522;V. Voltage distributes inversely to capacitance in series (smaller C gets larger V share).
+    </p>
+
+    <!-- Series/Parallel Builder -->
+    <div class="interactive-area">
+      <div class="interactive-label">Interactive: Series / Parallel Capacitor Builder</div>
+      <div class="cap-builder-row">
+        <select id="capMode" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;outline:none;">
+          <option value="series">Series</option>
+          <option value="parallel">Parallel</option>
+        </select>
+        <select id="capAddVal" style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;outline:none;">
+          <option value="2">2 μF</option>
+          <option value="4">4 μF</option>
+          <option value="6">6 μF</option>
+          <option value="8">8 μF</option>
+          <option value="10">10 μF</option>
+          <option value="12">12 μF</option>
+          <option value="20">20 μF</option>
+          <option value="47">47 μF</option>
+          <option value="100">100 μF</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="addCapacitor()">+ Add</button>
+        <button class="btn btn-sm" onclick="clearCapacitors()">Clear</button>
+      </div>
+      <div class="cap-builder-row" id="capChips" style="flex-wrap:wrap;gap:6px;min-height:36px"></div>
+      <div id="capResult" class="eq-result" style="display:none"></div>
+      <div id="capFormula" style="font-size:.72rem;color:var(--text-dim);margin-top:8px"></div>
+    </div>
+
+    <div class="practice-block">
+      <div class="practice-title">Practice Problems</div>
+
+      <div class="problem" id="p5a">
+        <p><strong>P17.</strong> Three capacitors 4 &mu;F, 6 &mu;F, and 12 &mu;F are in series. What is C<sub>eq</sub> in &mu;F?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p5aIn" placeholder="μF" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p5a','p5aIn',2,0.15,'1/Ceq = 1/4 + 1/6 + 1/12 = 3/12 + 2/12 + 1/12 = 6/12 = 1/2 → Ceq = 2 μF','p5aFb')">Check</button>
+        </div>
+        <div class="feedback" id="p5aFb"></div>
+      </div>
+
+      <div class="problem" id="p5b">
+        <p><strong>P18.</strong> The same capacitors (4, 6, 12 &mu;F) are now in parallel. C<sub>eq</sub> in &mu;F?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p5bIn" placeholder="μF" step="0.1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p5b','p5bIn',22,1,'Ceq = 4 + 6 + 12 = 22 μF','p5bFb')">Check</button>
+        </div>
+        <div class="feedback" id="p5bFb"></div>
+      </div>
+
+      <div class="problem" id="p5c">
+        <p><strong>P19.</strong> A 10 &mu;F and 40 &mu;F capacitor are in series across 100 V. What is the voltage across the 10 &mu;F capacitor in V?</p>
+        <div class="problem-input-row">
+          <input type="number" id="p5cIn" placeholder="V" step="1">
+          <button class="btn btn-primary btn-sm" onclick="checkNum('p5c','p5cIn',80,4,'Ceq = (10×40)/(10+40) = 8 μF. Q = CeqV = 800 μC. V10 = Q/C10 = 800/10 = 80 V. Smaller C gets larger voltage share.','p5cFb')">Check</button>
+        </div>
+        <div class="feedback" id="p5cFb"></div>
+      </div>
+
+      <div class="problem" id="p5d">
+        <p><strong>P20.</strong> Two capacitors in parallel (5 &mu;F and 15 &mu;F) are connected to 60 V. Which correctly describes the charge distribution?</p>
+        <div class="mc-choices">
+          <button class="mc-btn" onclick="checkMC(this,'p5d',false)">A) Both have Q = 1200 &mu;C since they share charge in parallel</button>
+          <button class="mc-btn" onclick="checkMC(this,'p5d',true)">B) Q&#8321; = 300 &mu;C on 5 &mu;F; Q&#8322; = 900 &mu;C on 15 &mu;F; same voltage 60 V</button>
+          <button class="mc-btn" onclick="checkMC(this,'p5d',false)">C) Q&#8321; = 900 &mu;C and Q&#8322; = 300 &mu;C since larger C gets less charge</button>
+          <button class="mc-btn" onclick="checkMC(this,'p5d',false)">D) Both have Q = 600 &mu;C, charge splits equally</button>
+        </div>
+        <div class="feedback" id="p5dFb"></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: 10-QUESTION QUIZ -->
+<!-- ============================================================ -->
+<div class="section-card" data-section="6">
+  <div class="section-header" onclick="toggleSection(this)">
+    <h2><span class="section-num">6</span> Chapter Quiz</h2>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+  </div>
+  <div class="section-body"><div class="section-inner">
+
+    <div class="quiz-score">
+      <span class="score-text">Quiz Score</span>
+      <span class="score-num" id="quizScore">0 / 10</span>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-q" id="qq1">
+      <div class="q-num">Question 1</div>
+      <div class="q-text">Two charges +2 &mu;C and +2 &mu;C are 0.10 m apart. The electric potential energy of the system is closest to:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(1,this,false)">A) 0.18 J</button>
+        <button class="choice-btn" onclick="answerQuiz(1,this,false)">B) &minus;0.36 J</button>
+        <button class="choice-btn" onclick="answerQuiz(1,this,true)">C) +0.36 J</button>
+        <button class="choice-btn" onclick="answerQuiz(1,this,false)">D) +3.6 J</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q" id="qq2">
+      <div class="q-num">Question 2</div>
+      <div class="q-text">Electric potential V is best described as:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(2,this,false)">A) A vector pointing from negative to positive charges</button>
+        <button class="choice-btn" onclick="answerQuiz(2,this,true)">B) A scalar equal to potential energy per unit charge (J/C)</button>
+        <button class="choice-btn" onclick="answerQuiz(2,this,false)">C) The force per unit charge at a point in space</button>
+        <button class="choice-btn" onclick="answerQuiz(2,this,false)">D) The work per unit mass done by gravity</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q" id="qq3">
+      <div class="q-num">Question 3</div>
+      <div class="q-text">A &minus;5 &mu;C charge is at the origin. The electric potential at r = 0.45 m is closest to: (k = 9&times;10&#8313;)</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(3,this,false)">A) +100 kV</button>
+        <button class="choice-btn" onclick="answerQuiz(3,this,true)">B) &minus;100 kV</button>
+        <button class="choice-btn" onclick="answerQuiz(3,this,false)">C) &minus;50 kV</button>
+        <button class="choice-btn" onclick="answerQuiz(3,this,false)">D) +200 kV</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q" id="qq4">
+      <div class="q-num">Question 4</div>
+      <div class="q-text">A proton moves from V = &minus;300 V to V = +500 V. The work done BY the electric field on the proton is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(4,this,false)">A) +500 eV</button>
+        <button class="choice-btn" onclick="answerQuiz(4,this,false)">B) &minus;500 eV</button>
+        <button class="choice-btn" onclick="answerQuiz(4,this,false)">C) +800 eV</button>
+        <button class="choice-btn" onclick="answerQuiz(4,this,true)">D) &minus;800 eV</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q" id="qq5">
+      <div class="q-num">Question 5</div>
+      <div class="q-text">Parallel plates have separation d = 3 mm and voltage difference 90 V. The electric field magnitude between the plates is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(5,this,false)">A) 270 kV/m</button>
+        <button class="choice-btn" onclick="answerQuiz(5,this,false)">B) 0.27 V/m</button>
+        <button class="choice-btn" onclick="answerQuiz(5,this,true)">C) 30 kV/m</button>
+        <button class="choice-btn" onclick="answerQuiz(5,this,false)">D) 300 kV/m</button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q" id="qq6">
+      <div class="q-num">Question 6</div>
+      <div class="q-text">A capacitor stores 200 &mu;C at 50 V. What is its capacitance?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(6,this,false)">A) 10 mF</button>
+        <button class="choice-btn" onclick="answerQuiz(6,this,true)">B) 4 &mu;F</button>
+        <button class="choice-btn" onclick="answerQuiz(6,this,false)">C) 40 &mu;F</button>
+        <button class="choice-btn" onclick="answerQuiz(6,this,false)">D) 0.25 &mu;F</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q" id="qq7">
+      <div class="q-num">Question 7</div>
+      <div class="q-text">Three 12 &mu;F capacitors are connected in series. The equivalent capacitance is:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(7,this,false)">A) 36 &mu;F</button>
+        <button class="choice-btn" onclick="answerQuiz(7,this,false)">B) 6 &mu;F</button>
+        <button class="choice-btn" onclick="answerQuiz(7,this,true)">C) 4 &mu;F</button>
+        <button class="choice-btn" onclick="answerQuiz(7,this,false)">D) 12 &mu;F</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q" id="qq8">
+      <div class="q-num">Question 8</div>
+      <div class="q-text">A 100 &mu;F capacitor charged to 20 V has a dielectric (&kappa; = 5) inserted while DISCONNECTED from the battery. What happens to the voltage?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(8,this,false)">A) Increases to 100 V — dielectric increases voltage</button>
+        <button class="choice-btn" onclick="answerQuiz(8,this,false)">B) Stays at 20 V — dielectric has no effect on voltage</button>
+        <button class="choice-btn" onclick="answerQuiz(8,this,true)">C) Drops to 4 V — C increases 5x, Q constant, so V = Q/C decreases</button>
+        <button class="choice-btn" onclick="answerQuiz(8,this,false)">D) Drops to 10 V — dielectric halves the voltage</button>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-q" id="qq9">
+      <div class="q-num">Question 9</div>
+      <div class="q-text">Which correctly describes equipotential surfaces around a positive point charge?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(9,this,false)">A) Parallel planes perpendicular to the charge</button>
+        <button class="choice-btn" onclick="answerQuiz(9,this,true)">B) Concentric spheres; field lines point radially outward and perpendicular to them</button>
+        <button class="choice-btn" onclick="answerQuiz(9,this,false)">C) Concentric spheres; field lines are tangent to the surfaces</button>
+        <button class="choice-btn" onclick="answerQuiz(9,this,false)">D) Radial lines pointing away from the charge</button>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="quiz-q" id="qq10">
+      <div class="q-num">Question 10</div>
+      <div class="q-text">An electron is accelerated from rest through 1000 V. Its final kinetic energy in joules is closest to:</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="answerQuiz(10,this,false)">A) 1.6 &times; 10&#8315;&#185;&#8310; J</button>
+        <button class="choice-btn" onclick="answerQuiz(10,this,true)">B) 1.6 &times; 10&#8315;&#185;&#8310; J &mdash; KE = qV = (1.6e-19)(1000) = 1.6&times;10&#8315;&#185;&#8310; J</button>
+        <button class="choice-btn" onclick="answerQuiz(10,this,false)">C) 1.6 &times; 10&#8315;&#185;&#8313; J</button>
+        <button class="choice-btn" onclick="answerQuiz(10,this,false)">D) 1.6 &times; 10&#8315;&#178;&#8313; J</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+/* ============================================================
+   PROGRESS & SECTION TOGGLE
+   ============================================================ */
+const TOTAL_SECTIONS = 6;
+let completedSections = new Set();
+
+function toggleSection(header) {
+  const card = header.closest('.section-card');
+  const isOpen = card.classList.contains('open');
+  card.classList.toggle('open', !isOpen);
+  if (!isOpen) markCompleted(card);
+}
+
+function markCompleted(card) {
+  const sec = card.dataset.section;
+  if (!completedSections.has(sec)) {
+    completedSections.add(sec);
+    card.classList.add('completed');
+    updateProgress();
+  }
+}
+
+function updateProgress() {
+  const pct = (completedSections.size / TOTAL_SECTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    completedSections.size + ' / ' + TOTAL_SECTIONS + ' sections';
+}
+
+// Mark first section as visited on load
+window.addEventListener('DOMContentLoaded', () => {
+  const first = document.querySelector('.section-card[data-section="1"]');
+  if (first) markCompleted(first);
+  drawEquipotential();
+  updateCapCalc();
+});
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+function springPop(el) {
+  el.classList.remove('pop', 'shake');
+  void el.offsetWidth;
+  el.classList.add('pop');
+  el.addEventListener('animationend', () => el.classList.remove('pop'), {once:true});
+}
+function shakeIt(el) {
+  el.classList.remove('pop', 'shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+  el.addEventListener('animationend', () => el.classList.remove('shake'), {once:true});
+}
+
+/* ============================================================
+   PRACTICE: NUMERIC CHECK
+   ============================================================ */
+function checkNum(problemId, inputId, answer, tolerance, explanation, feedbackId) {
+  const input = document.getElementById(inputId);
+  const fb = document.getElementById(feedbackId);
+  const val = parseFloat(input.value);
+  const problem = document.getElementById(problemId);
+  if (isNaN(val)) { fb.className='feedback incorrect'; fb.style.display='block'; fb.textContent='Enter a numeric value.'; return; }
+  const correct = Math.abs(val - answer) <= tolerance;
+  fb.style.display = 'block';
+  if (correct) {
+    fb.className = 'feedback correct';
+    fb.textContent = 'Correct! ' + explanation;
+    springPop(problem);
+    markCompleted(problem.closest('.section-card'));
+  } else {
+    fb.className = 'feedback incorrect';
+    fb.textContent = 'Not quite. Hint: ' + explanation;
+    shakeIt(problem);
+  }
+}
+
+/* ============================================================
+   PRACTICE: MULTIPLE CHOICE CHECK
+   ============================================================ */
+function checkMC(btn, problemId, isCorrect) {
+  const problem = document.getElementById(problemId);
+  const btns = problem.querySelectorAll('.mc-btn');
+  btns.forEach(b => b.classList.add('disabled'));
+  if (isCorrect) {
+    btn.classList.add('correct');
+    springPop(problem);
+    const fb = problem.querySelector('.feedback') || makeFb(problem);
+    fb.className='feedback correct'; fb.style.display='block';
+    fb.textContent = 'Correct!';
+    markCompleted(problem.closest('.section-card'));
+  } else {
+    btn.classList.add('wrong');
+    shakeIt(problem);
+    btns.forEach(b => {
+      if (b.onclick && b.onclick.toString().includes('true')) b.classList.add('correct');
+    });
+    const fb = problem.querySelector('.feedback') || makeFb(problem);
+    fb.className='feedback incorrect'; fb.style.display='block';
+    fb.textContent = 'Incorrect. The highlighted answer is correct.';
+  }
+}
+
+function makeFb(parent) {
+  const d = document.createElement('div');
+  d.className='feedback';
+  parent.appendChild(d);
+  return d;
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+let quizScore = 0;
+const answered = {};
+
+function answerQuiz(qNum, btn, isCorrect) {
+  if (answered[qNum]) return;
+  answered[qNum] = true;
+  const container = document.getElementById('qq' + qNum);
+  const btns = container.querySelectorAll('.choice-btn');
+  btns.forEach(b => b.classList.add('disabled'));
+  if (isCorrect) {
+    btn.classList.add('selected-correct');
+    quizScore++;
+    springPop(container);
+  } else {
+    btn.classList.add('selected-wrong');
+    btns.forEach(b => {
+      if (b.onclick && b.onclick.toString().includes('true')) b.classList.add('reveal-correct');
+    });
+    shakeIt(container);
+  }
+  document.getElementById('quizScore').textContent = quizScore + ' / 10';
+  markCompleted(container.closest('.section-card'));
+}
+
+/* ============================================================
+   EQUIPOTENTIAL MAP CANVAS
+   ============================================================ */
+function drawEquipotential() {
+  const canvas = document.getElementById('eqCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const rawQ = parseFloat(document.getElementById('eqCharge').value);
+  document.getElementById('eqChargeVal').textContent = (rawQ >= 0 ? '+' : '') + rawQ + ' \u03bcC';
+
+  // Background gradient based on potential
+  const cx = W / 2, cy = H / 2;
+  const k = 9e9, Q = rawQ * 1e-6;
+  const scale = 300; // pixels per meter
+
+  // Draw background color map
+  const imgData = ctx.createImageData(W, H);
+  for (let px = 0; px < W; px++) {
+    for (let py = 0; py < H; py++) {
+      const dx = (px - cx) / scale;
+      const dy = (py - cy) / scale;
+      const r = Math.sqrt(dx*dx + dy*dy);
+      if (r < 0.01) { const i=(py*W+px)*4; imgData.data[i]=30;imgData.data[i+1]=33;imgData.data[i+2]=40;imgData.data[i+3]=255; continue; }
+      const V = k * Q / r;
+      const Vmax = k * Math.abs(Q) / 0.05;
+      const norm = Math.tanh(V / Vmax);
+      const i = (py * W + px) * 4;
+      if (norm > 0) {
+        imgData.data[i]   = Math.round(30 + norm * 70);
+        imgData.data[i+1] = Math.round(33 + norm * 30);
+        imgData.data[i+2] = Math.round(40 + norm * 180);
+      } else {
+        imgData.data[i]   = Math.round(30 + (-norm) * 200);
+        imgData.data[i+1] = Math.round(33 + (-norm) * 40);
+        imgData.data[i+2] = Math.round(40 + (-norm) * 80);
+      }
+      imgData.data[i+3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  // Draw equipotential rings
+  const ringVals = Q > 0
+    ? [k*Q/0.3, k*Q/0.2, k*Q/0.12, k*Q/0.07, k*Q/0.04]
+    : [k*Q/0.3, k*Q/0.2, k*Q/0.12, k*Q/0.07, k*Q/0.04];
+
+  ctx.lineWidth = 1.5;
+  ringVals.forEach((Vring, i) => {
+    if (Vring === 0) return;
+    const r = Math.abs(k * Q / Vring) * scale;
+    if (r < 4 || r > W * 1.5) return;
+    const hue = Q > 0 ? 230 : 0;
+    ctx.strokeStyle = `hsla(${hue},80%,70%,0.7)`;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+    ctx.stroke();
+    // Label
+    ctx.fillStyle = `hsla(${hue},80%,80%,0.9)`;
+    ctx.font = '10px JetBrains Mono, monospace';
+    const label = (Vring / 1000).toFixed(0) + 'kV';
+    ctx.fillText(label, cx + r + 3, cy - 3);
+  });
+
+  // Draw field lines
+  const nLines = 12;
+  ctx.strokeStyle = Q > 0 ? 'rgba(253,224,100,0.75)' : 'rgba(236,72,153,0.75)';
+  ctx.lineWidth = 1.2;
+  for (let a = 0; a < nLines; a++) {
+    const angle = (a / nLines) * 2 * Math.PI;
+    const startR = 16;
+    let x = cx + Math.cos(angle) * startR;
+    let y = cy + Math.sin(angle) * startR;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    const steps = 120;
+    const dt = Q > 0 ? 0.6 : -0.6;
+    for (let s = 0; s < steps; s++) {
+      const dx = (x - cx) / scale;
+      const dy = (y - cy) / scale;
+      const r2 = dx*dx + dy*dy;
+      if (r2 < 1e-6) break;
+      const Ex = k * Q * dx / (r2 * Math.sqrt(r2)) / 1e6;
+      const Ey = k * Q * dy / (r2 * Math.sqrt(r2)) / 1e6;
+      const mag = Math.sqrt(Ex*Ex + Ey*Ey);
+      if (mag === 0) break;
+      x += (Ex/mag) * dt;
+      y += (Ey/mag) * dt;
+      if (x<0||x>W||y<0||y>H) break;
+      ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  // Draw charge
+  ctx.beginPath();
+  ctx.arc(cx, cy, 8, 0, 2*Math.PI);
+  ctx.fillStyle = Q > 0 ? '#6366f1' : '#ec4899';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(Q > 0 ? '+' : '\u2212', cx, cy);
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+
+  // Update readouts
+  const sign = rawQ >= 0 ? '+' : '';
+  document.getElementById('eqReadQ').textContent = sign + rawQ.toFixed(1) + ' \u03bcC';
+  const v1 = k * Q / 0.01;
+  const v5 = k * Q / 0.05;
+  document.getElementById('eqReadV1').textContent = (v1/1e6).toFixed(2) + ' MV';
+  document.getElementById('eqReadV5').textContent = (v5/1e6).toFixed(2) + ' MV';
+}
+
+/* ============================================================
+   CAPACITOR ENERGY CALCULATOR
+   ============================================================ */
+function updateCapCalc() {
+  const C = parseFloat(document.getElementById('capC').value) * 1e-6;
+  const V = parseFloat(document.getElementById('capV').value);
+  const d = parseFloat(document.getElementById('capD').value) * 1e-3;
+  document.getElementById('capCVal').textContent = (C*1e6).toFixed(0) + ' \u03bcF';
+  document.getElementById('capVVal').textContent = V.toFixed(0) + ' V';
+  document.getElementById('capDVal').textContent = (d*1e3).toFixed(1) + ' mm';
+
+  const Q = C * V;
+  const U = 0.5 * C * V * V;
+  const E = V / d;
+  const eps0 = 8.85e-12;
+  const A = C * d / eps0;
+
+  document.getElementById('capReadQ').textContent = Q >= 1e-3
+    ? (Q*1e3).toFixed(2) + ' mC'
+    : (Q*1e6).toFixed(1) + ' \u03bcC';
+  document.getElementById('capReadU').textContent = U >= 1e-3
+    ? (U*1e3).toFixed(2) + ' mJ'
+    : (U*1e6).toFixed(1) + ' \u03bcJ';
+  document.getElementById('capReadE').textContent = E >= 1e6
+    ? (E/1e6).toFixed(2) + ' MV/m'
+    : (E/1e3).toFixed(1) + ' kV/m';
+  document.getElementById('capReadA').textContent = A >= 1
+    ? A.toFixed(2) + ' m\u00b2'
+    : (A*1e4).toFixed(1) + ' cm\u00b2';
+}
+
+/* ============================================================
+   SERIES / PARALLEL CAPACITOR BUILDER
+   ============================================================ */
+let capList = [];
+
+function addCapacitor() {
+  const val = parseFloat(document.getElementById('capAddVal').value);
+  capList.push(val);
+  renderCapacitors();
+}
+
+function removeCapacitor(idx) {
+  capList.splice(idx, 1);
+  renderCapacitors();
+}
+
+function clearCapacitors() {
+  capList = [];
+  renderCapacitors();
+}
+
+function renderCapacitors() {
+  const mode = document.getElementById('capMode').value;
+  const chips = document.getElementById('capChips');
+  const result = document.getElementById('capResult');
+  const formula = document.getElementById('capFormula');
+
+  chips.innerHTML = '';
+  capList.forEach((c, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'cap-chip';
+    chip.innerHTML = `<span>C${i+1}</span><span class="cap-val">${c} \u03bcF</span><span class="remove-cap" onclick="removeCapacitor(${i})">&#10005;</span>`;
+    chips.appendChild(chip);
+  });
+
+  if (capList.length === 0) {
+    result.style.display = 'none';
+    formula.textContent = '';
+    return;
+  }
+
+  let ceq, fText;
+  if (mode === 'parallel') {
+    ceq = capList.reduce((a, b) => a + b, 0);
+    fText = 'C\u2091\u2091 = ' + capList.join(' + ') + ' = ' + ceq.toFixed(3) + ' \u03bcF (parallel)';
+  } else {
+    const recip = capList.reduce((a, b) => a + 1/b, 0);
+    ceq = 1 / recip;
+    fText = '1/C\u2091\u2091 = ' + capList.map(c => '1/'+c).join(' + ') + ' = ' + recip.toFixed(4) + ' \u21d2 C\u2091\u2091 = ' + ceq.toFixed(3) + ' \u03bcF (series)';
+  }
+
+  result.style.display = 'inline-block';
+  result.textContent = 'C\u2091\u2091 = ' + ceq.toFixed(3) + ' \u03bcF';
+  formula.textContent = fText;
+}
+</script>
+</body>
+</html>
